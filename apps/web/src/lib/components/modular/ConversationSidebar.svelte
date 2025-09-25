@@ -87,7 +87,7 @@
 <div class="bg-white border-r border-gray-100 flex flex-col h-full {showOnMobile ? 'block' : 'hidden'} sm:block">
   <!-- Tab Navigation - Messenger Style Pills -->
   <div class="flex-none p-4 bg-white">
-    <div class="flex gap-2 overflow-x-auto scrollbar-hide">
+    <div class="flex gap-2 overflow-x-auto scrollbarhide">
       {#each messageTabData as tab (tab.id)}
         <button
           onclick={() => handleTabChange(tab.id)}

@@ -70,7 +70,7 @@
         bind:this={scrollContainer}
         role="region"
         aria-label="Partner showcase"
-        class="flex overflow-x-auto scrollbar-hide gap-4 px-4 sm:px-0 pb-2
+        class="flex overflow-x-auto scrollbarhide gap-4 px-4 sm:px-0 pb-2
                {variant === 'marquee' ? 'scroll-smooth' : ''}"
         onmouseenter={() => { if (variant === 'marquee') isScrolling = true; }}
         onmouseleave={() => { if (variant === 'marquee') isScrolling = false; }}

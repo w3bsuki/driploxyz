@@ -396,7 +396,7 @@
 
       <!-- Top Sellers -->
       {#if sellers.length > 0}
-        <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-6">
+        <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbarhide pb-6">
           {#each sellers as seller}
             <button
               onclick={() => openSellerModal(seller)}
@@ -599,7 +599,7 @@
       {#if pillCategories.length > 0}
         <div class="space-y-3">
           <div class="flex justify-center">
-            <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
+            <div class="flex overflow-x-auto scrollbarhide gap-2 px-4">
               {#each pillCategories.filter(cat => cat.productCount > 0).slice(0, 12) as cat}
                 <FilterPill 
                   variant="primary" 
@@ -915,13 +915,3 @@
   }}
 />
 
-<style>
-  /* Hide scrollbar for horizontal scroll */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

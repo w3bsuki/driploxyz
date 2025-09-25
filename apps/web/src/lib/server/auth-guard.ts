@@ -53,11 +53,11 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
   }
 
   // For routes that need auth, check if session cache exists to avoid recursion
-  const locals = event.locals as any;
+  const locals = event.locals as { __sessionCache?: { session: unknown; user: unknown } };
   if (locals.__sessionCache !== undefined) {
     // Session already validated, use cached values
-    event.locals.session = locals.__sessionCache.session;
-    event.locals.user = locals.__sessionCache.user;
+    event.locals.session = locals.__sessionCache.session as import('@supabase/supabase-js').Session | null;
+    event.locals.user = locals.__sessionCache.user as import('@supabase/supabase-js').User | null;
     return;
   }
 

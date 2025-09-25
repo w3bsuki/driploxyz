@@ -16,8 +16,8 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 	);
 	if (rateLimitResponse) return rateLimitResponse;
 	try {
-		const { session } = await locals.safeGetSession();
-		if (!session?.user) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user) {
 			return json({ error: 'Authentication required' }, { status: 401 });
 		}
 
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			currency: currency as Currency,
 			productId,
 			sellerId,
-			buyerId: session.user.id,
+			buyerId: user.id,
 			metadata
 		};
 
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		});
 	} catch (error) {
 		paymentLogger.error('Error creating payment intent', error, {
-			userId: locals.session?.user?.id
+			userId: user?.id
 		});
 		return json({ error: 'Failed to create payment intent' }, { status: 500 });
 	}

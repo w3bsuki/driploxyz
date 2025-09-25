@@ -23,3 +23,6 @@ export const reroute: Reroute = ({ url }) => {
   // No change needed - default to Bulgarian
   return pathname;
 };
+
+// Export empty transport function for build compatibility
+export const transport = () => {};

@@ -6,11 +6,11 @@ import { getUserCountry } from '$lib/country/detection';
 import { generateUniqueSlug, validateSlug } from '$lib/utils/slug';
 
 export const load = (async ({ locals }) => {
-  // Get the session from locals 
-  const { supabase, session } = locals;
-  
+  // Get the session and validated user from locals
+  const { supabase, session, user } = locals;
+
   // Redirect to login if not authenticated
-  if (!session) {
+  if (!session || !user) {
     redirect(303, '/login?redirect=/sell');
   }
 
@@ -21,7 +21,7 @@ export const load = (async ({ locals }) => {
     const { data: profile } = await supabase
       .from('profiles')
       .select('account_type, subscription_tier, premium_boosts_remaining, role, username')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
     
     // Check if brand user can list products
@@ -40,7 +40,7 @@ export const load = (async ({ locals }) => {
       .eq('is_active', true)
       .order('price_monthly', { ascending: true });
     return {
-      user: session.user,
+      user: user,
       profile,
       categories: allCategories || [],
       canListProducts,
@@ -50,7 +50,7 @@ export const load = (async ({ locals }) => {
   } catch {
     // Return empty but valid data structure
     return {
-      user: session.user,
+      user: user,
       profile: null,
       categories: [],
       canListProducts: true,

@@ -255,7 +255,9 @@
 
   $effect(() => {
     if (!filtersInitialized && data.products) {
-      filterStore.setProducts(data.products);
+      // Handle products array directly (no longer wrapped in Promise)
+      const products = Array.isArray(data.products) ? data.products : [];
+      filterStore.setProducts(products);
       filterStore.loadPersistedFilters();
 
       if (data.filters) {

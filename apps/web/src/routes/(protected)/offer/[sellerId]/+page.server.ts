@@ -3,9 +3,9 @@ import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
 export const load = (async ({ params, locals }) => {
-  const { session } = await locals.safeGetSession();
-  
-  if (!session?.user) {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     redirect(303, '/login');
   }
   
@@ -51,6 +51,6 @@ export const load = (async ({ params, locals }) => {
   return {
     seller,
     products: productsWithImages,
-    currentUser: session.user
+    currentUser: user
   };
 }) satisfies PageServerLoad;

@@ -480,7 +480,7 @@ function getSubcategoryIcon(name: string): string {
         <div class="absolute top-full left-0 right-0 mt-1 z-50">
           <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-h-[350px] max-h-[80vh] overflow-hidden">
             <!-- Tab Headers - Scrollable on mobile (40px preferred for secondary actions) -->
-            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto" role="tablist" aria-label="Filter categories">
+            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto scrollbarhide" role="tablist" aria-label="Filter categories">
               <button
                 onclick={() => activeDropdownTab = 'categories'}
                 class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'categories' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
@@ -741,7 +741,7 @@ function getSubcategoryIcon(name: string): string {
     {/if}
 
     <!-- Smart Filter Pills -->
-    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Smart category filters">
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbarhide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Smart category filters">
       <!-- Dynamic Category Pills -->
       {#each smartPillData?.pills || [] as pill, index}
         <CategoryPill
@@ -790,14 +790,5 @@ function getSubcategoryIcon(name: string): string {
   </div>
 </div>
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>
 
 

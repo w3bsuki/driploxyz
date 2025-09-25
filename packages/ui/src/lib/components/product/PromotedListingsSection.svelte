@@ -88,9 +88,9 @@
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
 		<div class="relative px-2 sm:px-4 lg:px-6">
-			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
+			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbarhide promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
 				{#each activePromotedProducts as product (product.id)}
-					<div class="flex-shrink-0 snap-start promoted-card" data-promoted-card>
+					<div class="flex-shrink-0 snap-start basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/5" data-promoted-card>
 						<ProductCard
 							{product}
 							onclick={onProductClick}
@@ -120,41 +120,4 @@
 	</section>
 {/if}
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Match exact grid card sizes - use same padding as section container */
-
-  .promoted-card {
-    /* Mobile: 2 columns like grid-cols-2 */
-    width: calc((100vw - 1rem - 0.75rem) / 2); /* 100vw - padding - gap */
-  }
-
-  @media (min-width: 640px) {
-    .promoted-card {
-      /* Small screens: 3 columns like sm:grid-cols-3 */
-      width: calc((100vw - 2rem - 2rem) / 3); /* 100vw - padding - gaps */
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .promoted-card {
-      /* Large screens: 4 columns like lg:grid-cols-4 */
-      width: calc((100vw - 3rem - 3rem) / 4);
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .promoted-card {
-      /* XL screens: 5 columns like xl:grid-cols-5 */
-      width: calc((100vw - 3rem - 4rem) / 5);
-    }
-  }
-</style>
 

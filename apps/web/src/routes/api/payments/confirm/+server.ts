@@ -19,8 +19,8 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 	
 	try {
 		// Get current user session
-		const { session } = await locals.safeGetSession();
-		if (!session?.user) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user) {
 			return json({ error: 'Authentication required' }, { status: 401 });
 		}
 
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		
 		const params: PaymentIntentConfirmParams = {
 			paymentIntentId,
-			buyerId: session.user.id
+			buyerId: user.id
 		};
 
 		const result = await stripeService.confirmPaymentIntent(params);
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 					.single();
 
 				// Get buyer email
-				const { data: buyer } = await locals.supabase.auth.admin.getUserById(session.user.id);
+				const { data: buyer } = await locals.supabase.auth.admin.getUserById(user.id);
 				
 				// Get seller details
 				const { data: seller } = await locals.supabase

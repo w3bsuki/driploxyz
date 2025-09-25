@@ -204,7 +204,7 @@
 <div 
   bind:this={containerRef}
   use:root 
-  class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 {className}"
+  class="flex items-center gap-2 overflow-x-auto scrollbarhide pb-1 {className}"
   role="toolbar"
   aria-label={label || filter_ui_filterOptionsAriaLabel()}
   aria-orientation="horizontal"
@@ -275,15 +275,6 @@
 {/if}
 
 <style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  
   /* Smooth scroll behavior for horizontal scrolling */
   .overflow-x-auto {
     scroll-behavior: smooth;

@@ -1,0 +1,104 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO TOKENS · Semantics
+  Purpose-driven surfaces, typography, borders, interactive states
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* Brand identity */
+  --brand-primary: var(--gray-700);
+  --brand-primary-strong: var(--blue-600);
+  --brand-primary-soft: var(--blue-100);
+  --brand-secondary: var(--purple-500);
+  --brand-accent: var(--orange-500);
+
+  /* Surfaces */
+  --surface-base: var(--gray-0);
+  --surface-subtle: var(--gray-50);
+  --surface-muted: var(--gray-100);
+  --surface-emphasis: var(--gray-200);
+  --surface-inverse: var(--gray-900);
+
+  /* Text hierarchy */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-700);
+  --text-tertiary: var(--gray-600);
+  --text-muted: var(--gray-500);
+  --text-disabled: var(--gray-400);
+  --text-inverse: var(--gray-0);
+  --text-link: var(--brand-primary-strong);
+  --text-link-hover: var(--blue-700);
+
+  /* Borders */
+  --border-subtle: var(--gray-200);
+  --border-default: var(--gray-300);
+  --border-emphasis: var(--gray-400);
+  --border-inverse: var(--gray-700);
+
+  /* Interactive states */
+  --state-hover: oklch(0.98 0.005 270 / 0.5);
+  --state-active: oklch(0.96 0.005 270 / 0.7);
+  --state-focus: var(--brand-primary-strong);
+  --state-disabled: var(--gray-300);
+
+  /* Status tokens */
+  --status-success-bg: var(--green-50);
+  --status-success-border: var(--green-200);
+  --status-success-text: var(--green-700);
+  --status-success-solid: var(--green-500);
+
+  --status-error-bg: var(--red-50);
+  --status-error-border: var(--red-200);
+  --status-error-text: var(--red-700);
+  --status-error-solid: var(--red-500);
+
+  --status-warning-bg: var(--yellow-50);
+  --status-warning-border: var(--yellow-200);
+  --status-warning-text: var(--yellow-700);
+  --status-warning-solid: var(--yellow-500);
+
+  --status-info-bg: var(--blue-50);
+  --status-info-border: var(--blue-200);
+  --status-info-text: var(--blue-700);
+  --status-info-solid: var(--blue-500);
+
+  /* Domain-specific colors */
+  --condition-new: var(--green-500);
+  --condition-like-new: var(--blue-500);
+  --condition-good: var(--yellow-500);
+  --condition-fair: var(--orange-500);
+
+  --category-men: var(--blue-500);
+  --category-women: var(--pink-500);
+  --category-kids: var(--orange-500);
+
+  --favorite-solid: oklch(0.55 0.18 15);
+  --favorite-hover: oklch(0.45 0.20 15);
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --surface-base: var(--gray-900);
+  --surface-subtle: var(--gray-800);
+  --surface-muted: var(--gray-700);
+  --surface-emphasis: var(--gray-600);
+  --surface-inverse: var(--gray-0);
+
+  --text-primary: var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary: var(--gray-300);
+  --text-muted: var(--gray-400);
+  --text-disabled: var(--gray-500);
+  --text-inverse: var(--gray-900);
+
+  --border-subtle: var(--gray-700);
+  --border-default: var(--gray-600);
+  --border-emphasis: var(--gray-500);
+  --border-inverse: var(--gray-200);
+
+  --state-focus: var(--brand-primary-soft);
+
+  --text-link: var(--blue-300);
+  --text-link-hover: var(--blue-200);
+}

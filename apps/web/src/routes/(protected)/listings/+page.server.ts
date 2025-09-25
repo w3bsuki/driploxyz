@@ -1,9 +1,9 @@
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
-	const { session } = await locals.safeGetSession();
+	const { session, user } = await locals.safeGetSession();
 
-	if (!session?.user) {
+	if (!session || !user) {
 		return {
 			listings: []
 		};
@@ -22,7 +22,7 @@ export const load = (async ({ locals }) => {
 				username
 			)
 		`)
-		.eq('seller_id', session.user.id)
+		.eq('seller_id', user.id)
 		.order('created_at', { ascending: false });
 
 	if (error) {
@@ -36,25 +36,25 @@ export const load = (async ({ locals }) => {
 	const { count: totalListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('seller_id', session.user.id);
+		.eq('seller_id', user.id);
 
 	const { count: activeListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('seller_id', session.user.id)
+		.eq('seller_id', user.id)
 		.eq('status', 'active')
 		.eq('is_sold', false);
 
 	const { count: soldListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('seller_id', session.user.id)
+		.eq('seller_id', user.id)
 		.eq('is_sold', true);
 
 	const { count: draftListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('seller_id', session.user.id)
+		.eq('seller_id', user.id)
 		.eq('status', 'draft');
 
 	return {

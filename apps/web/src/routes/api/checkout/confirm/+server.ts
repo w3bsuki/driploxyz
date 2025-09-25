@@ -15,9 +15,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
   if (rateLimitResponse) return rateLimitResponse;
   
   try {
-    const { session } = await safeGetSession();
-    
-    if (!session?.user) {
+    const { session, user } = await safeGetSession();
+
+    if (!session || !user) {
       return error(401, { message: 'Authentication required' });
     }
 
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     // Confirm payment intent and process order
     const { order, transaction, success, error: confirmError } = await services.stripe.confirmPaymentIntent({
       paymentIntentId,
-      buyerId: session.user.id
+      buyerId: user.id
     });
 
     if (!success || confirmError) {

@@ -157,9 +157,17 @@ export class ConversationService {
     }
 
     try {
+      // First validate the user to ensure session is authentic
+      const { data: { user }, error: userError } = await this.supabase.auth.getUser();
+      if (userError || !user) {
+        messagingLogger.error('User validation failed for sending message', { error: userError?.message });
+        return false;
+      }
+
+      // Get session for access token (needed for Edge Function auth)
       const { data: { session } } = await this.supabase.auth.getSession();
-      if (!session) {
-        messagingLogger.error('No session for sending message');
+      if (!session?.access_token) {
+        messagingLogger.error('No valid session token for sending message');
         return false;
       }
 

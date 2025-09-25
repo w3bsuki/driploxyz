@@ -80,7 +80,7 @@
     <!-- Condition Filters -->
     <div class="space-y-3">
       <h3 class="text-xs uppercase tracking-wide font-semibold text-[color:var(--text-secondary)]">{translations.shopByCondition}</h3>
-      <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+      <div class="flex items-center gap-2 overflow-x-auto scrollbarhide">
         <button 
           onclick={() => onFilterClick('condition=brand_new_with_tags')}
           class="shrink-0 px-4 py-2 bg-[color:var(--surface-subtle)] border border-[color:var(--border-default)] rounded-lg text-sm font-medium text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)] hover:border-[color:var(--border-hover)] transition-colors min-h-[36px] focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] focus:ring-offset-1"
@@ -111,7 +111,7 @@
     <!-- Price & Sort Filters -->
     <div class="space-y-3">
       <h3 class="text-xs uppercase tracking-wide font-semibold text-[color:var(--text-secondary)]">{translations.shopByPrice}</h3>
-      <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+      <div class="flex items-center gap-2 overflow-x-auto scrollbarhide">
         <button 
           onclick={() => onFilterClick('under25')}
           class="shrink-0 px-4 py-2 bg-[color:var(--primary)] text-[color:var(--primary-fg)] rounded-lg text-sm font-medium hover:bg-[color:var(--primary-hover)] transition-colors min-h-[36px] focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] focus:ring-offset-1"
@@ -149,7 +149,7 @@
           <span class="w-2 h-2 bg-[color:var(--primary)] rounded-full animate-pulse"></span>
           {translations.topSellers}
         </h3>
-        <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-1">
+        <div class="flex items-center gap-3 overflow-x-auto scrollbarhide pb-1">
           {#each topSellers.slice(0, 6) as seller, index}
             <button
               onclick={() => onSellerClick(seller)}

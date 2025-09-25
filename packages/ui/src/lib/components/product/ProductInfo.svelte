@@ -519,13 +519,8 @@
     background: var(--surface-subtle);
     border-bottom: 1px solid var(--border-subtle);
     overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
   }
 
-  .tab-nav::-webkit-scrollbar {
-    display: none;
-  }
 
   .tab-button {
     display: flex;

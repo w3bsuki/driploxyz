@@ -1,16 +1,15 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 import { OrderService } from '$lib/services/OrderService';
 
 export const PATCH: RequestHandler = async (event) => {
-	const { request, params } = event;
-	const supabase = createServerSupabaseClient(event);
+	const { request, params, locals } = event;
+	const supabase = locals.supabase;
 	const orderService = new OrderService(supabase);
-	
-	const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-	
-	if (sessionError || !session?.user) {
+
+	const { session, user } = await locals.safeGetSession();
+
+	if (!session || !user) {
 		error(401, 'Unauthorized');
 	}
 
@@ -35,7 +34,7 @@ export const PATCH: RequestHandler = async (event) => {
 		const { order: updatedOrder, error: updateError } = await orderService.updateOrderStatus({
 			orderId: params.id,
 			status,
-			userId: session.user.id,
+			userId: user.id,
 			trackingNumber: tracking_number,
 			notes
 		});

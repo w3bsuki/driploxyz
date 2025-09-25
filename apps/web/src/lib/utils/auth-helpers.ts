@@ -49,20 +49,21 @@ export async function retryWithBackoff<T>(
  */
 export async function validateSession(supabase: SupabaseClient) {
   return retryWithBackoff(async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (error) throw error;
-    if (!session) return null;
-    
-    // Validate the session is still valid
+    // Use getUser() as the primary authentication method for security
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError || !user) {
-      // Session is invalid, clear it
+
+    if (userError) throw userError;
+    if (!user) return null;
+
+    // Only get session after user validation
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError) {
+      // If session retrieval fails but user is valid, sign out to be safe
       await supabase.auth.signOut();
       return null;
     }
-    
+
     return { session, user };
   }, { maxAttempts: 2, delay: 500 });
 }

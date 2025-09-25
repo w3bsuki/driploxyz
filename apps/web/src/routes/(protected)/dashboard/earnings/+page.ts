@@ -9,7 +9,7 @@ export const load = (async ({ parent }) => {
   }
   
   return {
-    user: session.user,
+    user: session?.user,
     profile
   };
 }) satisfies PageLoad;

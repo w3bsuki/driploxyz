@@ -5,11 +5,13 @@
   interface Props {
     onConsentChange?: (consent: ConsentState) => void;
     enableLocationDetection?: boolean;
+    initialShowBanner?: boolean;
   }
-  
-  let { 
+
+  let {
     onConsentChange,
-    enableLocationDetection = true 
+    enableLocationDetection = true,
+    initialShowBanner = false
   }: Props = $props();
   
   interface ConsentState {
@@ -119,13 +121,16 @@
   
   $effect(() => {
     if (!isBrowser) return;
-    
+
     consentManager = SimpleCookieManager.getInstance();
     localeManager = SimpleLocaleManager.getInstance();
-    
-    // Check existing consent
+
+    // Use server-side determination for initial banner visibility
+    showBanner = initialShowBanner;
+
+    // Check existing consent for UI state
     const existingConsent = consentManager.getConsent();
-    
+
     if (existingConsent) {
       hasExistingConsent = true;
       preferences = {
@@ -134,24 +139,12 @@
         analytics: existingConsent.analytics,
         marketing: existingConsent.marketing
       };
-      
-      // Check if consent needs renewal (365 days)
-      if (existingConsent.timestamp) {
-        const age = Date.now() - existingConsent.timestamp;
-        if (age > 365 * 24 * 60 * 60 * 1000) {
-          showBanner = true;
-        }
-      } else {
-        // No timestamp means old consent format - show banner for renewal
-        showBanner = true;
-      }
     } else {
       // First visit - detect location for language suggestion
-      if (enableLocationDetection) {
+      if (enableLocationDetection && initialShowBanner) {
         detectLocation();
       }
-      showBanner = true;
-      showLanguageSelector = enableLocationDetection;
+      showLanguageSelector = enableLocationDetection && initialShowBanner;
     }
     
     // Get current locale
@@ -267,16 +260,11 @@
       analytics: false,
       marketing: false
     };
-    
+
     // Update consent
     consentManager.updateConsent(consent);
     onConsentChange?.(consent);
-    
-    // Force reload to refresh cookie state
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
-    
+
     showBanner = false;
     showLanguageSelector = false;
   }

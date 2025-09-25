@@ -35,8 +35,8 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
     
     if (otherUserId && uuidRegex.test(otherUserId)) {
       const { data, error } = await supabase.rpc('get_conversation_messages_secure', {
-        other_user_id: otherUserId,
-        limit_count: 10  // Load only 10 most recent messages initially for better performance
+        conversation_id: conversationParam,
+        other_user_id: otherUserId
       });
       
       // Transform the function result to match expected format
@@ -63,6 +63,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   } else {
     // Load conversation summaries using optimized function
     const { data, error } = await supabase.rpc('get_user_conversations_secure', {
+      user_id: user.id,
       conv_limit: 50
     });
     
@@ -80,10 +81,10 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
       orderId: undefined,
       orderStatus: undefined,
       orderTotal: undefined,
-      lastMessage: conv.last_message_content || '',
-      lastMessageTime: conv.last_message_at || conv.updated_at,
+      lastMessage: conv.last_message || '',
+      lastMessageTime: conv.last_message_at || conv.created_at,
       messages: [], // Messages loaded separately
-      unread: conv.participant_one_id === user.id ? conv.unread_count_p1 > 0 : conv.unread_count_p2 > 0,
+      unread: false, // Unread counts not available in this RPC response
       isProductConversation: false,
       isOrderConversation: false
     })) as Conversation[] : [];
@@ -134,7 +135,8 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
     // Use optimized function to mark conversation as read (non-blocking)
     if (otherUserId) {
       void supabase.rpc('mark_conversation_read_secure', {
-        other_user_id: otherUserId
+        conversation_id: conversationParam,
+        user_id: user.id
       }); // Fire and forget
     }
   }

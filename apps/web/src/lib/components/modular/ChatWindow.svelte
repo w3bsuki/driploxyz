@@ -376,7 +376,7 @@
   <!-- Message Input - Modern Messenger Style -->
   <div class="flex-none bg-white border-t border-gray-100 p-4">
     <!-- Quick Actions - Clean pill style -->
-    <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide">
+    <div class="flex gap-2 mb-4 overflow-x-auto scrollbarhide">
       <button 
         onclick={handleMakeOffer}
         class="flex items-center space-x-2 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-full transition-all active:scale-95 whitespace-nowrap text-sm border border-green-200"

@@ -76,7 +76,7 @@
 
   <!-- Quick Actions Row -->
   <div class="p-4 bg-[color:var(--surface-subtle)] border-b border-[color:var(--border-subtle)]">
-    <div class="flex items-center gap-3 overflow-x-auto scroll-snap-x-mandatory scrollbar-hide">
+    <div class="flex items-center gap-3 overflow-x-auto scroll-snap-x-mandatory scrollbarhide">
       <button class="shrink-0 px-4 py-2 min-h-[var(--touch-standard)] bg-[color:var(--status-error-bg)] text-[color:var(--status-error-text)] rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-shadow flex items-center gap-2 scroll-snap-start hover:bg-[color:var(--status-error-bg-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary">
         <span>🔥</span>
         <span>Hot Deals</span>

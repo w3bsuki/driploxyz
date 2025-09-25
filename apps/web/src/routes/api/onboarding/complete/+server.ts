@@ -12,9 +12,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
   );
   if (rateLimitResponse) return rateLimitResponse;
   
-  const { session } = await safeGetSession();
-  
-  if (!session?.user) {
+  const { session, user } = await safeGetSession();
+
+  if (!session || !user) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         onboarding_completed: true,
         updated_at: new Date().toISOString()
       })
-      .eq('id', session.user.id);
+      .eq('id', user.id);
 
     if (error) {
       return json({ error: 'Failed to update profile' }, { status: 500 });

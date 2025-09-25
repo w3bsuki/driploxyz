@@ -38,7 +38,10 @@
       "default": "./dist/primitives/index.js"
     },
     "./styles/tokens.css": "./src/styles/tokens.css",
-    "./styles/semantic.css": "./src/styles/semantic.css"
+    "./styles/semantic.css": "./src/styles/semantic.css",
+    "./styles/utilities.css": "./src/styles/utilities.css",
+    "./styles/base.css": "./src/styles/base.css",
+    "./styles/components.css": "./src/styles/components.css"
   },
   "files": [
     "dist",

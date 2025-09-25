@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ url, locals, request, getClientAddre
   if (rateLimitResponse) return rateLimitResponse;
 
   const followingId = url.searchParams.get('followingId');
-  const { session } = await locals.safeGetSession();
+  const { session, user } = await locals.safeGetSession();
 
   if (!followingId) {
     return json({ error: 'Missing followingId parameter' }, { status: 400 });
@@ -34,11 +34,11 @@ export const GET: RequestHandler = async ({ url, locals, request, getClientAddre
   let isFollowing = false;
 
   // Check if current user is following (if logged in)
-  if (session?.user) {
+  if (session && user) {
     const { data: follow, error: followError } = await locals.supabase
       .from('followers')
       .select('id')
-      .eq('follower_id', session.user.id)
+      .eq('follower_id', user.id)
       .eq('following_id', followingId)
       .single();
 

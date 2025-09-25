@@ -3,18 +3,22 @@ import type { Database } from '@repo/database';
 import { validatePayoutMethod } from '$lib/utils/payments';
 import type { PayoutMethod } from '$lib/stripe/types';
 
-type Tables = Database['public']['Tables'];
 // TODO: Implement transactions table first
+// type Tables = Database['public']['Tables'];
 // type Transaction = Tables['transactions']['Row'];
 // type TransactionUpdate = Tables['transactions']['Update'];
 
 export class PayoutService {
-	constructor(private supabase: SupabaseClient<Database>) {}
+	constructor(private _supabase: SupabaseClient<Database>) {
+		// Service initialization - supabase client available for when transactions table is implemented
+		// Suppress unused warning
+		void this._supabase;
+	}
 
 	/**
 	 * Process payouts for completed transactions
 	 */
-	async processPayouts(sellerId: string): Promise<{ transactions: any[] | null; error: Error | null }> {
+	async processPayouts(): Promise<{ transactions: unknown[] | null; error: Error | null }> {
 		// TODO: Implement after creating transactions table
 		return { transactions: [], error: new Error('Transactions table not implemented') };
 
@@ -45,8 +49,8 @@ export class PayoutService {
 	/**
 	 * Get seller's payout history
 	 */
-	async getSellerPayouts(sellerId: string) {
-		// TODO: Implement after creating transactions table
+	async getSellerPayouts() {
+		// TODO: Implement after creating transactions table - sellerId parameter will be needed
 		return { data: [], error: null };
 		// return await this.supabase
 		//	.from('transactions')
@@ -76,12 +80,8 @@ export class PayoutService {
 	/**
 	 * Update payout status (admin only)
 	 */
-	async updatePayoutStatus(
-		transactionId: string,
-		status: 'processing' | 'completed' | 'failed',
-		payoutReference?: string
-	) {
-		// TODO: Implement after creating transactions table
+	async updatePayoutStatus() {
+		// TODO: Implement after creating transactions table - transactionId, status, payoutReference params will be needed
 		return { success: false, error: 'Transactions table not implemented' };
 
 		/* Original implementation:
@@ -121,8 +121,8 @@ export class PayoutService {
 	/**
 	 * Get seller's earnings summary
 	 */
-	async getSellerEarnings(sellerId: string) {
-		// TODO: Implement after creating transactions table
+	async getSellerEarnings() {
+		// TODO: Implement after creating transactions table - sellerId parameter will be needed
 		return {
 			totalEarnings: 0,
 			pendingPayout: 0,

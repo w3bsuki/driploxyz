@@ -15,7 +15,8 @@
   import { invalidate, preloadCode, goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   import { injectAnalytics } from '@vercel/analytics/sveltekit';
-  // Auth stores removed - we use server data directly
+  // Consolidated auth system
+  import AuthProvider from '$lib/auth/AuthProvider.svelte';
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
@@ -45,12 +46,9 @@
     // Only invalidate auth state for user-specific features (favorites, etc.)
     // Homepage content should be visible regardless of cookie acceptance
     if (browser) {
-      // Delay auth invalidation to avoid interfering with redirect/login flow
-      // This prevents race conditions when users accept cookies and then try to login
-      setTimeout(() => {
-        invalidate('supabase:auth');
-        // Don't invalidate home:data - content should always be visible
-      }, 500);
+      // Immediate invalidation without delay to fix auth flow
+      invalidate('supabase:auth');
+      // Don't invalidate home:data - content should always be visible
     }
   }
 
@@ -90,6 +88,26 @@
           sessionStorage.setItem('selectedLocale', data.language);
         }
       }
+    }
+  });
+
+  // Enable SvelteKit view transitions for smoother navigation
+  $effect(() => {
+    if (browser && 'startViewTransition' in document) {
+      // Enhance page navigation with view transitions
+      const originalGoto = goto;
+      window.goto = async (...args) => {
+        if (document.startViewTransition) {
+          return new Promise(resolve => {
+            document.startViewTransition?.(async () => {
+              const result = await originalGoto(...args);
+              resolve(result);
+            });
+          });
+        } else {
+          return originalGoto(...args);
+        }
+      };
     }
   });
 
@@ -538,12 +556,15 @@
   <!-- Route progress just below header -->
   <TopProgress />
 
-  <!-- Wrap main content with realtime error boundary -->
-  <RealtimeErrorBoundary>
-    <main>
-      {@render children?.()}
-    </main>
-  </RealtimeErrorBoundary>
+  <!-- Wrap everything with consolidated auth provider -->
+  <AuthProvider user={data.user} session={data.session} profile={data.profile}>
+    <!-- Wrap main content with realtime error boundary -->
+    <RealtimeErrorBoundary>
+      <main>
+        {@render children?.()}
+      </main>
+    </RealtimeErrorBoundary>
+  </AuthProvider>
 </ErrorBoundary>
 
 <!-- Footer -->
@@ -581,7 +602,10 @@
 <!-- Note: ToastProvider above already handles all notifications -->
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
-<UnifiedCookieConsent onConsentChange={handleConsentChange} />
+<UnifiedCookieConsent
+  initialShowBanner={data.shouldShowCookieConsent}
+  onConsentChange={handleConsentChange}
+/>
 
 <!-- Global Message Notification Toast -->
 {#if getActiveNotification()}

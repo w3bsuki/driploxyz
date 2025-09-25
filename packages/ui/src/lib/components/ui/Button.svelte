@@ -30,20 +30,20 @@
     use
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-200 relative select-none touch-manipulation';
 
   const variantClasses = {
-    primary: 'bg-black text-white focus-visible:ring-[color:var(--state-focus)] hover:bg-gray-800 active:bg-gray-900',
-    secondary: 'bg-white text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
-    outline: 'border-2 border-gray-200 bg-white text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
-    ghost: 'text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
-    danger: 'bg-red-500 text-white focus-visible:ring-red-500 hover:bg-red-700 active:bg-red-800'
+    primary: 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--primary-600)] active:bg-[color:var(--primary-700)]',
+    secondary: 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)] border border-[color:var(--border-default)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--surface-emphasis)] hover:border-[color:var(--border-emphasis)] active:bg-[color:var(--surface-subtle)]',
+    outline: 'border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--surface-subtle)] hover:border-[color:var(--border-emphasis)] active:bg-[color:var(--surface-muted)]',
+    ghost: 'text-[color:var(--text-primary)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--state-hover)] active:bg-[color:var(--surface-muted)]',
+    danger: 'bg-[color:var(--error)] text-[color:var(--error-fg)] focus-visible:ring-[color:var(--error)] hover:bg-[color:var(--status-error-solid)] active:bg-[color:var(--status-error-text)]'
   };
 
   const sizeClasses = {
-    sm: 'px-[var(--btn-padding-sm)] text-[var(--btn-font-sm)] min-h-[var(--btn-height-sm)]',    // Compact for dense UI (32px)
-    md: 'px-[var(--btn-padding-md)] text-[var(--btn-font-md)] min-h-[var(--btn-height-md)]',      // Standard - most buttons (36px)
-    lg: 'px-[var(--btn-padding-lg)] text-[var(--btn-font-lg)] min-h-[var(--btn-height-lg)]'    // Primary CTAs (buy, sell) - MOBILE FIRST (44px)
+    sm: 'px-3 text-xs min-h-8',      // Compact for dense UI (32px)
+    md: 'px-4 text-sm min-h-9',      // Standard buttons (36px)
+    lg: 'px-6 text-base min-h-11'    // Primary CTAs - accessible touch target (44px)
   };
 
   const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${loading ? 'pointer-events-none opacity-70' : ''} ${className}`);
@@ -56,7 +56,7 @@
 </script>
 
 {#if href}
-  <a {href} class={classes} aria-busy={loading} use:melt={use?.[1]}>
+  <a {href} class={classes} aria-busy={loading} use:melt={use && use[1] ? use[1] : undefined}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
@@ -66,7 +66,7 @@
     {@render children?.()}
   </a>
 {:else}
-  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading} use:melt={use?.[1]}>
+  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading} use:melt={use && use[1] ? use[1] : undefined}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
@@ -77,14 +77,3 @@
   </button>
 {/if}
 
-<style>
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .animate-spin {
-    animation: spin var(--duration-slower) linear infinite;
-  }
-</style>

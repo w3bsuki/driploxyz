@@ -38,21 +38,18 @@ export function createSupabaseServerClient(cookies: Cookies, fetch?: typeof glob
  */
 export async function getServerSession(cookies: Cookies) {
   const supabase = createSupabaseServerClient(cookies);
-  
+
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      return { session: null, user: null };
-    }
-    
-    // Validate the session
+    // Use getUser() as the primary method for security
     const { data: { user }, error } = await supabase.auth.getUser();
-    
+
     if (error || !user) {
       return { session: null, user: null };
     }
-    
+
+    // Only get session after user validation for consistency
+    const { data: { session } } = await supabase.auth.getSession();
+
     return { session, user };
   } catch {
     return { session: null, user: null };

@@ -1,8 +1,10 @@
 import type { PageServerLoad } from './$types';
 
 
-export const load = (async ({ locals: { supabase, session } }) => {
-  if (!session?.user) {
+export const load = (async ({ locals }) => {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     return {
       favoritedProducts: [],
       error: null
@@ -11,7 +13,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
 
   try {
     // Get user's favorited products
-    const { data: favorites, error: favoritesError } = await supabase
+    const { data: favorites, error: favoritesError } = await locals.supabase
       .from('favorites')
       .select(`
         product_id,
@@ -29,7 +31,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
           profiles!seller_id (username, rating, avatar_url)
         )
       `)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (favoritesError) {

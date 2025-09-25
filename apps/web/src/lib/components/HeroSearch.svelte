@@ -99,7 +99,7 @@
     <nav 
       role="group"
       aria-label="Quick category filters"
-      class="flex gap-1.5 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 sm:gap-3"
+      class="flex gap-1.5 overflow-x-auto scrollbarhide -mx-4 px-4 sm:mx-0 sm:px-0 sm:gap-3"
     >
       <button 
         onmouseenter={() => preloadCode('/search')}

@@ -2,8 +2,8 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
 
-export const load = (async ({ params, locals: { supabase, safeGetSession, country }, depends, setHeaders }) => {
-  const { session } = await safeGetSession();
+export const load = (async ({ params, locals, depends, setHeaders }) => {
+  const { session, user } = await locals.safeGetSession();
   const startTime = Date.now();
 
   // Mark dependencies for intelligent invalidation
@@ -22,7 +22,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   // Get product by seller username and slug with timeout for resilience
   // This is the new SEO-friendly URL format: /product/{seller}/{slug}
   const { data: product, error: productError } = await withTimeout(
-    supabase
+    locals.supabase
       .from('products')
       .select(`
         id,
@@ -69,7 +69,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       `)
       .eq('slug', params.slug)
       .eq('is_active', true)
-      .eq('country_code', country || 'BG')
+      .eq('country_code', locals.country || 'BG')
       .eq('profiles.username', params.seller)
       .single(),
     3000,
@@ -108,7 +108,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   
   if (product.categories?.parent_id) {
     const { data: parent } = await withTimeout(
-      supabase
+      locals.supabase
         .from('categories')
         .select('id, name, slug, parent_id')
         .eq('id', product.categories.parent_id)
@@ -121,7 +121,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     // If parent has a parent, get the top-level category (MEN/WOMEN/KIDS)
     if (parent?.parent_id) {
       const { data: topLevel } = await withTimeout(
-        supabase
+        locals.supabase
           .from('categories')
           .select('id, name, slug')
           .eq('id', parent.parent_id)
@@ -167,11 +167,11 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   // Stream additional data in parallel without blocking initial render
   const [favoriteResult, similarResult, sellerResult, reviewsResult] = await Promise.allSettled([
     // Check if user has favorited (only if authenticated)
-    session?.user ? withTimeout(
-      supabase
+    session && user ? withTimeout(
+      locals.supabase
         .from('favorites')
         .select('id')
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .eq('product_id', product.id)
         .maybeSingle(),
       1000,
@@ -179,9 +179,9 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     ) : Promise.resolve({ data: null }),
     
     // Get similar products (same category, if category exists)
-    product.category_id 
+    product.category_id
       ? withTimeout(
-          supabase
+          locals.supabase
             .from('products')
             .select(`
               id,
@@ -203,7 +203,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
             .eq('is_active', true)
             .eq('is_sold', false)
             .neq('id', product.id)
-            .eq('country_code', country || 'BG')
+            .eq('country_code', locals.country || 'BG')
             .limit(6),
           2500,
           { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
@@ -212,7 +212,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     
     // Get other seller products
     withTimeout(
-      supabase
+      locals.supabase
         .from('products')
         .select(`
           id,
@@ -234,7 +234,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .eq('is_active', true)
         .eq('is_sold', false)
         .neq('id', product.id)
-        .eq('country_code', country || 'BG')
+        .eq('country_code', locals.country || 'BG')
         .limit(4),
       2000,
       { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
@@ -242,7 +242,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     
     // Get seller reviews and rating summary
     withTimeout(
-      supabase
+      locals.supabase
         .from('reviews')
         .select(`
           id,
@@ -274,7 +274,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
   const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
   const reviews = reviewsResult.status === 'fulfilled' ? reviewsResult.value.data || [] : [];
-  const isOwner = session?.user?.id === product.seller_id;
+  const isOwner = session && user && user.id === product.seller_id;
 
   // Calculate rating summary
   const ratingSummary = reviews.length > 0 ? {
@@ -291,7 +291,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     // Critical product data - available immediately
     product: productData,
     isOwner,
-    user: session?.user || null,
+    user: user || null,
     locale: 'bg-BG',
 
     // Stream user-specific data (favorites) - only for authenticated users

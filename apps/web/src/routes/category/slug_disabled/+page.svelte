@@ -250,7 +250,7 @@
 
       <!-- Top Sellers -->
       {#if sellers.length > 0}
-        <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-6">
+        <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbarhide pb-6">
           {#each sellers.slice(0, 15) as seller}
             <button
               onclick={() => openSellerModal(seller)}
@@ -352,7 +352,7 @@
       <!-- Simple Category Navigation Pills -->
       {#if subcategories.length > 0 || level3Categories.length > 0}
         <div class="flex justify-center">
-          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
+          <div class="flex overflow-x-auto scrollbarhide space-x-2 px-4">
             
             {#if subcategories.length > 0}
               <!-- Show Level 2 subcategories (e.g., Clothing, Shoes, Accessories) -->
@@ -647,13 +647,3 @@
   }}
 />
 
-<style>
-  /* Hide scrollbar for horizontal scroll */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

@@ -428,20 +428,18 @@ export class ReviewService {
 	async sendReviewNotification(review: ReviewWithDetails): Promise<void> {
 		try {
 			await this.supabase
-				.from('notifications')
+				.from('admin_notifications')
 				.insert({
 					user_id: review.reviewee.id,
 					type: 'new_review',
 					title: `New ${review.rating}⭐ review!`,
 					message: `${review.reviewer.username} left you a ${review.rating}-star review${review.product ? ` for "${review.product.title}"` : ''}`,
-					order_id: review.order_id,
 					data: {
 						review_id: review.id,
 						rating: review.rating,
 						reviewer_username: review.reviewer.username,
 						product_title: review.product?.title
 					},
-					category: 'reviews',
 					priority: 'normal'
 				});
 		} catch {

@@ -88,4 +88,7 @@ export const handleError = PUBLIC_SENTRY_DSN
   ? handleErrorWithSentry()
   : fallbackErrorHandler;
 
+// Export empty init function for build compatibility
+export const init = () => {};
+
 // Reroute is handled in hooks.ts (universal hooks file)

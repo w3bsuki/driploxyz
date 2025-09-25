@@ -2,12 +2,14 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
 
-export const load = (async ({ params, locals: { supabase, session } }) => {
-  if (!session) {
+export const load = (async ({ params, locals }) => {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     redirect(303, `/login?redirect=/product/${params.id}/edit`);
   }
 
-  const services = createServices(supabase, null); // No stripe needed for product editing
+  const services = createServices(locals.supabase, null); // No stripe needed for product editing
 
   // Get the product
   const { data: product, error } = await services.products.getProduct(params.id);
@@ -17,7 +19,7 @@ export const load = (async ({ params, locals: { supabase, session } }) => {
   }
 
   // Check if user owns this product
-  if (product.seller_id !== session.user.id) {
+  if (product.seller_id !== user.id) {
     redirect(303, `/product/${params.id}`);
   }
 
@@ -31,13 +33,15 @@ export const load = (async ({ params, locals: { supabase, session } }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  update: async ({ request, params, locals: { supabase, session } }) => {
-    if (!session) {
+  update: async ({ request, params, locals }) => {
+    const { session, user } = await locals.safeGetSession();
+
+    if (!session || !user) {
       return fail(401, { error: 'Not authenticated' });
     }
 
     const formData = await request.formData();
-    const services = createServices(supabase, null); // No stripe needed for product updates
+    const services = createServices(locals.supabase, null); // No stripe needed for product updates
 
     const updates = {
       title: formData.get('title') as string,
@@ -56,7 +60,7 @@ export const actions = {
     const { error } = await services.products.updateProduct(
       params.id,
       updates,
-      session.user.id
+      user.id
     );
 
     if (error) {
@@ -66,13 +70,15 @@ export const actions = {
     redirect(303, `/product/${params.id}`);
   },
 
-  delete: async ({ params, locals: { supabase, session } }) => {
-    if (!session) {
+  delete: async ({ params, locals }) => {
+    const { session, user } = await locals.safeGetSession();
+
+    if (!session || !user) {
       return fail(401, { error: 'Not authenticated' });
     }
 
-    const services = createServices(supabase, null); // No stripe needed for product deletion
-    const { error } = await services.products.deleteProduct(params.id, session.user.id);
+    const services = createServices(locals.supabase, null); // No stripe needed for product deletion
+    const { error } = await services.products.deleteProduct(params.id, user.id);
 
     if (error) {
       return fail(400, { error });

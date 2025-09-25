@@ -1,8 +1,6 @@
 <script lang="ts">
-  import type { InputType } from '../../types';
-
   interface Props {
-    type?: InputType;
+    type?: HTMLInputElement['type'];
     value?: string;
     placeholder?: string;
     label?: string;
@@ -42,20 +40,20 @@
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
   
 
-  // Use text-base (16px) to prevent mobile zoom on focus
-  const baseClasses = 'block w-full rounded-[var(--input-radius)] border-2 border-gray-300 px-[var(--input-padding)] py-2 min-h-[var(--input-height)] text-[var(--input-font)] placeholder-gray-500 transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900';
-  const stateClasses = $derived(error 
-    ? 'border-red-200 focus:ring-red-500/20 focus:border-red-500' 
+  // Use text-base (16px) to prevent mobile zoom on focus - @tailwindcss/forms provides base styling
+  const baseClasses = 'block w-full rounded-md border-[color:var(--border-default)] bg-[color:var(--surface-base)] px-3 py-2 min-h-11 text-base text-[color:var(--text-primary)] placeholder-[color:var(--text-tertiary)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)] focus:ring-offset-0 focus:border-[color:var(--color-primary)] disabled:cursor-not-allowed disabled:bg-[color:var(--surface-muted)] disabled:text-[color:var(--text-disabled)]';
+  const stateClasses = $derived(error
+    ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]'
     : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>
 
 <div>
   {#if label}
-    <label for={inputId} class="block text-sm font-medium text-gray-900 mb-1.5">
+    <label for={inputId} class="block text-sm font-medium text-[color:var(--text-strong)] mb-2">
       {label}
       {#if required}
-        <span class="text-red-500">*</span>
+        <span class="text-[color:var(--status-error-solid)]">*</span>
       {/if}
     </label>
   {/if}
@@ -72,6 +70,8 @@
     inputmode={inputmode || (type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'number' ? 'numeric' : undefined)}
     id={inputId}
     class={classes}
+    aria-describedby={error ? `${inputId}-error` : undefined}
+    aria-invalid={error ? 'true' : 'false'}
     {oninput}
     {onchange}
     {onfocus}
@@ -80,6 +80,6 @@
   </div>
   
   {#if error}
-    <p class="text-sm text-red-700">{error}</p>
+    <p class="mt-2 text-sm text-[color:var(--status-error-text)]" id="{inputId}-error">{error}</p>
   {/if}
 </div>

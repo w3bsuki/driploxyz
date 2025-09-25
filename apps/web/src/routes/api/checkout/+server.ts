@@ -17,16 +17,16 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
   
   paymentLogger.info('Starting checkout process');
   
-  const { session } = await safeGetSession();
-  
-  if (!session?.user) {
+  const { session, user } = await safeGetSession();
+
+  if (!session || !user) {
     paymentLogger.warn('No session found - authentication required');
     return json({ error: 'Authentication required' }, { status: 401 });
   }
   
   try {
 
-    paymentLogger.info('User authenticated', { userId: session.user.id });
+    paymentLogger.info('User authenticated', { userId: user.id });
 
     const { productId, selectedSize, bundleItems } = await request.json();
     paymentLogger.info('Checkout request received', { productId, selectedSize, bundleItemsCount: bundleItems?.length });
@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         if (!product || product.is_sold) {
           return error(400, { message: `Product ${item.title} is no longer available` });
         }
-        if (product.seller_id === session.user.id) {
+        if (product.seller_id === user.id) {
           return error(400, { message: 'You cannot buy your own products' });
         }
       }
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         return error(400, { message: 'Product is no longer available' });
       }
 
-      if (product.seller_id === session.user.id) {
+      if (product.seller_id === user.id) {
         return error(400, { message: 'You cannot buy your own product' });
       }
 
@@ -130,8 +130,8 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         currency: 'bgn',
         productId,
         sellerId: product.seller_id,
-        buyerId: session.user.id,
-        userEmail: session.user.email,
+        buyerId: user.id,
+        userEmail: user.email,
         metadata: {
           selectedSize: selectedSize || '',
           productTitle: product.title,
@@ -150,7 +150,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       if (stripeError || !paymentIntent || !clientSecret) {
         paymentLogger.error('Stripe error during single product payment intent creation', stripeError, {
           productId,
-          userId: session.user.id
+          userId: user.id
         });
         return error(500, { message: 'Failed to create payment intent' });
       }
@@ -180,7 +180,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       paymentLogger.info('Processing bundle checkout', {
         itemCount: bundleItems.length,
         sellerId: bundleItems[0]?.seller_id,
-        userId: session.user.id
+        userId: user.id
       });
       
       // Calculate bundle total (NO SHIPPING - paid on delivery)
@@ -192,7 +192,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       const { data: bundleSession } = await supabase
         .from('bundle_sessions')
         .insert({
-          buyer_id: session.user.id,
+          buyer_id: user.id,
           seller_id: bundleItems[0].seller_id,
           product_ids: bundleItems.map((item: { id: string }) => item.id),
           expires_at: new Date(Date.now() + 30 * 60000).toISOString()
@@ -206,8 +206,8 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         currency: 'bgn',
         productId: bundleItems[0].id, // Primary item
         sellerId: bundleItems[0].seller_id,
-        buyerId: session.user.id,
-        userEmail: session.user.email,
+        buyerId: user.id,
+        userEmail: user.email,
         metadata: {
           isBundle: 'true',
           itemCount: bundleItems.length.toString(),
@@ -219,7 +219,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       if (stripeError || !paymentIntent || !clientSecret) {
         paymentLogger.error('Stripe error during bundle payment intent creation', stripeError, {
           itemCount: bundleItems.length,
-          userId: session.user.id
+          userId: user.id
         });
         return error(500, { message: 'Failed to create payment intent' });
       }

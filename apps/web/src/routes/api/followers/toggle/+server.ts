@@ -12,8 +12,8 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
   );
   if (rateLimitResponse) return rateLimitResponse;
   
-  const { session } = await locals.safeGetSession();
-  if (!session?.user) {
+  const { session, user } = await locals.safeGetSession();
+  if (!session || !user) {
     error(401, 'Unauthorized');
   }
 
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       error(400, 'Missing following_id');
     }
 
-    if (following_id === session.user.id) {
+    if (following_id === user.id) {
       error(400, 'Cannot follow yourself');
     }
 
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
     const { data: existingFollow } = await locals.supabase
       .from('followers')
       .select('id')
-      .eq('follower_id', session.user.id)
+      .eq('follower_id', user.id)
       .eq('following_id', following_id)
       .single();
 
@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       const { error: deleteError } = await locals.supabase
         .from('followers')
         .delete()
-        .eq('follower_id', session.user.id)
+        .eq('follower_id', user.id)
         .eq('following_id', following_id);
 
       if (deleteError) {
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       const { error: insertError } = await locals.supabase
         .from('followers')
         .insert({
-          follower_id: session.user.id,
+          follower_id: user.id,
           following_id: following_id
         });
 
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       const { data: followerInfo } = await locals.supabase
         .from('profiles')
         .select('username, full_name, avatar_url')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single();
 
       return json({ 

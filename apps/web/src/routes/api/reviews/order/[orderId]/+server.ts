@@ -3,9 +3,9 @@ import type { RequestHandler } from './$types.js';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { orderId } = params;
-	const { session } = await locals.safeGetSession();
-	
-	if (!session?.user) {
+	const { session, user } = await locals.safeGetSession();
+
+	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -30,14 +30,14 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Verify user is part of this transaction
-		if (order.buyer_id !== session.user.id && order.seller_id !== session.user.id) {
+		if (order.buyer_id !== user.id && order.seller_id !== user.id) {
 			return json({ error: 'Access denied' }, { status: 403 });
 		}
 
 		// Check if user can leave a review
-		const canReview = order.status === 'delivered' && 
-			((order.buyer_id === session.user.id && !order.buyer_rated) ||
-			 (order.seller_id === session.user.id && !order.seller_rated));
+		const canReview = order.status === 'delivered' &&
+			((order.buyer_id === user.id && !order.buyer_rated) ||
+			 (order.seller_id === user.id && !order.seller_rated));
 
 		// Check if user has already reviewed
 		const { data: existingReview } = await locals.supabase
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				)
 			`)
 			.eq('order_id', orderId)
-			.eq('reviewer_id', session.user.id)
+			.eq('reviewer_id', user.id)
 			.single();
 
 		return json({

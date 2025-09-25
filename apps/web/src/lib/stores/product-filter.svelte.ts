@@ -1,15 +1,19 @@
 /**
  * Product Filtering Store with Svelte 5 Runes
- * 
+ *
  * This store handles all client-side product filtering logic,
  * eliminating unnecessary server roundtrips for filter changes.
- * 
+ *
  * Benefits:
  * - Instant filtering (10ms vs 300ms)
  * - No network requests for filter changes
  * - Maintains URL sync for shareable links
  * - Reduces server load by 60%+
  */
+
+import { pushState, replaceState } from '$app/navigation';
+import { page } from '$app/stores';
+import { get } from 'svelte/store';
 
 // import type { Product } from '@repo/ui'; // Removed as not used directly in this file
 
@@ -376,11 +380,11 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
  * URL Sync Utilities
  * Sync filter state with URL without navigation
  */
-export function syncFiltersToUrl(filters: FilterState, replaceState = true) {
+export function syncFiltersToUrl(filters: FilterState, replaceStateMode = true) {
   if (typeof window === 'undefined') return;
-  
-  const url = new URL(window.location.href);
-  const params = url.searchParams;
+
+  const currentPage = get(page);
+  const params = new URLSearchParams(currentPage.url.searchParams);
   
   // Clear existing search params
   Array.from(params.keys()).forEach(key => params.delete(key));
@@ -397,13 +401,13 @@ export function syncFiltersToUrl(filters: FilterState, replaceState = true) {
   if (filters.maxPrice) params.set('max_price', filters.maxPrice);
   if (filters.sortBy && filters.sortBy !== 'relevance') params.set('sort', filters.sortBy);
   
-  // Update URL without navigation
-  const newUrl = url.pathname + (params.toString() ? '?' + params.toString() : '');
-  
-  if (replaceState) {
-    window.history.replaceState({}, '', newUrl);
+  // Update URL without navigation using SvelteKit utilities
+  const newUrl = currentPage.url.pathname + (params.toString() ? '?' + params.toString() : '');
+
+  if (replaceStateMode) {
+    replaceState(newUrl, {});
   } else {
-    window.history.pushState({}, '', newUrl);
+    pushState(newUrl, {});
   }
 }
 

@@ -173,7 +173,7 @@
     {#if partners.length > 0}
       <div class="flex items-center gap-2">
         <span class="text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Partners</span>
-        <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+        <div class="flex items-center gap-2 overflow-x-auto scrollbarhide">
           {#each partners as partner}
             <button
               onclick={() => onPartnerClick?.(partner)}
@@ -256,7 +256,7 @@
     >
       <div
         id="highlights-container"
-        class="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+        class="flex gap-4 overflow-x-auto scrollbarhide snap-x snap-mandatory"
         data-highlights-container
         role="list"
       >

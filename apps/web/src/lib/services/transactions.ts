@@ -30,14 +30,14 @@ export class TransactionService {
 		stripePaymentIntentId: string;
 	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
 		try {
-			const { totalAmount, commissionAmount, sellerAmount } = 
+			const { totalAmount, commissionAmount, sellerAmount } =
 				this.calculateCommission(params.productPrice, params.shippingCost || 0);
 
 			const transactionData: TransactionInsert = {
 				order_id: params.orderId,
 				seller_id: params.sellerId,
 				buyer_id: params.buyerId,
-				amount_total: totalAmount,
+				amount: totalAmount,
 				commission_amount: commissionAmount,
 				seller_earnings: sellerAmount,
 				stripe_payment_intent_id: params.stripePaymentIntentId,
@@ -54,7 +54,7 @@ export class TransactionService {
 			if (error) throw error;
 
 			// Update seller's earnings
-			await this.updateSellerEarnings(params.sellerId, sellerAmount);
+			await this._updateSellerEarnings(params.sellerId, sellerAmount);
 
 			// Update order with commission details (using correct columns)
 			await this.supabase
@@ -74,7 +74,7 @@ export class TransactionService {
 	/**
 	 * Update seller's total earnings and pending payout
 	 */
-	private async updateSellerEarnings(sellerId: string, amount: number) {
+	private async _updateSellerEarnings(sellerId: string, amount: number) {
 		const { data: profile } = await this.supabase
 			.from('profiles')
 			.select('current_balance, total_sales_value')

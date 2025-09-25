@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import type { Stripe } from 'stripe';
-import { createStripeService } from './stripe';
-import type { SubscriptionCreateParams } from '$lib/stripe/types';
+// import { createStripeService } from './stripe'; // TODO: Uncomment when subscription functionality is implemented
+// import type { SubscriptionCreateParams } from '$lib/stripe/types'; // TODO: Uncomment when subscription functionality is implemented
 
 // type Tables = Database['public']['Tables']; // Future database type usage
 // Database types reserved for future subscription features
@@ -12,19 +12,30 @@ export class SubscriptionService {
 
 	/**
 	 * Get all available subscription plans
+	 * TODO: Re-implement when subscription_plans table is available
 	 */
 	async getAvailablePlans() {
+		// Return empty array for now
+		return { data: [], error: null };
+
+		/*
 		return await this.supabase
 			.from('subscription_plans')
 			.select('id, plan_type, name, description, price_monthly, price_yearly, features, is_active')
 			.eq('is_active', true)
 			.order('price_monthly', { ascending: true });
+		*/
 	}
 
 	/**
 	 * Get user's current subscriptions
+	 * TODO: Re-implement when user_subscriptions table is available
 	 */
-	async getUserSubscriptions(userId: string) {
+	async getUserSubscriptions(_userId: string) {
+		// Return empty array for now
+		return { data: [], error: null };
+
+		/*
 		return await this.supabase
 			.from('user_subscriptions')
 			.select(`
@@ -33,12 +44,18 @@ export class SubscriptionService {
 			`)
 			.eq('user_id', userId)
 			.eq('status', 'active');
+		*/
 	}
 
 	/**
 	 * Check if user has active subscription for a plan type
+	 * TODO: Re-implement when user_subscriptions table is available
 	 */
-	async hasActiveSubscription(userId: string, planType: 'premium' | 'brand'): Promise<boolean> {
+	async hasActiveSubscription(_userId: string, _planType: 'premium' | 'brand'): Promise<boolean> {
+		// Return false for now (no active subscriptions)
+		return false;
+
+		/*
 		const { data } = await this.supabase
 			.from('user_subscriptions')
 			.select(`
@@ -48,25 +65,29 @@ export class SubscriptionService {
 			.eq('status', 'active')
 			.eq('subscription_plans.plan_type', planType)
 			.maybeSingle();
-
 		return !!data;
+		*/
 	}
 
 	/**
 	 * Create Stripe subscription for user
 	 */
 	async createStripeSubscription(
-		userId: string,
-		planId: string,
-		stripeInstance: Stripe,
-		discountAmount: number = 0
+		_userId: string,
+		_planId: string,
+		_stripeInstance: Stripe,
+		_discountAmount: number = 0
 		// _discountCode: string = '' // Future discount code validation
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
+		// TODO: Re-implement when subscription functionality is available
+		return { error: new Error('Subscription creation functionality is not currently available') };
+
+		/*
 		try {
 			if (!stripeInstance) {
 				return { error: new Error('Stripe instance required') };
 			}
-			
+
 			// Get plan to calculate discount percent from amount
 			const { data: plan } = await this.supabase
 				.from('subscription_plans')
@@ -101,15 +122,20 @@ export class SubscriptionService {
 				clientSecret: result.clientSecret
 			};
 		} catch (error) {
-			
+
 			return { error: error as Error };
 		}
+		*/
 	}
 
 	/**
 	 * Cancel user subscription
 	 */
-	async cancelSubscription(userId: string, subscriptionId: string, stripeInstance: Stripe) {
+	async cancelSubscription(_userId: string, _subscriptionId: string, _stripeInstance: Stripe) {
+		// TODO: Re-implement when subscription functionality is available
+		return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
+
+		/*
 		try {
 			if (!stripeInstance) {
 				return { error: new Error('Stripe instance required'), success: false };
@@ -118,15 +144,20 @@ export class SubscriptionService {
 			const stripeService = createStripeService(this.supabase, stripeInstance);
 			return await stripeService.cancelSubscription(userId, subscriptionId);
 		} catch (error) {
-			
+
 			return { error: error as Error, success: false };
 		}
+		*/
 	}
 
 	/**
 	 * Handle Stripe webhook for subscription updates
 	 */
-	async handleStripeWebhook(event: Stripe.Event, stripeInstance: Stripe) {
+	async handleStripeWebhook(_event: Stripe.Event, _stripeInstance: Stripe) {
+		// TODO: Re-implement when subscription functionality is available
+		return { success: false, error: new Error('Webhook handling functionality is not currently available') };
+
+		/*
 		try {
 			if (!stripeInstance) {
 				return { success: false, error: new Error('Stripe instance required') };
@@ -135,9 +166,10 @@ export class SubscriptionService {
 			const stripeService = createStripeService(this.supabase, stripeInstance);
 			return await stripeService.processWebhook(event);
 		} catch (error) {
-			
+
 			return { success: false, error: error as Error };
 		}
+		*/
 	}
 
 	/**
@@ -167,20 +199,32 @@ export class SubscriptionService {
 	 * Get subscription statistics for admin
 	 */
 	async getSubscriptionStats() {
+		// TODO: Re-implement when subscription tables are available
+		return {
+			totalSubscriptions: 0,
+			activeSubscriptions: 0,
+			premiumUsers: 0,
+			brandUsers: 0,
+			monthlyRecurringRevenue: 0
+		};
+
+		/*
 		const { data: subscriptions } = await this.supabase
 			.from('user_subscriptions')
 			.select(`
 				status,
 				subscription_plans(plan_type, price_monthly)
 			`);
+		*/
 
+		/*
 		const stats = {
 			totalSubscriptions: subscriptions?.length || 0,
 			activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
-			premiumUsers: subscriptions?.filter(s => 
+			premiumUsers: subscriptions?.filter(s =>
 				s.status === 'active' && s.subscription_plans?.plan_type === 'premium'
 			).length || 0,
-			brandUsers: subscriptions?.filter(s => 
+			brandUsers: subscriptions?.filter(s =>
 				s.status === 'active' && s.subscription_plans?.plan_type === 'brand'
 			).length || 0,
 			monthlyRecurringRevenue: subscriptions
@@ -189,6 +233,7 @@ export class SubscriptionService {
 		};
 
 		return stats;
+		*/
 	}
 
 	/**

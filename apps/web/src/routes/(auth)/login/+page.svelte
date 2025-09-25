@@ -13,16 +13,24 @@
 
   let submitting = $state(false);
 
-  // Initialize form validator
-  const initialValues = {
+  // Direct state bindings to avoid reactivity warnings
+  let email = $state(form?.values?.email || '');
+  let password = $state(form?.values?.password || '');
+
+  // Initialize form validator with initial values
+  const validator = createFormValidator({
     email: form?.values?.email || '',
     password: form?.values?.password || ''
-  };
-
-  const validator = createFormValidator(initialValues, LoginSchema, {
+  }, LoginSchema, {
     validateOnChange: true,
     validateOnBlur: true,
     debounceMs: 300
+  });
+
+  // Sync validator state with reactive fields
+  $effect(() => {
+    validator.formState.values.email = email;
+    validator.formState.values.password = password;
   });
 
   $effect(() => {
@@ -36,9 +44,9 @@
       }
 
       // Pre-fill email if provided
-      const email = page.url.searchParams.get('email');
-      if (email) {
-        validator.formState.values.email = decodeURIComponent(email);
+      const emailParam = page.url.searchParams.get('email');
+      if (emailParam) {
+        email = decodeURIComponent(emailParam);
       }
     }
 
@@ -93,9 +101,9 @@
     prevFormErrorsKey = currentFormErrorsKey;
   });
 
-  // Get field props for form binding
-  const emailField = $derived(validator.getFieldProps('email'));
-  const passwordField = $derived(validator.getFieldProps('password'));
+  // Get field errors for display (reactive computed)
+  const emailError = $derived(validator.formState.errors.email);
+  const passwordError = $derived(validator.formState.errors.password);
 </script>
 
 <svelte:head>
@@ -162,11 +170,13 @@
             required
             placeholder="Enter your email"
             autocomplete="email"
-            bind:value={emailField.value}
+            bind:value={email}
+            onchange={() => validator.setFieldValue('email', email)}
+            onblur={() => validator.touchField('email')}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-          {#if emailField.error}
-            <p class="text-sm text-red-600">{emailField.error}</p>
+          {#if emailError}
+            <p class="text-sm text-red-600">{emailError}</p>
           {/if}
         </div>
       </div>
@@ -181,11 +191,13 @@
             required
             placeholder="Enter your password"
             autocomplete="current-password"
-            bind:value={passwordField.value}
+            bind:value={password}
+            onchange={() => validator.setFieldValue('password', password)}
+            onblur={() => validator.touchField('password')}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-          {#if passwordField.error}
-            <p class="text-sm text-red-600">{passwordField.error}</p>
+          {#if passwordError}
+            <p class="text-sm text-red-600">{passwordError}</p>
           {/if}
         </div>
       </div>

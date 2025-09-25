@@ -678,14 +678,9 @@
     gap: var(--space-2);
     overflow-x: auto;
     scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     padding: var(--space-1) 0;
   }
 
-  .thumbnails-strip::-webkit-scrollbar {
-    display: none;
-  }
 
   .thumbnail {
     position: relative;

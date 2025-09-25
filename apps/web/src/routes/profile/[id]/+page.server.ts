@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
 export const load = (async ({ params, locals, setHeaders }) => {
-  const { session } = await locals.safeGetSession();
+  const { user } = await locals.safeGetSession();
   const profileService = new ProfileService(locals.supabase);
 
   // Optimize cache headers for profile pages - user-specific data that changes occasionally
@@ -15,20 +15,20 @@ export const load = (async ({ params, locals, setHeaders }) => {
   
   // Handle special "me" case - redirect to current user's profile
   if (params.id === 'me') {
-    if (!session?.user) {
+    if (!user) {
       redirect(303, '/login');
     }
     // Get current user's profile to get their username
     const { data: currentUserProfile } = await locals.supabase
       .from('profiles')
       .select('username')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
     
     if (currentUserProfile?.username) {
       redirect(303, `/profile/${currentUserProfile.username}`);
     } else {
-      redirect(303, `/profile/${session.user.id}`);
+      redirect(303, `/profile/${user.id}`);
     }
   }
   
@@ -56,7 +56,7 @@ export const load = (async ({ params, locals, setHeaders }) => {
   }
 
   // Check if this is the current user's profile
-  const isOwnProfile = session?.user?.id === profile.id;
+  const isOwnProfile = user?.id === profile.id;
   
   // Redirect users viewing their own profile to account page
   if (isOwnProfile) {
@@ -151,9 +151,9 @@ export const load = (async ({ params, locals, setHeaders }) => {
 
   // Check if current user is following this profile
   let isFollowing = false;
-  if (session?.user) {
+  if (user) {
     const { isFollowing: followStatus } = await profileService.isFollowing(
-      session.user.id,
+      user.id,
       profile.id
     );
     isFollowing = followStatus;
@@ -172,7 +172,7 @@ export const load = (async ({ params, locals, setHeaders }) => {
     reviews: reviews || [],
     reviewStats,
     totalReviewCount: totalReviewCount || 0,
-    currentUser: session?.user || null,
+    currentUser: user || null,
     isFollowing
   };
 }) satisfies PageServerLoad;

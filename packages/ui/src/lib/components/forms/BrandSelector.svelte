@@ -67,14 +67,14 @@
     const base = 'px-3 py-2 text-sm rounded-lg border-2 font-medium';
     
     if (disabled) {
-      return `${base} opacity-50 cursor-not-allowed border-gray-200 bg-gray-50`;
+      return `${base} opacity-50 cursor-not-allowed border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)]`;
     }
-    
+
     if (isSelected) {
-      return `${base} border-black bg-black text-white`;
+      return `${base} border-[color:var(--primary)] bg-[color:var(--primary)] text-[color:var(--primary-fg)]`;
     }
-    
-    return `${base} border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50`;
+
+    return `${base} border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] hover:border-[color:var(--border-default)] hover:bg-[color:var(--surface-subtle)]`;
   }
 </script>
 

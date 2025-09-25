@@ -3,6 +3,30 @@ import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
 import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch, type CountryCode } from '$lib/country/detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
+import { getUserProfile, needsOnboardingRedirect } from '$lib/auth/index';
+
+/**
+ * Check if user has existing cookie consent
+ */
+function hasExistingCookieConsent(cookies: Parameters<LayoutServerLoad>[0]['cookies']): boolean {
+  try {
+    const consentCookie = cookies.get('driplo_consent');
+    if (!consentCookie) return false;
+
+    const consent = JSON.parse(decodeURIComponent(consentCookie));
+
+    // Check if consent needs renewal (365 days)
+    if (consent.timestamp) {
+      const age = Date.now() - consent.timestamp;
+      return age <= 365 * 24 * 60 * 60 * 1000;
+    }
+
+    // Old consent format without timestamp needs renewal
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -17,28 +41,7 @@ const REDIRECT_PATHS_TO_SKIP = [
  * Stream profile data - non-blocking promise for better performance
  */
 async function streamProfileData(supabase: App.Locals['supabase'], userId: string) {
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
-      .eq('id', userId)
-      .single();
-
-    // Ignore profile not found errors (PGRST116)
-    if (error && error.code !== 'PGRST116') {
-      if (dev) {
-        console.warn('Profile fetch failed:', error);
-      }
-      return null;
-    }
-
-    return data;
-  } catch (err) {
-    if (dev) {
-      console.warn('Profile streaming error:', err);
-    }
-    return null;
-  }
+  return getUserProfile(supabase, userId);
 }
 
 /**
@@ -65,7 +68,8 @@ export const load = (async (event) => {
   depends('app:preferences');   // User preferences changes
 
   // CRITICAL DATA - Load immediately and block page render
-  const { session, user } = await locals.safeGetSession();
+  // Fallback in case auth setup failed
+  const { session, user } = locals.safeGetSession ? await locals.safeGetSession() : { session: null, user: null };
   const supabase = locals.supabase;
   const language = locals.locale || 'bg';
   const country = locals.country || 'BG';
@@ -74,6 +78,9 @@ export const load = (async (event) => {
 
   // Generate SEO data (synchronous)
   const seoData = getCanonicalAndHreflang(event);
+
+  // Check if cookie consent banner should be shown (server-side for immediate display)
+  const shouldShowCookieConsent = !hasExistingCookieConsent(cookies);
 
   // STREAMED DATA - Non-blocking promises for better performance
   const profilePromise = user && supabase
@@ -94,8 +101,8 @@ export const load = (async (event) => {
         regionPromise
       ]);
 
-      const needsOnboarding = user && (!profile || profile.onboarding_completed !== true);
-      if (needsOnboarding) {
+      // Check if user needs onboarding redirect using consolidated auth logic
+      if (needsOnboardingRedirect(user, profile, url.pathname)) {
         redirect(303, '/onboarding');
       }
 
@@ -109,6 +116,7 @@ export const load = (async (event) => {
         currency,
         seo: seoData,
         cookies: cookies.getAll(),
+        shouldShowCookieConsent,
 
         // Loaded data for protected paths
         profile,
@@ -135,6 +143,7 @@ export const load = (async (event) => {
         currency,
         seo: seoData,
         cookies: cookies.getAll(),
+        shouldShowCookieConsent,
 
         // Resolved data (awaited to prevent type issues)
         profile,
@@ -160,6 +169,7 @@ export const load = (async (event) => {
     currency,
     seo: seoData,
     cookies: cookies.getAll(),
+    shouldShowCookieConsent,
 
     // Resolved data (awaited to prevent type issues)
     profile: null,

@@ -137,7 +137,7 @@
   {:else}
     <!-- Ultrathink: Standardized spacing in sellers container -->
     <div class="px-2 sm:px-4 lg:px-6">
-      <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
+      <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbarhide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
         <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>
           <SellerProfileCard

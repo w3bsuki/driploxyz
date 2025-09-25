@@ -3,9 +3,9 @@ import type { RequestHandler } from './$types.js';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { id } = params;
-	const { session } = await locals.safeGetSession();
-	
-	if (!session?.user) {
+	const { session, user } = await locals.safeGetSession();
+
+	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			)
 		`)
 		.eq('id', id)
-		.or(`buyer_id.eq.${session.user.id},seller_id.eq.${session.user.id}`)
+		.or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
 		.single();
 
 	if (error || !order) {

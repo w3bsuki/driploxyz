@@ -112,7 +112,7 @@
           
           <!-- Avatar Horizontal Scroll -->
           <div class="relative mb-4">
-            <div class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2">
+            <div class="flex space-x-3 overflow-x-auto scrollbarhide pb-2">
               {#each avatars as avatar}
                 <button
                   type="button"

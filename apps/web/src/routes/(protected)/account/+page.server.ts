@@ -2,9 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
-  const { session } = await locals.safeGetSession();
-  
-  if (!session?.user) {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     redirect(303, '/login');
   }
 
@@ -12,7 +12,7 @@ export const load = (async ({ locals }) => {
   const { data: profile } = await locals.supabase
     .from('profiles')
     .select('*')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single();
 
   if (!profile) {
@@ -39,7 +39,7 @@ export const load = (async ({ locals }) => {
         slug
       )
     `)
-    .eq('seller_id', session.user.id)
+    .eq('seller_id', user.id)
     .eq('is_active', true)
     .eq('country_code', locals.country || 'BG')
     .order('created_at', { ascending: false });
@@ -67,7 +67,7 @@ export const load = (async ({ locals }) => {
         avatar_url
       )
     `)
-    .eq('buyer_id', session.user.id)
+    .eq('buyer_id', user.id)
     .order('created_at', { ascending: false })
     .limit(50);
 
@@ -95,7 +95,7 @@ export const load = (async ({ locals }) => {
         avatar_url
       )
     `)
-    .eq('seller_id', session.user.id)
+    .eq('seller_id', user.id)
     .order('created_at', { ascending: false })
     .limit(50);
 
@@ -118,7 +118,7 @@ export const load = (async ({ locals }) => {
         )
       )
     `)
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
   // Transform data
@@ -157,6 +157,6 @@ export const load = (async ({ locals }) => {
     orders: ordersWithImages,
     sales: salesWithImages,
     favorites: favoritesWithImages,
-    currentUser: session.user
+    currentUser: user
   };
 }) satisfies PageServerLoad;

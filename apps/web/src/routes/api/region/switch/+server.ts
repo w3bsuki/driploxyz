@@ -14,15 +14,15 @@ export const POST: RequestHandler = async (event) => {
   setCountryCookie(event, countryCode);
   
   // Update user profile if logged in
-  const { session } = await event.locals.safeGetSession();
-  if (session?.user) {
+  const { session, user } = await event.locals.safeGetSession();
+  if (session && user) {
     const { error } = await event.locals.supabase
       .from('profiles')
-      .update({ 
+      .update({
         region,
         currency: region === 'UK' ? 'GBP' : 'BGN'
       })
-      .eq('id', session.user.id);
+      .eq('id', user.id);
       
     if (error) {
       // Region update errors are non-critical - default region will be used

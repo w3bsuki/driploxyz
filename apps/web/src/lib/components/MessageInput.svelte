@@ -29,7 +29,7 @@
 
 <div class="border-t border-gray-200 p-4 bg-white">
   <!-- Quick Actions -->
-  <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
+  <div class="flex gap-2 mb-2 overflow-x-auto scrollbarhide">
     <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
       <span class="text-lg">💰</span>
       <span class="text-xs font-medium">{i18n.messages_makeOffer()}</span>

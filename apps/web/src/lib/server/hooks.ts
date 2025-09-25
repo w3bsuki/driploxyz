@@ -3,19 +3,19 @@ import type { Handle, HandleServerError, HandleFetch } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
 import { setupEnvironment } from './env';
-import { setupAuth } from './supabase-hooks';
+import { setupAuth, authGuard } from '$lib/auth/hooks';
 import { setupI18n, transformPageChunk } from './i18n';
 import { setupCountry } from './country';
 // import { handleCountryRedirect } from './country-redirect'; // Currently disabled for performance
 import { handleUnknownLocales } from './locale-redirect';
-import { setupAuthGuard } from './auth-guard';
+// Removed: import { setupAuthGuard } from './auth-guard'; // Using consolidated auth system
 import { createErrorHandler } from './error-handler';
 import { CSRFProtection } from './csrf';
 
 /**
- * Supabase authentication handler
+ * Authentication handler - sets up Supabase client and session handling
  */
-const supabaseHandler: Handle = async ({ event, resolve }) => {
+const authHandler: Handle = async ({ event, resolve }) => {
   setupEnvironment();
   await setupAuth(event);
 
@@ -74,10 +74,10 @@ const csrfGuard: Handle = async ({ event, resolve }) => {
 };
 
 /**
- * Authentication guard handler
+ * Route protection handler - validates sessions for protected routes
  */
 const authGuardHandler: Handle = async ({ event, resolve }) => {
-  await setupAuthGuard(event);
+  await authGuard(event);
   return resolve(event);
 };
 
@@ -139,7 +139,7 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 export const handle: Handle = sequence(
   localeRedirectHandler,
   csrfGuard,
-  supabaseHandler,
+  authHandler,
   languageHandler,
   // countryRedirectHandler, // intentionally disabled for perf
   authGuardHandler

@@ -140,7 +140,7 @@
     {/if}
 
     <!-- Breadcrumb List -->
-    <ol class="flex items-center flex-1 min-w-0 space-x-1 text-sm overflow-x-auto scrollbar-hide">
+    <ol class="flex items-center flex-1 min-w-0 space-x-1 text-sm overflow-x-auto scrollbarhide">
       {#each breadcrumbItems() as item, index}
         {@const isLast = index === breadcrumbItems().length - 1}
         <li class="flex items-center">
@@ -189,13 +189,3 @@
   {@html `<script type="application/ld+json">${JSON.stringify(breadcrumbLd())}</script>`}
 </svelte:head>
 
-<style>
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

@@ -263,7 +263,7 @@
           </h3>
           
           <!-- Horizontal scrollable products -->
-          <div class="flex gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbar-hide -mx-4 px-4">
+          <div class="flex gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbarhide -mx-4 px-4">
             {#each sellerProducts as product (product.id)}
               {@const isSelected = selectedItems.some(item => item.id === product.id)}
               <button

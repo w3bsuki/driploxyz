@@ -117,7 +117,7 @@
   );
 
   const listClasses = $derived(
-    `tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto scrollbar-hide' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[color:var(--border-subtle)]' : ''} ${tabListClass}`
+    `tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto scrollbarhide' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[color:var(--border-subtle)]' : ''} ${tabListClass}`
   );
 
   const getTabClasses = (tab: TabData, isActive: boolean) => {

@@ -425,7 +425,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
       <nav
         id="category-pills"
         aria-label={i18n.nav_browseCategories()}
-        class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pt-[var(--gutter-xxs)] pb-[var(--gutter-xxs)] sm:justify-center"
+        class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbarhide pt-[var(--gutter-xxs)] pb-[var(--gutter-xxs)] sm:justify-center"
       >
         <!-- All Categories -->
         <CategoryPill
@@ -498,12 +498,3 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
   </div>
 </div>
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

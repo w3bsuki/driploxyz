@@ -1,0 +1,60 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO TOKENS · Component mappings
+  Component-level tokens composed from semantic values
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* Buttons */
+  --btn-height-sm: var(--touch-compact);
+  --btn-height-md: var(--touch-standard);
+  --btn-height-lg: var(--touch-primary);
+  --btn-padding-sm: var(--space-3);
+  --btn-padding-md: var(--space-4);
+  --btn-padding-lg: var(--space-6);
+  --btn-radius: var(--radius-sm);
+  --btn-font-sm: var(--text-xs);
+  --btn-font-md: var(--text-sm);
+  --btn-font-lg: var(--text-base);
+
+  /* Inputs */
+  --input-height: var(--touch-primary);
+  --input-padding: var(--space-3);
+  --input-radius: var(--radius-sm);
+  --input-border: var(--border-default);
+  --input-font: var(--text-base);
+  --input-bg: var(--surface-base);
+  --input-focus-border: var(--state-focus);
+  --input-focus-ring: oklch(0.15 0.015 270 / 0.2);
+
+  /* Cards */
+  --card-padding-sm: var(--space-3);
+  --card-padding-md: var(--space-4);
+  --card-padding-lg: var(--space-6);
+  --card-radius: var(--radius-sm);
+  --card-shadow: var(--shadow-sm);
+  --card-border: var(--border-subtle);
+  --card-bg: var(--surface-base);
+
+  /* Badges */
+  --badge-padding-x: var(--space-2);
+  --badge-padding-y: var(--space-1);
+  --badge-radius: var(--radius-full);
+  --badge-font: var(--text-xs);
+  --badge-font-weight: var(--font-medium);
+
+  /* Modal */
+  --modal-padding: var(--space-6);
+  --modal-radius: var(--radius-xl);
+  --modal-shadow: var(--shadow-2xl);
+  --modal-bg: var(--surface-base);
+  --modal-overlay: oklch(0 0 0 / 0.5);
+
+  /* Navigation */
+  --nav-height: var(--space-14);
+  --nav-padding: var(--space-4);
+  --nav-bg: var(--surface-base);
+  --nav-border: var(--border-subtle);
+  --nav-shadow: var(--shadow-sm);
+}

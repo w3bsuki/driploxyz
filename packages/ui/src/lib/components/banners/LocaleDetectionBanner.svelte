@@ -25,7 +25,7 @@
   };
 </script>
 
-<div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-gray-200 rounded-lg shadow-sm md:shadow-lg p-4 z-50">
+<div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-lg shadow-sm md:shadow-lg p-4 z-50">
   <button
     onclick={onDismiss}
     class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-500 transition-colors"
@@ -53,14 +53,14 @@
     <div class="flex gap-2">
       <button
         onclick={onAccept}
-        class="flex-1 px-4 py-2 bg-black text-white text-sm font-medium rounded-sm hover:bg-gray-800 transition-colors"
+        class="flex-1 px-4 py-2 bg-[color:var(--primary)] text-[color:var(--primary-fg)] text-sm font-medium rounded-sm hover:bg-[color:var(--primary-600)] transition-colors"
       >
         Switch to {localeNames[detectedLocale]}
       </button>
       
       <button
         onclick={onDismiss}
-        class="flex-1 px-4 py-2 bg-gray-100 text-gray-900 text-sm font-medium rounded-sm hover:bg-gray-200 transition-colors"
+        class="flex-1 px-4 py-2 bg-[color:var(--surface-muted)] text-[color:var(--text-primary)] text-sm font-medium rounded-sm hover:bg-[color:var(--surface-emphasis)] transition-colors"
       >
         Keep {localeNames[currentLocale]}
       </button>

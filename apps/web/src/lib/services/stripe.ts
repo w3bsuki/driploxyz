@@ -5,7 +5,8 @@ import { paymentLogger } from '$lib/utils/log';
 
 // Database types
 type Tables = Database['public']['Tables'];
-type Transaction = Tables['transactions']['Row'];
+// TODO: Define transactions table in database schema
+// type Transaction = Tables['transactions']['Row'];
 type Order = Tables['orders']['Row'];
 
 export interface PaymentCreateParams {
@@ -190,7 +191,9 @@ export class StripeService {
 				}
 			});
 
-			// Create pending transaction record with order_id
+			// TODO: Create pending transaction record with order_id
+			// This requires the transactions table to be defined in the database schema
+			/*
 			const totalAmount = amount / 100;
 			const { error: transactionError } = await this.supabase
 				.from('transactions')
@@ -212,6 +215,7 @@ export class StripeService {
 					paymentIntentId: paymentIntent.id
 				});
 			}
+			*/
 
 			return {
 				paymentIntent,
@@ -275,7 +279,7 @@ export class StripeService {
 		error?: Error;
 	}> {
 		try {
-			const { userId, planId, discountPercent = 0 } = params;
+			const { userId, planId } = params;
 
 			// Get current user's email directly from auth
 			const { data: { user: currentUser } } = await this.supabase.auth.getUser();
@@ -288,13 +292,20 @@ export class StripeService {
 				throw new Error('Please sign in to continue');
 			}
 
-			// Get plan details
+			// TODO: Get plan details when subscription_plans table is available
+			/*
 			const { data: plan } = await this.supabase
 				.from('subscription_plans')
 				.select('id, name, plan_type, price_monthly, currency')
 				.eq('id', planId)
 				.single();
+			*/
 
+			// Temporary stub until subscription_plans table is implemented
+			throw new Error('Subscription functionality is not currently available');
+
+			/*
+			// Rest of the subscription logic - disabled until database tables are available
 			if (!plan) throw new Error('Plan not found');
 
 			// Calculate final price with discount
@@ -337,11 +348,11 @@ export class StripeService {
 					}
 				});
 
-
 			// Return immediately with client secret - no bullshit!
 			return {
 				clientSecret: paymentIntent.client_secret || ''
 			};
+			*/
 
 		} catch (error) {
 			paymentLogger.error('Error creating account upgrade payment', error, {
@@ -355,10 +366,14 @@ export class StripeService {
 	/**
 	 * Cancel subscription
 	 */
-	async cancelSubscription(userId: string, subscriptionId: string): Promise<{
+	async cancelSubscription(_userId: string, _subscriptionId: string): Promise<{
 		success: boolean;
 		error?: Error;
 	}> {
+		// TODO: Re-implement when subscription functionality is available
+		return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
+
+		/*
 		try {
 			// Cancel in Stripe (at period end)
 			await this.stripe.subscriptions.update(subscriptionId, {
@@ -380,12 +395,13 @@ export class StripeService {
 			});
 			return { success: false, error: error as Error };
 		}
+		*/
 	}
 
 	/**
 	 * Update subscription plan
 	 */
-	async updateSubscription(params: {
+	async updateSubscription(_params: {
 		userId: string;
 		subscriptionId: string;
 		newPlanId: string;
@@ -393,6 +409,10 @@ export class StripeService {
 		subscription?: Stripe.Subscription;
 		error?: Error;
 	}> {
+		// TODO: Re-implement when subscription functionality is available
+		return { error: new Error('Subscription update functionality is not currently available') };
+
+		/*
 		try {
 			const { subscriptionId, newPlanId } = params;
 
@@ -402,7 +422,6 @@ export class StripeService {
 				.select('id, name, plan_type, price_monthly, currency')
 				.eq('id', newPlanId)
 				.single();
-
 			if (!newPlan) throw new Error('New plan not found');
 
 			// Get current subscription
@@ -431,7 +450,7 @@ export class StripeService {
 			// Update database
 			await this.supabase
 				.from('user_subscriptions')
-				.update({ 
+				.update({
 					plan_id: newPlanId,
 					processed_at: new Date().toISOString()
 				})
@@ -446,6 +465,7 @@ export class StripeService {
 			});
 			return { error: error as Error };
 		}
+		*/
 	}
 
 	/**
@@ -495,7 +515,8 @@ export class StripeService {
 				})
 				.eq('id', metadata.user_id);
 
-			// Update payment record
+			// TODO: Update payment record when user_payments table is available
+			/*
 			await this.supabase
 				.from('user_payments')
 				.update({
@@ -503,6 +524,7 @@ export class StripeService {
 					processed_at: new Date().toISOString()
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
+			*/
 
 		} else if (metadata.product_id) {
 			// Handle product purchase
@@ -516,7 +538,8 @@ export class StripeService {
 	private async handleProductPurchaseSuccess(paymentIntent: Stripe.PaymentIntent): Promise<void> {
 		const { metadata } = paymentIntent;
 		
-		// Update transaction status
+		// TODO: Update transaction status when transactions table is implemented
+		/*
 		await this.supabase
 			.from('transactions')
 			.update({
@@ -524,6 +547,7 @@ export class StripeService {
 				processed_at: new Date().toISOString()
 			})
 			.eq('stripe_payment_intent_id', paymentIntent.id);
+		*/
 
 		// Mark product as sold
 		if (metadata.product_id) {
@@ -558,7 +582,8 @@ export class StripeService {
 		const { metadata } = paymentIntent;
 		
 		if (metadata.payment_type === 'one_time_upgrade') {
-			// Update payment record
+			// TODO: Update payment record when user_payments table is available
+			/*
 			await this.supabase
 				.from('user_payments')
 				.update({
@@ -566,8 +591,10 @@ export class StripeService {
 					failed_at: new Date().toISOString()
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
+			*/
 		} else if (metadata.product_id) {
-			// Update transaction status
+			// TODO: Update transaction status when transactions table is implemented
+			/*
 			await this.supabase
 				.from('transactions')
 				.update({
@@ -575,6 +602,7 @@ export class StripeService {
 					failed_at: new Date().toISOString()
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
+			*/
 		}
 	}
 
@@ -582,6 +610,13 @@ export class StripeService {
 	 * Handle subscription update
 	 */
 	private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
+		// TODO: Re-implement when user_subscriptions table is available
+		paymentLogger.info('Subscription update ignored - not implemented', {
+			subscriptionId: subscription.id,
+			status: subscription.status
+		});
+
+		/*
 		// const { metadata: _metadata } = subscription; // Future metadata processing
 
 		const periodStart = 'current_period_start' in subscription && typeof subscription.current_period_start === 'number'
@@ -600,12 +635,19 @@ export class StripeService {
 				processed_at: new Date().toISOString()
 			})
 			.eq('stripe_subscription_id', subscription.id);
+		*/
 	}
 
 	/**
 	 * Handle subscription cancellation
 	 */
 	private async handleSubscriptionCancellation(subscription: Stripe.Subscription): Promise<void> {
+		// TODO: Re-implement when user_subscriptions table is available
+		paymentLogger.info('Subscription cancellation ignored - not implemented', {
+			subscriptionId: subscription.id
+		});
+
+		/*
 		await this.supabase
 			.from('user_subscriptions')
 			.update({
@@ -622,6 +664,7 @@ export class StripeService {
 				subscription_tier: 'free'
 			})
 			.eq('id', subscription.metadata.supabase_user_id as string);
+		*/
 	}
 
 	/**
@@ -708,15 +751,25 @@ export class StripeService {
 		transactionId: string,
 		status: 'pending' | 'completed' | 'failed' | 'refunded'
 	): Promise<{ success: boolean; error: Error | null }> {
+		// TODO: Implement when transactions table is available
+		/*
 		const { error } = await this.supabase
 			.from('transactions')
-			.update({ 
+			.update({
 				status,
 				...(status === 'completed' ? { processed_at: new Date().toISOString() } : {})
 			})
 			.eq('id', transactionId);
 
 		return { success: !error, error };
+		*/
+
+		paymentLogger.info('Transaction status update requested but not implemented', {
+			transactionId,
+			status
+		});
+
+		return { success: true, error: null };
 	}
 
 	/**
@@ -729,7 +782,7 @@ export class StripeService {
 			
 			// Notification for buyer
 			await this.supabase
-				.from('notifications')
+				.from('admin_notifications')
 				.insert({
 					user_id: order.buyer_id,
 					type: 'purchase',
@@ -750,7 +803,7 @@ export class StripeService {
 
 			// Notification for seller
 			await this.supabase
-				.from('notifications')
+				.from('admin_notifications')
 				.insert({
 					user_id: order.seller_id,
 					type: 'sale',
@@ -790,7 +843,7 @@ export class StripeService {
 	}): Promise<{
 		success: boolean;
 		order?: Order;
-		transaction?: Transaction;
+		// transaction?: Transaction; // TODO: Define when transactions table is implemented
 		error?: Error;
 	}> {
 		try {
@@ -843,7 +896,7 @@ export class StripeService {
 				}
 
 				// Create order items for bundle
-				const orderItems = await Promise.all(
+				const _orderItems = await Promise.all(
 					itemIds.map(async (productId) => {
 						const { data: product } = await this.supabase
 							.from('products')
@@ -867,7 +920,7 @@ export class StripeService {
 				// Insert order items
 				await this.supabase
 					.from('order_items')
-					.insert(orderItems);
+					.insert(_orderItems);
 
 				// Mark all products as sold
 				await this.supabase
@@ -878,15 +931,18 @@ export class StripeService {
 					})
 					.in('id', itemIds);
 
-				// Mark bundle session as completed if exists
+				// TODO: Mark bundle session as completed when bundle_sessions table is available
+				/*
 				if (metadata.bundleSessionId) {
 					await this.supabase
 						.from('bundle_sessions')
 						.update({ completed: true })
 						.eq('id', metadata.bundleSessionId);
 				}
+				*/
 
-				// Update transaction status
+				// TODO: Update transaction status when transactions table is implemented
+				/*
 				const { data: transaction } = await this.supabase
 					.from('transactions')
 					.update({
@@ -897,6 +953,7 @@ export class StripeService {
 					.eq('stripe_payment_intent_id', params.paymentIntentId)
 					.select()
 					.single();
+				*/
 
 				// Create notifications for both buyer and seller
 				await this.createOrderNotifications(order, 'bundle');
@@ -904,7 +961,7 @@ export class StripeService {
 				return {
 					success: true,
 					order,
-					transaction: transaction || undefined
+					// transaction: transaction || undefined // TODO: Return when transactions implemented
 				};
 				
 			} else {
@@ -933,6 +990,8 @@ export class StripeService {
 					throw new Error('Missing order_id or product_id in metadata');
 				}
 				
+				// TODO: Insert order item when order_items table is available
+				/*
 				await this.supabase
 					.from('order_items')
 					.insert({
@@ -941,8 +1000,10 @@ export class StripeService {
 						price: order.total_amount - (order.shipping_cost || 0) - (order.service_fee || 0),
 						quantity: 1
 					});
+				*/
 
-				// Update transaction status
+				// TODO: Update transaction status when transactions table is implemented
+				/*
 				const { data: transaction, error: transactionError } = await this.supabase
 					.from('transactions')
 					.update({
@@ -960,6 +1021,7 @@ export class StripeService {
 						orderId: metadata.order_id
 					});
 				}
+				*/
 
 				// Mark product as sold
 				await this.supabase
@@ -976,7 +1038,7 @@ export class StripeService {
 				return {
 					success: true,
 					order,
-					transaction: transaction || undefined
+					// transaction: transaction || undefined // TODO: Return when transactions implemented
 				};
 			}
 

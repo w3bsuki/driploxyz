@@ -26,6 +26,18 @@
 				} catch(e){}
 			})();
 		</script>
+
+		<!-- No-FOUC script: prevent flash of unstyled content -->
+		<script nonce="%sveltekit.nonce%">
+			(function(){
+				// Hide body until CSS is loaded to prevent FOUC
+				document.documentElement.style.visibility = 'hidden';
+				// Show body after CSS is loaded
+				document.addEventListener('DOMContentLoaded', function() {
+					document.documentElement.style.visibility = 'visible';
+				});
+			})();
+		</script>
 		
 		<!-- Resource hints for better Core Web Vitals -->
 		<meta name="theme-color" content="#3b82f6">

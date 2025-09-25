@@ -17,23 +17,23 @@ export const GET: RequestHandler = async ({ params, locals, request, getClientAd
 	if (rateLimitResponse) return rateLimitResponse;
 	
 	const { productId } = params;
-	const { session } = await locals.safeGetSession();
-	
+	const { session, user } = await locals.safeGetSession();
+
 	// Get total favorite count for this product
 	const { data: product } = await locals.supabase
 		.from('products')
 		.select('favorite_count')
 		.eq('id', productId)
 		.single();
-	
+
 	let isFavorited = false;
-	
+
 	// Check if current user has favorited (if logged in)
-	if (session?.user) {
+	if (session && user) {
 		const { data: favorite } = await locals.supabase
 			.from('favorites')
 			.select('id')
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 			.eq('product_id', productId)
 			.single();
 		
@@ -58,13 +58,13 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 	if (rateLimitResponse) return rateLimitResponse;
 	
 	const { productId } = params;
-	const { session } = await locals.safeGetSession();
-	
-	if (!session?.user) {
+	const { session, user } = await locals.safeGetSession();
+
+	if (!session || !user) {
 		return json({ error: 'Login required to favorite items' }, { status: 401 });
 	}
-	
-	const requestKey = `${session.user.id}:${productId}`;
+
+	const requestKey = `${user.id}:${productId}`;
 	
 	// Check if this exact request is already being processed
 	if (processingRequests.has(requestKey)) {
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 			const { data: existingFavorite } = await locals.supabase
 				.from('favorites')
 				.select('id')
-				.eq('user_id', session.user.id)
+				.eq('user_id', user.id)
 				.eq('product_id', productId)
 				.single();
 			
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 				const { error: deleteError } = await locals.supabase
 					.from('favorites')
 					.delete()
-					.eq('user_id', session.user.id)
+					.eq('user_id', user.id)
 					.eq('product_id', productId);
 				
 				if (deleteError) {
@@ -136,7 +136,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 				const { error: insertError } = await locals.supabase
 					.from('favorites')
 					.insert({
-						user_id: session.user.id,
+						user_id: user.id,
 						product_id: productId
 					});
 				

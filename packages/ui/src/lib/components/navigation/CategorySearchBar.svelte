@@ -264,7 +264,7 @@ const activeFilterCount = $derived.by(() => {
     </div>
 
     <!-- Enhanced Quick Filter Pills -->
-    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbarhide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
       <!-- Main Category Pills -->
       {#each mainCategories as category, index}
         <CategoryPill
@@ -322,13 +322,6 @@ const activeFilterCount = $derived.by(() => {
 </div>
 
 <style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
 
   .animate-pulse {
     animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;

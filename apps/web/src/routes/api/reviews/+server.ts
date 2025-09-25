@@ -14,9 +14,9 @@ const reviewSchema = z.object({
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { session } = await locals.safeGetSession();
-	
-	if (!session?.user) {
+	const { session, user } = await locals.safeGetSession();
+
+	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -60,8 +60,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Determine if this is a buyer reviewing seller or vice versa
-		const isBuyerReview = order.buyer_id === session.user.id;
-		const isSellerReview = order.seller_id === session.user.id;
+		const isBuyerReview = order.buyer_id === user.id;
+		const isSellerReview = order.seller_id === user.id;
 
 		if (!isBuyerReview && !isSellerReview) {
 			return json({ error: 'You are not part of this transaction' }, { status: 403 });
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.from('reviews')
 			.select('id')
 			.eq('order_id', order_id)
-			.eq('reviewer_id', session.user.id)
+			.eq('reviewer_id', user.id)
 			.single();
 
 		if (existingReview) {
@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Create review
 		const reviewData = {
-			reviewer_id: session.user.id,
+			reviewer_id: user.id,
 			reviewee_id: order.seller_id, // V1: buyers review sellers only
 			product_id: order.product_id,
 			order_id: order_id,

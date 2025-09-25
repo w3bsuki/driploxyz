@@ -34,14 +34,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     });
 
     // Get user's favorite status if authenticated
-    const { session } = await locals.safeGetSession();
+    const { session, user } = await locals.safeGetSession();
     const userFavorites: Record<string, boolean> = {};
-    
-    if (session?.user) {
+
+    if (session && user) {
       const { data: userFavoriteData, error: userFavoriteError } = await supabase
         .from('favorites')
         .select('product_id')
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .in('product_id', productIds);
 
       if (userFavoriteError) {
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       userFavorites
     }, {
       headers: {
-        'cache-control': session?.user ? 'private, max-age=60, stale-while-revalidate=300' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+        'cache-control': (session && user) ? 'private, max-age=60, stale-while-revalidate=300' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
         'vary': 'Accept-Encoding, Authorization',
         'x-cache-strategy': 'user-data-api'
       }

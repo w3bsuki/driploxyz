@@ -37,7 +37,7 @@
 <div use:root class="tabgroup-root">
   <div 
     use:list 
-    class="flex space-x-1 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbar-hide {className}"
+    class="flex space-x-1 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbarhide {className}"
   >
     {#each tabs as tab (tab.id)}
       <button

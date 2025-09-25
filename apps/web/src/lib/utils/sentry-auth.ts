@@ -6,7 +6,7 @@
  */
 
 import { browser } from '$app/environment';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { setSentryUser, addSentryBreadcrumb, captureSentryError } from '$lib/server/sentry-config';
 
 /**
@@ -109,31 +109,32 @@ export function trackAuthError(
 
 /**
  * Track session state changes
+ * Uses validated user object for secure monitoring
  */
 export function trackSessionChange(
-  session: Session | null,
+  user: User | null,
   event: 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED'
 ): void {
   if (!browser) return;
-  
+
   try {
-    if (session?.user) {
+    if (user) {
       setSentryUser({
-        id: session.user.id,
-        email: session.user.email,
+        id: user.id,
+        email: user.email,
       });
     } else {
       setSentryUser(null);
     }
-    
+
     addSentryBreadcrumb(
       `Session ${event.toLowerCase()}`,
       'auth',
       'info',
       {
         event,
-        hasSession: !!session,
-        userId: session?.user?.id
+        hasUser: !!user,
+        userId: user?.id
       }
     );
   } catch {

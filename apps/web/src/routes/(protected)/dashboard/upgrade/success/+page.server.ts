@@ -2,10 +2,10 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { activateBrandStatus } from '$lib/services/brandService';
 
-export const load = (async ({ url, locals: { supabase, safeGetSession } }) => {
-  const { session } = await safeGetSession();
-  
-  if (!session) {
+export const load = (async ({ url, locals }) => {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     redirect(303, '/login');
   }
 
@@ -18,16 +18,16 @@ export const load = (async ({ url, locals: { supabase, safeGetSession } }) => {
   
   if (paymentIntentStatus === 'succeeded' && subscriptionId) {
     // Get user's profile to check if they're a brand account
-    const { data: profile } = await supabase
+    const { data: profile } = await locals.supabase
       .from('profiles')
       .select('brand_status')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
 
     // If user has brand_pending status, activate their brand
     if (profile?.brand_status === 'brand_pending') {
-      const result = await activateBrandStatus(supabase, {
-        userId: session.user.id,
+      const result = await activateBrandStatus(locals.supabase, {
+        userId: user.id,
         subscriptionId
       });
       

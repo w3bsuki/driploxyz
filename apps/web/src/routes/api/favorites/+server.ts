@@ -2,7 +2,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  if (!locals.session?.user?.id) {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -16,7 +18,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const { error } = await locals.supabase
       .from('favorites')
       .insert({
-        user_id: locals.session.user.id,
+        user_id: user.id,
         product_id: productId
       });
 
@@ -33,7 +35,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 export const DELETE: RequestHandler = async ({ request, locals }) => {
-  if (!locals.session?.user?.id) {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -47,7 +51,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
     const { error } = await locals.supabase
       .from('favorites')
       .delete()
-      .eq('user_id', locals.session.user.id)
+      .eq('user_id', user.id)
       .eq('product_id', productId);
 
     if (error) {

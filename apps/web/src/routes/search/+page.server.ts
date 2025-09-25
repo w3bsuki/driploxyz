@@ -448,6 +448,8 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
           avatar_url: product.profiles.avatar_url,
           account_type: product.profiles.account_type
         } : null,
+        // Preserve seller username for URL generation
+        seller_username: product.profiles?.username || null,
         category: product.categories || null,
         main_category_name: mainCategoryName || null,
         category_name: mainCategoryName || null, // For backward compatibility
@@ -478,8 +480,8 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       hasMore: transformedProducts.length === pageSize,
       nextCursor,
 
-      // Essential search results - load immediately but allow streaming
-      products: Promise.resolve(transformedProducts),
+      // Essential search results - load immediately
+      products: transformedProducts,
 
       // UI structure data - needed for layout
       categories: sortedCategories,

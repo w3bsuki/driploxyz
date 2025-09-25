@@ -30,6 +30,7 @@ export interface ProductForUrl {
 export interface ProductWithProfile {
   id: string;
   slug?: string | null;
+  seller_username?: string | null; // For search results with flattened seller data
   profiles?: {
     username?: string | null;
   } | null;
@@ -51,7 +52,7 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
   let categorySlug: string | undefined;
 
   // Handle ProductForUrl interface (clean structure)
-  if ('seller_username' in p) {
+  if ('seller_username' in p && p.seller_username) {
     if (!p.seller_username || !p.slug) {
       throw new Error(`getProductUrl: Missing required fields - seller_username: ${p.seller_username}, slug: ${p.slug}, product_id: ${p.id}`);
     }
@@ -64,13 +65,19 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
     if (p.profiles?.username && p.slug) {
       sellerUsername = p.profiles.username;
       productSlug = p.slug;
-      categorySlug = p.categories?.slug ?? undefined;
+      categorySlug = 'categories' in p ? p.categories?.slug ?? undefined : undefined;
     } else {
       // Graceful fallback when data is incomplete
       return `/product/${p.id}`;
     }
+  }
+  // Handle products with seller_username at top level (when no profiles nested structure)
+  else if (p.seller_username && p.slug) {
+    sellerUsername = p.seller_username;
+    productSlug = p.slug;
+    categorySlug = undefined; // Category slug not available in this structure
   } else {
-    // Graceful fallback for unknown structure
+    // Graceful fallback for unknown structure or missing data
     return `/product/${(p as { id: string }).id}`;
   }
 
