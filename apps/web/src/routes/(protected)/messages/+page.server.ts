@@ -173,7 +173,7 @@ function transformConversationRow(row: ConversationSummaryRow, currentUserId: st
     id: row.id,
     userId: otherUserId,
     userName: otherParticipant?.username ?? 'Unknown',
-    userAvatar: otherParticipant?.avatar_url ?? null,
+    userAvatar: otherParticipant?.avatar_url ?? undefined,
     productId: undefined,
     productTitle: undefined,
     productImage: undefined,

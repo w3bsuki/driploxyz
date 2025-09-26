@@ -72,7 +72,7 @@ export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, user
 
         orderSubscriptionStore.addUpdate(update);
 
-        if (update.status === 'shipped' && payload.old && payload.old.status !== 'shipped') {
+        if (update.status === 'shipped' && payload.old && 'status' in payload.old && payload.old.status !== 'shipped') {
           const message = update.tracking_number
             ? `Your order has been shipped! Tracking: ${update.tracking_number}`
             : 'Your order has been shipped!';
@@ -96,7 +96,7 @@ export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, user
 
         orderSubscriptionStore.addUpdate(update);
 
-        if (update.status === 'delivered' && payload.old && payload.old.status !== 'delivered') {
+        if (update.status === 'delivered' && payload.old && 'status' in payload.old && payload.old.status !== 'delivered') {
           showNotification('Order Delivered', 'Your buyer has confirmed delivery!');
         }
       }
@@ -139,13 +139,13 @@ export function clearOrderUpdates() {
 
 function createOrderUpdate(payload: RealtimePostgresChangesPayload<OrderRow>): OrderUpdate | null {
   const newRow = payload.new;
-  if (!newRow) {
+  if (!newRow || !('id' in newRow) || !('status' in newRow)) {
     return null;
   }
 
   return {
     id: newRow.id,
-    status: newRow.status,
+    status: newRow.status ?? 'pending',
     tracking_number: newRow.tracking_number ?? undefined,
     shipped_at: newRow.shipped_at ?? undefined,
     delivered_at: newRow.delivered_at ?? undefined,

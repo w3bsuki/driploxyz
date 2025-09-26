@@ -393,7 +393,7 @@ export class ProductService {
       // Get featured products (fallback since no boosted products exist)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
-        .select<RawProductWithJoinedData>(`
+        .select(`
           *,
           product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
           categories!category_id (name),
@@ -409,7 +409,7 @@ export class ProductService {
       }
 
       // Combine and deduplicate products
-      const manualProducts = this.normalizeProducts(manuallyPromoted);
+      const manualProducts = this.normalizeProducts(manuallyPromoted as RawProductWithJoinedData[]);
 
       const allPromoted: ProductWithJoinedData[] = [
         ...boostedProducts,
@@ -433,7 +433,7 @@ export class ProductService {
         // Get newest products to fill the highlights
         const { data: newestProducts, error: newestError } = await this.supabase
           .from('products')
-          .select<RawProductWithJoinedData>(`
+          .select(`
             *,
             product_images (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
             categories (name),
@@ -449,7 +449,7 @@ export class ProductService {
         } else {
           // Add newest products that aren't already in promoted list
           const promotedIds = new Set(limitedProducts.map((p) => p.id));
-          const newestNormalized = this.normalizeProducts(newestProducts);
+          const newestNormalized = this.normalizeProducts(newestProducts as RawProductWithJoinedData[]);
           const filteredNewest = newestNormalized.filter((p) => promotedIds.has(p.id) === false);
           limitedProducts = [...limitedProducts, ...filteredNewest];
         }

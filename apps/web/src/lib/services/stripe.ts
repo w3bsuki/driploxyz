@@ -688,7 +688,7 @@ export class StripeService {
         private getSubscriptionPeriod(
                 subscription: Stripe.Subscription,
                 field: 'current_period_start' | 'current_period_end'
-        ): string | null {
+        ): string | number | undefined {
                 const subscriptionRecord = subscription as Partial<Record<'current_period_start' | 'current_period_end', unknown>>;
                 const value = subscriptionRecord[field];
 
@@ -696,7 +696,7 @@ export class StripeService {
                         return new Date(value * 1000).toISOString();
                 }
 
-                return null;
+                return undefined;
         }
 
 	/**

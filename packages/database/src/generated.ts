@@ -584,6 +584,52 @@ export type Database = {
           }
         ]
       }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          product_id: string
+          price: number
+          quantity: number
+          line_total: number
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          product_id: string
+          price: number
+          quantity?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          product_id?: string
+          price?: number
+          quantity?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       conversations: {
         Row: {
           id: string

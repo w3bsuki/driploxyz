@@ -4,7 +4,7 @@
  * Clean login endpoint using consolidated auth system.
  */
 
-import { json, redirect } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { LoginSchema } from '$lib/validation/auth';
 import { createServerSupabase } from '$lib/auth/index';
