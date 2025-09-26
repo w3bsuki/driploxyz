@@ -699,32 +699,6 @@ export class StripeService {
                 return undefined;
         }
 
-	/**
-	 * Get or create Stripe customer
-	 */
-	private async getOrCreateCustomer(userId: string, details: {
-		email?: string;
-		name?: string;
-	}): Promise<Stripe.Customer> {
-		// First, try to find existing customer
-		const customers = details.email ? await this.stripe.customers.list({
-			email: details.email,
-			limit: 1
-		}) : { data: [] };
-
-		if (customers.data.length > 0) {
-			return customers.data[0]!;
-		}
-
-		// Create new customer
-		return await this.stripe.customers.create({
-			email: details.email || '',
-			name: details.name || undefined,
-			metadata: {
-				supabase_user_id: userId
-			}
-		});
-	}
 
 	/**
 	 * Create transaction record - Future transaction creation

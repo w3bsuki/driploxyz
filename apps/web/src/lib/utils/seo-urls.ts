@@ -58,7 +58,7 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
     }
     sellerUsername = p.seller_username;
     productSlug = p.slug;
-    categorySlug = p.category_slug ?? undefined;
+    categorySlug = 'category_slug' in p ? p.category_slug ?? undefined : undefined;
   }
   // Handle ProductWithProfile interface (nested profiles structure)
   else if ('profiles' in p) {
