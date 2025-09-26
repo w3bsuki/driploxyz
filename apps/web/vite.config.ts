@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
@@ -13,7 +13,7 @@ export default defineConfig({
 			project: '../../packages/i18n/project.inlang',
 			outdir: '../../packages/i18n/lib/paraglide',
 			strategy: ['cookie', 'url', 'baseLocale']
-		}),
+		}) as PluginOption,
 		sveltekit()
 	],
 	// Speed up dev server

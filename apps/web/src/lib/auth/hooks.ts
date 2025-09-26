@@ -6,7 +6,7 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { createServerSupabase, getServerSession } from './index.js';
+import { createServerSupabase, getServerSession, type SupabaseAuthClient } from './index.js';
 
 /**
  * Set up authentication for a request event
@@ -31,7 +31,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   } catch (error) {
     console.warn('[Auth] Setup failed:', error);
     // Don't break the app if auth setup fails
-    event.locals.supabase = null as any;
+    event.locals.supabase = null as unknown as SupabaseAuthClient;
     event.locals.safeGetSession = async () => ({ session: null, user: null });
   }
 }

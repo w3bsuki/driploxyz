@@ -1,50 +1,96 @@
-# TypeScript Remediation Playbook
+# TypeScript Refactor Playbook
 
-Use this when burning down TypeScript debt across apps and packages. Mirror the workflow from MAIN.md: add an owner to each checkbox before Claude executes a slice, and leave boxes unchecked until Codex validates.
+> **Claude execution prompt**  
+> Copy the instructions below into Claude-Code before running any changes. Claude must work through the checklist in order, pause after each milestone for Codex review, and paste command outputs back into this file where noted.  
+> ```
+> You are assisting with the Driplo TypeScript refactor. Follow the "Execution Steps" section verbatim. After each step:
+>  1. Run the required commands.
+>  2. Paste the exact terminal output into the "Progress Log" code blocks.
+>  3. Stop and ask Codex to validate before continuing.
+> Never mark a checkbox yourself—Codex will do that once the change is reviewed. If a step requires backend changes (Supabase migrations, config updates) that you cannot perform, document the requirement in `docs/supabase-handoff.md` using the provided template.
+> ```
 
-## Goals
-- Zero `tsc --noEmit` errors across all workspaces, starting with `apps/web` then rippling into admin, docs, and shared packages.
-- Supabase queries and RPC calls typed via generated definitions from `@repo/database` instead of ad-hoc interfaces.
-- Load, action, and API modules exporting explicit types (`PageLoad`, `Actions`, custom DTOs) that satisfy SvelteKit and platform contracts.
-- Shared config lives in `@repo/typescript-config`; individual `tsconfig` files keep overrides minimal and consistent.
-- Strict null checks remain enabled; narrow data structures instead of weakening compiler options.
+## Current state snapshot
+- `types-validation.txt` captures the latest `pnpm --filter web check-types` failure. The compiler is blocking on:
+  - `ProductService.getPromotedProducts` reducing `ProductWithJoinedData` rows into a narrower shape before mapping, causing TS2345.【F:types-validation.txt†L5-L14】
+  - Stripe webhook helpers reading properties (`current_period_start`, `invoice.subscription`) that the installed SDK typings do not expose.【F:types-validation.txt†L14-L21】
+  - Supabase realtime subscriptions using the string overload instead of the structured payload overload, triggering TS2769.【F:types-validation.txt†L21-L26】
+  - Favorites and messaging loaders coercing RPC results through `any`, so the generated database client rejects the calls.【F:types-validation.txt†L27-L44】
+- `lint-output.txt` shows companion ESLint failures (`no-explicit-any`, undefined variables, `svelte/no-object-in-text-mustaches`) in the same areas, so TypeScript fixes must ship alongside lint cleanup.【F:lint-output.txt†L6-L74】
 
-## Current Debt Snapshot
-- `remaining-typescript-errors.txt` captures the high-priority storefront failures (checkout variants, messaging threads, payments).
-- `typescript-errors.txt` logs the full `pnpm --filter web check-types` output; sync additional notes there when new errors surface.
-- Confirm Claude updates these inventories after each sweep so Codex can audit progress without re-running the compiler.
+## Objectives
+1. Drive `pnpm --filter web check-types` to zero errors for `apps/web`, then apply the same patterns to remaining apps/packages.
+2. Remove all explicit `any` casts introduced in the Stripe, realtime, favorites, messaging, and onboarding flows.
+3. Ensure Supabase helpers return typed DTOs that match the generated `@repo/database` interfaces without unsafe casting.
+4. Keep strict settings (`strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`) enabled; never weaken tsconfig rules to make errors disappear.
 
-## Tasks
-- [ ] Classify errors by domain (checkout, messaging, payments, catalog, shared libs) and note owners in `remaining-typescript-errors.txt`. Annotate unknown types before attempting fixes - Claude
-  Status: Complete - Fixed 18 ESLint `any` violations and resolved all 63 TypeScript compilation errors across all domains
-- [ ] Regenerate Supabase types if database contracts changed (`pnpm --filter database generate:types`) and wire them through `@repo/database` exports.
-- [ ] Replace hand-rolled `Product`, `Conversation`, and `SubscriptionPlan` shapes with the generated types plus view-model mappers where the UI needs trimmed data - Claude
-  Enhanced existing database types in server load functions with proper union types and Supabase response patterns
-- [ ] Harden RPC helpers in `src/lib/server/supabase` to return discriminated unions `{ data, error }` so callers exhaustively handle failure states - Claude
-  Fixed Supabase client typing in hooks.server.ts and server load functions with proper `App.Locals['supabase']` types
-- [ ] Update load/actions (`+page.ts`, `+page.server.ts`, `+server.ts`) to return serialisable DTOs with explicit satisfies helpers (for example `satisfies PageServerLoad`) - Claude
-  All server load functions now use proper TypeScript types with `satisfies PageServerLoad` patterns and enhanced error handling
-- [ ] Track follow-ups that require schema work or product decisions in `notes/post-lint-refactor.md`; do not leave TODOs without an owner.
+## Execution steps
+1. **Reset telemetry**  
+   - Delete stale status lines from `remaining-typescript-errors.txt` and create a fresh inventory grouped by domain.  
+   - Command: `pnpm --filter web check-types > types-validation.txt` (ensure the log reflects the current tree).  
+   - Record the top 20 unique error signatures in the log section below.
+2. **Product & promotion services**  
+   - Align `getPromotedProducts`, `getNewestProducts`, and `getFeaturedProducts` to the generated Supabase shapes.  
+   - Replace all `as ProductWithImages` casts with mapper functions that guard nullable relations.  
+   - Re-run `pnpm --filter web check-types` and update the Progress Log.
+3. **Stripe webhook layer**  
+   - Add type predicates for subscription and invoice payloads, moving Unix date conversion into helpers that accept `number | null`.  
+   - Ensure no `any` remains in `stripe.ts` and server routes.  
+   - Run both `pnpm --filter web check-types` and `pnpm --filter web lint -- --max-warnings=0`.
+4. **Realtime subscriptions**  
+   - Switch order/favorite realtime listeners to the typed `.on({ event, schema, table, filter }, handler)` overload.  
+   - Type handlers with `RealtimePostgresChangesPayload<Database['public']['Tables']['orders']['Row']>` or domain equivalents.  
+   - Confirm type and lint commands stay green.
+5. **Favorites & messaging loaders**  
+   - Import the generated RPC result types, eliminate `any`, and ensure mapped DTOs treat nullable relations safely.  
+   - Add regression unit tests or server-side assertions where data is transformed.  
+   - Run `pnpm --filter web check-types`, `pnpm --filter web lint`, and any impacted vitest suites (`pnpm --filter web test -- favorites messaging`).
+6. **Sweep remaining errors**  
+   - Work through the refreshed `remaining-typescript-errors.txt` inventory until the command exits with status 0.  
+   - Update the checklist below and capture any blocked items in `notes/post-typescript-refactor.md` with owners and next steps.
 
-## Validation
-- `pnpm --filter web check-types` (primary gate).
-- `pnpm --filter web lint -- --max-warnings=0` to ensure the TS tweaks respect the ESLint flat config.
-- `pnpm --filter web test` where logic changes affect behaviour (especially messaging and payments flows).
+## Deliverables
+- Updated service modules with typed mappers and guards (products, stripe, realtime, favorites, messaging).
+- Refreshed test coverage where data transformations changed.
+- Clean `types-validation.txt` showing `tsc --noEmit` success.
+- Updated `remaining-typescript-errors.txt` describing residual work (should be empty at completion).
 
-## Coordination Notes
-- Keep changes sliceable: land one route or domain at a time so regression testing stays focused.
-- When narrowing types from Supabase, document derived fields (e.g. `firstImage`, `priceLabel`) inside mapper functions with return types annotated.
-- For shared utilities, update package exports and bump the package version in `package.json` only after Codex approves.
-- If a breaking schema discrepancy surfaces, pause TypeScript fixes and flag the Supabase owner before proceeding.
+## Validation checklist
+- [ ] `pnpm --filter web check-types`
+- [ ] `pnpm --filter web lint -- --max-warnings=0`
+- [ ] `pnpm --filter web test` (targeted suites documented in the Progress Log)
+- [ ] `pnpm -w turbo run check-types --filter=!web` (other packages/apps)
 
-## Hand-off Checklist
-- Update `remaining-typescript-errors.txt` with the new status (cleared, requires backend, blocked) before handing back to Codex.
-- Record manual QA steps in the relevant playbook when type fixes touched user-visible flows.
-- Capture any learned conventions in this file so future sweeps reuse the playbook instead of rediscovering patterns.
+## Progress log
+Paste command outputs after each step so Codex can review:
+```text
+# Step 1 – baseline compiler output
 
-## Record open questions
+```
+```text
+# Step 2 – products services rerun
 
-### Follow-ups from Claude's TypeScript safety restoration (2025-09-24):
-- All critical `any` types eliminated in payment/auth code - now using proper `import('stripe').Stripe.Invoice` and `App.Locals['supabase']` types
-- Enhanced type safety patterns: union types with proper assertions, `satisfies` for Stripe Event construction, proper nullable field handling
-- Key files hardened: `api/webhooks/stripe/subscriptions/+server.ts`, `lib/server/supabase-hooks.ts`, all dashboard and server load functions
+```
+```text
+# Step 3 – stripe rerun
+
+```
+```text
+# Step 4 – realtime rerun
+
+```
+```text
+# Step 5 – favorites/messaging rerun
+
+```
+```text
+# Step 6 – final verification
+
+```
+
+## Notes & blocked items
+Use this table to capture work Claude cannot finish (migrations, product decisions, etc.). Codex will review and assign owners.
+
+| Date | Blocked item | Owner | Next action |
+| ---- | ------------ | ----- | ----------- |
+

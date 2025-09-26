@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		}
 
 		// Send confirmation emails (only if RESEND_API_KEY is configured)
-		if (process.env.RESEND_API_KEY && result.order && result.transaction) {
+		if (process.env.RESEND_API_KEY && result.order) {
 			try {
 				// Get product details for emails
 				const { data: product } = await locals.supabase
@@ -89,8 +89,8 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 					await sendEmail(sellerAuth.user.email, emailTemplates.productSold({
 						product: { title: product.title },
 						amount: result.order.total_amount,
-						commission: result.transaction.commission_amount * 100, // Convert to cents
-						net_amount: result.transaction.seller_earnings * 100
+						commission: 0, // TODO: Implement when transaction system is fully integrated
+						net_amount: result.order.total_amount * 100 // Convert to cents
 					}));
 				}
 			} catch (emailError) {
@@ -104,8 +104,8 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		
 		return json({
 			success: true,
-			orderId: result.order?.id,
-			transactionId: result.transaction?.id
+			orderId: result.order?.id
+			// transactionId: TODO - implement when transaction system is fully integrated
 		});
 	} catch (error) {
 		paymentLogger.error('Error confirming payment', error, {

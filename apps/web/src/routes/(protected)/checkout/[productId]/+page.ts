@@ -11,9 +11,11 @@ export const load = (async ({ params, fetch }) => {
 
     if (response.ok) {
       const productData = await response.json();
-      return {
-        product: productData.product as Product
-      };
+      if (productData && typeof productData === 'object' && 'product' in productData) {
+        return {
+          product: productData.product as Product
+        };
+      }
     }
   } catch {
     // TODO: integrate logging once server logger is wired up
@@ -44,18 +46,44 @@ export const load = (async ({ params, fetch }) => {
     createdAt: new Date().toISOString(), // Legacy compatibility
     slug: 'test-product-001',
     availableSizes: ['M'],
-    // Database fields that might be required
+    // Required database fields
+    is_active: true,
+    shipping_cost: null,
+    sold_at: null,
+    boost_type: null,
+    commission_rate: null,
+    net_earnings: null,
+    platform_fee: null,
+    auto_archive_after_days: null,
+    archived_at: null,
     country_code: 'BG',
+    region: null,
     status: 'active' as const,
     tags: null,
     is_featured: false,
     is_boosted: false,
     boosted_until: null,
     material: null,
-    color: null
-  };
+    color: null,
+    search_vector: null,
+    slug_locked: null,
+    is_drip_candidate: null,
+    drip_status: null,
+    drip_nominated_at: null,
+    drip_approved_at: null,
+    drip_rejected_at: null,
+    drip_nominated_by: null,
+    drip_reviewed_by: null,
+    drip_rejection_reason: null,
+    drip_quality_score: null,
+    drip_admin_notes: null,
+    boost_history_id: null,
+    boost_priority: null,
+    brand_collection_id: null,
+    custom_subcategory: null
+  } satisfies Product;
 
   return {
-    product: testProduct as Product
+    product: testProduct
   };
 }) satisfies PageLoad;

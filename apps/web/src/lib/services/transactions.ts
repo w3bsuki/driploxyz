@@ -37,11 +37,13 @@ export class TransactionService {
 				order_id: params.orderId,
 				seller_id: params.sellerId,
 				buyer_id: params.buyerId,
+				product_id: params.productId,
 				amount: totalAmount,
 				commission_amount: commissionAmount,
 				seller_earnings: sellerAmount,
 				stripe_payment_intent_id: params.stripePaymentIntentId,
-				payment_status: 'completed',
+				payout_status: 'completed',
+				status: 'completed',
 				processed_at: new Date().toISOString()
 			};
 

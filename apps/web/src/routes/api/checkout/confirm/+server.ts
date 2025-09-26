@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     }
 
     // Confirm payment intent and process order
-    const { order, transaction, success, error: confirmError } = await services.stripe.confirmPaymentIntent({
+    const { order, success, error: confirmError } = await services.stripe.confirmPaymentIntent({
       paymentIntentId,
       buyerId: user.id
     });
@@ -52,7 +52,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     return json({
       success: true,
       order,
-      transaction,
       message: 'Payment confirmed successfully!'
     });
 
