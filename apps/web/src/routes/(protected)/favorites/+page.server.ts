@@ -1,5 +1,23 @@
 import type { PageServerLoad } from './$types';
+import type { Database } from '@repo/database';
 
+type FavoriteProductImage = Pick<
+  Database['public']['Tables']['product_images']['Row'],
+  'id' | 'image_url' | 'alt_text' | 'sort_order'
+>;
+
+type FavoriteProductRow = Database['public']['Tables']['products']['Row'] & {
+  favorite_count: number | null;
+  product_images: FavoriteProductImage[] | null;
+  categories: { name: string | null } | null;
+  profiles: Pick<Database['public']['Tables']['profiles']['Row'], 'username' | 'rating' | 'avatar_url'> | null;
+};
+
+type FavoriteRecord = {
+  product_id: string;
+  created_at: string;
+  products: FavoriteProductRow | null;
+};
 
 export const load = (async ({ locals }) => {
   const { session, user } = await locals.safeGetSession();
@@ -43,23 +61,32 @@ export const load = (async ({ locals }) => {
     }
 
     // Transform the data to match the Product interface
-    const favoritedProducts = (favorites || [])
-      .filter(favorite => favorite.products) // Filter out any null products
-      .map(favorite => ({
-        ...favorite.products,
-        images: (favorite.products.product_images || []).map((img: { image_url: string }) => img.image_url),
-        product_images: favorite.products.product_images || [],
-        category_name: favorite.products.categories?.name,
-        seller_name: favorite.products.profiles?.username,
-        seller_username: favorite.products.profiles?.username,
-        seller_rating: favorite.products.profiles?.rating,
-        seller_avatar: favorite.products.profiles?.avatar_url,
-        favoritedAt: favorite.created_at, // Add when this was favorited
-        sellerId: favorite.products.seller_id,
-        sellerName: favorite.products.profiles?.username || 'Unknown',
-        sellerRating: favorite.products.profiles?.rating || 0,
-        createdAt: favorite.products.created_at
-      }));
+    const favoriteRows = (favorites ?? []) as FavoriteRecord[];
+    const favoritedProducts = favoriteRows
+      .filter((favorite): favorite is FavoriteRecord & { products: FavoriteProductRow } => favorite.products !== null)
+      .map((favorite) => {
+        const product = favorite.products;
+        const productImages = product.product_images ?? [];
+        const imageUrls = productImages
+          .map((img) => img.image_url)
+          .filter((url): url is string => typeof url === 'string');
+
+        return {
+          ...product,
+          images: imageUrls,
+          product_images: productImages,
+          category_name: product.categories?.name,
+          seller_name: product.profiles?.username,
+          seller_username: product.profiles?.username,
+          seller_rating: product.profiles?.rating ?? undefined,
+          seller_avatar: product.profiles?.avatar_url ?? undefined,
+          favoritedAt: favorite.created_at,
+          sellerId: product.seller_id,
+          sellerName: product.profiles?.username ?? 'Unknown',
+          sellerRating: product.profiles?.rating ?? 0,
+          createdAt: product.created_at
+        };
+      });
 
     return {
       favoritedProducts,

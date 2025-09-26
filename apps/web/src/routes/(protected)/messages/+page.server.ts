@@ -2,15 +2,15 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Message, Conversation, UserInfo } from '$lib/services/ConversationService';
 import type { Database } from '@repo/database';
+import type { PostgrestError } from '@supabase/supabase-js';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
-
-// These interfaces are no longer needed as we use 'any' type for RPC results
+type ConversationMessageRow = Database['public']['Functions']['get_conversation_messages_secure']['Returns'][number];
+type ConversationSummaryRow = Database['public']['Functions']['get_user_conversations_secure']['Returns'][number];
 
 export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   depends('messages:conversations');
   depends('messages:specific');
-  
+
   const { user } = await parent();
 
   if (!user) {
@@ -23,7 +23,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   
   let messages: Message[] = [];
   let conversations: Conversation[] = [];
-  let messagesError = null;
+  let messagesError: PostgrestError | null = null;
   
   if (conversationParam) {
     // Load specific conversation messages using optimized function
@@ -38,26 +38,12 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         conversation_id: conversationParam,
         other_user_id: otherUserId
       });
-      
-      // Transform the function result to match expected format
-      messages = data && Array.isArray(data) ? data.reverse().map((msg) => ({
-        id: msg.id,
-        sender_id: msg.sender_id,
-        receiver_id: msg.receiver_id,
-        product_id: null, // Not available in this RPC
-        order_id: null, // Not available in this RPC
-        content: msg.content,
-        created_at: msg.created_at,
-        is_read: msg.read || false,
-        status: 'sent', // Default since not available in RPC
-        delivered_at: undefined, // Not available in this RPC
-        read_at: undefined, // Not available in this RPC
-        message_type: 'user', // Default since not available in RPC
-        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...(msg.sender_profile as Record<string, unknown>), id: (msg.sender_profile as Record<string, unknown>)?.id as string || '' } as UserInfo : undefined,
-        receiver: undefined, // receiver_profile not available in this RPC
-        order: undefined // order_details not available in this RPC
-      })) : [];
-      
+
+      if (!error && isConversationMessageRows(data)) {
+        const ordered = [...data].reverse();
+        messages = ordered.map(transformMessageRow);
+      }
+
       messagesError = error;
     }
   } else {
@@ -66,29 +52,12 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
       user_id: user.id,
       conv_limit: 50
     });
-    
+
     // Transform conversation summaries into expected format for ConversationService
-    conversations = data && Array.isArray(data) ? data.map((conv) => ({
-      id: conv.id,
-      userId: conv.participant_one_id === user.id ? conv.participant_two_id : conv.participant_one_id,
-      userName: conv.other_participant ? (conv.other_participant as Profile)?.username || 'Unknown' : 'Unknown',
-      userAvatar: conv.other_participant ? (conv.other_participant as Profile)?.avatar_url || null : null,
-      lastActiveAt: conv.other_participant ? (conv.other_participant as Profile)?.last_active_at || null : null,
-      productId: undefined,
-      productTitle: undefined,
-      productPrice: undefined,
-      productImage: undefined,
-      orderId: undefined,
-      orderStatus: undefined,
-      orderTotal: undefined,
-      lastMessage: conv.last_message || '',
-      lastMessageTime: conv.last_message_at || conv.created_at,
-      messages: [], // Messages loaded separately
-      unread: false, // Unread counts not available in this RPC response
-      isProductConversation: false,
-      isOrderConversation: false
-    })) as Conversation[] : [];
-    
+    conversations = isConversationSummaryRows(data)
+      ? data.map((conv) => transformConversationRow(conv, user.id))
+      : [];
+
     messagesError = error;
   }
   
@@ -114,10 +83,10 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         .select('id, username, full_name, avatar_url, last_active_at')
         .eq('id', otherUserId)
         .single();
-      
+
       conversationUser = userData;
     }
-    
+
     // Product information is no longer fetched in this simplified implementation
   }
 
@@ -170,3 +139,62 @@ export const actions = {
   // for consistency, rate limiting, and proper real-time notifications
   // Use ConversationService.sendMessage() instead
 } satisfies Actions;
+
+function transformMessageRow(row: ConversationMessageRow): Message {
+  const senderProfile = row.sender_profile;
+  const sender: UserInfo | undefined = senderProfile
+    ? {
+        id: senderProfile.id,
+        username: senderProfile.username,
+        avatar_url: senderProfile.avatar_url ?? undefined
+      }
+    : undefined;
+
+  return {
+    id: row.id,
+    sender_id: row.sender_id,
+    receiver_id: row.receiver_id,
+    product_id: null,
+    order_id: null,
+    content: row.content,
+    created_at: row.created_at,
+    is_read: row.read,
+    status: row.read ? 'read' : 'sent',
+    message_type: 'user',
+    sender
+  };
+}
+
+function transformConversationRow(row: ConversationSummaryRow, currentUserId: string): Conversation {
+  const otherParticipant = row.other_participant;
+  const otherUserId = row.participant_one_id === currentUserId ? row.participant_two_id : row.participant_one_id;
+
+  return {
+    id: row.id,
+    userId: otherUserId,
+    userName: otherParticipant?.username ?? 'Unknown',
+    userAvatar: otherParticipant?.avatar_url ?? null,
+    productId: undefined,
+    productTitle: undefined,
+    productImage: undefined,
+    productPrice: undefined,
+    orderId: undefined,
+    orderStatus: undefined,
+    orderTotal: undefined,
+    messages: [],
+    lastMessage: row.last_message ?? '',
+    lastMessageTime: row.last_message_at ?? row.created_at,
+    unread: false,
+    lastActiveAt: undefined,
+    isProductConversation: false,
+    isOrderConversation: false
+  };
+}
+
+function isConversationMessageRows(data: unknown): data is ConversationMessageRow[] {
+  return Array.isArray(data);
+}
+
+function isConversationSummaryRows(data: unknown): data is ConversationSummaryRow[] {
+  return Array.isArray(data);
+}

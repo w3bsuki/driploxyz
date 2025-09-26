@@ -1,63 +1,78 @@
-# Svelte 5 Rune Playbook
+# Svelte 5 Migration Playbook
 
-Use this guide when refactoring components, stores, and shared UI under the Svelte 5 runtime.
+> **Claude execution prompt**  
+> ```
+> You are migrating Driplo to idiomatic Svelte 5 runes. Follow the "Execution flow" section exactly. After each numbered phase:
+>  1. Run the listed commands.
+>  2. Paste the relevant diffs and terminal output into the "Progress journal" blocks.
+>  3. Request Codex review before moving on.
+> Use Melt UI toasts/components where instructed. Do not downgrade to legacy Svelte patterns or introduce new lint ignores.
+> ```
+
+## Current gaps
+- Components in the onboarding, dashboard, orders, and messaging routes still rely on `export let`, `onMount`, and manual DOM alerts instead of `$state`, `$derived`, and Melt primitives. Audit notes from `lint-output.txt` confirm undefined helpers (`_showValidationError`) and unused state placeholders scattered through onboarding forms.【F:lint-output.txt†L32-L63】
+- Store modules such as `orderSubscription.svelte.ts` mix rune factories with legacy `writable` stores and unsafe in-place mutation, contributing to TypeScript and lint errors.【F:types-validation.txt†L21-L26】
+- Shared UI packages expose rune-compatible APIs, but app-level components continue to import `.svelte.ts` stores directly from the file system without a factory wrapper, breaking SSR expectations.
 
 ## Goals
-- All interactive state uses $state or $state.raw and is reassigned instead of mutated.
-- Derived data is computed with $derived or $derived.by, not legacy dollar reactive statements.
-- Effects via $effect are pure side effects with guard clauses to prevent loops.
-- Component props pulled with $props and documented with TypeScript interfaces.
-- Shared state exposed through factory functions or context instead of mutating module scope.
+1. Every interactive component uses rune state (`$state`, `$state.raw`) with reassignment semantics; no leftover `export let` or `$:` reactive statements remain outside of derived helpers.
+2. Side effects run in `$effect` with explicit guards; derived state moves into `$derived` or computed helpers.
+3. Client feedback flows through Melt toasts, dialogs, or modals instead of `alert`, `confirm`, or bare HTML popups.
+4. Store access happens through dedicated factory functions (`createOrderSubscriptionStore`) so SSR and hydration stay aligned.
 
-## Tasks
-- [ ] Audit components for leftover export let or legacy reactive statements; convert to rune equivalents - Claude
-  Searched packages/ui and apps/web components using rg patterns, confirmed zero legacy `export let` or `$:` reactive statements remain
-- [ ] Replace writable stores that can be rune factories (for example auth, favorites, notifications) with createStore patterns plus thin compatibility wrappers where needed - Claude
-  Fixed critical auth-popup reactivity bug in `apps/web/src/lib/stores/auth-popup.svelte.ts` and `apps/web/src/routes/+page.svelte`
-- [ ] Ensure arrays and objects returned from state reassign new references; no in-place push or splice - Claude
-  Validated state mutation patterns in notification stores and auth-popup store use proper reassignment
-- [ ] Remove unused shim files once consumers migrate to the new rune APIs.
-  Status: in progress - scope requires identifying and removing legacy compatibility layers
-- [ ] Document rune usage in packages/ui README and ensure tests cover happy and error paths.
-  Status: in progress - scope includes creating comprehensive rune documentation and test coverage
-- [ ] Add examples to this file showing canonical rune usage (state, derived, effect, props, bindings) - Claude
-  Documented optimization patterns in `BINDABLE_OPTIMIZATION_PLAN.md` and `BINDABLE_OPTIMIZATION_COMPLETION_REPORT.md`
+## Execution flow
+1. **Inventory legacy patterns**  
+   - Run `rg "export let" apps/web/src/routes` and `rg "\$:" apps/web/src/routes -g'*.svelte'`.  
+   - Document components needing rune refactors in `notes/svelte5-inventory.md` with owner + priority.  
+   - Capture output in the Progress journal.
+2. **Refactor onboarding flow**  
+   - Convert onboarding +page.svelte to rune state, replace `_showValidationError` with Melt toast notifications, and ensure async flows use `$effect`/actions.  
+   - Update the paired server load/action to return typed DTOs consumed by rune props.  
+   - Commands: `pnpm --filter web lint -- --max-warnings=0`, `pnpm --filter web check`.  
+3. **Dashboard/orders messaging stores**  
+   - Wrap `orderSubscription.svelte.ts` and messaging stores in factory functions returning rune state + unsubscribe handlers.  
+   - Replace direct mutation with reassignment and typed helpers.  
+   - Commands: `pnpm --filter web check-types`, `pnpm --filter web test --orders`, `pnpm --filter web test --messaging` (create targeted vitest suites if missing).
+4. **Shared primitives alignment**  
+   - Promote duplicated UI logic into `packages/ui` rune components (buttons, carousels, modals) and ensure apps import from the package index.  
+   - Update stories/tests accordingly.  
+   - Commands: `pnpm --filter ui build`, `pnpm --filter web check`.
+5. **Final audit**  
+   - Re-run the search for `export let`, `$:` reactive statements, `onMount`, and raw DOM alerts.  
+   - Any remaining occurrences must have a documented rationale in `notes/svelte5-inventory.md`.  
+   - Run `pnpm -w turbo run check` to ensure all apps comply.
 
-## Validation
-- Run pnpm --filter web check-types to confirm TypeScript signatures remain strict.
-- Run pnpm --filter web test to execute vitest suites covering UI logic.
-- Manually smoke test critical components in story or playground once available.
+## Acceptance checklist
+- [ ] `rg "export let" apps/web/src/routes` returns zero matches (outside of `$props` wrappers).
+- [ ] `rg "onMount" apps/web/src/routes` returns zero matches.
+- [ ] All Melt toasts/dialogs have associated accessibility tests (see UI-UX.md for patterns).
+- [ ] `pnpm --filter web check` passes without rune-related compile errors.
 
-## Anti-patterns to Eliminate
-- Mixing rune state with legacy Svelte stores without a clear bridge.
-- Using $effect for pure derivations where $derived would suffice.
-- Keeping massive barrel exports that leak private components without design review.
-- Leaving TODOs without owner and follow-up ticket.
+## Progress journal
+```text
+# Step 1 – legacy pattern inventory
 
-## TDD Reminders
-- Add tests before altering store behaviour; snapshot derived values where helpful.
-- Use vitest with testing-library to assert DOM updates triggered by rune state.
-- When fixing bugs, add regression coverage under packages/ui or apps/web tests.
+```
+```text
+# Step 2 – onboarding rune migration
 
-## Record open questions
+```
+```text
+# Step 3 – dashboard/orders/messaging refactor
 
-### Follow-ups from Claude's SvelteKit 2 migration (2025-09-24):
-- Fixed critical memory leak in `realtime.svelte.ts` where `subscribe()()` pattern caused immediate unsubscribes
-- Eliminated duplicate toast system - unified to single modern toast system in `packages/ui/src/lib/primitives/toast/store.svelte.ts`
-- Enhanced auth-popup store reactivity with proper getter/setter pattern for Svelte 5 compliance
+```
+```text
+# Step 4 – shared primitives alignment
 
-### Build System Integration
-- Web app build failing due to missing paraglide translation file `sell_materialoptional1.js` (non-Svelte 5 issue)
-- Consider implementing automated bindable prop default optimization based on `BINDABLE_OPTIMIZATION_PLAN.md`
-- Paraglide i18n directory conflicts resolved during dev server startup
+```
+```text
+# Step 5 – final audit run
 
-### Component Architecture
-- 22+ components identified with bindable prop optimization opportunities in modal, form, and business logic components
-- Accessibility warnings in navigation components need addressing (7 violations found)
+```
 
-### Performance Optimization
-- CSS cleanup needed: 3 unused selectors in HeaderLogo and PartnerShowcase components
-- Bundle analysis should validate Svelte 5 optimizations are active
-- Layout auth performance optimized with batched invalidations and smart session monitoring
+## Known blockers & escalations
+| Area | Description | Escalation path |
+| ---- | ----------- | --------------- |
+| Melt primitives | Missing toast/modal variant? | Propose API addition in `packages/ui/README.md` and assign to Design Systems owner |
+| SSR restrictions | Component requires browser-only API | Gate with `if (browser)` and document in `notes/svelte5-inventory.md` |
 
-Log open questions or edge cases at the bottom so future maintainers continue the trail.

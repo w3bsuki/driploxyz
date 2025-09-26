@@ -11,9 +11,11 @@ export const load = (async ({ params, fetch }) => {
 
     if (response.ok) {
       const productData = await response.json();
-      return {
-        product: productData.product as Product
-      };
+      if (productData && typeof productData === 'object' && 'product' in productData) {
+        return {
+          product: productData.product as Product
+        };
+      }
     }
   } catch {
     // TODO: integrate logging once server logger is wired up
@@ -53,9 +55,9 @@ export const load = (async ({ params, fetch }) => {
     boosted_until: null,
     material: null,
     color: null
-  };
+  } satisfies Product;
 
   return {
-    product: testProduct as Product
+    product: testProduct
   };
 }) satisfies PageLoad;

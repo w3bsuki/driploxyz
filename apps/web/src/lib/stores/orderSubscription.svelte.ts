@@ -15,6 +15,8 @@ interface OrderSubscriptionState {
   channel: RealtimeChannel | null;
 }
 
+type OrderRow = Database['public']['Tables']['orders']['Row'];
+
 export function createOrderSubscriptionStore() {
   const state = $state<OrderSubscriptionState>({
     updates: [],
@@ -54,7 +56,7 @@ export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, user
   // Subscribe to order updates for both buyer and seller
   const orderChannel = supabase
     .channel('order-updates')
-    .on(
+    .on<OrderRow>(
       'postgres_changes',
       {
         event: 'UPDATE',
@@ -62,21 +64,23 @@ export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, user
         table: 'orders',
         filter: `buyer_id=eq.${userId}`
       },
-      (payload: RealtimePostgresChangesPayload<OrderUpdate>) => {
-        if (payload.new && 'id' in payload.new && 'status' in payload.new) {
-          orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
+      (payload: RealtimePostgresChangesPayload<OrderRow>) => {
+        const update = createOrderUpdate(payload);
+        if (!update) {
+          return;
+        }
 
-          // Show notification if order was shipped
-          if ((payload.new as OrderUpdate).status === 'shipped' && payload.old && 'status' in payload.old && (payload.old as Partial<OrderUpdate>).status !== 'shipped') {
-            showNotification('Order Shipped',
-              'tracking_number' in payload.new && (payload.new as OrderUpdate).tracking_number
-                ? `Your order has been shipped! Tracking: ${(payload.new as OrderUpdate).tracking_number}`
-                : 'Your order has been shipped!');
-          }
+        orderSubscriptionStore.addUpdate(update);
+
+        if (update.status === 'shipped' && payload.old && payload.old.status !== 'shipped') {
+          const message = update.tracking_number
+            ? `Your order has been shipped! Tracking: ${update.tracking_number}`
+            : 'Your order has been shipped!';
+          showNotification('Order Shipped', message);
         }
       }
     )
-    .on(
+    .on<OrderRow>(
       'postgres_changes',
       {
         event: 'UPDATE',
@@ -84,14 +88,16 @@ export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, user
         table: 'orders',
         filter: `seller_id=eq.${userId}`
       },
-      (payload: RealtimePostgresChangesPayload<OrderUpdate>) => {
-        if (payload.new && 'id' in payload.new && 'status' in payload.new) {
-          orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
+      (payload: RealtimePostgresChangesPayload<OrderRow>) => {
+        const update = createOrderUpdate(payload);
+        if (!update) {
+          return;
+        }
 
-          // Show notification if order was delivered
-          if ((payload.new as OrderUpdate).status === 'delivered' && payload.old && 'status' in payload.old && (payload.old as Partial<OrderUpdate>).status !== 'delivered') {
-            showNotification('Order Delivered', 'Your buyer has confirmed delivery!');
-          }
+        orderSubscriptionStore.addUpdate(update);
+
+        if (update.status === 'delivered' && payload.old && payload.old.status !== 'delivered') {
+          showNotification('Order Delivered', 'Your buyer has confirmed delivery!');
         }
       }
     )
@@ -129,4 +135,20 @@ function showNotification(title: string, message: string) {
 
 export function clearOrderUpdates() {
   orderSubscriptionStore.clearUpdates();
+}
+
+function createOrderUpdate(payload: RealtimePostgresChangesPayload<OrderRow>): OrderUpdate | null {
+  const newRow = payload.new;
+  if (!newRow) {
+    return null;
+  }
+
+  return {
+    id: newRow.id,
+    status: newRow.status,
+    tracking_number: newRow.tracking_number ?? undefined,
+    shipped_at: newRow.shipped_at ?? undefined,
+    delivered_at: newRow.delivered_at ?? undefined,
+    updated_at: newRow.updated_at ?? newRow.created_at ?? new Date().toISOString()
+  };
 }

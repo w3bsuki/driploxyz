@@ -15,6 +15,12 @@ interface ProductWithJoinedData extends Product {
   profiles: { username: string | null; rating: number | null; avatar_url: string | null } | null;
 }
 
+type RawProductWithJoinedData = Product & {
+  product_images?: ProductImage[] | null;
+  categories?: { name: string | null } | null;
+  profiles?: { username: string | null; rating: number | null; avatar_url: string | null } | null;
+};
+
 export interface ProductWithImages extends Product {
   images: ProductImage[];
   category_name?: string;
@@ -387,7 +393,7 @@ export class ProductService {
       // Get featured products (fallback since no boosted products exist)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
-        .select(`
+        .select<RawProductWithJoinedData>(`
           *,
           product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
           categories!category_id (name),
@@ -403,9 +409,11 @@ export class ProductService {
       }
 
       // Combine and deduplicate products
-      const allPromoted = [
-        ...(boostedProducts || []),
-        ...(manuallyPromoted || [])
+      const manualProducts = this.normalizeProducts(manuallyPromoted);
+
+      const allPromoted: ProductWithJoinedData[] = [
+        ...boostedProducts,
+        ...manualProducts
       ];
       
       // Remove duplicates based on product ID
@@ -425,7 +433,7 @@ export class ProductService {
         // Get newest products to fill the highlights
         const { data: newestProducts, error: newestError } = await this.supabase
           .from('products')
-          .select(`
+          .select<RawProductWithJoinedData>(`
             *,
             product_images (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
             categories (name),
@@ -441,7 +449,8 @@ export class ProductService {
         } else {
           // Add newest products that aren't already in promoted list
           const promotedIds = new Set(limitedProducts.map((p) => p.id));
-          const filteredNewest = (newestProducts || []).filter((p) => !promotedIds.has(p.id));
+          const newestNormalized = this.normalizeProducts(newestProducts);
+          const filteredNewest = newestNormalized.filter((p) => promotedIds.has(p.id) === false);
           limitedProducts = [...limitedProducts, ...filteredNewest];
         }
       }
@@ -451,14 +460,19 @@ export class ProductService {
       }
 
       // Transform the data
-      const products: ProductWithImages[] = limitedProducts.map((item) => {
+      const products: ProductWithImages[] = limitedProducts.map((item): ProductWithImages => {
         const { product_images, categories, profiles, ...productData } = item;
+        const normalizedImages = product_images ?? [];
+        const sellerProfile = profiles ?? null;
+        const productFields: Product = productData;
+
         return {
-          ...productData,
-          images: product_images || [],
-          category_name: categories?.name || undefined,
-          seller_name: profiles?.username || undefined,
-          seller_rating: profiles?.rating || undefined
+          ...productFields,
+          images: normalizedImages,
+          category_name: categories?.name ?? undefined,
+          seller_name: sellerProfile?.username ?? undefined,
+          seller_username: sellerProfile?.username ?? undefined,
+          seller_rating: sellerProfile?.rating ?? undefined
         };
       });
 
@@ -466,6 +480,23 @@ export class ProductService {
     } catch {
       return { data: [], error: 'Failed to fetch promoted products' };
     }
+  }
+
+  private normalizeProducts(records: RawProductWithJoinedData[] | null): ProductWithJoinedData[] {
+    if (records == null || records.length === 0) {
+      return [];
+    }
+
+    return records.map((item): ProductWithJoinedData => {
+      const { product_images, categories, profiles, ...productFields } = item;
+
+      return {
+        ...(productFields as Product),
+        product_images: product_images ?? [],
+        categories: categories ?? null,
+        profiles: profiles ?? null
+      };
+    });
   }
 
   /**

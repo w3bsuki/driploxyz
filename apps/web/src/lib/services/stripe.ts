@@ -609,34 +609,30 @@ export class StripeService {
 	/**
 	 * Handle subscription update
 	 */
-	private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
-		// TODO: Re-implement when user_subscriptions table is available
-		paymentLogger.info('Subscription update ignored - not implemented', {
-			subscriptionId: subscription.id,
-			status: subscription.status
-		});
+        private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
+                const periodStart = this.getSubscriptionPeriod(subscription, 'current_period_start');
+                const periodEnd = this.getSubscriptionPeriod(subscription, 'current_period_end');
 
-		/*
-		// const { metadata: _metadata } = subscription; // Future metadata processing
+                // TODO: Re-implement when user_subscriptions table is available
+                paymentLogger.info('Subscription update ignored - not implemented', {
+                        subscriptionId: subscription.id,
+                        status: subscription.status,
+                        periodStart,
+                        periodEnd
+                });
 
-		const periodStart = 'current_period_start' in subscription && typeof subscription.current_period_start === 'number'
-			? new Date((subscription.current_period_start as number) * 1000).toISOString()
-			: null;
-		const periodEnd = 'current_period_end' in subscription && typeof subscription.current_period_end === 'number'
-			? new Date((subscription.current_period_end as number) * 1000).toISOString()
-			: null;
-
-		await this.supabase
-			.from('user_subscriptions')
-			.update({
-				status: subscription.status as 'active' | 'canceled' | 'past_due' | 'incomplete' | 'incomplete_expired' | 'trialing' | 'unpaid',
-				current_period_start: periodStart,
-				current_period_end: periodEnd,
-				processed_at: new Date().toISOString()
-			})
-			.eq('stripe_subscription_id', subscription.id);
-		*/
-	}
+                /*
+                await this.supabase
+                        .from('user_subscriptions')
+                        .update({
+                                status: subscription.status as 'active' | 'canceled' | 'past_due' | 'incomplete' | 'incomplete_expired' | 'trialing' | 'unpaid',
+                                current_period_start: periodStart,
+                                current_period_end: periodEnd,
+                                processed_at: new Date().toISOString()
+                        })
+                        .eq('stripe_subscription_id', subscription.id);
+                */
+        }
 
 	/**
 	 * Handle subscription cancellation
@@ -670,20 +666,38 @@ export class StripeService {
 	/**
 	 * Handle invoice payment
 	 */
-	private async handleInvoicePayment(invoice: Stripe.Invoice): Promise<void> {
-		const subscriptionId = 'subscription' in invoice && invoice.subscription
-			? invoice.subscription
-			: null;
-		if (!subscriptionId) return;
+        private async handleInvoicePayment(invoice: Stripe.Invoice): Promise<void> {
+                const rawSubscription = 'subscription' in invoice ? invoice.subscription : null;
+                const subscriptionId = typeof rawSubscription === 'string'
+                        ? rawSubscription
+                        : rawSubscription && typeof rawSubscription === 'object' && rawSubscription !== null && 'id' in rawSubscription && typeof rawSubscription.id === 'string'
+                                ? rawSubscription.id
+                                : null;
 
-		const subscription = typeof subscriptionId === 'string'
-			? await this.stripe.subscriptions.retrieve(subscriptionId)
-			: subscriptionId;
+                if (subscriptionId === null) {
+                        return;
+                }
 
-		if (subscription) {
-			await this.handleSubscriptionUpdate(subscription as Stripe.Subscription);
-		}
-	}
+                const subscription = rawSubscription && typeof rawSubscription === 'object' && rawSubscription !== null
+                        ? (rawSubscription as Stripe.Subscription)
+                        : await this.stripe.subscriptions.retrieve(subscriptionId);
+
+                await this.handleSubscriptionUpdate(subscription);
+        }
+
+        private getSubscriptionPeriod(
+                subscription: Stripe.Subscription,
+                field: 'current_period_start' | 'current_period_end'
+        ): string | null {
+                const subscriptionRecord = subscription as Partial<Record<'current_period_start' | 'current_period_end', unknown>>;
+                const value = subscriptionRecord[field];
+
+                if (typeof value === 'number') {
+                        return new Date(value * 1000).toISOString();
+                }
+
+                return null;
+        }
 
 	/**
 	 * Get or create Stripe customer
