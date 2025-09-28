@@ -31,9 +31,10 @@ export class SubscriptionService {
 	 * Get user's current subscriptions
 	 * TODO: Re-implement when user_subscriptions table is available
 	 */
-	async getUserSubscriptions(_userId: string) {
-		// Return empty array for now
-		return { data: [], error: null };
+        async getUserSubscriptions(userId: string) {
+                void userId;
+                // Return empty array for now
+                return { data: [], error: null };
 
 		/*
 		return await this.supabase
@@ -51,9 +52,11 @@ export class SubscriptionService {
 	 * Check if user has active subscription for a plan type
 	 * TODO: Re-implement when user_subscriptions table is available
 	 */
-	async hasActiveSubscription(_userId: string, _planType: 'premium' | 'brand'): Promise<boolean> {
-		// Return false for now (no active subscriptions)
-		return false;
+        async hasActiveSubscription(userId: string, planType: 'premium' | 'brand'): Promise<boolean> {
+                void userId;
+                void planType;
+                // Return false for now (no active subscriptions)
+                return false;
 
 		/*
 		const { data } = await this.supabase
@@ -72,15 +75,19 @@ export class SubscriptionService {
 	/**
 	 * Create Stripe subscription for user
 	 */
-	async createStripeSubscription(
-		_userId: string,
-		_planId: string,
-		_stripeInstance: Stripe,
-		_discountAmount: number = 0
-		// _discountCode: string = '' // Future discount code validation
-	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
-		// TODO: Re-implement when subscription functionality is available
-		return { error: new Error('Subscription creation functionality is not currently available') };
+        async createStripeSubscription(
+                userId: string,
+                planId: string,
+                stripeInstance: Stripe,
+                discountAmount: number = 0
+                // _discountCode: string = '' // Future discount code validation
+        ): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
+                void userId;
+                void planId;
+                void stripeInstance;
+                void discountAmount;
+                // TODO: Re-implement when subscription functionality is available
+                return { error: new Error('Subscription creation functionality is not currently available') };
 
 		/*
 		try {
@@ -131,9 +138,12 @@ export class SubscriptionService {
 	/**
 	 * Cancel user subscription
 	 */
-	async cancelSubscription(_userId: string, _subscriptionId: string, _stripeInstance: Stripe) {
-		// TODO: Re-implement when subscription functionality is available
-		return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
+        async cancelSubscription(userId: string, subscriptionId: string, stripeInstance: Stripe) {
+                void userId;
+                void subscriptionId;
+                void stripeInstance;
+                // TODO: Re-implement when subscription functionality is available
+                return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
 
 		/*
 		try {
@@ -153,9 +163,11 @@ export class SubscriptionService {
 	/**
 	 * Handle Stripe webhook for subscription updates
 	 */
-	async handleStripeWebhook(_event: Stripe.Event, _stripeInstance: Stripe) {
-		// TODO: Re-implement when subscription functionality is available
-		return { success: false, error: new Error('Webhook handling functionality is not currently available') };
+        async handleStripeWebhook(event: Stripe.Event, stripeInstance: Stripe) {
+                void event;
+                void stripeInstance;
+                // TODO: Re-implement when subscription functionality is available
+                return { success: false, error: new Error('Webhook handling functionality is not currently available') };
 
 		/*
 		try {

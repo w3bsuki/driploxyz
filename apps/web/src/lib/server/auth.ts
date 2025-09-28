@@ -8,22 +8,32 @@ import type { Database } from '@repo/database';
  * This ensures consistent auth handling across all server contexts
  */
 export function createSupabaseServerClient(cookies: Cookies, fetch?: typeof globalThis.fetch) {
+  const supabaseUrl = env.PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = env.PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Missing Supabase public configuration');
+  }
+
+  type CookieSetOptions = Parameters<Cookies['set']>[2];
+  type CookiePayload = { name: string; value: string; options?: CookieSetOptions };
+
   return createServerClient<Database>(
-    env.PUBLIC_SUPABASE_URL,
-    env.PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
           return cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          (cookiesToSet as CookiePayload[]).forEach(({ name, value, options }) => {
             cookies.set(name, value, {
               ...options,
               path: '/'
             });
           });
-        },
+        }
       },
       global: {
         fetch: fetch || globalThis.fetch
