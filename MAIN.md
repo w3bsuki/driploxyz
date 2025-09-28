@@ -3,8 +3,10 @@
 This is the source of truth for stabilising and refining the Driplo monorepo. Work through the phases in order, ticking checklists only after validation commands pass. All subsystem playbooks linked below hold the detailed steps and tests.
 
 ## Phase Checklist
-- [ ] Phase 0 - Workspace baseline: follow ProjectStructure.md and ensure the repo tree matches the target layout.
-- [x] Phase 1 - Tooling readiness: finish Turbo.md, refresh lint/type/test pipelines, lock Node to 22.12.x.
+- [ ] Phase 0 - Workspace baseline: follow ProjectStructure.md and ensure the repo tree matches the target layout.| Date | Phase/Doc | Owner | Summary | Follow-ups |
+| ---- | --------- | ----- | ------- | ---------- |
+| 2025-09-24 | Phase 0 / Reports | Claude | Recreated refactor roadmap/task board, logged artefact/dependency audits, restored web lint to passing, and documented remaining type/build blockers | Supabase schema regeneration and env/type fixes still required before completing Phase 0 |
+| 2025-09-22 | Phase 0 | Claude | Fixed Node engine specs to >=22.12.0 <23 in all package.json files, completed repo structure audit (all legacy dirs cleaned, structure matches ProjectStructure.md target), created README.md for all workspaces | Node version 22.17.1 > target 22.12.0 - user may want to downgrade for consistency |
 - [ ] Phase 2 - Data and auth layer: align with Supabase.md, verify schema migrations and RLS, update shared clients.
 - [ ] Phase 3 - Framework cleanup: execute SvelteKit2.md then Svelte5.md to remove legacy patterns and duplicate stores.
 - [ ] Phase 4 - Design system: complete TailwindCSS.md refinements and run visual regression plus Tailwind build.

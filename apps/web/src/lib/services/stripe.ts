@@ -366,12 +366,14 @@ export class StripeService {
 	/**
 	 * Cancel subscription
 	 */
-	async cancelSubscription(_userId: string, _subscriptionId: string): Promise<{
-		success: boolean;
-		error?: Error;
-	}> {
-		// TODO: Re-implement when subscription functionality is available
-		return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
+        async cancelSubscription(userId: string, subscriptionId: string): Promise<{
+                success: boolean;
+                error?: Error;
+        }> {
+                void userId;
+                void subscriptionId;
+                // TODO: Re-implement when subscription functionality is available
+                return { success: false, error: new Error('Subscription cancellation functionality is not currently available') };
 
 		/*
 		try {
@@ -401,16 +403,17 @@ export class StripeService {
 	/**
 	 * Update subscription plan
 	 */
-	async updateSubscription(_params: {
-		userId: string;
-		subscriptionId: string;
-		newPlanId: string;
-	}): Promise<{
-		subscription?: Stripe.Subscription;
-		error?: Error;
-	}> {
-		// TODO: Re-implement when subscription functionality is available
-		return { error: new Error('Subscription update functionality is not currently available') };
+        async updateSubscription(params: {
+                userId: string;
+                subscriptionId: string;
+                newPlanId: string;
+        }): Promise<{
+                subscription?: Stripe.Subscription;
+                error?: Error;
+        }> {
+                void params;
+                // TODO: Re-implement when subscription functionality is available
+                return { error: new Error('Subscription update functionality is not currently available') };
 
 		/*
 		try {

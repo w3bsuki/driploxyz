@@ -31,7 +31,24 @@ declare global {
 }
 
 declare module '$env/static/public' {
-	export const PUBLIC_SITE_URL: string;
+        export const PUBLIC_SUPABASE_URL: string;
+        export const PUBLIC_SUPABASE_ANON_KEY: string;
+        export const PUBLIC_STRIPE_PUBLISHABLE_KEY: string | undefined;
+        export const PUBLIC_SENTRY_DSN: string | undefined;
+        export const PUBLIC_SITE_URL: string | undefined;
+}
+
+declare module '$env/static/private' {
+        export const SUPABASE_SERVICE_ROLE_KEY: string | undefined;
+        export const STRIPE_SECRET_KEY: string | undefined;
+        export const STRIPE_WEBHOOK_SECRET: string | undefined;
+        export const RATE_LIMIT_SECRET: string | undefined;
+        export const RESEND_API_KEY: string | undefined;
+        export const SENTRY_DSN: string | undefined;
+        export const SENTRY_AUTH_TOKEN: string | undefined;
+        export const SENTRY_RELEASE: string | undefined;
+        export const SENTRY_PROJECT: string | undefined;
+        export const SENTRY_ORG: string | undefined;
 }
 
 // Module declarations are in @repo/i18n/src/types.d.ts

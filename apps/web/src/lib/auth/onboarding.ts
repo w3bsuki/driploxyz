@@ -131,10 +131,12 @@ function validateOnboardingData(data: OnboardingData): { valid: boolean; error?:
  * TODO: Implement payment verification when user_payments table is added to database types
  */
 async function verifyPaymentForPremiumAccount(
-  _supabase: SupabaseAuthClient,
-  _userId: string,
+  supabase: SupabaseAuthClient,
+  userId: string,
   accountType: string
 ): Promise<boolean> {
+  void supabase;
+  void userId;
   // For now, skip payment verification - this should be implemented
   // when the user_payments table is properly typed in the database schema
   console.warn('[Onboarding] Payment verification skipped - table not in database types');
@@ -146,10 +148,13 @@ async function verifyPaymentForPremiumAccount(
  * TODO: Implement brand entry creation when brands table is added to database types
  */
 async function createBrandEntry(
-  _supabase: SupabaseAuthClient,
-  _profileId: string,
-  _brandName: string
+  supabase: SupabaseAuthClient,
+  profileId: string,
+  brandName: string
 ): Promise<void> {
+  void supabase;
+  void profileId;
+  void brandName;
   // Skip brand entry creation for now - table not in database types
   console.warn('[Onboarding] Brand entry creation skipped - table not in database types');
 }

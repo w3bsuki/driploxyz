@@ -31,7 +31,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   } catch (error) {
     console.warn('[Auth] Setup failed:', error);
     // Don't break the app if auth setup fails
-    event.locals.supabase = null as any;
+    event.locals.supabase = null as unknown as typeof event.locals.supabase;
     event.locals.safeGetSession = async () => ({ session: null, user: null });
   }
 }

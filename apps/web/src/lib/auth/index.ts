@@ -9,7 +9,6 @@
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
 import { env } from '$env/dynamic/public';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -29,12 +28,18 @@ export interface AuthState {
 }
 
 // Configuration
-const SUPABASE_URL = PUBLIC_SUPABASE_URL || env.PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = PUBLIC_SUPABASE_ANON_KEY || env.PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase configuration. Check your environment variables.');
 }
+
+const SUPABASE_URL = supabaseUrl;
+const SUPABASE_ANON_KEY = supabaseAnonKey;
+
+type CookieSetOptions = Parameters<Cookies['set']>[2];
+type SupabaseCookie = { name: string; value: string; options?: CookieSetOptions };
 
 /**
  * SERVER-SIDE AUTH HELPERS
@@ -48,7 +53,7 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
     cookies: {
       getAll: () => cookies.getAll(),
       setAll: (cookiesToSet) => {
-        cookiesToSet.forEach(({ name, value, options }) => {
+        (cookiesToSet as SupabaseCookie[]).forEach(({ name, value, options }) => {
           cookies.set(name, value, {
             path: '/',
             httpOnly: false,
