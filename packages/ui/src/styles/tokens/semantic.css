@@ -19,6 +19,9 @@
   --surface-muted: var(--gray-100);
   --surface-emphasis: var(--gray-200);
   --surface-inverse: var(--gray-900);
+  --surface-brand: var(--brand-primary);
+  --surface-brand-subtle: var(--brand-primary-soft);
+  --surface-brand-strong: var(--brand-primary-strong);
 
   /* Text hierarchy */
   --text-primary: var(--gray-900);
@@ -84,6 +87,9 @@
   --surface-muted: var(--gray-700);
   --surface-emphasis: var(--gray-600);
   --surface-inverse: var(--gray-0);
+  --surface-brand: var(--brand-primary-strong);
+  --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--gray-900) 78%);
+  --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, black 15%);
 
   --text-primary: var(--gray-50);
   --text-secondary: var(--gray-200);

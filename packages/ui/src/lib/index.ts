@@ -83,6 +83,9 @@ export { default as RatingModal } from './components/modals/RatingModal.svelte';
 // Notification components
 export { default as NotificationBell } from './components/notifications/NotificationBell.svelte';
 export { default as NotificationPanel } from './components/layout/NotificationPanel.svelte';
+export { default as Container } from './components/layout/Container.svelte';
+export { default as Stack } from './components/layout/Stack.svelte';
+export { default as HStack } from './components/layout/HStack.svelte';
 export { default as MessageNotificationToast } from './components/modals/MessageNotificationToast.svelte';
 export { default as FollowNotificationToast } from './components/modals/FollowNotificationToast.svelte';
 export { default as TypingIndicator } from './components/ui/TypingIndicator.svelte';

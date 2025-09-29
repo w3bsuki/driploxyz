@@ -1,7 +1,5 @@
 @import 'tailwindcss';
-@import '@repo/ui/styles/tokens.css';
-@import '@repo/ui/styles/semantic.css';
-@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/index.css';
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -12,26 +10,7 @@
 
 /* Docs site theme - minimal CODEX tokens for Tailwind CSS v4 */
 @theme {
-  /* Minimal CODEX tokens following zero-config philosophy */
-  /* Documentation-specific overrides */
-  --color-primary: oklch(0.58 0.14 240);
-  --color-accent: oklch(0.58 0.14 145);
-
-  /* Core documentation surfaces */
-  --color-background: var(--surface-base);
-  --color-foreground: var(--text-primary);
-
-  /* Documentation typography */
   --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
-
-  /* Touch targets for docs interface */
-  --space-touch: 44px;
-
-  /* Documentation UI radius */
-  --radius-default: 0.5rem;
-
-  /* Base spacing for documentation layouts */
-  --space-base: 1rem;
 }
 
 @layer base {

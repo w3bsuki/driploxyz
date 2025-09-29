@@ -44,6 +44,7 @@ export type Favorite = Tables<'favorites'>;
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonDensity = 'spacious' | 'cozy' | 'compact';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarVariant = 'circle' | 'square';
