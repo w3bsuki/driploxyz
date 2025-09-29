@@ -3,7 +3,14 @@
  * Provides type-safe variant composition utilities for Svelte 5 components
  */
 
-import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../types';
+import type {
+  ButtonVariant,
+  ButtonSize,
+  BadgeVariant,
+  BadgeSize,
+  AvatarSize,
+  AvatarVariant
+} from '../types';
 
 // Generic variant builder type
 type VariantConfig<TVariants extends Record<string, Record<string, string>>> = {
@@ -55,48 +62,66 @@ export function createVariants<TVariants extends Record<string, Record<string, s
 
 // Pre-configured variant systems for common components
 export const buttonVariants = createVariants({
-  base: 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-200',
+  base:
+    'inline-flex items-center justify-center gap-x-[var(--space-2)] font-medium rounded-[length:var(--btn-radius)] transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-base)] disabled:pointer-events-none disabled:opacity-60 data-[state=waiting]:pointer-events-none data-[state=waiting]:opacity-70 touch-manipulation select-none relative isolate',
   variants: {
     variant: {
-      primary: 'bg-blue-600 text-white focus-visible:ring-blue-500 hover:bg-blue-700',
-      secondary: 'bg-gray-100 text-gray-900 focus-visible:ring-gray-500 hover:bg-gray-200',
-      outline: 'border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 hover:bg-gray-50',
-      ghost: 'text-gray-700 focus-visible:ring-gray-500 hover:bg-gray-100',
-      danger: 'bg-red-600 text-white focus-visible:ring-red-500 hover:bg-red-700'
+      primary:
+        'bg-[color:var(--surface-brand-strong, var(--brand-primary-strong))] text-[color:var(--text-inverse)] shadow-[var(--shadow-sm)] hover:bg-[color:color-mix(in oklch, var(--brand-primary-strong) 92%, black 8%)] hover:shadow-[var(--shadow-md)] active:bg-[color:color-mix(in oklch, var(--brand-primary-strong) 88%, black 12%)]',
+      secondary:
+        'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)] border border-[color:var(--border-default)] hover:bg-[color:var(--surface-emphasis)] active:bg-[color:var(--surface-subtle)]',
+      outline:
+        'border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-subtle)] active:bg-[color:var(--surface-muted)]',
+      ghost:
+        'text-[color:var(--text-primary)] hover:bg-[color:var(--state-hover)] active:bg-[color:color-mix(in oklch, var(--state-hover) 80%, var(--surface-muted) 20%)]',
+      danger:
+        'bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)] hover:bg-[color:color-mix(in oklch, var(--status-error-solid) 92%, black 8%)] active:bg-[color:color-mix(in oklch, var(--status-error-solid) 88%, black 12%)]'
     },
     size: {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-sm',
-      lg: 'px-6 py-3 text-base'
+      sm: 'min-h-[length:var(--btn-height-sm)] px-[length:var(--btn-padding-sm)] text-[length:var(--btn-font-sm)]',
+      md: 'min-h-[length:var(--btn-height-md)] px-[length:var(--btn-padding-md)] text-[length:var(--btn-font-md)]',
+      lg: 'min-h-[length:var(--btn-height-lg)] px-[length:var(--btn-padding-lg)] text-[length:var(--btn-font-lg)]'
+    },
+    density: {
+      spacious: 'gap-x-[var(--space-3)]',
+      cozy: 'gap-x-[var(--space-1-5)]',
+      compact: 'gap-x-[var(--space-1)]'
     }
   },
   compoundVariants: [
     {
       conditions: { variant: 'outline', size: 'sm' },
-      className: 'border-2'
+      className: 'border-[length:1.5px]'
     }
   ],
   defaultVariants: {
     variant: 'primary',
-    size: 'md'
+    size: 'md',
+    density: 'spacious'
   }
 });
 
 export const badgeVariants = createVariants({
-  base: 'inline-flex items-center justify-center font-medium rounded-full border',
+  base:
+    'inline-flex items-center justify-center font-medium rounded-[length:var(--badge-radius)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] transition-colors duration-[var(--duration-base)] min-h-[length:var(--touch-compact)]',
   variants: {
     variant: {
-      primary: 'bg-blue-50 text-blue-700 border-blue-200',
-      secondary: 'bg-gray-50 text-gray-700 border-gray-200',
-      success: 'bg-green-50 text-green-700 border-green-200',
-      warning: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-      error: 'bg-red-50 text-red-700 border-red-200',
-      info: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+      primary:
+        'bg-[color:var(--surface-brand-subtle, var(--brand-primary-soft))] text-[color:var(--brand-primary-strong)] border-[color:color-mix(in oklch, var(--brand-primary-soft) 80%, var(--brand-primary-strong) 20%)]',
+      secondary: 'bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)] border-[color:var(--border-default)]',
+      success:
+        'bg-[color:var(--status-success-bg)] text-[color:var(--status-success-text)] border-[color:var(--status-success-border)]',
+      warning:
+        'bg-[color:var(--status-warning-bg)] text-[color:var(--status-warning-text)] border-[color:var(--status-warning-border)]',
+      error:
+        'bg-[color:var(--status-error-bg)] text-[color:var(--status-error-text)] border-[color:var(--status-error-border)]',
+      info:
+        'bg-[color:var(--status-info-bg)] text-[color:var(--status-info-text)] border-[color:var(--status-info-border)]'
     },
     size: {
-      sm: 'px-2 py-0.5 text-xs',
-      md: 'px-2.5 py-1 text-sm',
-      lg: 'px-3 py-1.5 text-base'
+      sm: 'px-[length:calc(var(--badge-padding-x)*0.75)] py-[length:calc(var(--badge-padding-y)*0.75)] text-[length:calc(var(--badge-font)*0.85)]',
+      md: 'px-[length:var(--badge-padding-x)] py-[length:var(--badge-padding-y)] text-[length:var(--badge-font)]',
+      lg: 'px-[length:calc(var(--badge-padding-x)*1.25)] py-[length:calc(var(--badge-padding-y)*1.1)] text-[length:calc(var(--badge-font)*1.1)]'
     }
   },
   defaultVariants: {

@@ -1,79 +1,122 @@
 <script lang="ts">
-  import type { ButtonVariant, ButtonSize } from '../../types';
-  import { melt } from '@melt-ui/svelte';
+  import type { Action } from 'svelte/action';
+  import type { ButtonVariant, ButtonSize, ButtonDensity } from '../../types';
+  import { buttonVariants } from '../../utils/variants';
 
   interface Props {
     variant?: ButtonVariant;
     size?: ButtonSize;
+    density?: ButtonDensity;
     disabled?: boolean;
     loading?: boolean;
+    loadingLabel?: string;
     href?: string;
+    rel?: string;
+    target?: HTMLAnchorElement['target'];
     type?: 'button' | 'submit' | 'reset';
     form?: string;
     onclick?: (event: MouseEvent) => void;
     class?: string;
     children?: import('svelte').Snippet;
-    use?: Array<any>;  // For Melt UI actions and other use directives
+    use?: Action<HTMLElement>[] | Action<HTMLElement> | null;
   }
 
   let {
     variant = 'primary',
     size = 'md',
+    density = 'spacious',
     disabled = false,
     loading = false,
+    loadingLabel = 'Loading',
     href,
+    rel,
+    target,
     type = 'button',
     form,
     onclick,
     class: className = '',
     children,
-    use
+    use = null
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-200 relative select-none touch-manipulation';
+  const element = $derived(href ? 'a' : 'button');
+  const tabIndex = $derived(href && disabled ? -1 : undefined);
+  const ariaBusy = $derived(loading ? 'true' : undefined);
+  const stateAttr = $derived(loading ? 'waiting' : 'ready');
 
-  const variantClasses = {
-    primary: 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--primary-600)] active:bg-[color:var(--primary-700)]',
-    secondary: 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)] border border-[color:var(--border-default)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--surface-emphasis)] hover:border-[color:var(--border-emphasis)] active:bg-[color:var(--surface-subtle)]',
-    outline: 'border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--surface-subtle)] hover:border-[color:var(--border-emphasis)] active:bg-[color:var(--surface-muted)]',
-    ghost: 'text-[color:var(--text-primary)] focus-visible:ring-[color:var(--primary)] hover:bg-[color:var(--state-hover)] active:bg-[color:var(--surface-muted)]',
-    danger: 'bg-[color:var(--error)] text-[color:var(--error-fg)] focus-visible:ring-[color:var(--error)] hover:bg-[color:var(--status-error-solid)] active:bg-[color:var(--status-error-text)]'
-  };
+  function applyActions(node: HTMLElement) {
+    const actions = Array.isArray(use) ? use : use ? [use] : [];
+    const cleanups = actions.map((action) => action?.(node)).filter(Boolean) as Array<() => void>;
+    return {
+      destroy() {
+        cleanups.forEach((cleanup) => cleanup?.());
+      }
+    };
+  }
 
-  const sizeClasses = {
-    sm: 'px-3 text-xs min-h-8',      // Compact for dense UI (32px)
-    md: 'px-4 text-sm min-h-9',      // Standard buttons (36px)
-    lg: 'px-6 text-base min-h-11'    // Primary CTAs - accessible touch target (44px)
-  };
+  const classes = $derived(
+    buttonVariants(
+      {
+        variant,
+        size,
+        density
+      },
+      className
+    )
+  );
 
-  const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${loading ? 'pointer-events-none opacity-70' : ''} ${className}`);
-  
-  const spinnerSizes = {
-    sm: 'w-3 h-3',
-    md: 'w-4 h-4',
-    lg: 'w-5 h-5'
-  };
+  const spinnerSize = $derived(
+    size === 'sm' ? 'size-3' : size === 'lg' ? 'size-5' : 'size-4'
+  );
 </script>
 
-{#if href}
-  <a {href} class={classes} aria-busy={loading} use:melt={use && use[1] ? use[1] : undefined}>
-    {#if loading}
-      <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+<svelte:element
+  this={element}
+  href={element === 'a' ? href : undefined}
+  rel={element === 'a' ? rel : undefined}
+  target={element === 'a' ? target : undefined}
+  form={element === 'button' ? form : undefined}
+  {onclick}
+  class={classes}
+  type={element === 'button' ? type : undefined}
+  disabled={element === 'button' ? disabled : undefined}
+  aria-disabled={element === 'a' && disabled ? 'true' : undefined}
+  aria-busy={ariaBusy}
+  data-state={stateAttr}
+  tabindex={tabIndex}
+  use:applyActions
+>
+  {#if loading}
+    <span
+      class={`inline-flex items-center gap-x-[var(--space-2)] ${size === 'sm' ? 'text-[length:var(--btn-font-sm)]' : size === 'lg' ? 'text-[length:var(--btn-font-lg)]' : 'text-[length:var(--btn-font-md)]'}`}
+      role="status"
+      aria-live="polite"
+    >
+      <svg
+        class={`${spinnerSize} animate-spin text-current`}
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        />
       </svg>
-    {/if}
+      <span class="sr-only">{loadingLabel}</span>
+    </span>
+  {/if}
+  <span
+    class={
+      loading
+        ? 'opacity-0 pointer-events-none absolute inset-0 flex items-center justify-center'
+        : 'inline-flex items-center gap-x-[var(--space-2)]'
+    }
+    aria-hidden={loading ? 'true' : undefined}
+  >
     {@render children?.()}
-  </a>
-{:else}
-  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading} use:melt={use && use[1] ? use[1] : undefined}>
-    {#if loading}
-      <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    {/if}
-    {@render children?.()}
-  </button>
-{/if}
+  </span>
+</svelte:element>
 

@@ -1,7 +1,5 @@
 @import 'tailwindcss';
-@import '@repo/ui/styles/tokens.css';
-@import '@repo/ui/styles/semantic.css';
-@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/index.css';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
@@ -15,26 +13,7 @@
 */
 
 @theme {
-  /* Minimal CODEX tokens for Tailwind CSS v4 zero-config philosophy */
-  /* Primary brand color - mapped to semantic tokens */
-  --color-primary: var(--brand-primary);
-  --color-accent: var(--brand-accent);
-
-  /* Core surfaces using semantic tokens from packages/ui */
-  --color-background: var(--surface-base);
-  --color-foreground: var(--text-primary);
-
-  /* Typography scale - uses Inter for consistent branding */
   --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
-
-  /* Touch target minimum for accessibility compliance */
-  --space-touch: 44px;
-
-  /* Border radius for consistent component styling */
-  --radius-default: 0.5rem;
-
-  /* Base spacing unit for consistent rhythm */
-  --space-base: 1rem;
 }
 
 /* Theme is now attribute-based via data-theme on <html>. */
@@ -66,64 +45,64 @@
   }
 
   /* Base typography — Overridden by language-specific styles in cyrillic-typography.css */
-  h1 { 
-    font-size: var(--text-4xl); 
-    line-height: var(--leading-tight); 
-    font-weight: var(--font-semibold); 
+  h1 {
+    font-size: var(--text-4xl);
+    line-height: var(--leading-tight);
+    font-weight: var(--font-semibold);
     letter-spacing: var(--tracking-tight);
-    color: var(--text-strong);
+    color: var(--text-primary);
   }
-  h2 { 
-    font-size: var(--text-3xl); 
-    line-height: var(--leading-tight); 
-    font-weight: var(--font-semibold); 
+  h2 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    font-weight: var(--font-semibold);
     letter-spacing: var(--tracking-normal);
-    color: var(--text-strong);
+    color: var(--text-primary);
   }
-  h3 { 
-    font-size: var(--text-2xl);  
-    line-height: var(--leading-snug);  
-    font-weight: var(--font-medium); 
+  h3 {
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+    font-weight: var(--font-medium);
     letter-spacing: var(--tracking-normal);
-    color: var(--text-base);
+    color: var(--text-secondary);
   }
-  h4 { 
-    font-size: var(--text-xl);  
-    line-height: var(--leading-snug);  
-    font-weight: var(--font-medium);   
+  h4 {
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    font-weight: var(--font-medium);
     letter-spacing: var(--tracking-normal);
-    color: var(--text-base);
+    color: var(--text-secondary);
   }
-  h5 { 
+  h5 {
     font-size: var(--text-lg);
     line-height: var(--leading-normal);
-    font-weight: var(--font-medium);   
+    font-weight: var(--font-medium);
     letter-spacing: var(--tracking-normal);
-    color: var(--text-base);
+    color: var(--text-secondary);
   }
-  h6 { 
-    font-size: var(--text-base);  
+  h6 {
+    font-size: var(--text-base);
     line-height: var(--leading-normal);
-    font-weight: var(--font-medium);   
+    font-weight: var(--font-medium);
     letter-spacing: var(--tracking-normal);
     color: var(--text-subtle);
   }
-  p  { 
+  p  {
     font-size: var(--text-base);
     line-height: var(--leading-relaxed);
-    color: var(--text-base);
+    color: var(--text-secondary);
   }
-  small { 
-    font-size: var(--text-sm); 
-    color: var(--text-mute);
+  small {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
   }
-  a { 
-    color: var(--text-brand); 
+  a {
+    color: var(--text-link);
     text-decoration: none;
     transition: color var(--duration-fast) var(--ease-out);
   }
-  a:hover { 
-    color: var(--text-brand-hover);
+  a:hover {
+    color: var(--text-link-hover);
     text-decoration: underline;
   }
   
@@ -394,7 +373,7 @@
   input[type="checkbox"],
   input[type="radio"] {
     border-color: var(--border-default);
-    color: var(--brand-primary);
+    color: var(--brand-primary-strong);
   }
   
   input[type="checkbox"]:focus,
@@ -412,8 +391,8 @@
   
   input[type="checkbox"]:checked,
   input[type="radio"]:checked {
-    border-color: var(--brand-primary);
-    background-color: var(--brand-primary);
+    border-color: var(--brand-primary-strong);
+    background-color: var(--brand-primary-strong);
   }
 }
 

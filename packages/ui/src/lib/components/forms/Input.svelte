@@ -4,6 +4,7 @@
     value?: string;
     placeholder?: string;
     label?: string;
+    description?: string;
     error?: string;
     disabled?: boolean;
     required?: boolean;
@@ -23,6 +24,7 @@
     value = $bindable(''),
     placeholder,
     label,
+    description,
     error,
     disabled = false,
     required = false,
@@ -37,49 +39,96 @@
     onblur
   }: Props = $props();
 
-  const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
-  
+  let generatedId = $state<string | null>(null);
 
-  // Use text-base (16px) to prevent mobile zoom on focus - @tailwindcss/forms provides base styling
-  const baseClasses = 'block w-full rounded-md border-[color:var(--border-default)] bg-[color:var(--surface-base)] px-3 py-2 min-h-11 text-base text-[color:var(--text-primary)] placeholder-[color:var(--text-tertiary)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)] focus:ring-offset-0 focus:border-[color:var(--color-primary)] disabled:cursor-not-allowed disabled:bg-[color:var(--surface-muted)] disabled:text-[color:var(--text-disabled)]';
-  const stateClasses = $derived(error
-    ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]'
-    : '');
-  const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
+  $effect(() => {
+    if (!id && !generatedId) {
+      generatedId = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `input-${Math.random().toString(36).slice(2)}`;
+    }
+  });
+
+  const inputId = $derived(id ?? generatedId ?? 'input');
+  const descriptionId = $derived(description ? `${inputId}-description` : undefined);
+  const errorId = $derived(error ? `${inputId}-error` : undefined);
+
+  const describedBy = $derived([
+    descriptionId,
+    errorId
+  ].filter(Boolean).join(' ') || undefined);
+
+  const baseClasses =
+    'block w-full rounded-[length:var(--input-radius)] border border-[color:var(--input-border)] bg-[color:var(--input-bg)] px-[length:var(--input-padding)] py-2 min-h-[length:var(--input-height)] text-[length:var(--input-font)] text-[color:var(--text-primary)] placeholder:text-[color:var(--text-tertiary)] transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] disabled:cursor-not-allowed disabled:bg-[color:var(--surface-muted)] disabled:text-[color:var(--text-disabled)]';
+
+  const stateClasses = $derived(
+    error
+      ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]'
+      : ''
+  );
+
+  const classes = $derived(`${baseClasses} ${stateClasses} ${className}`.trim());
 </script>
 
 <div>
   {#if label}
-    <label for={inputId} class="block text-sm font-medium text-[color:var(--text-strong)] mb-2">
+    <label
+      for={inputId}
+      class="block text-sm font-medium text-[color:var(--text-primary)] mb-1.5"
+    >
       {label}
       {#if required}
         <span class="text-[color:var(--status-error-solid)]">*</span>
       {/if}
     </label>
   {/if}
-  
-  <div>
+
+  <div class="space-y-[var(--space-1)]">
     <input
-    {type}
-    bind:value
-    {placeholder}
-    {disabled}
-    {required}
-    {name}
-    {autocomplete}
-    inputmode={inputmode || (type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'number' ? 'numeric' : undefined)}
-    id={inputId}
-    class={classes}
-    aria-describedby={error ? `${inputId}-error` : undefined}
-    aria-invalid={error ? 'true' : 'false'}
-    {oninput}
-    {onchange}
-    {onfocus}
-    {onblur}
+      {type}
+      bind:value
+      {placeholder}
+      {disabled}
+      {required}
+      {name}
+      {autocomplete}
+      inputmode={
+        inputmode ||
+        (type === 'email'
+          ? 'email'
+          : type === 'tel'
+            ? 'tel'
+            : type === 'number'
+              ? 'numeric'
+              : undefined)
+      }
+      id={inputId}
+      class={classes}
+      aria-describedby={describedBy}
+      aria-invalid={error ? 'true' : 'false'}
+      {oninput}
+      {onchange}
+      {onfocus}
+      {onblur}
     />
+
+    {#if description}
+      <p
+        id={descriptionId}
+        class="text-sm text-[color:var(--text-muted)]"
+      >
+        {description}
+      </p>
+    {/if}
+
+    {#if error}
+      <p
+        id={errorId}
+        class="text-sm text-[color:var(--status-error-text)]"
+        role="alert"
+      >
+        {error}
+      </p>
+    {/if}
   </div>
-  
-  {#if error}
-    <p class="mt-2 text-sm text-[color:var(--status-error-text)]" id="{inputId}-error">{error}</p>
-  {/if}
 </div>

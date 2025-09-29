@@ -61,6 +61,27 @@
   --touch-compact: 32px;
   --touch-icon: 40px;
 
+  /* Safe area insets */
+  --safe-area-top: max(env(safe-area-inset-top), 0px);
+  --safe-area-right: max(env(safe-area-inset-right), 0px);
+  --safe-area-bottom: max(env(safe-area-inset-bottom), 0px);
+  --safe-area-left: max(env(safe-area-inset-left), 0px);
+
+  /* Layout gutters */
+  --layout-gutter-xs: clamp(var(--space-4), 4vw, var(--space-9));
+  --layout-gutter-sm: clamp(var(--space-5), 4vw, var(--space-10));
+  --layout-gutter-md: clamp(var(--space-6), 4vw, var(--space-12));
+  --layout-gutter-lg: clamp(var(--space-8), 5vw, var(--space-14));
+
+  /* Fluid container widths */
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 36rem;
+  --container-lg: 48rem;
+  --container-xl: 64rem;
+  --container-2xl: 72rem;
+  --container-3xl: 80rem;
+
   /* OKLCH palette */
   --gray-0: oklch(1 0 0);
   --gray-50: oklch(0.98 0.005 270);

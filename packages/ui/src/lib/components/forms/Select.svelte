@@ -13,6 +13,7 @@
     options?: Option[] | string[];
     placeholder?: string;
     label?: string;
+    description?: string;
     error?: string;
     disabled?: boolean;
     required?: boolean;
@@ -24,11 +25,12 @@
     children?: Snippet;
   }
 
-  let { 
+  let {
     value = $bindable(),
     options,
     placeholder = 'Select an option',
     label,
+    description,
     error,
     disabled = false,
     required = false,
@@ -40,7 +42,23 @@
     children
   }: Props = $props();
 
-  const selectId = $derived(id || `select-${Math.random().toString(36).substr(2, 9)}`);
+  let generatedId = $state<string | null>(null);
+
+  $effect(() => {
+    if (!id && !generatedId) {
+      generatedId = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `select-${Math.random().toString(36).slice(2)}`;
+    }
+  });
+
+  const selectId = $derived(id ?? generatedId ?? 'select');
+  const descriptionId = $derived(description ? `${selectId}-description` : undefined);
+  const errorId = $derived(error ? `${selectId}-error` : undefined);
+  const describedBy = $derived([
+    descriptionId,
+    errorId
+  ].filter(Boolean).join(' ') || undefined);
 
   // Support both options prop and children pattern
   const normalizedOptions = $derived(
@@ -84,14 +102,18 @@
   }
 
   // Error state classes for the trigger
-  const errorClasses = $derived(error 
-    ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]' 
-    : 'border-[color:var(--input-border)] focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)]');
-  
-  const triggerClasses = $derived(`block w-full rounded-[var(--input-radius)] border px-[var(--input-padding)] py-2 pr-10 min-h-[var(--input-height)] text-[var(--input-font)] bg-[color:var(--input-bg)] transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 appearance-none cursor-pointer ${errorClasses} ${className}`);
+  const errorClasses = $derived(
+    error
+      ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]'
+      : 'border-[color:var(--input-border)] focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)]'
+  );
+
+  const triggerClasses = $derived(
+    `block w-full rounded-[length:var(--input-radius)] border px-[length:var(--input-padding)] py-2 pr-10 min-h-[length:var(--input-height)] text-[length:var(--input-font)] bg-[color:var(--input-bg)] text-[color:var(--text-primary)] transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${errorClasses} ${className}`.trim()
+  );
 </script>
 
-<div>
+<div class="space-y-[var(--space-1)]">
   {#if label}
     <label for={selectId} class="block text-sm font-medium text-[color:var(--text-primary)] mb-1.5">
       {label}
@@ -112,16 +134,23 @@
     onValueChange={handleValueChange}
     onBlur={handleBlur}
     triggerClass={triggerClasses}
+    aria-describedby={describedBy}
     class=""
-    menuClass="z-50 max-h-60 w-full overflow-auto rounded-[var(--radius-lg)] bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] shadow-[var(--shadow-lg)] py-1 focus:outline-none"
-    optionClass="relative w-full cursor-pointer select-none px-3 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] focus:bg-[color:var(--surface-muted)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-base)]"
+    menuClass="z-[var(--z-50,50)] max-h-60 w-full overflow-auto rounded-[length:var(--radius-lg)] bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] shadow-[var(--shadow-lg)] py-[var(--space-1)] focus:outline-none"
+    optionClass="relative w-full cursor-pointer select-none px-[var(--space-3)] py-[var(--space-2)] text-[length:var(--text-sm)] text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] focus:bg-[color:var(--surface-muted)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[length:var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-base)]"
   >
     {#if children}
       {@render children()}
     {/if}
   </MeltSelect>
-  
+
+  {#if description}
+    <p id={descriptionId} class="text-sm text-[color:var(--text-muted)]">
+      {description}
+    </p>
+  {/if}
+
   {#if error}
-    <p class="text-sm text-[color:var(--status-error-text)] mt-1">{error}</p>
+    <p id={errorId} class="text-sm text-[color:var(--status-error-text)]" role="alert">{error}</p>
   {/if}
 </div>

@@ -1,7 +1,5 @@
 @import 'tailwindcss';
-@import '@repo/ui/styles/tokens.css';
-@import '@repo/ui/styles/semantic.css';
-@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/index.css';
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -12,26 +10,7 @@
 
 /* Admin console theme - minimal CODEX tokens for Tailwind CSS v4 */
 @theme {
-  /* Minimal CODEX tokens following zero-config philosophy */
-  /* Admin-specific overrides for admin dashboard UI */
-  --color-primary: oklch(0.58 0.14 240);
-  --color-danger: oklch(0.58 0.14 0);
-
-  /* Core admin surfaces */
-  --color-background: var(--surface-base);
-  --color-foreground: var(--text-primary);
-
-  /* Admin dashboard font */
   --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
-
-  /* Touch targets for admin interface */
-  --space-touch: 44px;
-
-  /* Admin UI radius */
-  --radius-default: 0.5rem;
-
-  /* Base spacing for admin layouts */
-  --space-base: 1rem;
 }
 
 @layer base {
