@@ -8,23 +8,70 @@ import type { Toast, ToastType, ToastStore, ToastStoreOptions } from './types';
 
 // Global toast provider instance
 let toastProvider: {
-  addToastData?: (toast: Toast) => string;
+  addToastData?: (toast: Omit<Toast, 'id'>) => string;
   removeToastData?: (id: string) => void;
   clearAllToasts?: () => void;
 } | null = null;
 
-// Deduplication cache to prevent duplicate toasts
-const activeToasts = new Map<string, { id: string; timeout: ReturnType<typeof setTimeout> }>();
+// Track active toast hashes -> provider IDs so we can deduplicate incoming requests
+const activeToasts = new Map<string, string>();
 const toastIdLookup = new Map<string, string>();
-const TOAST_DEDUP_WINDOW = 100; // ms - prevent rapid duplicates
+const patchedProviders = new WeakSet<object>();
 
 export function setToastProvider(provider: typeof toastProvider) {
+  if (!provider) {
+    toastProvider = null;
+    return;
+  }
+
+  if (!patchedProviders.has(provider)) {
+    if (typeof provider.removeToastData === 'function') {
+      const originalRemove = provider.removeToastData.bind(provider);
+      provider.removeToastData = (id: string) => {
+        cleanupActiveToast(id);
+        originalRemove(id);
+      };
+    }
+
+    if (typeof provider.clearAllToasts === 'function') {
+      const originalClearAll = provider.clearAllToasts.bind(provider);
+      provider.clearAllToasts = () => {
+        originalClearAll();
+        activeToasts.clear();
+        toastIdLookup.clear();
+      };
+    }
+
+    patchedProviders.add(provider);
+  }
+
   toastProvider = provider;
 }
 
 // Generate unique content hash for deduplication
 function getToastHash(description: string, type: ToastType): string {
   return `${type}:${description.trim()}`;
+}
+
+function registerActiveToast(toastHash: string, id: string) {
+  activeToasts.set(toastHash, id);
+  toastIdLookup.set(id, toastHash);
+}
+
+function cleanupActiveToast(id: string) {
+  const toastHash = toastIdLookup.get(id);
+
+  if (!toastHash) {
+    return;
+  }
+
+  toastIdLookup.delete(id);
+
+  const activeId = activeToasts.get(toastHash);
+
+  if (activeId === id) {
+    activeToasts.delete(toastHash);
+  }
 }
 
 function createToastStore(): ToastStore {
@@ -41,57 +88,32 @@ function createToastStore(): ToastStore {
     // Deduplication check
     const toastHash = getToastHash(toast.description, toast.type);
     
-    const existingToast = activeToasts.get(toastHash);
+    const existingToastId = activeToasts.get(toastHash);
 
-    if (existingToast) {
+    if (existingToastId) {
       // Duplicate detected - return existing ID without creating new toast
-      return existingToast.id;
+      return existingToastId;
     }
 
     let mountedToastId = toast.id;
 
     if (toastProvider && typeof toastProvider.addToastData === 'function') {
-      mountedToastId = toastProvider.addToastData(toast);
+      const { id: _originalId, ...toastData } = toast;
+      mountedToastId = toastProvider.addToastData(toastData as Omit<Toast, 'id'>);
     } else {
       // Fallback: add to store (for compatibility)
       const filtered = toasts.filter(t => t.id !== toast.id);
       toasts = [...filtered, toast];
     }
 
-    // Mark as active and schedule cleanup
-    const timeout = setTimeout(() => {
-      const entry = activeToasts.get(toastHash);
-
-      if (entry && entry.id === mountedToastId) {
-        activeToasts.delete(toastHash);
-      }
-
-      toastIdLookup.delete(mountedToastId);
-    }, TOAST_DEDUP_WINDOW);
-
-    activeToasts.set(toastHash, { id: mountedToastId, timeout });
-    toastIdLookup.set(mountedToastId, toastHash);
+    registerActiveToast(toastHash, mountedToastId);
 
     return mountedToastId;
   }
 
   // Remove toast from provider or store
   function removeToast(id: string): void {
-    const toastHash = toastIdLookup.get(id);
-
-    if (toastHash) {
-      const entry = activeToasts.get(toastHash);
-
-      if (entry) {
-        clearTimeout(entry.timeout);
-
-        if (entry.id === id) {
-          activeToasts.delete(toastHash);
-        }
-      }
-
-      toastIdLookup.delete(id);
-    }
+    cleanupActiveToast(id);
 
     if (toastProvider && typeof toastProvider.removeToastData === 'function') {
       toastProvider.removeToastData(id);
@@ -154,8 +176,6 @@ function createToastStore(): ToastStore {
     dismissAll(): void {
       if (toastProvider && typeof toastProvider.clearAllToasts === 'function') {
         toastProvider.clearAllToasts();
-        activeToasts.clear();
-        toastIdLookup.clear();
         return;
       }
 

@@ -24,18 +24,17 @@
 	let toastProvider: any;
 
 	// Global toast function that other components can call (legacy support)
-	function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
-		const id = Math.random().toString(36).substring(2, 9);
-		
-		// Use ONLY the modern toast provider - no local toasts to prevent duplicates
-		if (toastProvider?.addToastData) {
-			return toastProvider.addToastData({
-				id,
-				type: type || 'info',
-				description: message,
-				duration
-			});
-		}
+        function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
+                const id = Math.random().toString(36).substring(2, 9);
+
+                // Use ONLY the modern toast provider - no local toasts to prevent duplicates
+                if (toastProvider?.addToastData) {
+                        return toastProvider.addToastData({
+                                type: type || 'info',
+                                description: message,
+                                duration
+                        });
+                }
 		
 		// Fallback only if no modern provider available
 		const toast: Toast = { id, message, type, duration };

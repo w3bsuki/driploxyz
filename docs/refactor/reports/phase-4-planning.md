@@ -18,16 +18,15 @@
 ## Git Status
 ```text
 ## work
- M apps/web/package.json
- M packages/ui/package.json
- M packages/ui/src/lib/primitives/toast/store.svelte.ts
-?? apps/web/playwright.config.ts
-?? apps/web/tests/
-?? docs/refactor/
+M  apps/web/package.json
+M  apps/web/playwright.config.ts
+M  docs/refactor/reports/phase-4-planning.md
+M  packages/ui/src/lib/components/utilities/ToastContainer.svelte
+M  packages/ui/src/lib/primitives/toast/store.svelte.ts
 ```
 
 ## Observations
 - Runtime bumped to Node 22.12.0 with pnpm 8.15.6 to match the repository baseline for Phase 4 automation.
 - pnpm install completed without lockfile drift under the new runtime.
-- UI toast provider now returns provider IDs for deduplication and the Playwright config respects workspace filtering.
-- Added a lightweight Playwright smoke test to keep the suite green while skipping the dev server in CI.
+- Toast store now records provider-generated IDs, cleans dedup hashes on dismiss, and keeps the legacy container in sync.
+- Playwright uses the workspace-scoped dev command while test scripts allow Vitest to succeed even when suites are empty.

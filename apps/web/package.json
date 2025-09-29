@@ -8,7 +8,7 @@
 		"dev:full": "vite dev",
 		"build": "svelte-kit sync && vite build",
 		"preview": "vite preview",
-                "test": "PLAYWRIGHT_SKIP_WEB_SERVER=1 vitest run --passWithNoTests && PLAYWRIGHT_SKIP_WEB_SERVER=1 playwright test",
+                "test": "vitest run --passWithNoTests && playwright test",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
 		"test:e2e": "playwright test",
