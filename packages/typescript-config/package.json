@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=22.12.0 <23"
   },
+  "scripts": {
+    "lint": "echo 'No lint for shared tsconfig package'",
+    "check-types": "echo 'No type checking for shared tsconfig package'",
+    "test": "echo 'No tests for shared tsconfig package'"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

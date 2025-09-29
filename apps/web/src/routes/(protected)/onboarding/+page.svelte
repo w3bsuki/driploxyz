@@ -14,7 +14,7 @@
   import { initializeLanguage } from '$lib/utils/language-switcher';
   import { toasts } from '@repo/ui';
   // Removed unused uploadImage import
-  import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+  import { env as publicEnv } from '$env/dynamic/public';
   import { createLogger } from '$lib/utils/log';
 
   const log = createLogger('onboarding-client');
@@ -664,7 +664,7 @@
     show={showBrandPayment}
     accountType={accountType}
     initialDiscountCode={discountCode}
-    stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    stripePublishableKey={publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''}
     onSuccess={handleBrandPaymentSuccess}
     onCancel={handleBrandPaymentCancel}
     onClose={() => showBrandPayment = false}

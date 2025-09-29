@@ -2,7 +2,7 @@
   import { Button, Accordion } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { loadStripe } from '@stripe/stripe-js';
-  import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+  import { env as publicEnv } from '$env/dynamic/public';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -21,8 +21,10 @@
 
   // Initialize Stripe
   $effect(async () => {
-    if (PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-      stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
+    const publishableKey = publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+    if (publishableKey) {
+      stripe = await loadStripe(publishableKey);
     }
   });
 

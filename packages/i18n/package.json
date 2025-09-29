@@ -6,12 +6,15 @@
     "node": ">=22.12.0 <23"
   },
   "scripts": {
-    "build": "pnpm run clean && pnpm run compile && pnpm run types",
-    "compile": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
-    "precompile": "pnpm run clean",
+    "build": "pnpm run clean && pnpm run generate && pnpm run types",
+    "compile": "pnpm run generate",
+    "generate": "node ./scripts/generate-message-exports.mjs",
     "types": "tsc",
-    "dev": "pnpm run compile",
-    "clean": "rimraf lib dist"
+    "dev": "pnpm run generate && tsc --watch",
+    "clean": "rimraf lib dist",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "test": "echo \"No automated tests for localization bundle (manual spot checks)\""
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -27,10 +30,11 @@
     "messages"
   ],
   "dependencies": {
-    "@inlang/paraglide-js": "2.2.0"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.31.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
   }

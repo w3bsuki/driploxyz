@@ -14,7 +14,7 @@ let toastProvider: {
 } | null = null;
 
 // Deduplication cache to prevent duplicate toasts
-const activeToasts = new Set<string>();
+const activeToasts = new Map<string, string>();
 const TOAST_DEDUP_WINDOW = 100; // ms - prevent rapid duplicates
 
 export function setToastProvider(provider: typeof toastProvider) {
@@ -40,27 +40,35 @@ function createToastStore(): ToastStore {
     // Deduplication check
     const toastHash = getToastHash(toast.description, toast.type);
     
-    if (activeToasts.has(toastHash)) {
+    const existingToastId = activeToasts.get(toastHash);
+
+    if (existingToastId) {
       // Duplicate detected - return existing ID without creating new toast
-      return toast.id;
+      return existingToastId;
     }
-    
-    // Mark as active
-    activeToasts.add(toastHash);
-    
-    // Auto-cleanup from dedup cache
-    setTimeout(() => {
-      activeToasts.delete(toastHash);
-    }, TOAST_DEDUP_WINDOW);
-    
+
+    const scheduleCleanup = () => {
+      setTimeout(() => {
+        activeToasts.delete(toastHash);
+      }, TOAST_DEDUP_WINDOW);
+    };
+
     if (toastProvider && typeof toastProvider.addToastData === 'function') {
-      return toastProvider.addToastData(toast);
+      const providerId = toastProvider.addToastData(toast);
+
+      activeToasts.set(toastHash, providerId);
+      scheduleCleanup();
+
+      return providerId;
     }
-    
+
     // Fallback: add to store (for compatibility)
     const filtered = toasts.filter(t => t.id !== toast.id);
     toasts = [...filtered, toast];
-    
+
+    activeToasts.set(toastHash, toast.id);
+    scheduleCleanup();
+
     return toast.id;
   }
   

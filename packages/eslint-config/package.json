@@ -10,6 +10,11 @@
     ".": "./index.js",
     "./index.js": "./index.js"
   },
+  "scripts": {
+    "lint": "echo 'No lint step for shared ESLint config'",
+    "check-types": "echo 'No type checking for ESLint config package'",
+    "test": "echo 'No automated tests for ESLint config package'"
+  },
   "publishConfig": {
     "access": "public"
   },

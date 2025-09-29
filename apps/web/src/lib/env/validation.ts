@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+import { env as publicEnv } from '$env/dynamic/public';
 import { building } from '$app/environment';
 
 // Public environment variables (available to client and server)
@@ -64,11 +64,11 @@ export function validatePublicEnv(): PublicEnv {
 	}
 	
 	try {
-		return publicEnvSchema.parse({
-			PUBLIC_SUPABASE_URL,
-			PUBLIC_SUPABASE_ANON_KEY,
-			PUBLIC_STRIPE_PUBLISHABLE_KEY,
-		});
+                return publicEnvSchema.parse({
+                        PUBLIC_SUPABASE_URL: publicEnv.PUBLIC_SUPABASE_URL,
+                        PUBLIC_SUPABASE_ANON_KEY: publicEnv.PUBLIC_SUPABASE_ANON_KEY,
+                        PUBLIC_STRIPE_PUBLISHABLE_KEY: publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+                });
 	} catch (error) {
 		if (error instanceof z.ZodError) {
 			error.errors.forEach(() => {

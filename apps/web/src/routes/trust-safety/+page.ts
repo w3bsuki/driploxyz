@@ -1,2 +1,2 @@
 // Static legal content - perfect for prerendering
-export const prerender = true;
+export const prerender = false;

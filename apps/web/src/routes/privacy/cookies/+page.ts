@@ -1,2 +1,2 @@
-// Static legal content - perfect for prerendering
-export const prerender = true;
+// Requires runtime-only environment values (Stripe publishable key)
+export const prerender = false;
