@@ -111,19 +111,27 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
     // Get real IP from various headers (works with Vercel, Cloudflare, etc.)
     let ip: string | null = null;
 
-    try {
-      ip = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-           event.request.headers.get('x-real-ip') ||
-           event.request.headers.get('cf-connecting-ip') ||
-           event.getClientAddress();
-    } catch (clientAddressError) {
-      // In development, getClientAddress might fail
-      console.debug('Could not get client address:', clientAddressError);
-      ip = null;
+    // Try headers first (most reliable in production environments)
+    ip = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
+    if (!ip) ip = event.request.headers.get('x-real-ip') || null;
+    if (!ip) ip = event.request.headers.get('cf-connecting-ip') || null;
+
+    // Only try getClientAddress if we don't have an IP from headers
+    if (!ip) {
+      try {
+        ip = event.getClientAddress();
+      } catch (_clientAddressError) {
+        // In development or some edge cases, getClientAddress might fail
+        if (dev) {
+          console.debug('Could not get client address (expected in local dev)');
+        }
+        // Return default for development, null for production to use other fallbacks
+        return dev ? 'BG' : null;
+      }
     }
 
-    if (!ip || ip === '127.0.0.1' || ip === '::1') {
-      // Local development
+    if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
+      // Local development or loopback address
       return dev ? 'BG' : null;
     }
 

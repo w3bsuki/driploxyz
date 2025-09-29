@@ -192,9 +192,9 @@ export function mergeSuggestions(suggestions: CategorySuggestion[]): CategorySug
  * Future enhancement: Use AI service for better analysis
  */
 export async function analyzeWithAI(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _imageUrl: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _apiKey?: string
 ): Promise<CategorySuggestion> {
   // Intentionally unused parameters for future implementation

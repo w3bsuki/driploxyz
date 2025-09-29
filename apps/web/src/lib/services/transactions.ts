@@ -41,7 +41,9 @@ export class TransactionService {
 				commission_amount: commissionAmount,
 				seller_earnings: sellerAmount,
 				stripe_payment_intent_id: params.stripePaymentIntentId,
-				payment_status: 'completed',
+				product_id: params.productId,
+				status: 'completed',
+				payout_status: 'completed',
 				processed_at: new Date().toISOString()
 			};
 
@@ -116,7 +118,7 @@ export class TransactionService {
 		let query = this.supabase
 			.from('transactions')
 			.select('commission_amount, created_at')
-			.eq('payment_status', 'completed');
+			.eq('status', 'completed');
 
 		if (startDate) {
 			query = query.gte('created_at', startDate);

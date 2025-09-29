@@ -9,14 +9,18 @@ import { paymentLogger } from '$lib/utils/log';
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	// Critical rate limiting for payment operations
 	const rateLimitResponse = await enforceRateLimit(
-		request, 
-		getClientAddress, 
+		request,
+		getClientAddress,
 		'payment',
 		`payment:${getClientAddress()}`
 	);
 	if (rateLimitResponse) return rateLimitResponse;
+
+	let user: Awaited<ReturnType<typeof locals.safeGetSession>>['user'] | undefined = undefined;
+
 	try {
-		const { session, user } = await locals.safeGetSession();
+		const { session, user: authenticatedUser } = await locals.safeGetSession();
+		user = authenticatedUser;
 		if (!session || !user) {
 			return json({ error: 'Authentication required' }, { status: 401 });
 		}

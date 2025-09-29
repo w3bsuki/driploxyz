@@ -5,8 +5,7 @@ import { paymentLogger } from '$lib/utils/log';
 
 // Database types
 type Tables = Database['public']['Tables'];
-// TODO: Define transactions table in database schema
-// type Transaction = Tables['transactions']['Row'];
+type Transaction = Tables['transactions']['Row'];
 type Order = Tables['orders']['Row'];
 
 export interface PaymentCreateParams {
@@ -685,32 +684,6 @@ export class StripeService {
 		}
 	}
 
-	/**
-	 * Get or create Stripe customer
-	 */
-	private async getOrCreateCustomer(userId: string, details: {
-		email?: string;
-		name?: string;
-	}): Promise<Stripe.Customer> {
-		// First, try to find existing customer
-		const customers = details.email ? await this.stripe.customers.list({
-			email: details.email,
-			limit: 1
-		}) : { data: [] };
-
-		if (customers.data.length > 0) {
-			return customers.data[0]!;
-		}
-
-		// Create new customer
-		return await this.stripe.customers.create({
-			email: details.email || '',
-			name: details.name || undefined,
-			metadata: {
-				supabase_user_id: userId
-			}
-		});
-	}
 
 	/**
 	 * Create transaction record - Future transaction creation
@@ -843,7 +816,7 @@ export class StripeService {
 	}): Promise<{
 		success: boolean;
 		order?: Order;
-		// transaction?: Transaction; // TODO: Define when transactions table is implemented
+		transaction?: Transaction;
 		error?: Error;
 	}> {
 		try {
@@ -896,7 +869,7 @@ export class StripeService {
 				}
 
 				// Create order items for bundle
-				const _orderItems = await Promise.all(
+				const orderItems = await Promise.all(
 					itemIds.map(async (productId) => {
 						const { data: product } = await this.supabase
 							.from('products')
@@ -916,11 +889,7 @@ export class StripeService {
 						};
 					})
 				);
-
-				// Insert order items
-				await this.supabase
-					.from('order_items')
-					.insert(_orderItems);
+				await this.supabase.from('order_items').insert(orderItems);
 
 				// Mark all products as sold
 				await this.supabase
@@ -990,8 +959,7 @@ export class StripeService {
 					throw new Error('Missing order_id or product_id in metadata');
 				}
 				
-				// TODO: Insert order item when order_items table is available
-				/*
+				// Insert order item
 				await this.supabase
 					.from('order_items')
 					.insert({
@@ -1000,7 +968,6 @@ export class StripeService {
 						price: order.total_amount - (order.shipping_cost || 0) - (order.service_fee || 0),
 						quantity: 1
 					});
-				*/
 
 				// TODO: Update transaction status when transactions table is implemented
 				/*
