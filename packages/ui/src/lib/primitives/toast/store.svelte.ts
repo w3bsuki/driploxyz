@@ -8,22 +8,70 @@ import type { Toast, ToastType, ToastStore, ToastStoreOptions } from './types';
 
 // Global toast provider instance
 let toastProvider: {
-  addToastData?: (toast: Toast) => string;
+  addToastData?: (toast: Omit<Toast, 'id'>) => string;
   removeToastData?: (id: string) => void;
   clearAllToasts?: () => void;
 } | null = null;
 
-// Deduplication cache to prevent duplicate toasts
-const activeToasts = new Set<string>();
-const TOAST_DEDUP_WINDOW = 100; // ms - prevent rapid duplicates
+// Track active toast hashes -> provider IDs so we can deduplicate incoming requests
+const activeToasts = new Map<string, string>();
+const toastIdLookup = new Map<string, string>();
+const patchedProviders = new WeakSet<object>();
 
 export function setToastProvider(provider: typeof toastProvider) {
+  if (!provider) {
+    toastProvider = null;
+    return;
+  }
+
+  if (!patchedProviders.has(provider)) {
+    if (typeof provider.removeToastData === 'function') {
+      const originalRemove = provider.removeToastData.bind(provider);
+      provider.removeToastData = (id: string) => {
+        cleanupActiveToast(id);
+        originalRemove(id);
+      };
+    }
+
+    if (typeof provider.clearAllToasts === 'function') {
+      const originalClearAll = provider.clearAllToasts.bind(provider);
+      provider.clearAllToasts = () => {
+        originalClearAll();
+        activeToasts.clear();
+        toastIdLookup.clear();
+      };
+    }
+
+    patchedProviders.add(provider);
+  }
+
   toastProvider = provider;
 }
 
 // Generate unique content hash for deduplication
 function getToastHash(description: string, type: ToastType): string {
   return `${type}:${description.trim()}`;
+}
+
+function registerActiveToast(toastHash: string, id: string) {
+  activeToasts.set(toastHash, id);
+  toastIdLookup.set(id, toastHash);
+}
+
+function cleanupActiveToast(id: string) {
+  const toastHash = toastIdLookup.get(id);
+
+  if (!toastHash) {
+    return;
+  }
+
+  toastIdLookup.delete(id);
+
+  const activeId = activeToasts.get(toastHash);
+
+  if (activeId === id) {
+    activeToasts.delete(toastHash);
+  }
 }
 
 function createToastStore(): ToastStore {
@@ -40,32 +88,33 @@ function createToastStore(): ToastStore {
     // Deduplication check
     const toastHash = getToastHash(toast.description, toast.type);
     
-    if (activeToasts.has(toastHash)) {
+    const existingToastId = activeToasts.get(toastHash);
+
+    if (existingToastId) {
       // Duplicate detected - return existing ID without creating new toast
-      return toast.id;
+      return existingToastId;
     }
-    
-    // Mark as active
-    activeToasts.add(toastHash);
-    
-    // Auto-cleanup from dedup cache
-    setTimeout(() => {
-      activeToasts.delete(toastHash);
-    }, TOAST_DEDUP_WINDOW);
-    
+
+    let mountedToastId = toast.id;
+
     if (toastProvider && typeof toastProvider.addToastData === 'function') {
-      return toastProvider.addToastData(toast);
+      const { id: _originalId, ...toastData } = toast;
+      mountedToastId = toastProvider.addToastData(toastData as Omit<Toast, 'id'>);
+    } else {
+      // Fallback: add to store (for compatibility)
+      const filtered = toasts.filter(t => t.id !== toast.id);
+      toasts = [...filtered, toast];
     }
-    
-    // Fallback: add to store (for compatibility)
-    const filtered = toasts.filter(t => t.id !== toast.id);
-    toasts = [...filtered, toast];
-    
-    return toast.id;
+
+    registerActiveToast(toastHash, mountedToastId);
+
+    return mountedToastId;
   }
-  
+
   // Remove toast from provider or store
   function removeToast(id: string): void {
+    cleanupActiveToast(id);
+
     if (toastProvider && typeof toastProvider.removeToastData === 'function') {
       toastProvider.removeToastData(id);
       return;
@@ -129,9 +178,11 @@ function createToastStore(): ToastStore {
         toastProvider.clearAllToasts();
         return;
       }
-      
+
       // Fallback: clear store
       toasts = [];
+      activeToasts.clear();
+      toastIdLookup.clear();
     }
   };
   
