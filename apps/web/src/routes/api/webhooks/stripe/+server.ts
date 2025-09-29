@@ -3,12 +3,11 @@ import type { Stripe } from 'stripe';
 import { stripe } from '$lib/stripe/server';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
-import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions';
 import { OrderService } from '$lib/services/OrderService';
 // import { ConversationService } from '$lib/services/ConversationService';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { paymentLogger } from '$lib/utils/log';
+import { createServiceSupabase } from '$lib/auth';
 
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -77,17 +76,8 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 				return;
 			}
 			
-			// Initialize Supabase client
-			const supabase = createServerClient(
-				PUBLIC_SUPABASE_URL!,
-				SUPABASE_SERVICE_ROLE_KEY!,
-				{
-					cookies: {
-						getAll: () => [],
-						setAll: () => {}
-					}
-				}
-			);
+                        // Initialize Supabase client
+                        const supabase = createServiceSupabase();
 
 			// Get order details to extract amounts
 			const { data: order, error: orderError1 } = await supabase
@@ -236,16 +226,7 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 			}
 			
 			// Initialize Supabase client
-			const supabase = createServerClient(
-				PUBLIC_SUPABASE_URL!,
-				SUPABASE_SERVICE_ROLE_KEY!,
-				{
-					cookies: {
-						getAll: () => [],
-						setAll: () => {}
-					}
-				}
-			);
+                        const supabase = createServiceSupabase();
 
 			// Update order status to failed (this will restore product availability)
 			await supabase
@@ -356,16 +337,7 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
 			}
 			
 			// Initialize Supabase client
-			const supabase = createServerClient(
-				PUBLIC_SUPABASE_URL!,
-				SUPABASE_SERVICE_ROLE_KEY!,
-				{
-					cookies: {
-						getAll: () => [],
-						setAll: () => {}
-					}
-				}
-			);
+                        const supabase = createServiceSupabase();
 
 			// Update order status to canceled
 			await supabase

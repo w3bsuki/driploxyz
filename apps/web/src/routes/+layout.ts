@@ -1,6 +1,6 @@
-import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import type { Database } from '@repo/database';
+import { isBrowser } from '@supabase/ssr';
+import type { Cookies } from '@sveltejs/kit';
+import { createBrowserSupabase, createServerSupabase } from '$lib/auth';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
@@ -13,21 +13,21 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
    * Create Supabase client following official SSR pattern
    * Uses browser client on client-side, server client with cookie bridging on server-side
    */
+  const noop = () => {};
+  const noopSerialize = () => '';
+
   const supabase = isBrowser()
-    ? createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-        global: { fetch }
-      })
-    : createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-        global: { fetch },
-        cookies: {
-          getAll() {
-            return data.cookies || [];
-          },
-          setAll() {
-            // Server-side cookie setting is handled by hooks
-          }
-        }
-      });
+    ? createBrowserSupabase()
+    : createServerSupabase(
+        {
+          get: () => undefined,
+          getAll: () => data.cookies || [],
+          set: noop,
+          delete: noop,
+          serialize: noopSerialize
+        } as unknown as Cookies,
+        fetch
+      );
 
   /**
    * It's safe to use getSession() here because on the client, getSession() is safe,

@@ -1,26 +1,28 @@
-/**
- * CONSOLIDATED AUTH SYSTEM
- * Single source of truth for all authentication in the web app.
- *
- * Modern SvelteKit 2 + Supabase SSR + Svelte 5 runes implementation.
- * Replaces the fragmented auth system with a clean, production-ready solution.
- */
-
-import { redirect } from '@sveltejs/kit';
-import { createServerClient, createBrowserClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import type { RequestEvent, Cookies } from '@sveltejs/kit';
+import { dev } from '$app/environment';
+import { redirect, type Cookies, type RequestEvent } from '@sveltejs/kit';
+import { createBrowserClient, createServerClient } from '@supabase/ssr';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { validatePublicEnv, validateServerEnv } from '$lib/env/validation';
 
-// Type exports
 export type AuthUser = User;
 export type AuthSession = Session;
 export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type SupabaseAuthClient = SupabaseClient<Database>;
 
-// Auth state interface
+const publicEnv = validatePublicEnv();
+const SUPABASE_URL = publicEnv.PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+
+function resolveServiceRoleKey(): string | undefined {
+  if (typeof window !== 'undefined') {
+    return undefined;
+  }
+
+  const serverEnv = validateServerEnv();
+  return serverEnv.SUPABASE_SERVICE_ROLE_KEY || undefined;
+}
+
 export interface AuthState {
   user: AuthUser | null;
   session: AuthSession | null;
@@ -28,33 +30,20 @@ export interface AuthState {
   loading: boolean;
 }
 
-// Configuration
-const SUPABASE_URL = PUBLIC_SUPABASE_URL || env.PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = PUBLIC_SUPABASE_ANON_KEY || env.PUBLIC_SUPABASE_ANON_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing Supabase configuration. Check your environment variables.');
-}
-
-/**
- * SERVER-SIDE AUTH HELPERS
- */
-
-/**
- * Create Supabase server client with proper SSR cookie handling
- */
-export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis.fetch): SupabaseAuthClient {
+export function createServerSupabase(
+  cookies: Cookies,
+  fetch: typeof globalThis.fetch = globalThis.fetch
+): SupabaseAuthClient {
   return createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll: () => cookies.getAll(),
       setAll: (cookiesToSet) => {
         cookiesToSet.forEach(({ name, value, options }) => {
           cookies.set(name, value, {
-            path: '/',
-            httpOnly: false,
+            httpOnly: true,
             sameSite: 'lax',
-            secure: !import.meta.env.DEV,
-            maxAge: 60 * 60 * 24 * 365, // 1 year
+            secure: !dev,
+            path: '/',
             ...options
           });
         });
@@ -64,25 +53,49 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
   });
 }
 
-/**
- * Get session with validation - single source of truth
- * Uses simple, efficient validation without over-caching
- */
+export function createBrowserSupabase(): SupabaseAuthClient {
+  return createBrowserClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookieOptions: {
+      sameSite: 'lax',
+      secure: !dev
+    }
+  });
+}
+
+export function createServiceSupabase(): SupabaseAuthClient {
+  const serviceRoleKey = resolveServiceRoleKey();
+
+  if (!serviceRoleKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured.');
+  }
+
+  return createServerClient<Database>(SUPABASE_URL, serviceRoleKey, {
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+      remove: () => {}
+    }
+  });
+}
+
 export async function getServerSession(
   event: RequestEvent
 ): Promise<{ session: AuthSession | null; user: AuthUser | null }> {
   const supabase = createServerSupabase(event.cookies, event.fetch);
 
   try {
-    // Use getUser() for secure authentication (contacts Supabase Auth server)
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
 
     if (userError || !user) {
       return { session: null, user: null };
     }
 
-    // Get the session for the authenticated user
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
 
     return { session, user };
   } catch (error) {
@@ -91,9 +104,6 @@ export async function getServerSession(
   }
 }
 
-/**
- * Get user profile from database
- */
 export async function getUserProfile(
   supabase: SupabaseAuthClient,
   userId: string
@@ -111,9 +121,6 @@ export async function getUserProfile(
   }
 }
 
-/**
- * Update user profile
- */
 export async function updateUserProfile(
   supabase: SupabaseAuthClient,
   userId: string,
@@ -140,54 +147,22 @@ export async function updateUserProfile(
   }
 }
 
-/**
- * CLIENT-SIDE AUTH HELPERS
- */
-
-/**
- * Create Supabase browser client for client-side operations
- */
-export function createBrowserSupabase(): SupabaseAuthClient {
-  return createBrowserClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookieOptions: {
-      sameSite: 'lax',
-      secure: !import.meta.env.DEV
-    }
-  });
-}
-
-/**
- * AUTH GUARDS AND UTILITIES
- */
-
-/**
- * Require authentication - throw redirect if not authenticated
- */
 export function requireAuth(user: AuthUser | null, redirectTo = '/login') {
   if (!user) {
     redirect(303, redirectTo);
   }
 }
 
-/**
- * Require no auth - redirect if already authenticated
- */
 export function requireNoAuth(user: AuthUser | null, redirectTo = '/') {
   if (user) {
     redirect(303, redirectTo);
   }
 }
 
-/**
- * Check if user has completed onboarding
- */
 export function hasCompletedOnboarding(profile: Profile | null): boolean {
   return profile?.onboarding_completed === true;
 }
 
-/**
- * Check if user needs onboarding redirect
- */
 export function needsOnboardingRedirect(
   user: AuthUser | null,
   profile: Profile | null,
@@ -195,18 +170,14 @@ export function needsOnboardingRedirect(
 ): boolean {
   if (!user) return false;
 
-  // Skip onboarding check for auth-related paths
   const skipPaths = ['/onboarding', '/logout', '/api/'];
-  if (skipPaths.some(path => currentPath.startsWith(path))) {
+  if (skipPaths.some((path) => currentPath.startsWith(path))) {
     return false;
   }
 
   return !hasCompletedOnboarding(profile);
 }
 
-/**
- * Check if user can perform seller actions
- */
 export function canSell(profile: Profile | null): boolean {
   if (!profile || !hasCompletedOnboarding(profile)) {
     return false;
@@ -219,31 +190,22 @@ export function canSell(profile: Profile | null): boolean {
   );
 }
 
-/**
- * Check if user is admin
- */
 export function isAdmin(profile: Profile | null): boolean {
   return profile?.role === 'admin';
 }
 
-/**
- * Get user display name
- */
 export function getDisplayName(profile: Profile | null): string {
   if (!profile) return 'User';
   return profile.username || profile.full_name || 'User';
 }
 
-/**
- * Get user initials for avatar
- */
 export function getUserInitials(profile: Profile | null): string {
   if (!profile) return '?';
 
   if (profile.full_name) {
     return profile.full_name
       .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
+      .map((name) => name.charAt(0).toUpperCase())
       .slice(0, 2)
       .join('');
   }
@@ -255,9 +217,6 @@ export function getUserInitials(profile: Profile | null): string {
   return '?';
 }
 
-/**
- * Sign out user (client-side only)
- */
 export async function signOut(supabase: SupabaseAuthClient) {
   if (typeof window === 'undefined') {
     throw new Error('signOut can only be called on the client side');
@@ -267,13 +226,6 @@ export async function signOut(supabase: SupabaseAuthClient) {
   window.location.href = '/';
 }
 
-/**
- * ROUTE PROTECTION HELPERS
- */
-
-/**
- * Create auth guard for page load functions
- */
 export function createAuthGuard(options: {
   requireAuth?: boolean;
   requireAdmin?: boolean;
