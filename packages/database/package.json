@@ -7,7 +7,10 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit",
+    "test": "echo \"No database tests configured (schema validated in apps)\""
   },
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -23,7 +26,9 @@
     "src"
   ],
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.31.0",
     "typescript": "5.8.2"
   }
 }

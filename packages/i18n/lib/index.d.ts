@@ -1,20 +1,9 @@
-export * from '../lib/paraglide/messages.js';
-export type Locale = 'en' | 'bg';
-export type LanguageTag = Locale;
-export { setLocale, getLocale, isLocale, locales, baseLocale } from '../lib/paraglide/runtime.js';
-export { getLocale as languageTag } from '../lib/paraglide/runtime.js';
-export { setLocale as setLanguageTag } from '../lib/paraglide/runtime.js';
-export { locales as availableLanguageTags } from '../lib/paraglide/runtime.js';
-export { isLocale as isAvailableLanguageTag } from '../lib/paraglide/runtime.js';
-export declare const languageNames: Record<Locale, string>;
-export declare function detectLanguage(acceptLanguage?: string): Locale;
-export declare const LOCALE_ALIASES: Record<string, Locale>;
-export declare function detectLocale(input: {
-    path?: string;
-    query?: URLSearchParams | null;
-    cookie?: string | null;
-    header?: string | null;
-    defaultLocale?: Locale;
-}): Locale;
-export declare function applyLocale(locale: Locale): void;
+export * from './generated/messages';
+import { LOCALE_ALIASES, applyLocale, baseLocale, detectLanguage, detectLocale, getLocale, getMessage, isLocale, languageNames, locales, setLocale } from './runtime';
+export type { Locale, MessageFunction, MessageInputs, MessageOptions } from './runtime';
+export { LOCALE_ALIASES, applyLocale, baseLocale, detectLanguage, detectLocale, getLocale, getMessage, isLocale, languageNames, locales, setLocale };
+export declare const languageTag: typeof getLocale;
+export declare const setLanguageTag: typeof setLocale;
+export declare const availableLanguageTags: readonly import("./runtime").Locale[];
+export declare const isAvailableLanguageTag: typeof isLocale;
 //# sourceMappingURL=index.d.ts.map
