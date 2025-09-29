@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
