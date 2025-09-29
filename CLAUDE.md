@@ -37,7 +37,7 @@ Tools: pnpm workspaces, Turborepo, Vitest, Playwright, Node 22.12.x
 ## Coding Standards
 - TypeScript strict, no any, explicit return types
 - Import @repo/* aliases, no deep relative paths
-- Tailwind tokens from TailwindCSS.md, 44px touch targets
+- Tailwind tokens from FRAMEWORKS.md (Tailwind v4 section), 44px touch targets
 - Prettier (2-space, single quotes, no trailing commas)
 - Test before refactor, document noteworthy backend events
 
