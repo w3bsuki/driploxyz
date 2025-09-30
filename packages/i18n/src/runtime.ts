@@ -42,13 +42,13 @@ export function formatMessage(template: string, inputs: MessageInputs = {}): str
 export function resolveTemplate(key: string, locale: Locale): string | undefined {
   const localeMessages = translations[locale];
   if (localeMessages && key in localeMessages) {
-    return localeMessages[key];
+    return (localeMessages as Record<string, string>)[key];
   }
 
   if (locale !== baseLocale) {
     const baseMessages = translations[baseLocale];
     if (baseMessages && key in baseMessages) {
-      return baseMessages[key];
+      return (baseMessages as Record<string, string>)[key];
     }
   }
 

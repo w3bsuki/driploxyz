@@ -28,9 +28,9 @@
   let activeConversationMessages = $state.raw<Message[]>([]); // Use $state.raw for message arrays
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
   let isLoadingOlder = $state(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   let _showSidebarOnMobile = $state(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   let _isLoadingConversation = $state(false);
   let hasMoreMessages = $state(true);
   let isInitializing = $state(true);

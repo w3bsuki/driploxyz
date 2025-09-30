@@ -28,9 +28,10 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
 
     // For performance, only validate sessions on routes that need auth
     // Protected routes will validate in their auth guards or load functions
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn('[Auth] Setup failed:', error);
     // Don't break the app if auth setup fails
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     event.locals.supabase = null as any;
     event.locals.safeGetSession = async () => ({ session: null, user: null });
   }

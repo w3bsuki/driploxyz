@@ -9,7 +9,6 @@
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
 import { env } from '$env/dynamic/public';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -28,12 +27,61 @@ export interface AuthState {
   loading: boolean;
 }
 
-// Configuration
-const SUPABASE_URL = PUBLIC_SUPABASE_URL || env.PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = PUBLIC_SUPABASE_ANON_KEY || env.PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_CONFIG_ERROR_MESSAGE =
+  'Missing Supabase configuration. Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY. See apps/web/.env.example.';
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing Supabase configuration. Check your environment variables.');
+export class SupabaseConfigError extends Error {
+  constructor(message = SUPABASE_CONFIG_ERROR_MESSAGE) {
+    super(message);
+    this.name = 'SupabaseConfigError';
+  }
+}
+
+interface SupabaseConfig {
+  url: string;
+  anonKey: string;
+}
+
+let cachedSupabaseConfig: SupabaseConfig | null = null;
+let cachedSupabaseConfigError: SupabaseConfigError | null = null;
+
+function resolveSupabaseConfig(): SupabaseConfig {
+  if (cachedSupabaseConfig) {
+    return cachedSupabaseConfig;
+  }
+
+  if (cachedSupabaseConfigError) {
+    throw cachedSupabaseConfigError;
+  }
+
+  const supabaseUrl =
+    env.PUBLIC_SUPABASE_URL ??
+    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_URL : undefined) ??
+    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined);
+
+  const supabaseAnonKey =
+    env.PUBLIC_SUPABASE_ANON_KEY ??
+    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_ANON_KEY : undefined) ??
+    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined);
+
+  if (supabaseUrl && supabaseAnonKey) {
+    cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
+    return cachedSupabaseConfig;
+  }
+
+  const error = new SupabaseConfigError();
+  cachedSupabaseConfigError = error;
+
+  const isProductionRuntime =
+    typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
+
+  if (!isProductionRuntime) {
+    console.warn(
+      '[Auth] Supabase environment variables missing – auth features disabled until PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are configured.'
+    );
+  }
+
+  throw error;
 }
 
 /**
@@ -44,7 +92,9 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
  * Create Supabase server client with proper SSR cookie handling
  */
 export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis.fetch): SupabaseAuthClient {
-  return createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const { url, anonKey } = resolveSupabaseConfig();
+
+  return createServerClient<Database>(url, anonKey, {
     cookies: {
       getAll: () => cookies.getAll(),
       setAll: (cookiesToSet) => {
@@ -71,9 +121,9 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
 export async function getServerSession(
   event: RequestEvent
 ): Promise<{ session: AuthSession | null; user: AuthUser | null }> {
-  const supabase = createServerSupabase(event.cookies, event.fetch);
-
   try {
+    const supabase = createServerSupabase(event.cookies, event.fetch);
+
     // Use getUser() for secure authentication (contacts Supabase Auth server)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -148,7 +198,9 @@ export async function updateUserProfile(
  * Create Supabase browser client for client-side operations
  */
 export function createBrowserSupabase(): SupabaseAuthClient {
-  return createBrowserClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const { url, anonKey } = resolveSupabaseConfig();
+
+  return createBrowserClient<Database>(url, anonKey, {
     cookieOptions: {
       sameSite: 'lax',
       secure: !import.meta.env.DEV

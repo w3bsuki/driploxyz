@@ -1,6 +1,8 @@
 import { RateLimiter } from 'sveltekit-rate-limiter/server';
 import { dev } from '$app/environment';
-import { RATE_LIMIT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
+
+const RATE_LIMIT_SECRET = env.RATE_LIMIT_SECRET;
 
 // Auth rate limiter - strict limits to prevent brute force
 export const authLimiter = new RateLimiter({

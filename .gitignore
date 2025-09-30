@@ -62,3 +62,4 @@ nul
 .mcp.json
 .mcp/
 .mcp-logs/
+logs/

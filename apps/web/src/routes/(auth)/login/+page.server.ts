@@ -38,7 +38,7 @@ export const load = (async (event) => {
 
 export const actions = {
   signin: async (event) => {
-    const { request, locals: { supabase }, getClientAddress } = event;
+    const { request, locals: { supabase } } = event;
     
     // Get form data
     const formData = await request.formData();
@@ -59,11 +59,17 @@ export const actions = {
     }
     
     const { email: validatedEmail, password: validatedPassword } = validation.data;
-    
-    // Rate limiting by IP address
-    const clientIp = getClientAddress();
+
+    // Rate limiting by IP address - safe client address detection
+    let clientIp = 'unknown';
+    try {
+      clientIp = event.getClientAddress();
+    } catch {
+      // In development, getClientAddress might fail - use fallback
+      clientIp = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'localhost';
+    }
     const rateLimitKey = `login:${clientIp}`;
-    const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'login');
+    const { allowed, retryAfter} = checkRateLimit(rateLimitKey, 'login');
     
     if (!allowed) {
       return fail(429, { 
