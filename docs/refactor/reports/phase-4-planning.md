@@ -50,7 +50,7 @@
  M packages/i18n/src/index.ts
  M packages/typescript-config/package.json
  M packages/ui/package.json
- M packages/ui/src/lib/primitives/toast/store.svelte.ts
+ M packages/ui/src/lib/primitives/toast/store.ts
  M pnpm-lock.yaml
 ?? apps/admin/eslint.config.ts
 ?? apps/web/playwright.config.ts

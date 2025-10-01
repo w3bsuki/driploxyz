@@ -58,10 +58,10 @@ Phase 3 has been successfully completed with significant improvements to code qu
 - Reactivity patterns follow Svelte 5 best practices
 - Component state management properly implemented
 
-**Critical File:** `packages/ui/src/lib/primitives/toast/store.svelte.ts`
-- Uses `$state()` for reactive state management
-- Implements proper cleanup with `$effect`
-- Follows Svelte 5 module pattern conventions
+**Critical File:** `packages/ui/src/lib/primitives/toast/store.ts`
+- Uses a canonical writable store that is compatible with SSR bundlers
+- Maintains deduplicated toast handling across Melt UI components
+- Provides the single source of truth for toast helpers and patterns
 
 ## 🧪 Testing Infrastructure
 

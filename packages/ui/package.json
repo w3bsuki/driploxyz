@@ -56,6 +56,7 @@
     "@supabase/supabase-js": "^2.56.0"
   },
   "devDependencies": {
+    "@repo/testing": "workspace:*",
     "@melt-ui/pp": "^0.3.2",
     "@sveltejs/adapter-auto": "^4.0.0",
     "@sveltejs/kit": "^2.37.1",
