@@ -3,7 +3,7 @@
   import { browser } from '$app/environment';
   // import { invalidateAll } from '$app/navigation'; // Not used in this component
   import { useErrorBoundary, type ErrorDetails } from '$lib/utils/error-handling.svelte';
-  import { toast } from '$lib/stores/toast.svelte';
+  import { toast } from '@repo/ui';
   import { Button } from '@repo/ui';
 
   interface Props {

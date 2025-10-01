@@ -7,7 +7,7 @@
 
 import { defineConfig, mergeConfig } from 'vitest/config';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import uiConfig from '@repo/testing/vitest.config.ui';
+import uiConfig from '../testing/vitest.config.ui.js';
 
 export default mergeConfig(
   uiConfig,

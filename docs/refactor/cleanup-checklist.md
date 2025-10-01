@@ -26,9 +26,9 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 
 ### Migration Strategy
 1. ✅ Identify all import locations
-2. ⚠️ Update imports to use `@repo/ui/primitives/toast`
-3. ⚠️ Remove legacy files
-4. ⚠️ Test toast functionality across all apps
+2. ✅ Update imports to use `@repo/ui/primitives/toast`
+3. ✅ Remove legacy files
+4. ✅ Test toast functionality across all apps
 
 ## 2. Demo/Test Files for Removal
 

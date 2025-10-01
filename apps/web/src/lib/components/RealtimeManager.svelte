@@ -41,7 +41,7 @@
   // Enhanced error handling
   import { createLogger } from '$lib/utils/log';
   import { parseError, createNetworkMonitor } from '$lib/utils/error-handling.svelte';
-  import { toast } from '$lib/stores/toast.svelte';
+  import { toast } from '@repo/ui';
 
   const log = createLogger('realtime-manager');
   const network = createNetworkMonitor();

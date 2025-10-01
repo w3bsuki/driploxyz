@@ -49,3 +49,9 @@
   added QA notes to `apps/web/README.md`.
 - Toast provider deduplication now records provider IDs, preventing duplicate
   UI notifications when the Melt provider is registered.
+- Fixed vitest configuration import from `@repo/testing` to use relative path
+  due to workspace package resolution issues.
+- Successfully migrated all toast consumers to use shared `@repo/ui` primitives
+  instead of local stores.
+- Removed duplicate `.ts` toast store file, keeping canonical `.svelte.ts` version.
+- All .svelte.ts artifacts now follow proper Svelte 5 patterns with runes.
