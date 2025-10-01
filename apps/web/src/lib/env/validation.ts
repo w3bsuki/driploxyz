@@ -11,8 +11,11 @@ const publicEnvSchema = z.object({
 
 // Server-only environment variables
 const serverEnvSchema = z.object({
-	// Supabase
-	SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
+        // Supabase
+        SUPABASE_SERVICE_ROLE_KEY: z
+                .string()
+                .min(1, 'SUPABASE_SERVICE_ROLE_KEY must not be empty')
+                .optional(),
 	
 	// Stripe (required for production)
 	STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
@@ -85,13 +88,12 @@ export function validatePublicEnv(): PublicEnv {
  * Only available in server context (+page.server.ts, +server.ts, hooks.server.ts)
  */
 export function validateServerEnv(): ServerEnv {
-	// Skip validation during build
-	if (building) {
-		return {
-			SUPABASE_SERVICE_ROLE_KEY: '',
-			NODE_ENV: 'development',
-		} as ServerEnv;
-	}
+        // Skip validation during build
+        if (building) {
+                return {
+                        NODE_ENV: 'development',
+                } as ServerEnv;
+        }
 	
 	try {
 		return serverEnvSchema.parse(process.env);
@@ -117,15 +119,15 @@ export function validateServerEnv(): ServerEnv {
  * Call this once at application startup
  */
 export function validateEnv(): Env {
-	const publicEnv = validatePublicEnv();
-	const serverEnv = validateServerEnv();
-	
-	// Additional cross-validation
-	if (serverEnv.NODE_ENV === 'production') {
-		// Enforce required variables in production
-		if (!serverEnv.STRIPE_SECRET_KEY) {
-			throw new Error('STRIPE_SECRET_KEY is required in production');
-		}
+        const publicEnv = validatePublicEnv();
+        const serverEnv = validateServerEnv();
+
+        // Additional cross-validation
+        if (serverEnv.NODE_ENV === 'production') {
+                // Enforce required variables in production
+                if (!serverEnv.STRIPE_SECRET_KEY) {
+                        throw new Error('STRIPE_SECRET_KEY is required in production');
+                }
 		if (!serverEnv.SENTRY_DSN) {
 			// Sentry DSN is optional - monitoring will be disabled
 		}
@@ -134,10 +136,10 @@ export function validateEnv(): Env {
 		}
 	}
 	
-	return {
-		...publicEnv,
-		...serverEnv,
-	};
+        return {
+                ...publicEnv,
+                ...serverEnv,
+        };
 }
 
 // Helper function to check if we're in production
@@ -152,9 +154,17 @@ export function isDevelopment(): boolean {
 
 // Helper function to get safe environment variables for client
 export function getClientEnv(): PublicEnv {
-	return validatePublicEnv();
+        return validatePublicEnv();
 }
 
 // Export validated environment (server-side only)
 // This will be available in server contexts
 export const env = building ? ({} as Env) : validateEnv();
+
+type ServiceRoleSource = Partial<Pick<ServerEnv, 'SUPABASE_SERVICE_ROLE_KEY'>> | Record<string, string | undefined>;
+
+export function hasServiceRoleKey(source?: ServiceRoleSource): boolean {
+        const context = source ?? process.env;
+        const value = context.SUPABASE_SERVICE_ROLE_KEY ?? context['SUPABASE_SERVICE_ROLE_KEY'];
+        return typeof value === 'string' && value.length > 0;
+}

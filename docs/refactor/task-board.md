@@ -29,3 +29,11 @@
 - `pnpm -w turbo run lint` (⚠️ network-limited; see validation log)
 - `pnpm -w turbo run check-types` (⚠️ network-limited; see validation log)
 - `pnpm -w turbo run build` (⚠️ network-limited; see validation log)
+
+## Ticket Progress (Phase 4)
+- ✅ **Ticket 1 – Toast Consolidation**
+- ✅ **Ticket 2 – Service-Role Hardening**
+- ✅ **Ticket 3 – UI Package Cleanup**
+- ✅ **Ticket 4 – Testing Infrastructure**
+- ✅ **Ticket 5 – Environment Validation**
+- ✅ **Ticket 6 – Svelte 5 Compliance Audit**
