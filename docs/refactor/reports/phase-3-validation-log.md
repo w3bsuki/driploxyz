@@ -87,6 +87,8 @@ Test Files  2 failed (2)
 
 **Status:** ❌ **SVELTE 5 COMPILER ISSUE** (separate from primary objective)
 
+> **Update (2025-10-01):** This compiler error no longer reproduces after migrating the toast store to `packages/ui/src/lib/primitives/toast/store.ts`, which avoids the unsupported `.svelte.ts` module pattern.
+
 ## Phase 3 Validation Summary
 
 ### Primary Objective Status

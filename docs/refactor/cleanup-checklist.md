@@ -14,7 +14,7 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 
 | File | Status | Purpose | Action |
 |------|--------|---------|--------|
-| `packages/ui/src/lib/primitives/toast/store.svelte.ts` | ✅ **KEEP** | Modern Melt UI system with Svelte 5 runes | Canonical source |
+| `packages/ui/src/lib/primitives/toast/store.ts` | ✅ **KEEP** | Modern Melt UI system store (Node-compatible) | Canonical source |
 | `packages/ui/src/lib/stores/toast-store.svelte.ts` | ❌ **REMOVE** | Legacy bridge (no longer needed) | Delete + update imports |
 | `apps/web/src/lib/stores/toast.svelte.ts` | ❌ **MIGRATE** | App-specific duplicate | Replace with @repo/ui import |
 

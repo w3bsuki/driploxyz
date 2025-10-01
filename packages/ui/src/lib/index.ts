@@ -202,7 +202,7 @@ export {
   toastUtils
 } from './primitives';
 
-export { toasts as modernToasts } from './primitives/toast/store.svelte';
+export { toasts as modernToasts } from './primitives/toast/store';
 
 // Convenience aliases for gradual migration
 export { toastStore as legacyToasts } from './primitives/toast';
