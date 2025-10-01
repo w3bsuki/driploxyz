@@ -185,12 +185,12 @@ export { default as AvatarUploader } from './components/ui/AvatarUploader.svelte
 export { default as PriceInput } from './components/forms/PriceInput.svelte';
 export { default as TagInput } from './components/forms/TagInput.svelte';
 
-// Toast components - Legacy (maintained for backwards compatibility)
-// These exports maintain existing API but use new Melt UI system internally
+// Toast components - consolidated Melt UI implementation
+// These exports maintain existing API but use the modern toast store internally
 export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
 export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
-export { toasts } from './stores/toast-store.svelte';
-export type { ToastMessage } from './stores/toast-store.svelte';
+export { toasts } from './primitives/toast/store.svelte';
+export type { Toast, ToastStore, ToastStoreOptions } from './primitives/toast/types';
 
 // Modern Toast System - Melt UI based (recommended for new code)
 export {
@@ -203,9 +203,6 @@ export {
 } from './primitives';
 
 export { toasts as modernToasts } from './primitives/toast/store.svelte';
-
-// Convenience aliases for gradual migration
-export { toasts as legacyToasts } from './stores/toast-store.svelte';
 
 // Filter components - accessibility-first filtering system (deduplicated)
 

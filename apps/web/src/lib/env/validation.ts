@@ -12,7 +12,7 @@ const publicEnvSchema = z.object({
 // Server-only environment variables
 const serverEnvSchema = z.object({
 	// Supabase
-	SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
+        SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required').optional(),
 	
 	// Stripe (required for production)
 	STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
@@ -87,10 +87,10 @@ export function validatePublicEnv(): PublicEnv {
 export function validateServerEnv(): ServerEnv {
 	// Skip validation during build
 	if (building) {
-		return {
-			SUPABASE_SERVICE_ROLE_KEY: '',
-			NODE_ENV: 'development',
-		} as ServerEnv;
+                return {
+                        SUPABASE_SERVICE_ROLE_KEY: undefined,
+                        NODE_ENV: 'development',
+                } as ServerEnv;
 	}
 	
 	try {

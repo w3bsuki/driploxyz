@@ -26,12 +26,14 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// Use source files from workspace during dev to avoid packaging/watch issues
-			'@repo/ui': fileURLToPath(new URL('../../packages/ui/src/lib/index.ts', import.meta.url)),
-			'@repo/ui/types': fileURLToPath(new URL('../../packages/ui/src/types', import.meta.url)),
-			'@repo/i18n': fileURLToPath(new URL('../../packages/i18n/src/index.ts', import.meta.url)),
-			'@repo/i18n/*': fileURLToPath(new URL('../../packages/i18n/src/*', import.meta.url))
-		}
-	},
+                        '@repo/ui': fileURLToPath(new URL('../../packages/ui/src/lib/index.ts', import.meta.url)),
+                        '@repo/ui/types': fileURLToPath(new URL('../../packages/ui/src/types', import.meta.url)),
+                        '@repo/core': fileURLToPath(new URL('../../packages/core/src/index.ts', import.meta.url)),
+                        '@repo/core/*': fileURLToPath(new URL('../../packages/core/src/*', import.meta.url)),
+                        '@repo/i18n': fileURLToPath(new URL('../../packages/i18n/src/index.ts', import.meta.url)),
+                        '@repo/i18n/*': fileURLToPath(new URL('../../packages/i18n/src/*', import.meta.url))
+                }
+        },
 	server: {
 		port: 5173
 	}

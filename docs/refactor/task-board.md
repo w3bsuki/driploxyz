@@ -19,6 +19,13 @@
   - Turbo runs noted with environment caveats; manual fallbacks documented.
   - Legal/offline routes updated to `prerender = false` for runtime env access.
 
+## Ticket Progress (Phase 4 Follow-ups)
+- ✅ **Ticket 2 – Service-Role Hardening**: Centralised server-only helpers for Supabase service-role usage, optionalised the key in env validation, and added regression tests.
+- ✅ **Ticket 3 – UI Package Cleanup**: Removed legacy toast store/demo artifacts and aligned `@repo/ui` exports with the consolidated Melt implementation.
+- ✅ **Ticket 4 – Testing Infrastructure**: Added Vitest coverage for the new service-role helpers and kept toast suites intact.
+- ✅ **Ticket 5 – Environment Validation**: Relaxed service-role requirements in validation schemas and updated `.env` templates/documentation.
+- ✅ **Ticket 6 – Svelte 5 Compliance Audit**: Toast system now relies exclusively on the rune-based store; legacy bridge removed.
+
 ## Key Command Summary
 - `pnpm --filter @repo/i18n build`
 - `pnpm --filter @repo/ui test`

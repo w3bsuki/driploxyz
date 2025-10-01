@@ -48,9 +48,6 @@ export * from './utils/navigation.js';
 export { default as SearchEmptyState } from './components/utilities/SearchEmptyState.svelte';
 export { default as SearchFeedback } from './components/utilities/SearchFeedback.svelte';
 
-// Toast System
-export { toasts } from './stores/toast-store.svelte';
-
 // Types (commonly used)
 export type { Product, SearchFilters } from './types/product';
 export type { User, Review, Message, ButtonVariant, ButtonSize, BadgeVariant, BadgeSize } from './types';

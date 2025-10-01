@@ -15,7 +15,7 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 | File | Status | Purpose | Action |
 |------|--------|---------|--------|
 | `packages/ui/src/lib/primitives/toast/store.svelte.ts` | ✅ **KEEP** | Modern Melt UI system with Svelte 5 runes | Canonical source |
-| `packages/ui/src/lib/stores/toast-store.svelte.ts` | ❌ **REMOVE** | Legacy bridge (no longer needed) | Delete + update imports |
+| `packages/ui/src/lib/stores/toast-store.svelte.ts` | ✅ **REMOVED** | Legacy bridge (no longer needed) | Delete + update imports |
 | `apps/web/src/lib/stores/toast.svelte.ts` | ❌ **MIGRATE** | App-specific duplicate | Replace with @repo/ui import |
 
 ### Impact Analysis
@@ -34,7 +34,7 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 
 | File | Type | Reason | Status |
 |------|------|--------|--------|
-| `packages/ui/src/lib/my-counter-class.svelte.ts` | Demo | Example Svelte 5 class (not production) | ❌ **REMOVE** |
+| `packages/ui/src/lib/my-counter-class.svelte.ts` | Demo | Example Svelte 5 class (not production) | ✅ **REMOVED** |
 | `apps/web/src/lib/tutorial/manager.svelte.ts` | Feature | Tutorial system (review if demo) | 🔍 **REVIEW** |
 
 **Note**: `packages/ui/src/lib/primitives/select/example.md` is **KEPT** as valuable documentation.

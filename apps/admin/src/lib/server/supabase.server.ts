@@ -1,6 +1,15 @@
 import { createServerClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
+import {
+  getServiceRoleConfig,
+  hasServiceRoleKey,
+  requireServiceRoleConfig
+} from './supabase-service-role';
+
+type CookieAdapter = {
+  get: (name: string) => string | undefined;
+  set: (name: string, value: string, options?: Record<string, unknown>) => void;
+  remove: (name: string, options?: Record<string, unknown>) => void;
+};
 
 /**
  * Create a Supabase client for server-side use with service role key
@@ -10,28 +19,24 @@ import { env as privateEnv } from '$env/dynamic/private';
  * 
  * This file uses .server.js naming convention to ensure it's never bundled in client code
  */
-export const createServiceClient = () => {
-  const SUPABASE_SERVICE_ROLE_KEY = privateEnv.SUPABASE_SERVICE_ROLE_KEY;
+export const createServiceClient = (options?: { cookies?: Partial<CookieAdapter> }) => {
+  const { supabaseUrl, serviceRoleKey } = requireServiceRoleConfig();
 
-  if (!env.PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Supabase service role environment variables not configured');
-  }
-
-  return createServerClient(
-    env.PUBLIC_SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY,
-    {
-      cookies: {
-        get: () => undefined,
-        set: () => {},
-        remove: () => {},
-      },
+  return createServerClient(supabaseUrl, serviceRoleKey, {
+    cookies: {
+      get: options?.cookies?.get ?? (() => undefined),
+      set: options?.cookies?.set ?? (() => {}),
+      remove: options?.cookies?.remove ?? (() => {})
     }
-  );
+  });
 };
 
 /**
  * Direct service client instance for server-only operations
  * Use this for admin operations that need to bypass RLS
  */
-export const supabaseServiceClient = createServiceClient();
+export const supabaseServiceRole = {
+  createClient: createServiceClient,
+  getConfig: getServiceRoleConfig,
+  hasKey: hasServiceRoleKey
+};

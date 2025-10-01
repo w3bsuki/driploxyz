@@ -19,12 +19,14 @@ const config = {
                 },
                 alias: {
                         '@repo/ui': '../../packages/ui/src/lib/index.ts',
-			'@repo/ui/*': '../../packages/ui/src/*',
-			'@repo/database': '../../packages/database/src/index.ts',
-			'@repo/i18n': '../../packages/i18n/src/index.ts',
-			'@repo/i18n/*': '../../packages/i18n/src/*'
-		}
-	},
+                        '@repo/ui/*': '../../packages/ui/src/*',
+                        '@repo/core': '../../packages/core/src/index.ts',
+                        '@repo/core/*': '../../packages/core/src/*',
+                        '@repo/database': '../../packages/database/src/index.ts',
+                        '@repo/i18n': '../../packages/i18n/src/index.ts',
+                        '@repo/i18n/*': '../../packages/i18n/src/*'
+                }
+        },
 };
 
 export default config;
