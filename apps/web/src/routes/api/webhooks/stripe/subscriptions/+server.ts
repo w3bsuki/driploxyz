@@ -36,7 +36,14 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 
   // Use service client for webhook processing (no user context)
-  const supabase = createServiceClient();
+  const supabase = createServiceClient({ required: false });
+
+  if (!supabase) {
+    if (isDebug) {
+      console.error('Supabase service role key not configured; webhook processing disabled');
+    }
+    return json({ error: 'Webhook processing unavailable' }, { status: 503 });
+  }
   const subscriptionService = new SubscriptionService(supabase);
 
   try {

@@ -49,7 +49,7 @@ export { default as SearchEmptyState } from './components/utilities/SearchEmptyS
 export { default as SearchFeedback } from './components/utilities/SearchFeedback.svelte';
 
 // Toast System
-export { toasts } from './stores/toast-store.svelte';
+export { toasts } from './primitives';
 
 // Types (commonly used)
 export type { Product, SearchFilters } from './types/product';

@@ -1,203 +1,85 @@
-/**
- * Toast Notification Store - Svelte 5 Runes
- * Manages toast notifications for errors and other messages
- */
+import { toasts, toastHelpers } from '@repo/ui/primitives/toast';
+import type { ToastStoreOptions, ToastType } from '@repo/ui/primitives/toast';
+import type { Toast as UiToast } from '@repo/ui/primitives/toast';
+import type { ErrorDetails } from '../utils/error-handling.svelte';
 
-import { browser } from '$app/environment';
+export type Toast = UiToast;
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface Toast {
-  id: string;
-  type: ToastType;
-  title?: string;
-  message: string;
-  description?: string;
-  duration?: number;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-  dismissible?: boolean;
-  persistent?: boolean;
-}
-
-// Global toast state
-let toasts = $state<Toast[]>([]);
-
-// Default configurations for different toast types
-const defaultConfigs: Record<ToastType, Partial<Toast>> = {
-  success: {
-    duration: 4000,
-    dismissible: true
-  },
-  error: {
-    duration: 8000,
-    dismissible: true
-  },
-  warning: {
-    duration: 6000,
-    dismissible: true
-  },
-  info: {
-    duration: 5000,
-    dismissible: true
-  }
-};
-
-/**
- * Generate unique toast ID
- */
-function generateToastId(): string {
-  return `toast-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
-/**
- * Add a new toast
- */
-function addToast(toast: Omit<Toast, 'id'> & { id?: string }): string {
-  const id = toast.id || generateToastId();
-  const config = defaultConfigs[toast.type];
-
-  const newToast: Toast = {
-    ...config,
-    ...toast,
-    id
-  };
-
-  toasts = [...toasts, newToast];
-
-  // Auto-remove toast after duration (unless persistent)
-  if (!newToast.persistent && newToast.duration && newToast.duration > 0) {
-    setTimeout(() => {
-      removeToast(id);
-    }, newToast.duration);
+function normalizeOptions(options: ToastStoreOptions | undefined): ToastStoreOptions | undefined {
+  if (!options) {
+    return undefined;
   }
 
-  return id;
+  return {
+    duration: options.duration,
+    dismissible: options.dismissible,
+    persistent: options.persistent,
+    action: options.action
+  } satisfies ToastStoreOptions;
 }
 
-/**
- * Remove a toast by ID
- */
-function removeToast(id: string): void {
-  toasts = toasts.filter(toast => toast.id !== id);
+function show(message: string, type: ToastType, options?: ToastStoreOptions) {
+  return toasts.show(message, type, normalizeOptions(options));
 }
 
-/**
- * Clear all toasts
- */
-function clearAllToasts(): void {
-  toasts = [];
-}
+function withRetryAction(
+  errorDetails: ErrorDetails,
+  options?: ToastStoreOptions
+): ToastStoreOptions | undefined {
+  if (!errorDetails.retryable) {
+    return normalizeOptions(options);
+  }
 
-/**
- * Update an existing toast
- */
-function updateToast(id: string, updates: Partial<Omit<Toast, 'id'>>): void {
-  toasts = toasts.map(toast =>
-    toast.id === id ? { ...toast, ...updates } : toast
-  );
-}
-
-/**
- * Create success toast
- */
-function success(message: string, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
-  return addToast({
-    type: 'success',
-    message,
-    ...options
-  });
-}
-
-/**
- * Create error toast
- */
-function error(message: string, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
-  return addToast({
-    type: 'error',
-    message,
-    ...options
-  });
-}
-
-/**
- * Create warning toast
- */
-function warning(message: string, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
-  return addToast({
-    type: 'warning',
-    message,
-    ...options
-  });
-}
-
-/**
- * Create info toast
- */
-function info(message: string, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
-  return addToast({
-    type: 'info',
-    message,
-    ...options
-  });
-}
-
-/**
- * Create error toast from ErrorDetails
- */
-function fromError(errorDetails: import('../utils/error-handling.svelte').ErrorDetails, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
-  const severity = errorDetails.severity;
-  const toastType: ToastType = severity === 'CRITICAL' || severity === 'HIGH' ? 'error' : 'warning';
-
-  return addToast({
-    type: toastType,
-    title: `${errorDetails.type} Error`,
-    message: errorDetails.userMessage,
-    description: errorDetails.code ? `Error code: ${errorDetails.code}` : undefined,
-    action: errorDetails.retryable ? {
-      label: 'Retry',
-      onClick: () => {
-        // Emit retry event
-        if (browser) {
-          window.dispatchEvent(new CustomEvent('toast-retry', {
+  const action = {
+    label: 'Retry',
+    onclick: () => {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('toast-retry', {
             detail: { errorDetails }
-          }));
-        }
+          })
+        );
       }
-    } : undefined,
-    persistent: severity === 'CRITICAL',
-    ...options
-  });
+    }
+  } as const;
+
+  return {
+    ...normalizeOptions(options),
+    action
+  } satisfies ToastStoreOptions;
 }
 
-/**
- * Export toast store interface
- */
+function fromError(errorDetails: ErrorDetails, options?: ToastStoreOptions): string {
+  const severity = errorDetails.severity;
+  const type: ToastType = severity === 'CRITICAL' || severity === 'HIGH' ? 'error' : 'warning';
+
+  return show(errorDetails.userMessage, type, withRetryAction(errorDetails, options));
+}
+
 export const toast = {
-  // State accessors
-  get all() { return toasts; },
-  get count() { return toasts.length; },
-
-  // Methods
-  add: addToast,
-  remove: removeToast,
-  clear: clearAllToasts,
-  update: updateToast,
-
-  // Convenience methods
-  success,
-  error,
-  warning,
-  info,
-  fromError
+  show(message: string, type: ToastType = 'info', options?: ToastStoreOptions) {
+    return show(message, type, options);
+  },
+  success(message: string, options?: ToastStoreOptions) {
+    return toasts.success(message, normalizeOptions(options));
+  },
+  error(message: string, options?: ToastStoreOptions) {
+    return toasts.error(message, normalizeOptions(options));
+  },
+  warning(message: string, options?: ToastStoreOptions) {
+    return toasts.warning(message, normalizeOptions(options));
+  },
+  info(message: string, options?: ToastStoreOptions) {
+    return toasts.info(message, normalizeOptions(options));
+  },
+  dismiss(id: string) {
+    toasts.dismiss(id);
+  },
+  dismissAll() {
+    toasts.dismissAll();
+  },
+  fromError,
+  helpers: toastHelpers
 };
 
-// Auto-clear toasts on page navigation in browser
-if (browser) {
-  // Clear non-persistent toasts on navigation
-  document.addEventListener('sveltekit:navigation-start', () => {
-    toasts = toasts.filter(toast => toast.persistent);
-  });
-}
+export type { ToastType };
