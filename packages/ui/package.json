@@ -37,6 +37,11 @@
       "svelte": "./dist/primitives/index.js",
       "default": "./dist/primitives/index.js"
     },
+    "./primitives/toast": {
+      "types": "./dist/primitives/toast/index.d.ts",
+      "svelte": "./dist/primitives/toast/index.js",
+      "default": "./dist/primitives/toast/index.js"
+    },
     "./styles/tokens.css": "./src/styles/tokens.css",
     "./styles/semantic.css": "./src/styles/semantic.css",
     "./styles/utilities.css": "./src/styles/utilities.css",

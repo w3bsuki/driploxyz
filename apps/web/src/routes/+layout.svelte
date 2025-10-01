@@ -21,8 +21,7 @@
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
   import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
-  // eslint-disable-next-line no-restricted-imports -- App-specific toast implementation
-  import Toast from '$lib/components/Toast.svelte';
+  import { ToastContainer } from '@repo/ui/primitives';
   import { ErrorBoundary } from '@repo/ui';
   // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
@@ -522,7 +521,7 @@
 </script>
 
 <!-- Global Toast Notifications -->
-<Toast />
+<ToastContainer position="top-right" limit={6} />
 
 <ErrorBoundary name="AppLayout">
   {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
@@ -599,7 +598,7 @@
   />
 {/if}
 
-<!-- Note: ToastProvider above already handles all notifications -->
+<!-- ToastContainer above already handles all notifications -->
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
 <UnifiedCookieConsent
