@@ -9,10 +9,10 @@ export { default as ToastProvider } from './ToastProvider.svelte';
 export { default as ToastContainer } from './ToastContainer.svelte';
 
 // Store and helpers
-export { toasts, toastHelpers, setToastProvider } from './store.svelte';
+export { toasts, toastHelpers, setToastProvider } from './store.svelte.ts';
 
 // Modern alias for the toast store
-export { toasts as modernToasts } from './store.svelte';
+export { toasts as modernToasts } from './store.svelte.ts';
 
 // Types
 export type {
@@ -27,7 +27,7 @@ export type {
 } from './types';
 
 // Import the toast store for use in the legacy compatibility layer
-import { toasts, toastHelpers } from './store.svelte';
+import { toasts, toastHelpers } from './store.svelte.ts';
 
 // Re-export for backwards compatibility with existing code
 export const toastStore = {

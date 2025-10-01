@@ -1,4 +1,4 @@
-﻿// Core UI components
+// Core UI components
 export { default as Badge } from './components/badges/Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './components/banners/Banner.svelte';
@@ -185,24 +185,27 @@ export { default as AvatarUploader } from './components/ui/AvatarUploader.svelte
 export { default as PriceInput } from './components/forms/PriceInput.svelte';
 export { default as TagInput } from './components/forms/TagInput.svelte';
 
-// Toast components - Legacy (maintained for backwards compatibility)
-// These exports maintain existing API but use new Melt UI system internally
-export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
-export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
-export { toasts } from './primitives';
-export type { Toast as ToastMessage } from './primitives/toast';
+// Enhanced Toast System - Recommended for all new code
+export { toast, toasts } from './toast';
+export type { Toast as ToastMessage, ToastType, ToastStoreOptions, ErrorDetails } from './toast';
 
-// Modern Toast System - Melt UI based (recommended for new code)
+// Modern Toast System - Melt UI based (low-level access)
 export {
-  Toast,
+  Toast as ToastComponent,
   ToastProvider,
   ToastContainer as MeltToastContainer,
   toastHelpers,
   toastPatterns,
-  toastUtils
+  toastUtils,
+  setToastProvider
 } from './primitives';
 
-export { toasts as modernToasts } from './primitives/toast/store.svelte';
+export { toasts as modernToasts } from './primitives';
+
+// Legacy Toast components (maintained for backwards compatibility)
+export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
+export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
+export type { Toast as ToastMessage } from './primitives/toast';
 
 // Convenience aliases for gradual migration
 export { toastStore as legacyToasts } from './primitives/toast';

@@ -21,7 +21,7 @@
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
   import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
-  import { ToastContainer } from '@repo/ui/primitives';
+  import { ToastContainer } from '@repo/ui';
   import { ErrorBoundary } from '@repo/ui';
   // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
