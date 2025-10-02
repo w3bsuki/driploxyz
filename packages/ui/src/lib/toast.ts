@@ -6,7 +6,7 @@
  * Includes support for error handling integration.
  */
 
-import { toasts as modernToasts, toastHelpers } from './primitives/toast/store.svelte';
+import { toasts as modernToasts, toastHelpers } from './primitives/toast/store';
 import type { ToastType, ToastStoreOptions } from './primitives/toast/types';
 
 /**

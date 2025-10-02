@@ -1,8 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
-import type { Database } from '@repo/database';
-
-type Category = Database['public']['Tables']['categories']['Row'];
+import { ProductDomainAdapter } from '$lib/services/products.domain';
 
 export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
@@ -13,11 +11,12 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const query = url.searchParams.get('q') || '';
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const pageSize = parseInt(url.searchParams.get('pageSize') || '50', 10);
-  
+
   // Handle both canonical and legacy parameter names
   const category = url.searchParams.get('category') || url.searchParams.get('level1') || '';
   const subcategory = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
   const specific = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
+
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -26,154 +25,77 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const sortBy = url.searchParams.get('sort') || 'relevance';
 
   try {
-    // Resolve category IDs similarly to +page.server.ts but simplified
-    // Get all categories once (used to compute hierarchy levels quickly)
-    const { data: allCategories } = await locals.supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true);
+    // Use domain adapter for search functionality
+    const productAdapter = new ProductDomainAdapter(locals.supabase);
 
+    // Resolve category IDs using domain adapter's category resolution
+    const categoryResult = await productAdapter.resolveCategorySegments([category, subcategory, specific].filter(Boolean));
     let categoryIds: string[] = [];
 
-    const findByName = (name: string) => allCategories?.find((c) => c.name?.toLowerCase() === name.toLowerCase());
-    const findBySlug = (slug: string) => allCategories?.find((c) => c.slug?.toLowerCase() === slug.toLowerCase());
-    const childrenOf = (id: string) => allCategories?.filter((c) => c.parent_id === id) || [];
-
-    if (category && category !== 'all') {
-      // Try finding by slug first (more reliable), fallback to name
-      const l1 = findBySlug(category) || findByName(category);
-      if (l1) {
-        if (subcategory && subcategory !== 'all') {
-          const l2 = childrenOf(l1.id).find((c) => c.slug?.toLowerCase() === subcategory.toLowerCase() || c.name?.toLowerCase() === subcategory.toLowerCase());
-          if (l2) {
-            if (specific && specific !== 'all') {
-              const l3 = childrenOf(l2.id).find((c) => c.slug?.toLowerCase() === specific.toLowerCase() || c.name?.toLowerCase() === specific.toLowerCase());
-              categoryIds = l3 ? [l3.id] : childrenOf(l2.id).map((c) => c.id);
-            } else {
-              categoryIds = [l2.id, ...childrenOf(l2.id).map((c) => c.id)];
-            }
-          } else {
-            categoryIds = [l1.id, ...childrenOf(l1.id).flatMap(child => [child.id, ...childrenOf(child.id).map(c => c.id)])];
-          }
-        } else {
-          categoryIds = [l1.id, ...childrenOf(l1.id).flatMap(child => [child.id, ...childrenOf(child.id).map(c => c.id)])];
-        }
-      }
-    } else if (subcategory && subcategory !== 'all') {
-      const l2s = allCategories?.filter((c) => c.level === 2 && (c.slug?.toLowerCase() === subcategory.toLowerCase() || c.name?.toLowerCase() === subcategory.toLowerCase())) || [];
-      const all = l2s.flatMap((l2) => [l2.id, ...childrenOf(l2.id).map((c) => c.id)]);
-      categoryIds = Array.from(new Set(all));
-    } else if (specific && specific !== 'all') {
-      const l3s = allCategories?.filter((c) => c.level === 3 && (c.slug?.toLowerCase() === specific.toLowerCase() || c.name?.toLowerCase() === specific.toLowerCase())) || [];
-      categoryIds = l3s.map((c) => c.id);
+    if (categoryResult.success) {
+      categoryIds = categoryResult.data;
     }
 
-    // Build products query
-    let productsQuery = locals.supabase
-      .from('products')
-      .select(`
-        id,
-        title,
-        price,
-        brand,
-        size,
-        condition,
-        location,
-        created_at,
-        seller_id,
-        category_id,
-        country_code,
-        slug,
-        product_images ( image_url ),
-        profiles!products_seller_id_fkey ( username, avatar_url, account_type ),
-        categories!inner ( id, name, slug, parent_id, level )
-      `)
-      .eq('is_sold', false)
-      .eq('is_active', true)
-      .eq('country_code', country);
-
-    if (categoryIds.length > 0) productsQuery = productsQuery.in('category_id', categoryIds);
-    if (query && query.trim()) productsQuery = productsQuery.ilike('title', `%${query}%`);
-    if (minPrice) {
-      const min = parseFloat(minPrice);
-      if (!isNaN(min)) productsQuery = productsQuery.gte('price', min);
-    }
-    if (maxPrice) {
-      const max = parseFloat(maxPrice);
-      if (!isNaN(max)) productsQuery = productsQuery.lte('price', max);
-    }
-    if (condition && condition !== 'all') {
-      const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'] as const;
-      if (validConditions.includes(condition as typeof validConditions[number])) {
-        productsQuery = productsQuery.eq('condition', condition as typeof validConditions[number]);
-      }
-    }
-    if (brand && brand !== 'all') productsQuery = productsQuery.ilike('brand', `%${brand}%`);
-    if (size && size !== 'all') productsQuery = productsQuery.eq('size', size);
-
+    // Map sort parameter to domain sort format
+    let sortOptions: { by: 'created_at' | 'price' | 'popularity' | 'relevance'; direction: 'asc' | 'desc' } = { by: 'created_at', direction: 'desc' };
     switch (sortBy) {
       case 'price-low':
-        productsQuery = productsQuery.order('price', { ascending: true });
+        sortOptions = { by: 'price', direction: 'asc' };
         break;
       case 'price-high':
-        productsQuery = productsQuery.order('price', { ascending: false });
+        sortOptions = { by: 'price', direction: 'desc' };
         break;
       case 'newest':
+        sortOptions = { by: 'created_at', direction: 'desc' };
+        break;
+      case 'relevance':
       default:
-        productsQuery = productsQuery.order('created_at', { ascending: false });
+        sortOptions = { by: 'relevance', direction: 'desc' };
         break;
     }
 
-    const offset = (page - 1) * pageSize;
-    productsQuery = productsQuery.range(offset, offset + pageSize - 1);
-    const { data: products } = await productsQuery;
+    // Build search options for domain adapter
+    const searchOptions = {
+      limit: pageSize,
+      country_code: country,
+      category_ids: categoryIds.length > 0 ? categoryIds : undefined,
+      min_price: minPrice ? parseFloat(minPrice) : undefined,
+      max_price: maxPrice ? parseFloat(maxPrice) : undefined,
+      conditions: condition && condition !== 'all' ? [condition] : undefined,
+      brands: brand && brand !== 'all' ? [brand] : undefined,
+      sizes: size && size !== 'all' ? [size] : undefined,
+      sort: sortOptions
+    };
 
-    const transformed = (products || []).map((product) => {
-      let mainCategoryName = '';
-      let subcategoryName = '';
-      let specificCategoryName = '';
-      const cats = allCategories || [];
-      if (product.categories) {
-        if (product.categories.level === 1) {
-          mainCategoryName = product.categories.name;
-        } else if (product.categories.level === 2) {
-          subcategoryName = product.categories.name;
-          const parentCat = cats.find((cat: Category) => cat.id === product.categories.parent_id);
-          if (parentCat) mainCategoryName = parentCat.name;
-        } else if (product.categories.level === 3) {
-          specificCategoryName = product.categories.name;
-          const parentCat = cats.find((cat: Category) => cat.id === product.categories.parent_id);
-          if (parentCat) {
-            subcategoryName = parentCat.name;
-            const grandparentCat = cats.find((cat: Category) => cat.id === parentCat.parent_id);
-            if (grandparentCat) mainCategoryName = grandparentCat.name;
-          }
-        }
-      }
-      return {
-        ...product,
-        images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
-        seller: product.profiles ? {
-          id: product.seller_id,
-          username: product.profiles.username,
-          avatar_url: product.profiles.avatar_url,
-          account_type: product.profiles.account_type
-        } : null,
-        category: product.categories || null,
-        main_category_name: mainCategoryName || null,
-        category_name: mainCategoryName || null,
-        subcategory_name: subcategoryName || null,
-        specific_category_name: specificCategoryName || null
-      };
-    });
+    // Execute search using domain adapter
+    const result = await productAdapter.searchProductsWithFilters(query, searchOptions);
+
+    if (result.error) {
+      return json({
+        error: result.error,
+        data: [],
+        pagination: { page, pageSize, total: 0, hasMore: false }
+      }, { status: 500 });
+    }
+
+    // Apply pagination for legacy compatibility
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = result.data.slice(startIndex, endIndex);
+    const total = result.data.length;
+    const hasMore = endIndex < total;
 
     return json({
-      products: transformed,
-      hasMore: transformed.length === pageSize,
-      currentPage: page
+      data: paginatedData,
+      pagination: { page, pageSize, total, hasMore }
     });
-  } catch {
-    return json({ products: [], hasMore: false, currentPage: page }, { status: 200 });
+
+  } catch (error) {
+    console.error('[API Search] Error:', error);
+    return json({
+      error: error instanceof Error ? error.message : 'Unknown error',
+      data: [],
+      pagination: { page, pageSize, total: 0, hasMore: false }
+    }, { status: 500 });
   }
 };
-

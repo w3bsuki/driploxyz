@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { ProductService } from '$lib/services/products';
-import { CategoryService } from '$lib/services/category';
+import { ProductDomainAdapter } from '$lib/services/products.domain';
+import { CategoryDomainAdapter } from '$lib/services/category.domain';
 import type { Database } from '@repo/database';
 
 export const load = (async ({ params, url, locals: { country, supabase }, setHeaders }) => {
@@ -12,15 +12,15 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     'cache-control': 'public, max-age=60, s-maxage=300' // 1min client, 5min CDN
   });
 
-  // Initialize services
-  const productService = new ProductService(supabase);
-  const categoryService = new CategoryService(supabase);
+  // Initialize domain adapters
+  const productAdapter = new ProductDomainAdapter(supabase);
+  const categoryAdapter = new CategoryDomainAdapter(supabase);
 
   try {
     const segments = (params.segments || '').split('/').filter(Boolean);
 
-    // Use CategoryService to resolve categories
-    const resolution = await categoryService.resolveCategories(segments);
+    // Use CategoryDomainAdapter to resolve categories
+    const resolution = await categoryAdapter.resolveCategories(segments);
 
     // Check if current path matches canonical path (for redirects)
     const currentPath = `/category/${segments.join('/')}`;
@@ -34,8 +34,8 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
       }
     }
 
-    // Generate breadcrumbs using service
-    const breadcrumbsResult = categoryService.generateBreadcrumbs(segments);
+    // Generate breadcrumbs using domain adapter
+    const breadcrumbsResult = categoryAdapter.generateBreadcrumbs(segments);
 
     // Parse query parameters for filtering and pagination
     const searchParams = url.searchParams;
@@ -92,23 +92,54 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const sortBy = (searchParams.get('sort') || 'created_at') as 'created_at' | 'price' | 'price-low' | 'price-high' | 'newest';
     const sortDirection = sortBy === 'price-low' ? 'asc' : sortBy === 'price-high' ? 'desc' : 'desc';
 
-    // Get category navigation using service
-    const navigationPromise = categoryService.getCategoryNavigation(resolution);
+    // Get category navigation using domain adapter
+    const navigationPromise = categoryAdapter.getCategoryNavigation(resolution);
 
     const [
       productsResult,
       navigationResult,
       sellersResult
     ] = await Promise.allSettled([
-      // Fetch actual products using ProductService
-      productService.getProducts({
-        filters: hierarchicalFilters,
-        sort: { by: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at', direction: sortDirection },
-        limit: limit,
-        offset: (page - 1) * limit
-      }),
+      // Fetch actual products using domain adapter
+      (async () => {
+        if (resolution.categoryIds.length > 0 && !resolution.isVirtual) {
+          // Use domain service for real categories
+          const categoryId = resolution.categoryIds[0]; // Use primary category
+          const result = await productAdapter.getProductsByCategory(categoryId, {
+            includeDescendants: true,
+            limit,
+            offset: (page - 1) * limit,
+            sort: { by: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at', direction: sortDirection },
+            country: currentCountry
+          });
 
-      // Get category navigation using service
+          if (result.success) {
+            return {
+              data: result.data.products,
+              total: result.data.total
+            };
+          } else {
+            return { data: [], total: 0 };
+          }
+        } else {
+          // Fallback to search for virtual or invalid categories
+          const searchOptions = {
+            limit,
+            country_code: currentCountry,
+            category_ids: hierarchicalFilters.category_ids,
+            min_price: hierarchicalFilters.min_price,
+            max_price: hierarchicalFilters.max_price,
+            conditions: hierarchicalFilters.conditions,
+            sizes: hierarchicalFilters.sizes,
+            brands: hierarchicalFilters.brands,
+            sort: { by: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at', direction: sortDirection }
+          };
+
+          return await productAdapter.searchProductsWithFilters('', searchOptions);
+        }
+      })(),
+
+      // Get category navigation using domain adapter
       navigationPromise,
 
       // For now, return empty sellers array (could be implemented later)
@@ -126,8 +157,8 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // Generate SEO meta using service
-    const metaData = categoryService.generateSEOMeta(resolution, total);
+    // Generate SEO meta using domain adapter
+    const metaData = categoryAdapter.generateSEOMeta(resolution, total);
 
     return {
       // Category information

@@ -8,7 +8,9 @@
 
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
+import { env as dynamicPublicEnv } from '$env/dynamic/public';
+// Avoid importing from $env/static/public to prevent build-time failures
+import { dev } from '$app/environment';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -54,15 +56,24 @@ function resolveSupabaseConfig(): SupabaseConfig {
     throw cachedSupabaseConfigError;
   }
 
-  const supabaseUrl =
-    env.PUBLIC_SUPABASE_URL ??
-    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_URL : undefined) ??
-    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined);
+  const firstNonEmpty = (...vals: Array<string | undefined>) => {
+    for (const v of vals) {
+      if (typeof v === 'string' && v.trim().length > 0) return v.trim();
+    }
+    return undefined;
+  };
 
-  const supabaseAnonKey =
-    env.PUBLIC_SUPABASE_ANON_KEY ??
-    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_ANON_KEY : undefined) ??
-    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined);
+  const supabaseUrl = firstNonEmpty(
+    dynamicPublicEnv.PUBLIC_SUPABASE_URL,
+    typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_URL : undefined,
+    typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined
+  );
+
+  const supabaseAnonKey = firstNonEmpty(
+    dynamicPublicEnv.PUBLIC_SUPABASE_ANON_KEY,
+    typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY : undefined,
+    typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined
+  );
 
   if (supabaseUrl && supabaseAnonKey) {
     cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
@@ -72,12 +83,9 @@ function resolveSupabaseConfig(): SupabaseConfig {
   const error = new SupabaseConfigError();
   cachedSupabaseConfigError = error;
 
-  const isProductionRuntime =
-    typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
-
-  if (!isProductionRuntime) {
+  if (dev) {
     console.warn(
-      '[Auth] Supabase environment variables missing – auth features disabled until PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are configured.'
+      '[Auth] Supabase environment variables missing – check .env files in apps/web. Looked in $env/dynamic/public, import.meta.env, $env/static/public, process.env.'
     );
   }
 
@@ -101,7 +109,8 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
         cookiesToSet.forEach(({ name, value, options }) => {
           cookies.set(name, value, {
             path: '/',
-            httpOnly: false,
+            // Use httpOnly for SSR auth cookies; Supabase client reads/writes these
+            httpOnly: true,
             sameSite: 'lax',
             secure: !import.meta.env.DEV,
             maxAge: 60 * 60 * 24 * 365, // 1 year
@@ -247,8 +256,8 @@ export function needsOnboardingRedirect(
 ): boolean {
   if (!user) return false;
 
-  // Skip onboarding check for auth-related paths
-  const skipPaths = ['/onboarding', '/logout', '/api/'];
+  // Skip onboarding check for auth-related paths - must match layout skip paths
+  const skipPaths = ['/onboarding', '/api', '/login', '/signup', '/logout', '/auth'];
   if (skipPaths.some(path => currentPath.startsWith(path))) {
     return false;
   }

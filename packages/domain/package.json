@@ -1,0 +1,86 @@
+{
+  "name": "@repo/domain",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./services": {
+      "types": "./dist/services/index.d.ts",
+      "import": "./dist/services/index.js",
+      "default": "./dist/services/index.js"
+    },
+    "./services/products": {
+      "types": "./dist/services/products/index.d.ts",
+      "import": "./dist/services/products/index.js",
+      "default": "./dist/services/products/index.js"
+    },
+    "./services/orders": {
+      "types": "./dist/services/orders/index.d.ts",
+      "import": "./dist/services/orders/index.js",
+      "default": "./dist/services/orders/index.js"
+    },
+    "./services/profiles": {
+      "types": "./dist/services/profiles/index.d.ts",
+      "import": "./dist/services/profiles/index.js",
+      "default": "./dist/services/profiles/index.js"
+    },
+    "./services/messaging": {
+      "types": "./dist/services/messaging/index.d.ts",
+      "import": "./dist/services/messaging/index.js",
+      "default": "./dist/services/messaging/index.js"
+    },
+    "./services/payments": {
+      "types": "./dist/services/payments/index.d.ts",
+      "import": "./dist/services/payments/index.js",
+      "default": "./dist/services/payments/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js",
+      "default": "./dist/validation/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "default": "./dist/types/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.spec.*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo/database": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@supabase/supabase-js": "^2.56.0",
+    "zod": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@sveltejs/kit": "^2.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.31.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}

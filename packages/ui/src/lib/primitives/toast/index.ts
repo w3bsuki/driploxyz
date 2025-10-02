@@ -9,10 +9,10 @@ export { default as ToastProvider } from './ToastProvider.svelte';
 export { default as ToastContainer } from './ToastContainer.svelte';
 
 // Store and helpers
-export { toasts, toastHelpers, setToastProvider } from './store.svelte.ts';
+export { toasts, toastHelpers, setToastProvider } from './store';
 
 // Modern alias for the toast store
-export { toasts as modernToasts } from './store.svelte.ts';
+export { toasts as modernToasts } from './store';
 
 // Types
 export type {
@@ -27,20 +27,10 @@ export type {
 } from './types';
 
 // Import the toast store for use in the legacy compatibility layer
-import { toasts, toastHelpers } from './store.svelte.ts';
+import { toasts, toastHelpers } from './store';
 
-// Re-export for backwards compatibility with existing code
-export const toastStore = {
-  // Legacy methods that map to new toast store
-  success: (message: string, duration = 5000) => toasts.success(message, { duration }),
-  error: (message: string, duration = 5000) => toasts.error(message, { duration }),
-  warning: (message: string, duration = 5000) => toasts.warning(message, { duration }),
-  info: (message: string, duration = 5000) => toasts.info(message, { duration }),
-  show: (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info', duration = 5000) => 
-    toasts.show(message, type, { duration }),
-  remove: (id: string) => toasts.dismiss(id),
-  clear: () => toasts.dismissAll()
-};
+// Re-export store's toastStore for backwards compatibility with existing code
+export { toastStore } from './store';
 
 // Advanced patterns for common use cases
 export const toastPatterns = {

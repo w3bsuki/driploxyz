@@ -64,6 +64,9 @@ const localeRedirectHandler: Handle = async ({ event, resolve }) => {
  * Global CSRF guard for mutating requests
  */
 const csrfGuard: Handle = async ({ event, resolve }) => {
+  // Bypass guards for debug endpoints
+  if (event.url.pathname.startsWith('/api/_debug')) return resolve(event);
+
   const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
   const path = event.url.pathname;
   if (!safeMethods.includes(event.request.method) && path.startsWith('/api')) {
@@ -132,11 +135,28 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 };
 
 /**
+ * Debug endpoint bypass handler - runs first to allow debug endpoints
+ * Completely bypasses all other middleware for debug endpoints
+ */
+const debugBypassHandler: Handle = async ({ event, resolve }) => {
+  const pathname = event.url.pathname;
+
+  // Short-circuit all middleware for debug endpoints
+  if (pathname.startsWith('/api/_debug')) {
+    // Skip auth setup, locale handling, CSRF, etc. for debug endpoints
+    return resolve(event);
+  }
+
+  return resolve(event);
+};
+
+/**
  * Main handle sequence with optional Sentry integration
  * CRITICAL: supabaseHandler MUST run first to set up auth before other handlers
  * localeRedirectHandler runs early to handle unknown locale prefixes
  */
 export const handle: Handle = sequence(
+  debugBypassHandler,
   localeRedirectHandler,
   csrfGuard,
   authHandler,

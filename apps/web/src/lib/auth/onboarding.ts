@@ -5,8 +5,8 @@
  * Handles profile creation and completion in a straightforward way.
  */
 
-import type { SupabaseAuthClient, Profile, AuthUser } from './index.js';
-import { updateUserProfile } from './index.js';
+import type { SupabaseAuthClient, Profile, AuthUser } from './index';
+import { updateUserProfile } from './index';
 import type { Database } from '@repo/database';
 
 // Onboarding form data interface

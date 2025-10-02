@@ -205,7 +205,6 @@ export { toasts as modernToasts } from './primitives';
 // Legacy Toast components (maintained for backwards compatibility)
 export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
 export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
-export type { Toast as ToastMessage } from './primitives/toast';
 
 // Convenience aliases for gradual migration
 export { toastStore as legacyToasts } from './primitives/toast';

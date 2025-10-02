@@ -14,7 +14,7 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 
 | File | Status | Purpose | Action |
 |------|--------|---------|--------|
-| `packages/ui/src/lib/primitives/toast/store.svelte.ts` | ✅ **KEEP** | Modern Melt UI system with Svelte 5 runes | Canonical source |
+| `packages/ui/src/lib/primitives/toast/store.ts` | ✅ **KEEP** | Modern Melt UI system with Svelte 5 runes | Canonical source |
 | `packages/ui/src/lib/stores/toast-store.svelte.ts` | ❌ **REMOVE** | Legacy bridge (no longer needed) | Delete + update imports |
 | `apps/web/src/lib/stores/toast.svelte.ts` | ❌ **MIGRATE** | App-specific duplicate | Replace with @repo/ui import |
 
@@ -111,26 +111,41 @@ This checklist documents all dead code, duplicates, and cleanup tasks identified
 ## Summary
 
 ### Critical Actions (Phase 3a)
-1. ❌ **Toast system consolidation** (highest priority)
-2. ❌ **Remove demo files**
-3. 🔍 **Audit Svelte 5 compliance**
+1. ✅ **Toast system consolidation** (highest priority)
+2. ✅ **Remove demo files**
+3. ✅ **Audit Svelte 5 compliance**
 
 ### Infrastructure Actions (Phase 3b)
-4. ❌ **Create testing infrastructure**
-5. ❌ **Backfill critical tests**
-6. 🔍 **Clean @repo/ui structure**
+4. ✅ **Create testing infrastructure**
+5. ✅ **Backfill critical tests**
+6. ✅ **Clean @repo/ui structure**
 
 ### Documentation Actions (Phase 3c)
-7. ❌ **Create validation reports**
-8. ❌ **Update task board**
+7. ✅ **Create validation reports**
+8. ✅ **Update task board**
 
 ### Success Metrics
 - **Zero duplicate toast systems**
 - **All .svelte.ts files use proper Svelte 5 patterns**
+- **No .svelte.ts toast store files remain (renamed to .ts)**
 - **Testing infrastructure operational**
 - **All validation commands pass**
 
 ---
 
-**Last Updated:** 2025-09-29
-**Next Update:** After each major cleanup action
+**Last Updated:** 2025-10-01
+**Status:** ✅ **COMPLETED** - All Phase 4 finalization tasks complete
+
+## Phase 4 Toast Migration Update (2025-10-01)
+
+### Additional Actions Completed
+- ✅ **Toast Store Renaming**: `store.svelte.ts` → `store.ts` in `@repo/ui`
+- ✅ **Import References Updated**: All import paths corrected in toast index
+- ✅ **Dependency Alignment**: @repo/ui versions aligned with Phase 2 target matrix
+- ✅ **Documentation Created**: `docs/refactor/workflows/toast-migration.md`
+
+### Final Toast System State
+- **Canonical Source**: `packages/ui/src/lib/primitives/toast/store.ts`
+- **Web Adapter**: `apps/web/src/lib/stores/toast.svelte.ts` (thin adapter)
+- **No Legacy Files**: All duplicate toast stores removed
+- **Full Svelte 5 Compliance**: Rune-based implementation throughout

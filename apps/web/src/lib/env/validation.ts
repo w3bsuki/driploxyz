@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { env as publicEnv } from '$env/dynamic/public';
-import { building } from '$app/environment';
+import { env as dynamicPublicEnv } from '$env/dynamic/public';
+// Avoid $env/static/public imports for optional keys to prevent build-time errors
+import { building, dev } from '$app/environment';
 
 // Public environment variables (available to client and server)
 const publicEnvSchema = z.object({
@@ -66,21 +67,51 @@ export function validatePublicEnv(): PublicEnv {
 		};
 	}
 	
-	try {
-                return publicEnvSchema.parse({
-                        PUBLIC_SUPABASE_URL: publicEnv.PUBLIC_SUPABASE_URL,
-                        PUBLIC_SUPABASE_ANON_KEY: publicEnv.PUBLIC_SUPABASE_ANON_KEY,
-                        PUBLIC_STRIPE_PUBLISHABLE_KEY: publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY,
-                });
-	} catch (error) {
-		if (error instanceof z.ZodError) {
-			error.errors.forEach(() => {
-				// Log validation errors if needed
-			});
-			throw new Error('Invalid public environment configuration');
-		}
-		throw error;
-	}
+    try {
+                // Resolve from multiple sources to avoid false negatives in dev:
+                // 1) $env/dynamic/public (runtime process.env)
+                // 2) import.meta.env (Vite-loaded .env.*)
+                // 3) $env/static/public (compile-time static values)
+                const firstNonEmpty = (...vals: Array<string | undefined>) => {
+                        for (const v of vals) {
+                                if (typeof v === 'string' && v.trim().length > 0) return v.trim();
+                        }
+                        return undefined;
+                };
+
+                const resolved = {
+                        PUBLIC_SUPABASE_URL: firstNonEmpty(
+                                dynamicPublicEnv.PUBLIC_SUPABASE_URL,
+                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_URL : undefined,
+                                process.env.PUBLIC_SUPABASE_URL
+                        ),
+                        PUBLIC_SUPABASE_ANON_KEY: firstNonEmpty(
+                                dynamicPublicEnv.PUBLIC_SUPABASE_ANON_KEY,
+                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY : undefined,
+                                process.env.PUBLIC_SUPABASE_ANON_KEY
+                        ),
+                        PUBLIC_STRIPE_PUBLISHABLE_KEY: firstNonEmpty(
+                                dynamicPublicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_STRIPE_PUBLISHABLE_KEY : undefined,
+                                process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY
+                        )
+                };
+
+                return publicEnvSchema.parse(resolved);
+    } catch (error) {
+                if (error instanceof z.ZodError) {
+                        if (dev) {
+                                console.warn('[env] Invalid public environment configuration. Using empty defaults in dev to avoid hard-fail.');
+                                return {
+                                        PUBLIC_SUPABASE_URL: '',
+                                        PUBLIC_SUPABASE_ANON_KEY: '',
+                                        PUBLIC_STRIPE_PUBLISHABLE_KEY: ''
+                                } as PublicEnv;
+                        }
+                        throw new Error('Invalid public environment configuration');
+                }
+                throw error;
+    }
 }
 
 /**

@@ -15,7 +15,7 @@ export default mergeConfig(
     plugins: [
       svelte({
         hot: false,
-        extensions: ['.svelte'],
+        extensions: ['.svelte', '.svelte.ts'],
         compilerOptions: {
           // Enable runes for Svelte 5
           runes: true

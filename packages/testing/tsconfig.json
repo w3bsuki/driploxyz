@@ -4,6 +4,6 @@
     "module": "ESNext",
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
-  "include": ["*.ts"],
+  "include": ["**/*.ts", "**/*.js"],
   "exclude": ["node_modules", "dist"]
 }

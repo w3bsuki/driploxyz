@@ -11,7 +11,7 @@
 <script lang="ts">
 	// No lifecycle imports needed - using $effect
 	import ToastProvider from '../../primitives/toast/ToastProvider.svelte';
-	import { setToastProvider } from '../../primitives/toast/store.svelte';
+	import { setToastProvider } from '../../primitives/toast/store';
 
 	interface Toast {
 		id: string;
