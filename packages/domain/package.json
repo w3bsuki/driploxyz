@@ -1,0 +1,37 @@
+{
+  "name": "@repo/domain",
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!dist/**/*.test.*",
+    "!dist/**/*.spec.*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/testing": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.31.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
+  }
+}

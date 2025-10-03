@@ -10,6 +10,7 @@
                 "build:metrics": "node ./scripts/build-report.mjs",
 		"preview": "vite preview",
                 "test": "svelte-kit sync && vitest run --passWithNoTests && playwright test --pass-with-no-tests",
+                "test:ci": "svelte-kit sync && vitest run --passWithNoTests",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
                 "test:e2e": "playwright test --pass-with-no-tests",

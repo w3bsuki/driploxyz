@@ -4,7 +4,11 @@
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
-    "incremental": false
+    "incremental": false,
+    "paths": {
+      "@repo/database": ["../database/src/index.ts"],
+      "@repo/database/*": ["../database/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]

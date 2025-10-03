@@ -35,6 +35,12 @@ async function walk(dir, relativeBase = '') {
 }
 
 async function run() {
+  // Provide default public env vars required for the build metrics SSR bundle.
+  // These are non-secret placeholders that unblock the build pipeline when
+  // the host environment hasn't supplied real values (e.g. CI dry runs).
+  process.env.PUBLIC_SUPABASE_URL ??= 'https://placeholder.supabase.co';
+  process.env.PUBLIC_SUPABASE_ANON_KEY ??= 'public-anon-key-placeholder';
+
   console.log('⏱️  Building web app with metrics...');
   await build({ configFile: path.join(projectRoot, 'vite.config.ts'), mode: 'production', root: projectRoot });
 

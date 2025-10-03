@@ -11,10 +11,13 @@ import { handleUnknownLocales } from './locale-redirect';
 // Removed: import { setupAuthGuard } from './auth-guard'; // Using consolidated auth system
 import { createErrorHandler } from './error-handler';
 import { CSRFProtection } from './csrf';
+import { createObservabilityHandle } from './observability';
 
 /**
  * Authentication handler - sets up Supabase client and session handling
  */
+const observabilityHandler = createObservabilityHandle();
+
 const authHandler: Handle = async ({ event, resolve }) => {
   setupEnvironment();
   await setupAuth(event);
@@ -137,6 +140,7 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
  * localeRedirectHandler runs early to handle unknown locale prefixes
  */
 export const handle: Handle = sequence(
+  observabilityHandler,
   localeRedirectHandler,
   csrfGuard,
   authHandler,
