@@ -11,13 +11,17 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
-    "check-types": "turbo check-types"
+    "check-types": "turbo check-types",
+    "cleanup:audit": "tsx apps/web/scripts/cleanup/report.ts",
+    "release:observability": "pnpm cleanup:audit && pnpm --filter @repo/core build && pnpm --filter @repo/ui build && pnpm --filter web build:metrics && pnpm --filter @repo/domain test && pnpm --filter web test:ci"
   },
   "devDependencies": {
     "@lhci/cli": "^0.12.0",
     "@playwright/test": "^1.55.0",
+    "@types/node": "^22.10.1",
     "prettier": "^3.6.0",
     "turbo": "2.5.4",
+    "tsx": "^4.19.2",
     "typescript": "^5.8.2",
     "web-vitals": "^3.5.0",
     "uuid": "^9.0.1"

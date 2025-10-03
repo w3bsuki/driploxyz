@@ -1,0 +1,10 @@
+/*
+  Phase 7 canonical design tokens entrypoint.
+  Provides a stable import path under packages/ui/src/lib/styles as mandated by the cleanup spec.
+  The file re-exports the foundational, semantic, component and alias token layers from the UI package.
+*/
+
+@import '../../styles/tokens/foundations.css';
+@import '../../styles/tokens/semantic.css';
+@import '../../styles/tokens/components.css';
+@import '../../styles/tokens/alias.css';

@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "generatedAt": "2025-10-03T01:03:10.561Z",
+  "projectRoot": "/workspace/driploxyz",
+  "dryRun": false,
+  "summary": {
+    "totalChecks": 9,
+    "passed": 9,
+    "failed": 0,
+    "warnings": 0
+  },
+  "checks": [
+    {
+      "id": "design-tokens-entrypoint",
+      "label": "Design tokens CSS entrypoint",
+      "path": "packages/ui/src/lib/styles/design-tokens.css",
+      "expectation": "present",
+      "severity": "critical",
+      "notes": "SPEC requires tokens to live under packages/ui/src/lib/styles.",
+      "status": "pass",
+      "exists": true
+    },
+    {
+      "id": "phase7-spec",
+      "label": "Phase 7 SPEC document",
+      "path": "docs/refactor/specs/SPEC-phase7-cleanup.md",
+      "expectation": "present",
+      "severity": "critical",
+      "status": "pass",
+      "exists": true
+    },
+    {
+      "id": "phase7-prd",
+      "label": "Phase 7 PRD document",
+      "path": "docs/product/PRD-phase7-cleanup.md",
+      "expectation": "present",
+      "severity": "critical",
+      "status": "pass",
+      "exists": true
+    },
+    {
+      "id": "phase7-audit-report",
+      "label": "Phase 7 cleanup audit report",
+      "path": "docs/refactor/reports/phase-7-cleanup-audit.json",
+      "expectation": "present",
+      "severity": "major",
+      "status": "pass",
+      "exists": true
+    },
+    {
+      "id": "phase7-validation-log",
+      "label": "Phase 7 validation log",
+      "path": "docs/refactor/reports/phase-7-validation-log.md",
+      "expectation": "present",
+      "severity": "major",
+      "status": "pass",
+      "exists": true
+    },
+    {
+      "id": "legacy-notification-service",
+      "label": "Legacy admin notification service removed",
+      "path": "apps/web/src/lib/services/notifications.ts",
+      "expectation": "absent",
+      "severity": "major",
+      "notes": "Deprecated in favor of realtime notification hooks.",
+      "status": "pass",
+      "exists": false
+    },
+    {
+      "id": "legacy-trending-service",
+      "label": "Legacy trending service removed",
+      "path": "apps/web/src/lib/services/trending.ts",
+      "expectation": "absent",
+      "severity": "major",
+      "status": "pass",
+      "exists": false
+    },
+    {
+      "id": "unused-form-error-boundary",
+      "label": "Unused FormErrorBoundary component removed",
+      "path": "apps/web/src/lib/components/FormErrorBoundary.svelte",
+      "expectation": "absent",
+      "severity": "minor",
+      "status": "pass",
+      "exists": false
+    },
+    {
+      "id": "observability-handler",
+      "label": "Observability hook available",
+      "path": "apps/web/src/lib/server/observability.ts",
+      "expectation": "present",
+      "severity": "major",
+      "status": "pass",
+      "exists": true
+    }
+  ],
+  "metrics": {
+    "servicesTotal": 18,
+    "removalTargetsPassing": 3,
+    "documentationFilesPresent": 4
+  }
+}
