@@ -301,7 +301,7 @@
                 <div class="reviewer-name-row">
                   <span class="reviewer-name">{review.reviewer.username}</span>
                   {#if review.reviewer.verified}
-                    <Badge variant="success" size="xs">
+                    <Badge variant="success" size="sm">
                       <svg class="verified-icon" viewBox="0 0 16 16">
                         <path fill="currentColor" d="M16 8A8 8 0 11-1.83e-06 8 8 8 0 0116 8zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.061L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z"/>
                       </svg>
@@ -384,7 +384,7 @@
               </svg>
               <span>Helpful</span>
               {#if review.helpfulCount && review.helpfulCount > 0}
-                <Badge variant="subtle" size="xs">{review.helpfulCount}</Badge>
+                <Badge variant="secondary" size="sm">{review.helpfulCount}</Badge>
               {/if}
             </button>
           </div>
@@ -438,19 +438,25 @@
 
 <!-- Image Modal -->
 {#if selectedImageModal}
-  <div
+  <button
+    type="button"
     class="image-modal-backdrop"
     onclick={closeImageModal}
-    role="presentation"
+    aria-label="Close image modal"
   >
     <div
       class="image-modal-content"
       onclick={(e) => e.stopPropagation()}
-      onkeydown={(e) => e.stopPropagation()}
+      onkeydown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          closeImageModal();
+        }
+      }}
       role="dialog"
       aria-modal="true"
       aria-label="Review image viewer"
-      tabindex="-1"
+      tabindex="0"
     >
       <button class="modal-close" onclick={closeImageModal} aria-label="Close image modal">
         <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -494,7 +500,7 @@
         </div>
       {/if}
     </div>
-  </div>
+  </button>
 {/if}
 
 <style>

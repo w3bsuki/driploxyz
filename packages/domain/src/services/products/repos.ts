@@ -2,15 +2,10 @@ import type {
   Product,
   Category,
   ProductImage,
-  DbProduct,
   DbCategory,
-  DbProductImage,
-  Result,
-  Money,
-  Slug
+  Result
 } from './entities';
 import type { SupabasePort, ProductRepository, CategoryRepository, ProductSearchParams, ProductSearchFilters, ProductListOptions, ProductSearchResult } from './ports';
-import { MoneyValueObject, SlugValueObject } from './value-objects';
 import { Ok, Err, NotFoundError, ProductValidationError as ValidationError } from './entities';
 
 /**
@@ -97,7 +92,7 @@ export class SupabaseProductRepository implements ProductRepository {
 
   async search(params: ProductSearchParams): Promise<Result<ProductSearchResult, ValidationError>> {
     try {
-      let query = `
+      const query = `
         *,
         product_images!product_id (
           id, image_url, alt_text, display_order, created_at, product_id, sort_order
@@ -199,7 +194,9 @@ export class SupabaseProductRepository implements ProductRepository {
       let nextCursor: string | undefined;
       if (hasMore && products.length > 0) {
         const lastProduct = products[products.length - 1];
-        nextCursor = Buffer.from(`${lastProduct.created_at.getTime()}:${lastProduct.id}`).toString('base64');
+        if (lastProduct) {
+          nextCursor = Buffer.from(`${lastProduct.created_at.getTime()}:${lastProduct.id}`).toString('base64');
+        }
       }
 
       return Ok({
@@ -579,6 +576,10 @@ export class SupabaseCategoryRepository implements CategoryRepository {
       // For now, just resolve the last segment to a category
       // In a full implementation, this would traverse the hierarchy
       const lastSegment = segments[segments.length - 1];
+      if (!lastSegment) {
+        return Err(new ValidationError('No segment provided'));
+      }
+
       const categoryResult = await this.getBySlug(lastSegment);
 
       if (!categoryResult.success) {

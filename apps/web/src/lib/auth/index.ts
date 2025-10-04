@@ -8,7 +8,7 @@
 
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
-import { env as dynamicPublicEnv } from '$env/dynamic/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 // Avoid importing from $env/static/public to prevent build-time failures
 import { dev } from '$app/environment';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
@@ -56,24 +56,9 @@ function resolveSupabaseConfig(): SupabaseConfig {
     throw cachedSupabaseConfigError;
   }
 
-  const firstNonEmpty = (...vals: Array<string | undefined>) => {
-    for (const v of vals) {
-      if (typeof v === 'string' && v.trim().length > 0) return v.trim();
-    }
-    return undefined;
-  };
-
-  const supabaseUrl = firstNonEmpty(
-    dynamicPublicEnv.PUBLIC_SUPABASE_URL,
-    typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_URL : undefined,
-    typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined
-  );
-
-  const supabaseAnonKey = firstNonEmpty(
-    dynamicPublicEnv.PUBLIC_SUPABASE_ANON_KEY,
-    typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY : undefined,
-    typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined
-  );
+  // Use static environment variables from SvelteKit
+  const supabaseUrl = PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
 
   if (supabaseUrl && supabaseAnonKey) {
     cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
@@ -85,7 +70,7 @@ function resolveSupabaseConfig(): SupabaseConfig {
 
   if (dev) {
     console.warn(
-      '[Auth] Supabase environment variables missing – check .env files in apps/web. Looked in $env/dynamic/public, import.meta.env, $env/static/public, process.env.'
+      '[Auth] Supabase environment variables missing – check .env file in apps/web.'
     );
   }
 
@@ -131,7 +116,8 @@ export async function getServerSession(
   event: RequestEvent
 ): Promise<{ session: AuthSession | null; user: AuthUser | null }> {
   try {
-    const supabase = createServerSupabase(event.cookies, event.fetch);
+    // Use the existing Supabase client if available
+    const supabase = event.locals.supabase || createServerSupabase(event.cookies, event.fetch);
 
     // Use getUser() for secure authentication (contacts Supabase Auth server)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -304,7 +290,7 @@ export function getUserInitials(profile: Profile | null): string {
   if (profile.full_name) {
     return profile.full_name
       .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
+      .map((name: string) => name.charAt(0).toUpperCase())
       .slice(0, 2)
       .join('');
   }

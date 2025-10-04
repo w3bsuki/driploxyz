@@ -158,8 +158,8 @@ const debugBypassHandler: Handle = async ({ event, resolve }) => {
 export const handle: Handle = sequence(
   debugBypassHandler,
   localeRedirectHandler,
-  csrfGuard,
   authHandler,
+  csrfGuard,
   languageHandler,
   // countryRedirectHandler, // intentionally disabled for perf
   authGuardHandler

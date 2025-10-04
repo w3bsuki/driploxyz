@@ -12,7 +12,7 @@ export function optimizedI18nPlugin(): Plugin {
     name: 'optimized-i18n',
 
     // Transform imports to use dynamic loading
-    resolveId(id: string, importer?: string) {
+    resolveId(id: string) {
       // Handle locale bundle imports
       if (id.includes('@repo/i18n/locales/')) {
         return id;
@@ -30,7 +30,7 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Configure build options
-    config(config: any, { command }: { command: string }) {
+    config(config: unknown, { command }: { command: string }) {
       if (command === 'build') {
         // Ensure locale bundles are split into separate chunks
         config.build = config.build || {};
@@ -53,7 +53,7 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Generate bundle metadata for analysis
-    generateBundle(options: any, bundle: Record<string, any>) {
+    generateBundle(_options: unknown, bundle: Record<string, unknown>) {
       const i18nChunks = Object.keys(bundle).filter(key =>
         key.includes('i18n-') || key.includes('@repo/i18n')
       );

@@ -2,12 +2,23 @@ import { json } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { env as dynamicPublicEnv } from '$env/dynamic/public';
 
+// Define ImportMeta interface for environment variables
+interface ImportMetaEnv {
+  PUBLIC_SUPABASE_URL?: string;
+  PUBLIC_SUPABASE_ANON_KEY?: string;
+  [key: string]: string | undefined;
+}
+
+interface ImportMeta {
+  env: ImportMetaEnv;
+}
+
 export const GET = async () => {
   if (!dev) {
     return new Response('Not found', { status: 404 });
   }
 
-  const importMetaEnv = (typeof import.meta !== 'undefined' ? (import.meta as any).env : {}) as Record<string, string | undefined>;
+  const importMetaEnv = (typeof import.meta !== 'undefined' ? (import.meta as ImportMeta).env : {}) as Record<string, string | undefined>;
 
   const dynamic = {
     PUBLIC_SUPABASE_URL: dynamicPublicEnv.PUBLIC_SUPABASE_URL,

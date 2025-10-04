@@ -13,9 +13,7 @@ import {
   // Domain types
   type Product as DomainProduct,
   type Category as DomainCategory,
-  type Result,
   type ProductSearchParams,
-  type ProductSearchResult,
 
   // Domain infrastructure
   createSupabasePort,
@@ -42,9 +40,9 @@ export class ProductDomainAdapter {
   private categoryRepo: ReturnType<typeof createCategoryRepository>;
   private getProductBySlug: ReturnType<typeof createGetProductBySlug>;
   private searchProducts: ReturnType<typeof createSearchProducts>;
-  private resolveCategorySegments: ReturnType<typeof createResolveCategorySegments>;
+  public resolveCategorySegments: ReturnType<typeof createResolveCategorySegments>;
   private getFeaturedProducts: ReturnType<typeof createGetFeaturedProducts>;
-  private getProductsByCategory: ReturnType<typeof createGetProductsByCategory>;
+  public getProductsByCategory: ReturnType<typeof createGetProductsByCategory>;
 
   constructor(supabase: SupabaseClient<Database>) {
     // Create domain infrastructure
@@ -365,13 +363,13 @@ export class ProductDomainAdapter {
       description: domainProduct.description,
       price: domainProduct.price.amount,
       condition: domainProduct.condition,
-      size: domainProduct.size,
-      brand: domainProduct.brand,
-      color: domainProduct.color,
-      material: domainProduct.material,
+      size: domainProduct.size || null,
+      brand: domainProduct.brand || null,
+      color: domainProduct.color || null,
+      material: domainProduct.material || null,
       location: domainProduct.location,
       country_code: domainProduct.country_code,
-      region: domainProduct.region,
+      region: domainProduct.region || null,
       slug: domainProduct.slug.value,
       seller_id: domainProduct.seller_id,
       category_id: domainProduct.category_id,
@@ -381,20 +379,66 @@ export class ProductDomainAdapter {
       favorite_count: domainProduct.favorite_count,
       created_at: domainProduct.created_at.toISOString(),
       updated_at: domainProduct.updated_at.toISOString(),
+      // Add missing required fields with default values
+      archived_at: null,
+      auto_archive_after_days: null,
+      boost_history_id: null,
+      boost_priority: null,
+      boost_expires_at: null,
+      is_boosted: false,
+      is_featured: false,
+      is_verified: false,
+      is_draft: false,
+      is_pending: false,
+      is_rejected: false,
+      rejection_reason: null,
+      moderation_notes: null,
+      moderation_status: 'approved',
+      moderation_updated_at: null,
+      moderation_updated_by: null,
+      shipping_type: null,
+      shipping_cost: null,
+      shipping_width: null,
+      shipping_height: null,
+      shipping_length: null,
+      shipping_weight: null,
+      // Add all missing fields from the database type
+      boost_type: null,
+      boosted_until: null,
+      brand_collection_id: null,
+      commission_rate: null,
+      custom_subcategory: null,
+      drip_admin_notes: null,
+      drip_approved_at: null,
+      drip_nominated_at: null,
+      drip_nominated_by: null,
+      drip_quality_score: null,
+      drip_rejected_at: null,
+      drip_rejection_reason: null,
+      drip_reviewed_by: null,
+      drip_status: null,
+      is_drip_candidate: false,
+      net_earnings: null,
+      platform_fee: null,
+      search_vector: null,
+      slug_locked: false,
+      sold_at: null,
+      status: null,
+      tags: null,
       images: domainProduct.images.map(img => ({
         id: img.id,
         product_id: img.product_id,
         image_url: img.image_url,
-        alt_text: img.alt_text,
+        alt_text: img.alt_text || null,
         display_order: img.display_order,
-        sort_order: img.sort_order,
+        sort_order: img.sort_order || null,
         created_at: img.created_at.toISOString()
       })),
       category_name: domainProduct.category_name,
       seller_name: domainProduct.seller_username,
       seller_username: domainProduct.seller_username,
       seller_rating: domainProduct.seller_rating
-    };
+    } as ProductWithImages;
   }
 }
 
@@ -418,8 +462,8 @@ export function getProductAdapter(locals: Locals): ProductDomainAdapter {
 
 // Export the domain types for use in components if needed
 export type {
-  DomainProduct,
-  DomainCategory,
+  Product as DomainProduct,
+  Category as DomainCategory,
   ProductSearchParams,
   ProductSearchResult,
   Result

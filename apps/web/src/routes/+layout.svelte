@@ -90,26 +90,6 @@
     }
   });
 
-  // Enable SvelteKit view transitions for smoother navigation
-  $effect(() => {
-    if (browser && 'startViewTransition' in document) {
-      // Enhance page navigation with view transitions
-      const originalGoto = goto;
-      window.goto = async (...args) => {
-        if (document.startViewTransition) {
-          return new Promise(resolve => {
-            document.startViewTransition?.(async () => {
-              const result = await originalGoto(...args);
-              resolve(result);
-            });
-          });
-        } else {
-          return originalGoto(...args);
-        }
-      };
-    }
-  });
-
   // Get Supabase client from load function (following official pattern)
   const { supabase, session, user } = $derived(data);
   const isAuthPage = $derived(page.route.id?.includes('(auth)'));

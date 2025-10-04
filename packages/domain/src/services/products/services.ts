@@ -178,13 +178,18 @@ export class ResolveCategorySegments {
     try {
       // Start with the most specific segment (last one)
       const lastSegment = cleanSegments[cleanSegments.length - 1];
+      if (!lastSegment) {
+        return Err(new ValidationError('Invalid segment'));
+      }
+
       const categoryResult = await this.categoryRepo.getBySlug(lastSegment);
 
       if (!categoryResult.success) {
         // Try to resolve as a search
         const searchResult = await this.categoryRepo.search(lastSegment, 1);
         if (searchResult.success && searchResult.data.length > 0) {
-          return Ok([searchResult.data[0].id]);
+          const id = searchResult.data[0]?.id;
+          return id ? Ok([id]) : Err(new ValidationError('Category not found'));
         }
         // Normalize to validation error for this service contract
         return Err(new ValidationError('Category not found'));
@@ -241,7 +246,7 @@ export class ResolveCategorySegments {
     return Ok(cleanSegments);
   }
 
-  private async validateHierarchy(category: Category, segments: string[]): Promise<Result<boolean, ValidationError>> {
+  private async validateHierarchy(category: Category, _segments: string[]): Promise<Result<boolean, ValidationError>> {
     // Get the breadcrumb to verify the hierarchy
     const breadcrumbResult = await this.categoryRepo.getBreadcrumb(category.id);
 
@@ -249,11 +254,7 @@ export class ResolveCategorySegments {
       return Ok(true); // Can't validate hierarchy, but don't fail the whole operation
     }
 
-    const breadcrumb = breadcrumbResult.data;
-    const breadcrumbSlugs = breadcrumb.map(cat => cat.slug.value);
-
     // Check if the provided segments match the breadcrumb (in reverse order)
-    const reversedSegments = [...segments].reverse();
 
     // We only need to validate that the category we found makes sense in the context
     // The exact hierarchy validation can be enhanced based on business requirements

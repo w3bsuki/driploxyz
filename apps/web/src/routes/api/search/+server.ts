@@ -29,7 +29,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     const productAdapter = new ProductDomainAdapter(locals.supabase);
 
     // Resolve category IDs using domain adapter's category resolution
-    const categoryResult = await productAdapter.resolveCategorySegments([category, subcategory, specific].filter(Boolean));
+    const categoryResult = await productAdapter.resolveCategorySegments.execute([category, subcategory, specific].filter(Boolean));
     let categoryIds: string[] = [];
 
     if (categoryResult.success) {

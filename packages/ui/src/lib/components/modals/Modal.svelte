@@ -142,11 +142,11 @@
     aria-modal="true"
     aria-labelledby={labelledBy}
     aria-describedby={descriptionId}
+    tabindex="0"
   >
     <div
       bind:this={dialogRef}
       class={`w-full ${sizeClasses[size]} rounded-[length:var(--modal-radius)] bg-[color:var(--modal-bg)] shadow-[var(--modal-shadow)] border border-[color:var(--border-subtle)] focus:outline-none ${className}`}
-      tabindex="-1"
     >
       <!-- Header Section -->
       {#if header}

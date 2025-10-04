@@ -3,10 +3,6 @@ import type { Database } from '@repo/database';
 import type {
   Product,
   Category,
-  ProductImage,
-  DbProduct,
-  DbCategory,
-  DbProductImage,
   Result,
   NotFoundError,
   ProductValidationError as ValidationError
@@ -246,9 +242,11 @@ export function createSupabasePort(client: SupabaseClient<Database>): SupabasePo
         // Apply ordering
         if (options.orderBy) {
           const orderBy = Array.isArray(options.orderBy) ? options.orderBy[0] : options.orderBy;
-          query = query.order(orderBy.column, {
-            ascending: orderBy.ascending ?? true
-          });
+          if (orderBy) {
+            query = query.order(orderBy.column, {
+              ascending: orderBy.ascending ?? true
+            });
+          }
         }
 
         // Apply pagination

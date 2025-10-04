@@ -3,6 +3,18 @@ import { env as dynamicPublicEnv } from '$env/dynamic/public';
 // Avoid $env/static/public imports for optional keys to prevent build-time errors
 import { building, dev } from '$app/environment';
 
+// Define ImportMeta interface for environment variables
+interface ImportMetaEnv {
+  PUBLIC_SUPABASE_URL?: string;
+  PUBLIC_SUPABASE_ANON_KEY?: string;
+  PUBLIC_STRIPE_PUBLISHABLE_KEY?: string;
+  [key: string]: string | undefined;
+}
+
+interface ImportMeta {
+  env: ImportMetaEnv;
+}
+
 // Public environment variables (available to client and server)
 const publicEnvSchema = z.object({
 	PUBLIC_SUPABASE_URL: z.string().url().min(1, 'PUBLIC_SUPABASE_URL is required'),
@@ -82,17 +94,17 @@ export function validatePublicEnv(): PublicEnv {
                 const resolved = {
                         PUBLIC_SUPABASE_URL: firstNonEmpty(
                                 dynamicPublicEnv.PUBLIC_SUPABASE_URL,
-                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_URL : undefined,
+                                typeof import.meta !== 'undefined' ? (import.meta as ImportMeta).env?.PUBLIC_SUPABASE_URL : undefined,
                                 process.env.PUBLIC_SUPABASE_URL
                         ),
                         PUBLIC_SUPABASE_ANON_KEY: firstNonEmpty(
                                 dynamicPublicEnv.PUBLIC_SUPABASE_ANON_KEY,
-                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY : undefined,
+                                typeof import.meta !== 'undefined' ? (import.meta as ImportMeta).env?.PUBLIC_SUPABASE_ANON_KEY : undefined,
                                 process.env.PUBLIC_SUPABASE_ANON_KEY
                         ),
                         PUBLIC_STRIPE_PUBLISHABLE_KEY: firstNonEmpty(
                                 dynamicPublicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY,
-                                typeof import.meta !== 'undefined' ? (import.meta as any).env?.PUBLIC_STRIPE_PUBLISHABLE_KEY : undefined,
+                                typeof import.meta !== 'undefined' ? (import.meta as ImportMeta).env?.PUBLIC_STRIPE_PUBLISHABLE_KEY : undefined,
                                 process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY
                         )
                 };
@@ -101,7 +113,10 @@ export function validatePublicEnv(): PublicEnv {
     } catch (error) {
                 if (error instanceof z.ZodError) {
                         if (dev) {
-                                console.warn('[env] Invalid public environment configuration. Using empty defaults in dev to avoid hard-fail.');
+                                console.error('[env] CRITICAL: Invalid public environment configuration.');
+                                console.error('[env] Missing variables:', error.errors.map(e => e.path.join('.')).join(', '));
+                                console.error('[env] Please check your .env file. The app will NOT work without these variables.');
+                                // Still provide empty defaults to avoid complete breakage, but log the severity
                                 return {
                                         PUBLIC_SUPABASE_URL: '',
                                         PUBLIC_SUPABASE_ANON_KEY: '',

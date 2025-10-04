@@ -6,3 +6,7 @@
 
 // Placeholder for profile service exports
 // Will be populated as services are extracted from apps/web/src/lib/services/
+
+export const ProfilesDomain = {
+  // Placeholder for profile services
+} as const;

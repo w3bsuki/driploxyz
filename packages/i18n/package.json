@@ -14,7 +14,9 @@
     "clean": "rimraf lib dist",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "echo \"No automated tests for localization bundle (manual spot checks)\""
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -36,6 +38,7 @@
     "@repo/typescript-config": "workspace:*",
     "eslint": "^9.31.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^2.0.0"
   }
 }

@@ -120,6 +120,8 @@
             <button
               onclick={handleDismiss}
               class="text-xs text-gray-500 hover:text-gray-900"
+              aria-label="Skip tutorial"
+              type="button"
             >
               Skip all
             </button>
@@ -127,6 +129,8 @@
               <button
                 onclick={handleNext}
                 class="text-xs font-medium text-blue-600 hover:text-blue-700"
+                aria-label={`Go to step ${step + 1} of tutorial`}
+                type="button"
               >
                 Next →
               </button>
@@ -134,6 +138,8 @@
               <button
                 onclick={handleDismiss}
                 class="text-xs font-medium text-green-600 hover:text-green-700"
+                aria-label="Complete tutorial"
+                type="button"
               >
                 Got it! ✓
               </button>

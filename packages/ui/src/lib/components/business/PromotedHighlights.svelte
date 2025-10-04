@@ -161,10 +161,9 @@
 </style>
 
 <!-- Promoted Listings / Highlights -->
-<section 
+<section
   class="border-y border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)] overflow-hidden"
   aria-label={translations.trending_promoted}
-  role="region"
 >
   
   <!-- Section Header with Navigation -->
@@ -247,8 +246,7 @@
     {:else if hasSellers}
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
-    <div
-      role="group"
+    <section
       aria-label="Promoted products carousel"
       class="relative pb-2"
       onkeydown={handleKeyNavigation}
@@ -401,9 +399,8 @@
           {/each}
         {/if}
       </div>
-    </div>
+    </section>
   </div>
-</section>
 
 <!-- Modal rendered at the end -->
 {#if showQuickView && selectedProduct}

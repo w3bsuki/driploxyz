@@ -105,11 +105,11 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
         if (resolution.categoryIds.length > 0 && !resolution.isVirtual) {
           // Use domain service for real categories
           const categoryId = resolution.categoryIds[0]; // Use primary category
-          const result = await productAdapter.getProductsByCategory(categoryId, {
+          const result = await productAdapter.getProductsByCategory.execute(categoryId || '', {
             includeDescendants: true,
             limit,
             offset: (page - 1) * limit,
-            sort: { by: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at', direction: sortDirection },
+            sort: { by: (sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at') as 'created_at' | 'price' | 'popularity', direction: sortDirection as 'asc' | 'desc' },
             country: currentCountry
           });
 
@@ -132,7 +132,7 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
             conditions: hierarchicalFilters.conditions,
             sizes: hierarchicalFilters.sizes,
             brands: hierarchicalFilters.brands,
-            sort: { by: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at', direction: sortDirection }
+            sort: { by: (sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at') as 'created_at' | 'price' | 'popularity', direction: sortDirection as 'asc' | 'desc' }
           };
 
           return await productAdapter.searchProductsWithFilters('', searchOptions);
@@ -148,7 +148,7 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
 
     // Extract results with error handling
     const products = productsResult.status === 'fulfilled' ? productsResult.value.data || [] : [];
-    const total = productsResult.status === 'fulfilled' ? productsResult.value.total || 0 : 0;
+    const total = productsResult.status === 'fulfilled' && 'total' in productsResult.value ? productsResult.value.total || 0 : 0;
     const navigation = navigationResult.status === 'fulfilled' ? navigationResult.value : { pills: [], dropdown: [] };
     const sellers = sellersResult.status === 'fulfilled' ? sellersResult.value || [] : [];
 

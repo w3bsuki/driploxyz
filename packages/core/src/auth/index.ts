@@ -46,7 +46,7 @@ export function createAuthHelpers(options: CreateClientOptions): AuthHelpers {
   }
 
   async function safeGetSession(event: RequestEvent) {
-    const locals = event.locals as AppLocals;
+    const locals = event.locals as unknown as AppLocals;
     if (locals.__sessionCache !== undefined) {
       return locals.__sessionCache as { session: Session | null; user: User | null };
     }
@@ -114,7 +114,7 @@ export function createAuthHelpers(options: CreateClientOptions): AuthHelpers {
 
 // Utility guard for admin; simple placeholder to avoid duplication across apps
 export async function assertAdmin(event: RequestEvent, predicate: (user: User) => Promise<boolean> | boolean) {
-  const locals = event.locals as AppLocals;
+  const locals = event.locals as unknown as AppLocals;
   if (!locals.safeGetSession) return false;
   const { user } = await locals.safeGetSession();
   if (!user) return false;

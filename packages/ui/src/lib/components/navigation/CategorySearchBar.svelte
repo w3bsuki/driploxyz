@@ -159,20 +159,22 @@ function handleConditionPillClick(conditionKey: string) {
 
 }
 
-// Handle click outside for category dropdown
+// Handle click outside for category dropdown - improved with proper cleanup
 $effect(() => {
-  if (typeof window !== 'undefined') {
-    function handleClickOutside(e: MouseEvent) {
+  if (typeof window !== 'undefined' && showCategoryDropdown) {
+    const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.category-search-dropdown-container')) {
         showCategoryDropdown = false;
       }
-    }
+    };
 
-    if (showCategoryDropdown) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
+    // Add event listener with proper capture
+    document.addEventListener('click', handleClickOutside, true);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
   }
 });
 

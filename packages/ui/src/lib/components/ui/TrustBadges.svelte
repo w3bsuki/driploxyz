@@ -1,165 +1,144 @@
 <script lang="ts">
-  interface BadgeConfig {
-    id: string;
-    icon: string;
-    title: string;
-    subtitle: string;
-    color: string;
-    clickable: boolean;
-    onClick?: () => void;
-  }
-
   interface Props {
-    showProtection?: boolean;
-    showSecurePayment?: boolean;
-    showReturnPolicy?: boolean;
-    showAuthenticity?: boolean;
-    layout?: 'horizontal' | 'vertical' | 'grid';
-    size?: 'sm' | 'md';
-    className?: string;
-    onProtectionClick?: () => void;
-    onReturnPolicyClick?: () => void;
+    variant?: 'default' | 'compact' | 'detailed';
+    showPayment?: boolean;
+    showSecurity?: boolean;
+    showReturns?: boolean;
+    showShipping?: boolean;
+    class?: string;
   }
 
-  let { 
-    showProtection = true,
-    showSecurePayment = true,
-    showReturnPolicy = true,
-    showAuthenticity = false,
-    layout = 'horizontal',
-    size = 'md',
-    className = '',
-    onProtectionClick,
-    onReturnPolicyClick
+  let {
+    variant = 'default',
+    showPayment = true,
+    showSecurity = true,
+    showReturns = true,
+    showShipping = true,
+    class: className = ''
   }: Props = $props();
 
-  const badges = $derived((): BadgeConfig[] => {
-    const badgeList: BadgeConfig[] = [];
-
-    if (showProtection) {
-      badgeList.push({
-        id: 'protection',
-        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-        </svg>`,
-        title: 'Driplo Protection',
-        subtitle: 'Secure purchase guarantee',
-        color: 'text-[color:var(--status-success-solid)]',
-        clickable: !!onProtectionClick,
-        onClick: onProtectionClick
-      });
+  const badges = [
+    {
+      id: 'payment',
+      icon: 'M3 10h18M7 15h1m4 0h1m-7-4h12a3 3 0 013-3V6a3 3 0 00-3-3H6a3 3 0 00-3 3v7a3 3 0 003 3z',
+      title: 'Secure Payment',
+      description: 'Your payment information is encrypted and secure',
+      show: showPayment
+    },
+    {
+      id: 'security',
+      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      title: 'Buyer Protection',
+      description: 'Shop with confidence - we protect your purchase',
+      show: showSecurity
+    },
+    {
+      id: 'returns',
+      icon: 'M16 15v1a4 4 0 004-4h4a4 4 0 004-4v-1m-4-4l-4-4m4 4V9a4 4 0 00-4-4H5a4 4 0 00-4 4v1m4-4V5a4 4 0 014-4h4a4 4 0 014 4v1',
+      title: 'Easy Returns',
+      description: '30-day return policy for most items',
+      show: showReturns
+    },
+    {
+      id: 'shipping',
+      icon: 'M20 7l-8-4-8 4M16 15v1a4 4 0 004-4h4a4 4 0 004-4v-1m-4-4l-4-4m4 4V9a4 4 0 00-4-4H5a4 4 0 00-4 4v1m4-4V5a4 4 0 014-4h4a4 4 0 014 4v1',
+      title: 'Fast Shipping',
+      description: 'Quick delivery to your doorstep',
+      show: showShipping
     }
-
-    if (showSecurePayment) {
-      badgeList.push({
-        id: 'payment',
-        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-        </svg>`,
-        title: 'Secure Payment',
-        subtitle: 'Encrypted transactions',
-        color: 'text-[color:var(--status-info-solid)]',
-        clickable: false
-      });
-    }
-
-    if (showReturnPolicy) {
-      badgeList.push({
-        id: 'returns',
-        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg>`,
-        title: 'Easy Returns',
-        subtitle: '3-day return policy',
-        color: 'text-[color:var(--brand-primary)]',
-        clickable: !!onReturnPolicyClick,
-        onClick: onReturnPolicyClick
-      });
-    }
-
-    if (showAuthenticity) {
-      badgeList.push({
-        id: 'authenticity',
-        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-        </svg>`,
-        title: 'Verified Authentic',
-        subtitle: 'Quality guaranteed',
-        color: 'text-[color:var(--status-warning-solid)]',
-        clickable: false
-      });
-    }
-
-    return badgeList;
-  });
-
-  const containerClasses = $derived(() => {
-    const base = 'trust-badges';
-    const layoutClass = layout === 'horizontal' ? 'flex flex-wrap gap-3' : 
-                       layout === 'vertical' ? 'flex flex-col gap-2' : 
-                       'grid grid-cols-2 gap-2';
-    return `${base} ${layoutClass} ${className}`;
-  });
-
-  const badgeClasses = $derived(() => {
-    const sizeClasses = size === 'sm' ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm';
-    return `flex items-center gap-2 bg-[color:var(--surface-subtle)] border border-[color:var(--border-subtle)] rounded-[--radius-md] transition-colors ${sizeClasses}`;
-  });
-
-  const iconClasses = $derived(() => {
-    return size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
-  });
+  ];
 </script>
 
-<div class={containerClasses}>
-  {#each badges() as badge}
-    {#if badge.clickable}
-      <button
-        onclick={badge.onClick}
-        class="{badgeClasses} hover:bg-[color:var(--surface-emphasis)] cursor-pointer"
-      >
-        <span class="{badge.color} {iconClasses}">
-          {@html badge.icon}
-        </span>
-        <div class="flex-1 text-left">
-          <div class="font-medium text-[color:var(--text-primary)]">
-            {badge.title}
-          </div>
-          {#if size === 'md'}
-            <div class="text-xs text-[color:var(--text-tertiary)]">
-              {badge.subtitle}
-            </div>
-          {/if}
-        </div>
-        {#if badge.clickable}
-          <svg class="w-3 h-3 text-[color:var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+<div class="trust-badges {className}" role="list" aria-label="Trust badges">
+  {#if variant === 'compact'}
+    <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+      {#each badges.filter(badge => badge.show) as badge}
+        <div class="flex items-center gap-1" role="listitem">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{badge.icon}" />
           </svg>
-        {/if}
-      </button>
-    {:else}
-      <div class={badgeClasses}>
-        <span class="{badge.color} {iconClasses}">
-          {@html badge.icon}
-        </span>
-        <div class="flex-1">
-          <div class="font-medium text-[color:var(--text-primary)]">
-            {badge.title}
-          </div>
-          {#if size === 'md'}
-            <div class="text-xs text-[color:var(--text-tertiary)]">
-              {badge.subtitle}
-            </div>
-          {/if}
+          <span class="font-medium">{badge.title}</span>
         </div>
-      </div>
-    {/if}
-  {/each}
+      {/each}
+    </div>
+  {:else if variant === 'detailed'}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6" role="list">
+      {#each badges.filter(badge => badge.show) as badge}
+        <div class="flex flex-col items-center text-center p-4 rounded-lg border border-gray-200 bg-gray-50" role="listitem">
+          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{badge.icon}" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-1">{badge.title}</h3>
+          <p class="text-xs text-gray-600">{badge.description}</p>
+        </div>
+      {/each}
+    </div>
+  {:else}
+    <div class="flex flex-wrap items-center justify-center gap-6 py-4" role="list">
+      {#each badges.filter(badge => badge.show) as badge}
+        <div class="flex flex-col items-center text-center group" role="listitem">
+          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors mb-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{badge.icon}" />
+            </svg>
+          </div>
+          <span class="text-xs font-medium text-gray-700 group-hover:text-gray-900 transition-colors">{badge.title}</span>
+        </div>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>
-  button:focus-visible {
-    outline: 2px solid var(--brand-primary);
-    outline-offset: 2px;
+  .trust-badges {
+    /* Ensure proper spacing and alignment */
+  }
+  
+  /* Enhanced hover effects for default variant */
+  .trust-badges .group:hover .group-hover\:bg-blue-100 {
+    background-color: oklch(0.94 0.04 240);
+  }
+  
+  .trust-badges .group:hover .group-hover\:text-blue-600 {
+    color: oklch(0.52 0.15 240);
+  }
+  
+  /* Ensure proper contrast */
+  .text-gray-900 {
+    color: oklch(0.15 0.015 270);
+  }
+  
+  .text-gray-700 {
+    color: oklch(0.38 0.025 270);
+  }
+  
+  .text-gray-600 {
+    color: oklch(0.5 0.025 270);
+  }
+  
+  .text-gray-500 {
+    color: oklch(0.62 0.02 270);
+  }
+  
+  .bg-gray-50 {
+    background-color: oklch(0.98 0.005 270);
+  }
+  
+  .bg-gray-100 {
+    background-color: oklch(0.96 0.005 270);
+  }
+  
+  .border-gray-200 {
+    border-color: oklch(0.95 0.005 270);
+  }
+  
+  .text-blue-600 {
+    color: oklch(0.52 0.15 240);
+  }
+  
+  .bg-blue-100 {
+    background-color: oklch(0.94 0.04 240);
   }
 </style>

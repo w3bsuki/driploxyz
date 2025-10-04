@@ -4,6 +4,6 @@
     "composite": true,
     "outDir": "dist"
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src/**/*", "eslint.config.ts"],
+  "exclude": ["dist", "node_modules", "src/generated/**/*"]
 }

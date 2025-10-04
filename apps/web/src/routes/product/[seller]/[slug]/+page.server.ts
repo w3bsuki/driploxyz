@@ -2,6 +2,30 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
 import { getProductAdapter } from '$lib/services/products.domain';
+import type { ProductWithImages } from '$lib/services/products';
+
+// Define product interfaces
+interface ProductImage {
+  image_url: string;
+  sort_order?: number;
+}
+
+interface Product {
+  id: string;
+  title: string;
+  slug: string;
+  seller_id: string;
+  seller_username: string;
+  seller_name?: string;
+  seller_rating?: number;
+  category_id?: string;
+  category_name?: string;
+  images?: ProductImage[];
+  price: number;
+  currency?: string;
+  description?: string;
+  condition?: string;
+}
 
 export const load = (async ({ params, locals, depends, setHeaders }) => {
   const { session, user } = await locals.safeGetSession();
@@ -107,11 +131,11 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
       .filter(Boolean) || [],
     seller_name: product.seller_name || product.seller_username || 'Unknown Seller',
     seller_username: product.seller_username,
-    seller_avatar: product.seller_avatar, // This would need to be added to domain model
+    seller_avatar: undefined, // This would need to be added to domain model
     seller_rating: product.seller_rating,
     seller_sales_count: 0, // This would need to be added to domain model
     category_name: product.category_name,
-    category_slug: product.category_slug,
+    category_slug: undefined, // This would need to be added to domain model
     parent_category: parentCategory,
     top_level_category: topLevelCategory,
     currency: 'EUR'
@@ -141,9 +165,9 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
             },
             limit: 6,
             sort: { by: 'created_at', direction: 'desc' }
-          }).then(result => result.data?.filter(p => p.id !== product.id) || []),
+          }).then(result => result.data?.filter((p: ProductWithImages) => p.id !== product.id) || []),
           2500,
-          { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
+          []
         )
       : Promise.resolve({ data: [] }),
 
@@ -152,9 +176,9 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
       productAdapter.getSellerProducts(product.seller_id!, {
         limit: 4,
         sort: { by: 'created_at', direction: 'desc' }
-      }).then(result => result.data?.filter(p => p.id !== product.id) || []),
+      }).then(result => result.data?.filter((p: ProductWithImages) => p.id !== product.id) || []),
       2000,
-      { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
+      []
     ),
 
     // Get seller reviews and rating summary (keep existing logic for now)
@@ -188,9 +212,9 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
   ]);
 
   const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
-  const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
-  const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
-  const reviews = reviewsResult.status === 'fulfilled' ? reviewsResult.value.data || [] : [];
+  const similarProducts = similarResult.status === 'fulfilled' && 'data' in similarResult.value ? similarResult.value.data || [] : [];
+  const sellerProducts = sellerResult.status === 'fulfilled' && 'data' in sellerResult.value ? sellerResult.value.data || [] : [];
+  const reviews = reviewsResult.status === 'fulfilled' && 'data' in reviewsResult.value ? reviewsResult.value.data || [] : [];
   const isOwner = session && user && user.id === product.seller_id;
 
   // Calculate rating summary
@@ -220,21 +244,21 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     // Stream similar products - enhances discoverability but not critical
     similarProducts: Promise.resolve().then(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
-      return similarProducts.map(p => ({
+      return Array.isArray(similarProducts) ? similarProducts.map((p: Product) => ({
         ...p,
-        images: p.images?.map(img => img.image_url) || [],
+        images: p.images?.map((img: ProductImage) => img.image_url) || [],
         canonicalUrl: p.slug && p.seller_username ? `/product/${p.seller_username}/${p.slug}` : `/product/${p.id}`
-      }));
+      })) : [];
     }),
 
     // Stream seller products - related content
     sellerProducts: Promise.resolve().then(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
-      return sellerProducts.map(p => ({
+      return Array.isArray(sellerProducts) ? sellerProducts.map((p: Product) => ({
         ...p,
-        images: p.images?.map(img => img.image_url) || [],
+        images: p.images?.map((img: ProductImage) => img.image_url) || [],
         canonicalUrl: p.slug && p.seller_username ? `/product/${p.seller_username}/${p.slug}` : `/product/${p.id}`
-      }));
+      })) : [];
     }),
 
     // Stream reviews and rating data - social proof but not blocking

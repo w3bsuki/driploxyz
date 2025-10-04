@@ -117,7 +117,9 @@
       "Bash(findstr:*)",
       "Bash(wmic process:*)",
       "Bash(cmd //c:*)",
-      "SlashCommand(/plan)"
+      "SlashCommand(/plan)",
+      "Bash(supabase db:*)",
+      "Bash(npx supabase db reset:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

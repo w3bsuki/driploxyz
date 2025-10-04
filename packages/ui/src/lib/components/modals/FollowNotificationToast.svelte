@@ -116,11 +116,6 @@
 {/if}
 
 <style>
-  @keyframes shrink {
-    from { transform: scaleX(1); }
-    to { transform: scaleX(0); }
-  }
-
   @keyframes slide-in-from-right-full {
     from {
       transform: translateX(100%);

@@ -174,6 +174,7 @@ export { default as OrderNotificationToast } from './components/modals/OrderNoti
 export { default as BottomNav } from './components/navigation/BottomNav.svelte';
 
 // Form components
+export { default as FormField } from './components/forms/FormField.svelte';
 export { default as Select } from './components/forms/Select.svelte';
 export { default as ConditionSelector } from './components/forms/ConditionSelector.svelte';
 export { default as BrandSelector } from './components/forms/BrandSelector.svelte';
@@ -280,6 +281,10 @@ export * from './utils/imagePreloader';
 
 // Core utilities
 export * from './utils/index';
+
+// Loading and Error States
+export { default as LoadingStates } from './components/utilities/LoadingStates.svelte';
+export { default as ErrorStates } from './components/utilities/ErrorStates.svelte';
 
 // Melt UI Primitives
 export * from './primitives';

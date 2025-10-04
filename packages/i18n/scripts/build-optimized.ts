@@ -39,7 +39,7 @@ async function buildOptimized(): Promise<void> {
   }
 
   // Generate consolidated runtime
-  const runtimeContent = generateConsolidatedRuntime(locales, allMessages);
+  const runtimeContent = generateConsolidatedRuntime(locales);
   await fs.writeFile(path.join(OUTPUT_DIR, 'runtime.js'), runtimeContent);
 
   // Generate consolidated messages per locale (for dynamic loading)
@@ -58,7 +58,7 @@ async function buildOptimized(): Promise<void> {
   await fs.writeFile(path.join(OUTPUT_DIR, 'index.d.ts'), typesContent);
 }
 
-function generateConsolidatedRuntime(locales: string[], allMessages: MessageCollection): string {
+function generateConsolidatedRuntime(locales: string[]): string {
   const baseLocale = 'en';
   const defaultLocale = 'bg'; // Project default per CLAUDE.md
 

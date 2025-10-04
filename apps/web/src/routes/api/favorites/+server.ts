@@ -1,6 +1,29 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+export const GET: RequestHandler = async ({ locals }) => {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { data, error } = await locals.supabase
+      .from('favorites')
+      .select('product_id')
+      .eq('user_id', user.id);
+
+    if (error) {
+      return json({ error: 'Failed to fetch favorites' }, { status: 500 });
+    }
+
+    return json({ favorites: data?.map(f => f.product_id) || [] });
+  } catch {
+    return json({ error: 'Internal server error' }, { status: 500 });
+  }
+};
+
 export const POST: RequestHandler = async ({ request, locals }) => {
   const { session, user } = await locals.safeGetSession();
 

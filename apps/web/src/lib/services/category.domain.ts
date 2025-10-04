@@ -9,17 +9,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import {
-  // Domain types
-  type Category as DomainCategory,
-  type Result,
-
   // Domain infrastructure
   createSupabasePort,
   createCategoryRepository,
 
   // Domain services
-  createResolveCategorySegments,
-  createGetProductsByCategory
+  createResolveCategorySegments
 } from '@repo/domain';
 
 // Legacy types from the app for compatibility
@@ -140,7 +135,7 @@ export class CategoryDomainAdapter {
    * Get category navigation (pills and dropdown)
    * For now, return empty structure - can be enhanced with domain data
    */
-  async getCategoryNavigation(resolution: CategoryResolution): Promise<CategoryNavigation> {
+  async getCategoryNavigation(_resolution: CategoryResolution): Promise<CategoryNavigation> {
     // TODO: Implement using domain category tree structure
     return {
       pills: [],

@@ -6,3 +6,7 @@
 
 // Placeholder for payment service exports
 // Will be populated as services are extracted from apps/web/src/lib/services/
+
+export const PaymentsDomain = {
+  // Placeholder for payment services
+} as const;

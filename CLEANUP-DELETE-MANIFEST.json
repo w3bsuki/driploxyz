@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "generatedAt": "",
+  "entries": [
+    {
+      "path": "",
+      "category": "docs|scripts|routes|components|packages|tests|artifacts|assets|config",
+      "reason": "",
+      "evidence": "",
+      "alternative": ""
+    }
+  ]
+}

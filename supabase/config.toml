@@ -45,7 +45,8 @@ content_path = "./apps/web/email-templates/recovery.html"
 enabled = true
 port = 54326
 
-# Remove the problematic types configuration for now
+[types]
+enabled = true
 
 # Project settings (for linked projects)
 [project]
