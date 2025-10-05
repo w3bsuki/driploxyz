@@ -31,7 +31,7 @@
     translations = {}
   }: SearchDropdownProps = $props();
 
-  let results: ProductWithImages[] = $state([]);
+  let results: ProductWithImages[] = $state.raw([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
   let searchTimeout: NodeJS.Timeout;
