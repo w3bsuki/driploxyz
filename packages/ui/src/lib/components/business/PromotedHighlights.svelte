@@ -246,11 +246,10 @@
     {:else if hasSellers}
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
-    <section
-      aria-label="Promoted products carousel"
+    <div
       class="relative pb-2"
-      onkeydown={handleKeyNavigation}
-      aria-controls="highlights-container"
+      aria-live="polite"
+      aria-label="Promoted products carousel"
     >
       <div
         id="highlights-container"
@@ -399,8 +398,9 @@
           {/each}
         {/if}
       </div>
-    </section>
+    </div>
   </div>
+</section>
 
 <!-- Modal rendered at the end -->
 {#if showQuickView && selectedProduct}
