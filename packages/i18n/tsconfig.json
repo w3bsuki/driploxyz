@@ -4,6 +4,7 @@
     "rootDir": "./",
     "declaration": true,
     "declarationMap": true,
+    "noEmit": false,
     "module": "ESNext",
     "target": "ES2022",
     "moduleResolution": "bundler",
