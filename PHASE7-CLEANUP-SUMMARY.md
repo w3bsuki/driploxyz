@@ -77,19 +77,41 @@ This document summarizes the cleanup and deep prune work completed in Phase 7 of
 ### Routes
 - apps/web/src/routes/category/slug_disabled
 
+## Completed Work
+
+### Phase A: Analyzer Baseline ✅
+- Ran knip, ts-prune, depcheck, jscpd, svelte-check analyzers
+- Identified 208 unused files, 200+ unused exports, 1000+ unused message keys
+- Found 1835 svelte-check errors and 15 warnings
+- Identified 10 unused devDependencies
+- Commit: feed3071
+
+### Phase B: Artifacts and Temp Files ✅
+- Removed 12 temporary files from root directory
+- Removed apps/web/playwright-report directory and apps/web/nul file
+- Updated ESLint configs for database and UI packages
+- Added @types/node to database package
+- Commit: efaa39f9
+
+### Phase C: Documentation Archive ✅
+- Moved 13 stale documentation files to docs/archive/refactor/
+- Moved reports/ and workflows/ subdirectories to archive
+- Added deprecation banners with links to current documentation
+- Preserved historical documentation for reference
+- Commit: e84760c9
+
 ## Next Steps
 
 The following tasks remain to be completed:
 
-1. Run static analyzers (knip, ts-prune, depcheck, jscpd) to identify specific candidates
-2. Remove unused components in packages/ui
-3. Remove unused keys/resources in packages/i18n
-4. Remove unused services/types in packages/domain
-5. Remove unused edge functions in supabase/functions/
-6. Fix ESLint configuration to parse all packages and ignore generated files
-7. Fix TypeScript errors and eliminate unused variables/exports
-8. Run final verification (lint, typecheck, test, build)
-9. Remove temporary analyzer dependencies
+1. Remove disabled route: apps/web/src/routes/category/slug_disabled
+2. Fix ESLint configuration for remaining packages
+3. Fix TypeScript errors in i18n package (missing Vite types)
+4. Remove unused components and exports identified by analyzers
+5. Fix remaining svelte-check errors and warnings
+6. Remove unused devDependencies identified by depcheck
+7. Run final verification (lint, typecheck, test, build)
+8. Remove temporary analyzer dependencies
 
 ## Impact
 

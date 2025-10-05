@@ -84,7 +84,7 @@ Record one entry per batch (small, reversible commits). Use this template:
 - Notes: Temporary files removed, ESLint config issues partially addressed (remaining issues are pre-existing)
 
 ### Batch C – Documentation Archive
-- Commit: TBD
+- Commit: e84760c9
 - Category: docs
 - Changes:
   - Moved 13 stale documentation files to docs/archive/refactor/
@@ -94,6 +94,17 @@ Record one entry per batch (small, reversible commits). Use this template:
 - Evidence: Documentation files were from previous refactor phases and no longer current
 - Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
 - Notes: Documentation successfully archived while preserving historical context
+
+### Batch D – Dead Routes and Demos Removal
+- Commit: TBD
+- Category: routes
+- Changes:
+  - Confirmed disabled route slug_disabled was already removed
+  - Removed unused demo file: packages/ui/src/lib/primitives/toast/demo.svelte
+  - Removed disabled test file: packages/ui/src/lib/components/forms/__tests__/Input.test.ts.disabled
+- Evidence: No references found for demo file and disabled test was empty
+- Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
+- Notes: Dead routes and demo files successfully removed
 
 ## Analyzer Snapshots
 

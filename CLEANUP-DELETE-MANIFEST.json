@@ -31,7 +31,9 @@
     "docs/refactor/TASK-11-FIXES.md",
     "docs/refactor/TOAST-SYSTEM-DOCUMENTATION.md",
     "docs/refactor/reports/*",
-    "docs/refactor/workflows/*"
+    "docs/refactor/workflows/*",
+    "packages/ui/src/lib/primitives/toast/demo.svelte",
+    "packages/ui/src/lib/components/forms/__tests__/Input.test.ts.disabled"
   ],
   "entries": [
     {
