@@ -1,3 +1,7 @@
+<!-- DEPRECATED: This documentation has been archived and is no longer maintained. -->
+<!-- For current documentation, see: https://github.com/w3bsuki/driploxyz/blob/main/docs/refactor/phase-7/ -->
+<!-- Archived on: 2025-10-05 -->
+
 # Phase 5 Execution Prompt
 
 **Use this prompt to start Phase 5 work with an AI assistant**

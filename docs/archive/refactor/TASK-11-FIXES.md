@@ -1,3 +1,7 @@
+<!-- DEPRECATED: This documentation has been archived and is no longer maintained. -->
+<!-- For current documentation, see: https://github.com/w3bsuki/driploxyz/blob/main/docs/refactor/phase-7/ -->
+<!-- Archived on: 2025-10-05 -->
+
 # Task 11 Completion - Action Plan
 
 **Status:** ⚠️ 57% Complete - Requires Immediate Fixes  

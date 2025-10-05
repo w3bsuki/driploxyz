@@ -1,4 +1,16 @@
+<!-- DEPRECATED: This documentation has been archived and is no longer maintained. -->
+<!-- For current documentation, see: https://github.com/w3bsuki/driploxyz/blob/main/docs/refactor/phase-7/ -->
+<!-- Archived on: 2025-10-05 -->
+
 # Phase 3 - Code Cleanup Checklist
+
+**Date Created:** 2025-09-29
+**Phase:** 3 - Code Cleanup & Testing
+**Status:** 🔄 **IN PROGRESS**
+
+## Overview
+
+This checklist documents all dead code, duplicates, and cleanup tasks identified during Phase 3 analysis. Items are marked with status and priority for systematic elimination.# Phase 3 - Code Cleanup Checklist
 
 **Date Created:** 2025-09-29
 **Phase:** 3 - Code Cleanup & Testing

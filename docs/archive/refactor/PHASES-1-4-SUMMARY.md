@@ -1,3 +1,7 @@
+<!-- DEPRECATED: This documentation has been archived and is no longer maintained. -->
+<!-- For current documentation, see: https://github.com/w3bsuki/driploxyz/blob/main/docs/refactor/phase-7/ -->
+<!-- Archived on: 2025-10-05 -->
+
 # Phase 1-4 Completion Summary & Phase 5 Readiness
 
 **Generated:** October 2, 2025  

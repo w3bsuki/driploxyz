@@ -16,7 +16,22 @@
     "unused_vars_inventory.txt",
     "NUL",
     "apps/web/nul",
-    "apps/web/playwright-report"
+    "apps/web/playwright-report",
+    "docs/refactor/cleanup-checklist.md",
+    "docs/refactor/CODEX-QUICK-START.md",
+    "docs/refactor/CODEX-WEB-PROMPT.md",
+    "docs/refactor/DOCUMENTATION-SUMMARY.md",
+    "docs/refactor/EXPLANATION-FOR-HUMAN.md",
+    "docs/refactor/PHASE-2-4-KICKOFF.md",
+    "docs/refactor/PHASE-5-KICKOFF.md",
+    "docs/refactor/PHASE-5-PROMPT.md",
+    "docs/refactor/PHASES-1-4-SUMMARY.md",
+    "docs/refactor/QUICK-REFERENCE-PHASE-5.md",
+    "docs/refactor/QUICK-REFERENCE.md",
+    "docs/refactor/TASK-11-FIXES.md",
+    "docs/refactor/TOAST-SYSTEM-DOCUMENTATION.md",
+    "docs/refactor/reports/*",
+    "docs/refactor/workflows/*"
   ],
   "entries": [
     {

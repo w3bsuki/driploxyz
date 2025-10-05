@@ -72,7 +72,7 @@ Record one entry per batch (small, reversible commits). Use this template:
 - Notes: Baseline established for systematic cleanup
 
 ### Batch B – Artifacts and Temp Files Removal
-- Commit: TBD
+- Commit: efaa39f9
 - Category: artifacts
 - Changes:
   - Removed 12 temporary files from root directory (temp_types.ts, testfile.txt, etc.)
@@ -82,6 +82,18 @@ Record one entry per batch (small, reversible commits). Use this template:
 - Evidence: Files contained outdated error logs and build artifacts now superceded by tooling
 - Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
 - Notes: Temporary files removed, ESLint config issues partially addressed (remaining issues are pre-existing)
+
+### Batch C – Documentation Archive
+- Commit: TBD
+- Category: docs
+- Changes:
+  - Moved 13 stale documentation files to docs/archive/refactor/
+  - Moved reports/ and workflows/ subdirectories to archive
+  - Added deprecation banners with links to current documentation
+  - Preserved historical documentation for reference
+- Evidence: Documentation files were from previous refactor phases and no longer current
+- Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
+- Notes: Documentation successfully archived while preserving historical context
 
 ## Analyzer Snapshots
 

@@ -1,3 +1,7 @@
+<!-- DEPRECATED: This documentation has been archived and is no longer maintained. -->
+<!-- For current documentation, see: https://github.com/w3bsuki/driploxyz/blob/main/docs/refactor/phase-7/ -->
+<!-- Archived on: 2025-10-05 -->
+
 # 🚀 CODEX WEB QUICK START PROMPT
 
 Copy everything below this line and paste into Codex Web:
