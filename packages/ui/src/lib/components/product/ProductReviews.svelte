@@ -243,10 +243,10 @@
               >
                 <span class="rating-label">{rating} star{rating !== 1 ? 's' : ''}</span>
                 <div class="progress-bar">
-                  <div 
-                    class="progress-fill" 
+                  <div
+                    class="progress-fill"
                     style="width: {getProgressWidth(summary.breakdown[rating], summary.totalReviews)}%"
-                  ></div>
+                ></div>
                 </div>
                 <span class="count-label">{summary.breakdown[rating]}</span>
               </button>
@@ -499,7 +499,6 @@
         {/if}
       </section>
     </div>
-  </div>
 {/if}
 
 <style>
