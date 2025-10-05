@@ -119,7 +119,9 @@
       "Bash(cmd //c:*)",
       "SlashCommand(/plan)",
       "Bash(supabase db:*)",
-      "Bash(npx supabase db reset:*)"
+      "Bash(npx supabase db reset:*)",
+      "mcp__svelte__list-sections",
+      "mcp__svelte__get-documentation"
     ]
   },
   "enableAllProjectMcpServers": true,

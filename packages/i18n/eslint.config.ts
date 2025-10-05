@@ -1,13 +1,13 @@
 import { config } from '@repo/eslint-config/index.js';
 
-export default [
+const eslintConfig = [
   ...config.map(cfg => ({
     ...cfg,
     languageOptions: {
       ...cfg.languageOptions,
       parserOptions: {
         ...cfg.languageOptions?.parserOptions,
-        project: './tsconfig.json',
+        project: true,
         tsconfigRootDir: import.meta.dirname
       }
     }
@@ -16,3 +16,5 @@ export default [
     ignores: ['lib/*', 'dist/*', 'src/generated/**/*', 'scripts/**/*.js']
   }
 ];
+
+export default eslintConfig;
