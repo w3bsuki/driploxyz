@@ -1,4 +1,9 @@
-import { config } from '@repo/eslint-config/index.js';
+import { config } from '@repo/eslint-config';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default [
   ...config.map(cfg => ({
@@ -8,7 +13,7 @@ export default [
       parserOptions: {
         ...cfg.languageOptions?.parserOptions,
         project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname
+        tsconfigRootDir: __dirname
       }
     }
   })),

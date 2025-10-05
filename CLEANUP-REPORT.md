@@ -60,7 +60,7 @@ Record one entry per batch (small, reversible commits). Use this template:
 - Notes: Analyzer tools are now available for code analysis
 
 ### Batch A – Analyzer Baseline
-- Commit: TBD
+- Commit: feed3071
 - Category: analysis
 - Changes:
   - Ran knip, ts-prune, depcheck, jscpd, svelte-check analyzers
@@ -68,8 +68,20 @@ Record one entry per batch (small, reversible commits). Use this template:
   - Found 1835 svelte-check errors and 15 warnings
   - Identified 10 unused devDependencies
 - Evidence: Comprehensive analyzer outputs showing significant cleanup opportunities
-- Verification: lint=TBD | type=TBD | tests=TBD | build=TBD
+- Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
 - Notes: Baseline established for systematic cleanup
+
+### Batch B – Artifacts and Temp Files Removal
+- Commit: TBD
+- Category: artifacts
+- Changes:
+  - Removed 12 temporary files from root directory (temp_types.ts, testfile.txt, etc.)
+  - Removed apps/web/playwright-report directory and apps/web/nul file
+  - Updated ESLint configs for database and UI packages to fix type-aware linting
+  - Added @types/node to database package
+- Evidence: Files contained outdated error logs and build artifacts now superceded by tooling
+- Verification: lint=FAILING | type=FAILING | tests=PASSING | build=FAILING
+- Notes: Temporary files removed, ESLint config issues partially addressed (remaining issues are pre-existing)
 
 ## Analyzer Snapshots
 

@@ -2,6 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "version": 1,
   "generatedAt": "2025-10-05T00:27:00Z",
+  "deletedEntries": [
+    "temp_types.ts",
+    "testfile.txt",
+    "remaining_errors.txt",
+    "remaining-typescript-errors.txt",
+    "lint-current.txt",
+    "lint-output.txt",
+    "lint-validation.txt",
+    "build-validation.txt",
+    "typescript-errors.txt",
+    "types-validation.txt",
+    "unused_vars_inventory.txt",
+    "NUL",
+    "apps/web/nul",
+    "apps/web/playwright-report"
+  ],
   "entries": [
     {
       "path": "temp_types.ts",
