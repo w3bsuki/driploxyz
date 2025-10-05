@@ -114,8 +114,12 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
         'x-forwarded-for': (() => {
           try {
             return event.getClientAddress();
-          } catch {
-            return 'localhost';
+          } catch (error) {
+            // Handle prerendering context where getClientAddress() is not available
+            if (error instanceof Error && error.message.includes('prerendering')) {
+              return '127.0.0.1';
+            }
+            return '127.0.0.1';
           }
         })(),
         'x-forwarded-proto': url.protocol.slice(0, -1),

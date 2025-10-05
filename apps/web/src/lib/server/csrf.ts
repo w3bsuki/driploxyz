@@ -163,7 +163,17 @@ export class CSRFProtection {
 	 */
 	static async getToken(event: RequestEvent): Promise<string> {
 		const session = await event.locals.safeGetSession();
-		const sessionId = session?.session?.access_token || event.getClientAddress();
+		const sessionId = session?.session?.access_token || (() => {
+			try {
+				return event.getClientAddress();
+			} catch (error) {
+				// Handle prerendering context where getClientAddress() is not available
+				if (error instanceof Error && error.message.includes('prerendering')) {
+					return '127.0.0.1';
+				}
+				return '127.0.0.1';
+			}
+		})();
 		
 		// Check if token exists in cookies
 		let token = event.cookies.get('csrf_token');
@@ -227,7 +237,17 @@ export class CSRFProtection {
 		}
 		
 		const session = await event.locals.safeGetSession();
-		const sessionId = session?.session?.access_token || event.getClientAddress();
+		const sessionId = session?.session?.access_token || (() => {
+			try {
+				return event.getClientAddress();
+			} catch (error) {
+				// Handle prerendering context where getClientAddress() is not available
+				if (error instanceof Error && error.message.includes('prerendering')) {
+					return '127.0.0.1';
+				}
+				return '127.0.0.1';
+			}
+		})();
 		
 		// Get token from provided value, headers, or cookies
 		const token = providedToken ||

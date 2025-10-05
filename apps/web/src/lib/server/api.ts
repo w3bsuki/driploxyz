@@ -157,7 +157,17 @@ export function withRateLimit(identifier: string, maxRequests: number = 100, win
   ) {
     return async (event: RequestEvent): Promise<Response> => {
       try {
-        const clientIP = event.getClientAddress();
+        const clientIP = (() => {
+          try {
+            return event.getClientAddress();
+          } catch (error) {
+            // Handle prerendering context where getClientAddress() is not available
+            if (error instanceof Error && error.message.includes('prerendering')) {
+              return '127.0.0.1';
+            }
+            return '127.0.0.1';
+          }
+        })();
         const key = `${identifier}:${clientIP}`;
         
         const allowed = rateLimiter.check(key, { maxAttempts: maxRequests, windowMs });

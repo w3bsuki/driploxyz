@@ -17,7 +17,8 @@ const config = {
       split: false // Combine routes into fewer functions to stay under 12 limit
     }),
     prerender: {
-      entries: ['*'] // Prerender all static routes by default
+      entries: [], // Disable prerendering - this app requires server context
+      handleUnseenRoutes: 'ignore' // Don't error about unseen routes
     },
     alias: {
       '@repo/ui': '../../packages/ui/src/lib/index.ts',

@@ -217,7 +217,13 @@ export function setCountryCookie(event: RequestEvent, country: CountryCode): voi
 // Get user's country with fallback chain
 export async function getUserCountry(event: RequestEvent): Promise<CountryCode> {
   // 1. Check URL parameter (highest priority for testing)
-  const urlCountry = event.url.searchParams.get('country');
+  let urlCountry: string | null = null;
+  try {
+    urlCountry = event.url.searchParams.get('country');
+  } catch {
+    // Handle prerendering context where searchParams is not available
+    urlCountry = null;
+  }
   if (urlCountry && urlCountry in COUNTRY_CONFIGS) {
     const country = urlCountry as CountryCode;
     setCountryCookie(event, country);

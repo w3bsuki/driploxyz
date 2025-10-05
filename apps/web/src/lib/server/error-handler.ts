@@ -57,7 +57,17 @@ function categorizeError(error: unknown, event: RequestEvent): ErrorContext {
     url: event.url.pathname,
     method: event.request.method,
     userAgent: event.request.headers.get('user-agent'),
-    ip: event.getClientAddress(),
+    ip: (() => {
+      try {
+        return event.getClientAddress();
+      } catch (error) {
+        // Handle prerendering context where getClientAddress() is not available
+        if (error instanceof Error && error.message.includes('prerendering')) {
+          return '127.0.0.1';
+        }
+        return '127.0.0.1';
+      }
+    })(),
     userId: event.locals.user?.id
   };
 

@@ -32,9 +32,17 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // If no header locale, use standard detection
   if (!locale) {
+    let query: URLSearchParams | null = null;
+    try {
+      query = event.url.searchParams;
+    } catch {
+      // Handle prerendering context where searchParams is not available
+      query = null;
+    }
+
     const detected = detectLocale({
       path: event.url.pathname,
-      query: event.url.searchParams,
+      query,
       cookie: event.cookies.get(COOKIES.LOCALE) ?? null,
       header: event.request.headers.get('accept-language'),
       defaultLocale: 'bg'
@@ -44,7 +52,14 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   
   // Update cookie if locale was set via URL parameter and consent exists
-  if (event.url.searchParams.get('locale') && hasFunctionalConsent) {
+  let localeParam: string | null = null;
+  try {
+    localeParam = event.url.searchParams.get('locale');
+  } catch {
+    // Handle prerendering context where searchParams is not available
+    localeParam = null;
+  }
+  if (localeParam && hasFunctionalConsent) {
     event.cookies.set(COOKIES.LOCALE, locale, {
       path: '/',
       maxAge: 365 * 24 * 60 * 60,
@@ -74,7 +89,12 @@ export function transformPageChunk(event: RequestEvent): (params: { html: string
     const locale = event.locals.locale || 'bg';
     const nonce = event.locals.cspNonce;
     let result = html.replace('<html', `<html lang="${locale}"`);
-    if (!nonce) return result;
+
+    if (!nonce) {
+      // During prerendering, remove nonce placeholders
+      result = result.replace(/ nonce="%sveltekit\.nonce%"/g, '');
+      return result;
+    }
 
     // Add nonce to all <script> tags that don't already have one
     result = result.replace(/<script(?![^>]*\bnonce=)/g, `<script nonce="${nonce}"`);

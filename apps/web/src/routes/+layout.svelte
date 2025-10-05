@@ -95,7 +95,14 @@
   const isAuthPage = $derived(page.route.id?.includes('(auth)'));
   const isSellPage = $derived(page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived(page.route.id?.includes('/onboarding'));
-  const isMessagesConversation = $derived(page.route.id?.includes('/messages') && page.url.searchParams.has('conversation'));
+  const isMessagesConversation = $derived(page.route.id?.includes('/messages') && (() => {
+    try {
+      return page.url.searchParams.has('conversation');
+    } catch {
+      // Handle prerendering context where searchParams is not available
+      return false;
+    }
+  })());
   const isSearchPage = $derived(page.route.id?.includes('/search'));
   const isCategoryPage = $derived(page.route.id?.includes('/category'));
   const isProductPage = $derived(page.route.id?.includes('/product'));
@@ -282,7 +289,13 @@
   }
 
   async function handleStickyFilterChange(key: string, value: string | number | boolean) {
-    const searchParams = new URLSearchParams(page.url.searchParams);
+    let searchParams: URLSearchParams;
+    try {
+      searchParams = new URLSearchParams(page.url.searchParams);
+    } catch {
+      // Handle prerendering context where searchParams is not available
+      searchParams = new URLSearchParams();
+    }
 
     // Map UI keys to URL params
     switch (key) {
@@ -303,7 +316,13 @@
   }
 
   async function handleStickyFilterRemove(key: string) {
-    const searchParams = new URLSearchParams(page.url.searchParams);
+    let searchParams: URLSearchParams;
+    try {
+      searchParams = new URLSearchParams(page.url.searchParams);
+    } catch {
+      // Handle prerendering context where searchParams is not available
+      searchParams = new URLSearchParams();
+    }
 
     switch (key) {
       case 'sortBy':
