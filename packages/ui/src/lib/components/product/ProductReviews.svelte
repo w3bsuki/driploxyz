@@ -468,35 +468,35 @@
           class="modal-image"
         />
 
-      {#if selectedImageModal.images.length > 1}
-        <div class="modal-nav">
-          <button
-            class="modal-nav-btn modal-nav-btn--prev"
-            onclick={() => selectedImageModal && selectedImageModal.index > 0 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index - 1 })}
-            disabled={selectedImageModal.index === 0}
-            aria-label="Previous image"
-          >
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path fill="currentColor" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
-            </svg>
-          </button>
+        {#if selectedImageModal.images.length > 1}
+          <div class="modal-nav">
+            <button
+              class="modal-nav-btn modal-nav-btn--prev"
+              onclick={() => selectedImageModal && selectedImageModal.index > 0 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index - 1 })}
+              disabled={selectedImageModal.index === 0}
+              aria-label="Previous image"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path fill="currentColor" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
+              </svg>
+            </button>
 
-          <span class="modal-counter">
-            {selectedImageModal.index + 1} of {selectedImageModal.images.length}
-          </span>
+            <span class="modal-counter">
+              {selectedImageModal.index + 1} of {selectedImageModal.images.length}
+            </span>
 
-          <button
-            class="modal-nav-btn modal-nav-btn--next"
-            onclick={() => selectedImageModal && selectedImageModal.index < selectedImageModal.images.length - 1 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index + 1 })}
-            disabled={selectedImageModal.index === selectedImageModal.images.length - 1}
-            aria-label="Next image"
-          >
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path fill="currentColor" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
-            </svg>
-          </button>
-        </div>
-      {/if}
+            <button
+              class="modal-nav-btn modal-nav-btn--next"
+              onclick={() => selectedImageModal && selectedImageModal.index < selectedImageModal.images.length - 1 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index + 1 })}
+              disabled={selectedImageModal.index === selectedImageModal.images.length - 1}
+              aria-label="Next image"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path fill="currentColor" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+              </svg>
+            </button>
+          </div>
+        {/if}
       </section>
     </div>
   </div>
