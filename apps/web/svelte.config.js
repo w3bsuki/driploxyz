@@ -14,10 +14,10 @@ const config = {
     adapter: adapter({
       runtime: 'nodejs20.x',
       maxDuration: 30,
-      split: true
+      split: false // Combine routes into fewer functions to stay under 12 limit
     }),
     prerender: {
-      entries: []
+      entries: ['*'] // Prerender all static routes by default
     },
     alias: {
       '@repo/ui': '../../packages/ui/src/lib/index.ts',

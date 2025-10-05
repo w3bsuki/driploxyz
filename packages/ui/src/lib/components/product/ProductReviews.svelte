@@ -452,10 +452,8 @@
               }
       }}
     >
-      <div
+      <section
         class="image-modal-content"
-        onclick={(e) => e.stopPropagation()}
-        onkeydown={(e) => e.stopPropagation()}
         role="document"
       >
         <button class="modal-close" onclick={closeImageModal} aria-label="Close image modal">
@@ -499,6 +497,7 @@
           </button>
         </div>
       {/if}
+      </section>
     </div>
   </div>
 {/if}

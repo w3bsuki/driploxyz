@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^0.542.0",
+		"@react-email/render": "^1.3.1",
 		"@repo/core": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/domain": "workspace:*",
