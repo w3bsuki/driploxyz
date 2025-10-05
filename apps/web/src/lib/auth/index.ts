@@ -9,7 +9,7 @@
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-// Avoid importing from $env/static/public to prevent build-time failures
+// Fallback environment variables for build compatibility
 import { dev } from '$app/environment';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
@@ -57,10 +57,18 @@ function resolveSupabaseConfig(): SupabaseConfig {
   }
 
   // Use static environment variables from SvelteKit
-  const supabaseUrl = PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
+  let supabaseUrl = PUBLIC_SUPABASE_URL;
+  let supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
 
-  if (supabaseUrl && supabaseAnonKey) {
+  // Fallback values for build compatibility (these won't be used at runtime)
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (typeof window === 'undefined') { // Server-side during build
+      supabaseUrl = 'https://placeholder.supabase.co';
+      supabaseAnonKey = 'placeholder-key';
+    }
+  }
+
+  if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') {
     cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
     return cachedSupabaseConfig;
   }
