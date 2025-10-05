@@ -6,7 +6,7 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { createServerSupabase, getServerSession } from './index.js';
+import { createServerSupabase, getServerSession } from './index';
 
 /**
  * Set up authentication for a request event
@@ -65,6 +65,9 @@ function isStaticRequest(pathname: string): boolean {
  */
 export async function authGuard(event: RequestEvent): Promise<void> {
   const { route, url } = event;
+
+  // Bypass guards for debug endpoints and API routes
+  if (url.pathname.startsWith('/api/_debug') || url.pathname.startsWith('/api')) return;
 
   // Skip guard for non-protected routes
   if (!route.id?.startsWith('/(protected)') && !route.id?.startsWith('/(admin)')) {

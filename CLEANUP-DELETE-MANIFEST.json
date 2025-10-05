@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "generatedAt": "2025-10-05T00:27:00Z",
+  "deletedEntries": [
+    "temp_types.ts",
+    "testfile.txt",
+    "remaining_errors.txt",
+    "remaining-typescript-errors.txt",
+    "lint-current.txt",
+    "lint-output.txt",
+    "lint-validation.txt",
+    "build-validation.txt",
+    "typescript-errors.txt",
+    "types-validation.txt",
+    "unused_vars_inventory.txt",
+    "NUL",
+    "apps/web/nul",
+    "apps/web/playwright-report",
+    "docs/refactor/cleanup-checklist.md",
+    "docs/refactor/CODEX-QUICK-START.md",
+    "docs/refactor/CODEX-WEB-PROMPT.md",
+    "docs/refactor/DOCUMENTATION-SUMMARY.md",
+    "docs/refactor/EXPLANATION-FOR-HUMAN.md",
+    "docs/refactor/PHASE-2-4-KICKOFF.md",
+    "docs/refactor/PHASE-5-KICKOFF.md",
+    "docs/refactor/PHASE-5-PROMPT.md",
+    "docs/refactor/PHASES-1-4-SUMMARY.md",
+    "docs/refactor/QUICK-REFERENCE-PHASE-5.md",
+    "docs/refactor/QUICK-REFERENCE.md",
+    "docs/refactor/TASK-11-FIXES.md",
+    "docs/refactor/TOAST-SYSTEM-DOCUMENTATION.md",
+    "docs/refactor/reports/*",
+    "docs/refactor/workflows/*",
+    "packages/ui/src/lib/primitives/toast/demo.svelte",
+    "packages/ui/src/lib/components/forms/__tests__/Input.test.ts.disabled"
+  ],
+  "entries": [
+    {
+      "path": "temp_types.ts",
+      "category": "artifacts",
+      "reason": "Empty temporary file that serves no purpose",
+      "evidence": "File is empty with no content",
+      "alternative": "None needed"
+    },
+    {
+      "path": "testfile.txt",
+      "category": "artifacts",
+      "reason": "Temporary test file with minimal content",
+      "evidence": "Contains only 'hello' text",
+      "alternative": "None needed"
+    },
+    {
+      "path": "remaining_errors.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated linting and type checking",
+      "evidence": "Contains outdated lint errors that are now tracked by tooling",
+      "alternative": "Use 'pnpm lint' for current errors"
+    },
+    {
+      "path": "remaining-typescript-errors.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated type checking",
+      "evidence": "Contains outdated TypeScript errors that are now resolved",
+      "alternative": "Use 'pnpm check-types' for current errors"
+    },
+    {
+      "path": "lint-current.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated linting",
+      "evidence": "Contains outdated lint output that is now tracked by tooling",
+      "alternative": "Use 'pnpm lint' for current errors"
+    },
+    {
+      "path": "lint-output.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated linting",
+      "evidence": "Contains outdated lint output that is now tracked by tooling",
+      "alternative": "Use 'pnpm lint' for current errors"
+    },
+    {
+      "path": "lint-validation.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated linting",
+      "evidence": "Contains outdated lint validation that is now tracked by tooling",
+      "alternative": "Use 'pnpm lint' for current errors"
+    },
+    {
+      "path": "build-validation.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated build validation",
+      "evidence": "Contains outdated build errors that are now tracked by tooling",
+      "alternative": "Use 'pnpm build' for current build status"
+    },
+    {
+      "path": "typescript-errors.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated type checking",
+      "evidence": "Contains outdated TypeScript errors that are now tracked by tooling",
+      "alternative": "Use 'pnpm check-types' for current errors"
+    },
+    {
+      "path": "types-validation.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated type checking",
+      "evidence": "Contains outdated TypeScript errors that are now tracked by tooling",
+      "alternative": "Use 'pnpm check-types' for current errors"
+    },
+    {
+      "path": "unused_vars_inventory.txt",
+      "category": "artifacts",
+      "reason": "Superseded by automated linting",
+      "evidence": "Contains outdated unused variable inventory that is now tracked by tooling",
+      "alternative": "Use 'pnpm lint' for current errors"
+    },
+    {
+      "path": "NUL",
+      "category": "artifacts",
+      "reason": "Invalid file artifact",
+      "evidence": "Empty/invalid file in root directory",
+      "alternative": "None needed"
+    },
+    {
+      "path": "apps/web/playwright-report",
+      "category": "artifacts",
+      "reason": "Tracked build artifact that should be gitignored",
+      "evidence": "Playwright test report directory that should not be in version control",
+      "alternative": "Generate reports on demand with 'pnpm test:e2e'"
+    },
+    {
+      "path": "apps/web/nul",
+      "category": "artifacts",
+      "reason": "Invalid file artifact",
+      "evidence": "Empty/invalid file in apps/web directory",
+      "alternative": "None needed"
+    },
+    {
+      "path": "docs/refactor/cleanup-checklist.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/CODEX-QUICK-START.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/CODEX-WEB-PROMPT.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/DOCUMENTATION-SUMMARY.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/EXPLANATION-FOR-HUMAN.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/PHASE-2-4-KICKOFF.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/PHASE-5-KICKOFF.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/PHASE-5-PROMPT.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/PHASES-1-4-SUMMARY.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/QUICK-REFERENCE-PHASE-5.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/QUICK-REFERENCE.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/TASK-11-FIXES.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/TOAST-SYSTEM-DOCUMENTATION.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/reports/phase-3-validation-log.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/reports/phase-4-planning.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/reports/runtime-breakage-investigation.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/reports/svelte5-compliance-audit.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "docs/refactor/workflows/toast-migration.md",
+      "category": "docs",
+      "reason": "Stale documentation from previous refactor phases",
+      "evidence": "Documentation is no longer relevant to current state",
+      "alternative": "Moved to docs/archive/ for historical reference"
+    },
+    {
+      "path": "apps/web/src/routes/category/slug_disabled",
+      "category": "routes",
+      "reason": "Disabled route that is no longer used",
+      "evidence": "Route name indicates it is disabled and not referenced in navigation",
+      "alternative": "Use the active category route at apps/web/src/routes/category/[...segments]"
+    }
+  ]
+}

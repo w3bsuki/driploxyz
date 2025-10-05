@@ -1,7 +1,7 @@
 // Type declarations for generated Paraglide modules
 declare module './paraglide/messages.js' {
   // Export all message functions as callable functions that return strings
-  const messages: Record<string, (...args: any[]) => string>;
+  const messages: Record<string, (...args: unknown[]) => string>;
   export = messages;
 }
 

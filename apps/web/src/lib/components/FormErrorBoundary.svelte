@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import { enhance } from '$app/forms';
   import { type ErrorDetails } from '$lib/utils/error-handling.svelte';
-  import { toast } from '$lib/stores/toast.svelte';
+  import { toast } from '@repo/ui';
   import ErrorBoundary from './ErrorBoundary.svelte';
 
   interface Props {

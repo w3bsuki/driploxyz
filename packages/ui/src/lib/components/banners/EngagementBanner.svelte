@@ -1,6 +1,6 @@
 <script lang="ts">
   import { isBrowser } from '../../utils/runtime.js';
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
 
   interface Translations {
     title?: string;
@@ -19,7 +19,7 @@
     translations?: Translations;
   }
 
-  let { 
+  let {
     isAuthenticated = false,
     onSignUp,
     onDismiss,
@@ -31,45 +31,64 @@
   let showBanner = $state(false);
   let viewCount = $state(0);
   let isDismissed = $state(false);
+  let initialized = $state(false);
 
   // Initialize view count and dismissal state once on mount
   $effect(() => {
-    if (!isBrowser || isAuthenticated) return;
+    if (!isBrowser || isAuthenticated || initialized) return;
 
-    // Get stored view count - only read, don't increment yet
+    // Get stored data
     const stored = localStorage.getItem('driplo_view_count');
     const storedCount = stored ? parseInt(stored, 10) : 0;
-
-    // Check if banner was previously dismissed
     const dismissed = localStorage.getItem('driplo_engagement_dismissed');
+
+    let shouldDismiss = false;
+    let newViewCount = storedCount;
+    let shouldShow = false;
+
+    // Check dismissal status
     if (dismissed) {
       const dismissedTime = parseInt(dismissed, 10);
-      // Show banner again after 24 hours
       if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) {
-        isDismissed = true;
-        return;
+        shouldDismiss = true;
       }
     }
 
-    // Only increment and show if not dismissed
-    if (!isDismissed) {
-      const newCount = storedCount + 1;
-      viewCount = newCount;
-      localStorage.setItem('driplo_view_count', newCount.toString());
+    // Calculate new view count and show logic
+    if (!shouldDismiss) {
+      newViewCount = storedCount + 1;
+      shouldShow = newViewCount >= showAfterViews;
+    }
 
-      // Show banner after enough views
-      if (newCount >= showAfterViews) {
-        setTimeout(() => {
-          if (!isDismissed) { // Double check before showing
+    // Use untrack to avoid reactive cycles when setting state
+    untrack(() => {
+      viewCount = newViewCount;
+      isDismissed = shouldDismiss;
+      initialized = true;
+
+      localStorage.setItem('driplo_view_count', newViewCount.toString());
+    });
+
+    // Handle banner showing with timers (side effects only)
+    if (shouldShow) {
+      const showTimer = setTimeout(() => {
+        untrack(() => {
+          if (!isDismissed) {
             showBanner = true;
-            
-            // Auto-hide after specified time
-            setTimeout(() => {
-              showBanner = false;
-            }, hideAfterMs);
           }
-        }, 1000); // Small delay to avoid jarring experience
-      }
+        });
+      }, 1000);
+
+      const hideTimer = setTimeout(() => {
+        untrack(() => {
+          showBanner = false;
+        });
+      }, 1000 + hideAfterMs);
+
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
     }
   });
 

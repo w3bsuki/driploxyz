@@ -5,8 +5,8 @@
  * Handles profile creation and completion in a straightforward way.
  */
 
-import type { SupabaseAuthClient, Profile, AuthUser } from './index.js';
-import { updateUserProfile } from './index.js';
+import type { SupabaseAuthClient, Profile, AuthUser } from './index';
+import { updateUserProfile } from './index';
 import type { Database } from '@repo/database';
 
 // Onboarding form data interface
@@ -128,30 +128,85 @@ function validateOnboardingData(data: OnboardingData): { valid: boolean; error?:
 
 /**
  * Verify payment for premium account types
- * TODO: Implement payment verification when user_payments table is added to database types
  */
 async function verifyPaymentForPremiumAccount(
-  _supabase: SupabaseAuthClient,
-  _userId: string,
+  supabase: SupabaseAuthClient,
+  userId: string,
   accountType: string
 ): Promise<boolean> {
-  // For now, skip payment verification - this should be implemented
-  // when the user_payments table is properly typed in the database schema
-  console.warn('[Onboarding] Payment verification skipped - table not in database types');
-  return accountType === 'personal'; // Only allow personal accounts for now
+  // Personal accounts don't require payment
+  if (accountType === 'personal') {
+    return true;
+  }
+
+  // For premium accounts, check if there's a successful payment
+  try {
+    const { data, error } = await supabase
+      .from('user_payments')
+      .select('id, status, plan_type, completed_at')
+      .eq('user_id', userId)
+      .eq('status', 'completed')
+      .eq('plan_type', accountType)
+      .not('completed_at', 'is', null)
+      .single();
+
+    if (error) {
+      console.warn('[Onboarding] Payment verification failed:', error);
+      return false;
+    }
+
+    return !!data;
+  } catch (error) {
+    console.error('[Onboarding] Error verifying payment:', error);
+    return false;
+  }
 }
 
 /**
  * Create brand entry for brand accounts
- * TODO: Implement brand entry creation when brands table is added to database types
  */
 async function createBrandEntry(
-  _supabase: SupabaseAuthClient,
-  _profileId: string,
-  _brandName: string
+  supabase: SupabaseAuthClient,
+  profileId: string,
+  brandName: string
 ): Promise<void> {
-  // Skip brand entry creation for now - table not in database types
-  console.warn('[Onboarding] Brand entry creation skipped - table not in database types');
+  try {
+    // Check if brand entry already exists
+    const { data: existingBrand } = await supabase
+      .from('brands')
+      .select('id')
+      .eq('profile_id', profileId)
+      .single();
+
+    if (existingBrand) {
+      console.log('[Onboarding] Brand entry already exists for profile:', profileId);
+      return;
+    }
+
+    // Create new brand entry
+    const { error } = await supabase
+      .from('brands')
+      .insert({
+        profile_id: profileId,
+        brand_name: brandName,
+        verified_brand: false,
+        subscription_active: true,
+        verification_documents: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('[Onboarding] Error creating brand entry:', error);
+      throw error;
+    }
+
+    console.log('[Onboarding] Brand entry created successfully for profile:', profileId);
+  } catch (error) {
+    console.error('[Onboarding] Error in createBrandEntry:', error);
+    // Don't throw the error to avoid breaking onboarding
+    // Log it for monitoring instead
+  }
 }
 
 /**

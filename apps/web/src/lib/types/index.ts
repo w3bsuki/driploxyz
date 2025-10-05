@@ -1,5 +1,22 @@
 // Use Seller type from @repo/ui instead
 
+// Import types for Locals interface
+import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
+import type { Database } from '@repo/database';
+import type { CountryCode } from '$lib/country/detection';
+import type { LanguageTag } from '@repo/i18n';
+
+// Define Locals type for use in services
+export interface Locals {
+  supabase: SupabaseClient<Database>;
+  safeGetSession: () => Promise<{ session: Session | null; user: User | null }>;
+  session: Session | null;
+  user: User | null;
+  country: CountryCode;
+  locale: LanguageTag;
+  cspNonce?: string;
+}
+
 // Product display types
 export interface ProductDisplay {
   id: string;

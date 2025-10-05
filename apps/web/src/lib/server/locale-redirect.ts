@@ -7,7 +7,10 @@ import { redirect } from '@sveltejs/kit';
  */
 export async function handleUnknownLocales(event: RequestEvent): Promise<void> {
   const pathname = event.url.pathname;
-  
+
+  // Skip API and _app endpoints
+  if (pathname.startsWith('/api') || pathname.startsWith('/_app')) return;
+
   // Check for any two-letter locale prefix that's not uk or bg
   const unknownLocaleMatch = pathname.match(/^\/([a-z]{2})(\/.*)?$/i);
   

@@ -99,6 +99,7 @@ let {
   currentPath = ''
 }: Props = $props();
 
+
 // Component state
 let showTrendingDropdown = $state(false);
 let activeDropdownTab = $state('trending');
@@ -141,24 +142,28 @@ const filteredQuickShopItems = $derived.by(() => {
   );
 });
 
-// Consolidated effects for better performance
+// Hide trending dropdown when user starts typing - use derived instead of effect
+const shouldHideTrendingDropdown = $derived(searchQuery.trim().length > 0);
+
+// Update showTrendingDropdown based on derived value
 $effect(() => {
-  // Hide trending dropdown when user starts typing in search
-  if (searchQuery.trim()) {
+  if (shouldHideTrendingDropdown) {
     showTrendingDropdown = false;
   }
+});
 
-  // Handle click outside for trending dropdown
+// Handle click outside for trending dropdown - effect for DOM listeners only
+$effect(() => {
   if (typeof window !== 'undefined' && showTrendingDropdown) {
-    function handleClickOutside(e: MouseEvent) {
+    const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('#hero-search-container')) {
         showTrendingDropdown = false;
       }
-    }
+    };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside, true);
+    return () => document.removeEventListener('click', handleClickOutside, true);
   }
 });
 
@@ -278,7 +283,8 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                     <button
                       onclick={() => dropdownSearchQuery = ''}
                       class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600"
-                      aria-label="Clear search"
+                      aria-label="Clear search input"
+                      type="button"
                     >
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

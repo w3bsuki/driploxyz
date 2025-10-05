@@ -4,6 +4,11 @@ import { env } from '$env/dynamic/private';
 
 const RATE_LIMIT_SECRET = env.RATE_LIMIT_SECRET;
 
+// Validate RATE_LIMIT_SECRET in production
+if (!RATE_LIMIT_SECRET && !dev) {
+	throw new Error('RATE_LIMIT_SECRET environment variable is required in production. Please set it in your deployment environment.');
+}
+
 // Auth rate limiter - strict limits to prevent brute force
 export const authLimiter = new RateLimiter({
 	// Identifier (IP address by default)
@@ -11,7 +16,7 @@ export const authLimiter = new RateLimiter({
 	IPUA: [10, '30m'], // 10 requests per 30 minutes per IP+User-Agent
 	cookie: {
 		name: 'auth_rl', // Cookie name for tracking
-		secret: RATE_LIMIT_SECRET || 'fallback-dev-secret-change-in-prod',
+		secret: RATE_LIMIT_SECRET || (dev ? 'fallback-dev-secret-change-in-prod' : 'missing-production-secret'),
 		rate: [3, '5m'], // 3 attempts per 5 minutes per cookie
 		preflight: true // Check rate limit before processing
 	}
@@ -29,7 +34,7 @@ export const uploadLimiter = new RateLimiter({
 	IPUA: [20, 'h'], // 20 uploads per hour per IP+User-Agent
 	cookie: {
 		name: 'upload_rl',
-		secret: RATE_LIMIT_SECRET || 'fallback-dev-secret-change-in-prod',
+		secret: RATE_LIMIT_SECRET || (dev ? 'fallback-dev-secret-change-in-prod' : 'missing-production-secret'),
 		rate: [5, '30m'], // 5 uploads per 30 minutes per cookie
 		preflight: true
 	}
@@ -41,7 +46,7 @@ export const messageLimiter = new RateLimiter({
 	IPUA: [50, 'h'], // 50 messages per hour per IP+User-Agent
 	cookie: {
 		name: 'msg_rl',
-		secret: RATE_LIMIT_SECRET || 'fallback-dev-secret-change-in-prod',
+		secret: RATE_LIMIT_SECRET || (dev ? 'fallback-dev-secret-change-in-prod' : 'missing-production-secret'),
 		rate: [20, '30m'], // 20 messages per 30 minutes per cookie
 		preflight: true
 	}

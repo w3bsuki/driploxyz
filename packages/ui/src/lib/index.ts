@@ -1,4 +1,4 @@
-﻿// Core UI components
+// Core UI components
 export { default as Badge } from './components/badges/Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './components/banners/Banner.svelte';
@@ -174,6 +174,7 @@ export { default as OrderNotificationToast } from './components/modals/OrderNoti
 export { default as BottomNav } from './components/navigation/BottomNav.svelte';
 
 // Form components
+export { default as FormField } from './components/forms/FormField.svelte';
 export { default as Select } from './components/forms/Select.svelte';
 export { default as ConditionSelector } from './components/forms/ConditionSelector.svelte';
 export { default as BrandSelector } from './components/forms/BrandSelector.svelte';
@@ -185,24 +186,26 @@ export { default as AvatarUploader } from './components/ui/AvatarUploader.svelte
 export { default as PriceInput } from './components/forms/PriceInput.svelte';
 export { default as TagInput } from './components/forms/TagInput.svelte';
 
-// Toast components - Legacy (maintained for backwards compatibility)
-// These exports maintain existing API but use new Melt UI system internally
-export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
-export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
-export { toasts } from './primitives';
-export type { Toast as ToastMessage } from './primitives/toast';
+// Enhanced Toast System - Recommended for all new code
+export { toast, toasts } from './toast';
+export type { Toast as ToastMessage, ToastType, ToastStoreOptions, ErrorDetails } from './toast';
 
-// Modern Toast System - Melt UI based (recommended for new code)
+// Modern Toast System - Melt UI based (low-level access)
 export {
-  Toast,
+  Toast as ToastComponent,
   ToastProvider,
   ToastContainer as MeltToastContainer,
   toastHelpers,
   toastPatterns,
-  toastUtils
+  toastUtils,
+  setToastProvider
 } from './primitives';
 
-export { toasts as modernToasts } from './primitives/toast/store';
+export { toasts as modernToasts } from './primitives';
+
+// Legacy Toast components (maintained for backwards compatibility)
+export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
+export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
 
 // Convenience aliases for gradual migration
 export { toastStore as legacyToasts } from './primitives/toast';
@@ -278,6 +281,10 @@ export * from './utils/imagePreloader';
 
 // Core utilities
 export * from './utils/index';
+
+// Loading and Error States
+export { default as LoadingStates } from './components/utilities/LoadingStates.svelte';
+export { default as ErrorStates } from './components/utilities/ErrorStates.svelte';
 
 // Melt UI Primitives
 export * from './primitives';

@@ -84,6 +84,7 @@
   aria-busy={ariaBusy}
   data-state={stateAttr}
   tabindex={tabIndex}
+  role={element === 'a' ? undefined : 'button'}
   use:applyActions
 >
   {#if loading}

@@ -7,7 +7,7 @@
 
 import { defineConfig, mergeConfig } from 'vitest/config';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import uiConfig from '@repo/testing/vitest.config.ui';
+import uiConfig from '../testing/vitest.config.ui.js';
 
 export default mergeConfig(
   uiConfig,
@@ -15,7 +15,7 @@ export default mergeConfig(
     plugins: [
       svelte({
         hot: false,
-        extensions: ['.svelte'],
+        extensions: ['.svelte', '.svelte.ts'],
         compilerOptions: {
           // Enable runes for Svelte 5
           runes: true

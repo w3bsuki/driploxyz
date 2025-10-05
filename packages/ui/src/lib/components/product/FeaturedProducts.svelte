@@ -70,7 +70,10 @@
   // Derived states
   const hasProducts = $derived(products.length > 0);
   const hasErrors = $derived(!!errors?.products);
-  const gridId = $derived(`product-grid-${Math.random().toString(36).substr(2, 9)}`);
+  const gridId = $derived(() => {
+    const firstProductId = products[0]?.id;
+    return firstProductId ? `product-grid-${firstProductId}` : 'product-grid';
+  });
 </script>
 
 <!-- Product Grid Section with standardized spacing (tokens) -->

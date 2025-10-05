@@ -11,7 +11,7 @@ const translations = {
 } as const satisfies Record<Locale, Record<string, string>>;
 
 export const baseLocale: Locale = 'en';
-export const defaultLocale: Locale = 'bg';
+export const defaultLocale: Locale = 'en';
 export const locales: readonly Locale[] = Object.keys(translations) as Locale[];
 
 let currentLocale: Locale = defaultLocale;
@@ -76,6 +76,7 @@ export function detectLanguage(acceptLanguage?: string | null): Locale {
   if (!acceptLanguage) return baseLocale;
   const langs = acceptLanguage.toLowerCase();
   if (langs.includes('bg')) return 'bg';
+  if (langs.includes('en') || langs.includes('en-gb') || langs.includes('en-us')) return 'en';
   return baseLocale;
 }
 

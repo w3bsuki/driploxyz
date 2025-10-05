@@ -161,10 +161,9 @@
 </style>
 
 <!-- Promoted Listings / Highlights -->
-<section 
+<section
   class="border-y border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)] overflow-hidden"
   aria-label={translations.trending_promoted}
-  role="region"
 >
   
   <!-- Section Header with Navigation -->
@@ -248,11 +247,9 @@
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
     <div
-      role="group"
-      aria-label="Promoted products carousel"
       class="relative pb-2"
-      onkeydown={handleKeyNavigation}
-      aria-controls="highlights-container"
+      aria-live="polite"
+      aria-label="Promoted products carousel"
     >
       <div
         id="highlights-container"

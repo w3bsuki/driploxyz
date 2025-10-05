@@ -1,6 +1,6 @@
-import { toasts, toastHelpers } from '@repo/ui/primitives/toast';
-import type { ToastStoreOptions, ToastType } from '@repo/ui/primitives/toast';
-import type { Toast as UiToast } from '@repo/ui/primitives/toast';
+import { toasts, toastHelpers } from '@repo/ui';
+import type { ToastStoreOptions, ToastType } from '@repo/ui';
+import type { Toast as UiToast } from '@repo/ui';
 import type { ErrorDetails } from '../utils/error-handling.svelte';
 
 export type Toast = UiToast;

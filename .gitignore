@@ -57,6 +57,21 @@ yarn-error.log*
 *.temp
 nul
 *.error.ts
+temp_types.ts
+testfile.txt
+remaining_errors.txt
+remaining-typescript-errors.txt
+lint-current.txt
+lint-output.txt
+lint-validation.txt
+build-validation.txt
+typescript-errors.txt
+types-validation.txt
+unused_vars_inventory.txt
+NUL
+
+# Additional invalid files
+apps/*/nul
 
 # MCP local configs (never commit secrets)
 .mcp.json

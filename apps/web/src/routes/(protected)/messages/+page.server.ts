@@ -35,8 +35,8 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
     
     if (otherUserId && uuidRegex.test(otherUserId)) {
       const { data, error } = await supabase.rpc('get_conversation_messages_secure', {
-        conversation_id: conversationParam,
-        other_user_id: otherUserId
+        other_user_id: otherUserId,
+        limit_count: 50
       });
       
       // Transform the function result to match expected format
@@ -53,7 +53,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         delivered_at: undefined, // Not available in this RPC
         read_at: undefined, // Not available in this RPC
         message_type: 'user', // Default since not available in RPC
-        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...(msg.sender_profile as Record<string, unknown>), id: (msg.sender_profile as Record<string, unknown>)?.id as string || '' } as UserInfo : undefined,
+        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...(msg.sender_profile as Record<string, unknown>), id: (msg.sender_profile as Record<string, unknown>)?.id as string || user.id } as UserInfo : undefined,
         receiver: undefined, // receiver_profile not available in this RPC
         order: undefined // order_details not available in this RPC
       })) : [];
@@ -63,7 +63,6 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   } else {
     // Load conversation summaries using optimized function
     const { data, error } = await supabase.rpc('get_user_conversations_secure', {
-      user_id: user.id,
       conv_limit: 50
     });
     
@@ -81,7 +80,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
       orderId: undefined,
       orderStatus: undefined,
       orderTotal: undefined,
-      lastMessage: conv.last_message || '',
+      lastMessage: conv.last_message_content || '',
       lastMessageTime: conv.last_message_at || conv.created_at,
       messages: [], // Messages loaded separately
       unread: false, // Unread counts not available in this RPC response
@@ -135,8 +134,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
     // Use optimized function to mark conversation as read (non-blocking)
     if (otherUserId) {
       void supabase.rpc('mark_conversation_read_secure', {
-        conversation_id: conversationParam,
-        user_id: user.id
+        other_user_id: otherUserId
       }); // Fire and forget
     }
   }

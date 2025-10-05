@@ -8,17 +8,42 @@ export function validateEnvironment(): void {
     return;
   }
 
-  const env = validateEnv();
+  try {
+    const env = validateEnv();
+    
+    if (dev) {
+      console.log('[Env] Environment validation successful');
+      console.log('[Env] Supabase URL configured:', !!env.PUBLIC_SUPABASE_URL);
+      console.log('[Env] Supabase Anon Key configured:', !!env.PUBLIC_SUPABASE_ANON_KEY);
+      console.log('[Env] Auth redirect URL:', process.env.PUBLIC_AUTH_REDIRECT_URL || 'Not set');
+      console.log('[Env] Auth site URL:', process.env.PUBLIC_AUTH_SITE_URL || 'Not set');
 
-  if (!dev && !hasServiceRoleKey(env)) {
-    console.warn('SUPABASE_SERVICE_ROLE_KEY is not configured; service role features are disabled.');
+      // Warn if Supabase config is missing
+      if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
+        console.error('[Env] CRITICAL: Supabase configuration is missing. The app will not function properly.');
+      }
+    }
+
+    if (!dev && !hasServiceRoleKey(env)) {
+      console.warn('SUPABASE_SERVICE_ROLE_KEY is not configured; service role features are disabled.');
+    }
+
+    validated = true;
+  } catch (error) {
+    console.error('[Env] Environment validation failed:', error);
+    // Don't throw in development, just log the error
+    if (!dev) {
+      throw error;
+    }
+    validated = true; // Mark as validated to avoid repeated errors
   }
-
-  validated = true;
 }
 
 export function setupEnvironment(): void {
   validateEnvironment();
 }
 
-validateEnvironment();
+// Only validate immediately in production
+if (!dev) {
+  validateEnvironment();
+}

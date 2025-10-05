@@ -81,13 +81,6 @@
     animation-play-state: paused;
   }
 
-  .emoji-track span {
-    height: 1.2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   @keyframes emoji-slide {
     0% { transform: translateY(0); }
     100% { transform: translateY(-75%); }
@@ -97,9 +90,6 @@
   @media (prefers-reduced-motion: reduce) {
     .emoji-track {
       animation: none;
-    }
-    .emoji-track span:not(:first-child) {
-      display: none;
     }
   }
 </style>

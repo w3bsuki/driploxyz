@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createDialog } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
-  import { tick } from 'svelte';
+  import { tick, untrack } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';
   import * as i18n from '@repo/i18n';
   import type { FilterModalProps, FilterSection, FilterValue } from '@repo/ui/types';
@@ -144,8 +144,8 @@
   // Local filter state for the modal
   let localFilters = $state<Record<string, FilterValue>>({});
 
-  // Initialize local filters from sections
-  $effect(() => {
+  // Initialize local filters from sections using derived value
+  const initialFilters = $derived(() => {
     const initial: Record<string, FilterValue> = {};
     sections.forEach(section => {
       if (section.type === 'range') {
@@ -155,7 +155,16 @@
         initial[section.key] = section.value || (section.type === 'pills' ? 'all' : null);
       }
     });
-    localFilters = initial;
+    return initial;
+  });
+
+  // Sync derived filters to state
+  $effect(() => {
+    if (Object.keys(localFilters).length === 0) {
+      untrack(() => {
+        localFilters = initialFilters();
+      });
+    }
   });
 
   // Handle individual filter changes
@@ -230,7 +239,9 @@
   $effect(() => {
     if (announcement) {
       const timer = setTimeout(() => {
-        announcement = '';
+        untrack(() => {
+          announcement = '';
+        });
       }, 1000);
       return () => clearTimeout(timer);
     }

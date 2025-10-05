@@ -31,7 +31,7 @@
     translations = {}
   }: SearchDropdownProps = $props();
 
-  let results: ProductWithImages[] = $state([]);
+  let results: ProductWithImages[] = $state.raw([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
   let searchTimeout: NodeJS.Timeout;
@@ -301,23 +301,38 @@
   }
 
   // Close dropdown when clicking outside
-  function handleClickOutside() {
-    if (onClose) {
-      onClose();
+  function handleClickOutside(event: MouseEvent) {
+    // Only close if clicking outside the dropdown container
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-dropdown-container')) {
+      if (onClose) {
+        onClose();
+      }
+      selectedIndex = -1;
     }
-    selectedIndex = -1;
   }
-</script>
 
-<svelte:document onkeydown={handleKeyDown} onclick={handleClickOutside} />
+  // Set up document listeners only when dropdown is visible
+  $effect(() => {
+    if (dropdownVisible && typeof window !== 'undefined') {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  });
+</script>
 
 {#if dropdownVisible}
   <div
-    class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-[var(--input-radius)] shadow-lg z-50 {className}"
+    class="search-dropdown-container absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-[var(--input-radius)] shadow-lg z-50 {className}"
     onclick={(e) => e.stopPropagation()}
     onkeydown={(e) => { if (e.key === 'Escape') handleClickOutside(); }}
     role="dialog"
-    tabindex="-1"
+    tabindex="0"
     aria-label="Search results and browse options"
   >
     {#if query && query.trim()}

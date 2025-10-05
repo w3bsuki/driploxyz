@@ -33,8 +33,7 @@
 	let featuredProductsData = $state<Product[]>([]);
 	let topBrandsData = $state<Array<{id: string; full_name?: string; username: string; avatar_url?: string; verified?: boolean; products?: Product[]; weekly_sales_count?: number; sales_count?: number; monthly_views?: number}>>([]);
 	let topSellersData = $state<Array<{id: string; username?: string; full_name?: string; avatar_url?: string; verified?: boolean; products?: Product[]; rating?: number; sales_count?: number; account_type?: string}>>([]);
-	let userFavoritesData = $state<Record<string, boolean>>({});
-	let dataLoaded = $state(false);
+		let dataLoaded = $state(false);
 
 	// Batched preview map for sellers/brands (populated client-side without MCP)
 	let sellerPreviewMap = $state<Record<string, Product[]>>({});
@@ -90,15 +89,13 @@
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.getLocale());
 
-	// Sync searchQuery with URL parameters on page load/navigation
-	$effect(() => {
-		if (browser) {
-			const urlSearchQuery = page.url.searchParams.get('q') || '';
-			if (urlSearchQuery !== searchQuery) {
-				searchQuery = urlSearchQuery;
-			}
+	// Initialize searchQuery from URL on component mount only
+	if (browser) {
+		const urlSearchQuery = page.url.searchParams.get('q') || '';
+		if (urlSearchQuery) {
+			searchQuery = urlSearchQuery;
 		}
-	});
+	}
 
 	// Track language changes and setup route preloading
 	$effect(() => {
@@ -162,38 +159,49 @@
 		};
 	}
 
-	// Resolve streamed promises
+	// Initialize data directly from server (no promises)
 	$effect(() => {
-		if (data.featuredProducts instanceof Promise) {
-			data.featuredProducts.then(products => {
-				featuredProductsData = products || [];
-			});
-		} else {
-			featuredProductsData = data.featuredProducts || [];
-		}
+		// Debug logging disabled for performance
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: Initializing data from server');
+		// 	console.log('[DEBUG] Client: data object:', data);
+		// 	console.log('[DEBUG] Client: featuredProducts from data:', data.featuredProducts?.length);
+		// 	console.log('[DEBUG] Client: featuredProductsData before assignment:', featuredProductsData.length);
+		// }
 
-		if (data.topBrands instanceof Promise) {
-			data.topBrands.then(brands => topBrandsData = brands || []);
-		} else {
-			topBrandsData = data.topBrands || [];
-		}
+		// Set featured products directly
+		featuredProductsData = data.featuredProducts || [];
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: Featured products loaded:', featuredProductsData.length);
+		// }
 
-		if (data.topSellers instanceof Promise) {
-			data.topSellers.then(sellers => topSellersData = sellers || []);
-		} else {
-			topSellersData = data.topSellers || [];
-		}
+		// Set top brands directly
+		topBrandsData = data.topBrands || [];
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: Top brands loaded:', topBrandsData.length);
+		// }
 
+		// Set top sellers directly
+		topSellersData = data.topSellers || [];
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: Top sellers loaded:', topSellersData.length);
+		// }
 
-		if (data.userFavorites instanceof Promise) {
-			data.userFavorites.then(favorites => userFavoritesData = favorites || {});
-		} else {
-			userFavoritesData = data.userFavorites || {};
-		}
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: User favorites loaded:', Object.keys(userFavoritesData).length);
+		// }
 
-
-		// Mark data as loaded after processing
+		// Mark data as loaded
 		dataLoaded = true;
+		// if (browser && dev) {
+		// 	console.log('[DEBUG] Client: Data loaded flag set to true');
+		// 	console.log('[DEBUG] Client: Final data state:', {
+		// 		featuredProducts: featuredProductsData.length,
+		// 		topBrands: topBrandsData.length,
+		// 		topSellers: topSellersData.length,
+		// 		dataLoaded
+		// 	});
+		// }
 	});
 
 	// Optimized promoted products computation using $derived.by() for better performance - unused
@@ -328,39 +336,10 @@
 		return map;
 	});
 
-	// Consolidated effect for data initialization to reduce re-renders
+	// Initialize seller previews directly
 	$effect(() => {
-		// Handle seller previews
-		if (data.sellerPreviews instanceof Promise) {
-			data.sellerPreviews.then(previews => sellerPreviewMap = previews || {});
-		} else {
-			sellerPreviewMap = data.sellerPreviews || {};
-		}
-
-		// Initialize favorites from server data when products are available
-		if (browser && boostedProducts && regularProducts) {
-			// Always initialize favorite counts from products, regardless of login status
-			const counts: Record<string, number> = {};
-			[...boostedProducts, ...regularProducts].forEach(product => {
-				if (product.favorite_count !== undefined) {
-					counts[product.id] = product.favorite_count;
-				}
-			});
-
-			// Initialize favorites state from server if user is logged in
-			// Update favorite counts
-			Object.entries(counts).forEach(([productId, count]) => {
-				favoritesActions.updateCounts(productId, count);
-			});
-
-			// Initialize user favorites if logged in
-			if (data.user && userFavoritesData) {
-				// The favoritesStore with Svelte 5 runes doesn't have an update method
-				// Instead, individual favorites are tracked through the actions
-				// The userFavoritesData will be loaded through loadUserFavorites() action
-				favoritesActions.loadUserFavorites();
-			}
-		}
+		// Set seller previews directly
+		sellerPreviewMap = data.sellerPreviews || {};
 	});
 
 	// Production cleanup - debug logs removed for better performance
@@ -399,28 +378,12 @@
 	// Partners data - production ready, no test data
 	const partners = $derived([]);
 
-	// function handleSearch(query: string) {
-	// 	if (query.trim()) {
-	// 		goto(`/search?q=${encodeURIComponent(query)}`);
-	// 	} else if (!query.trim() && $page.url.searchParams.has('q')) {
-	// 		// Clear search param if query is empty
-	// 		const url = new URL($page.url);
-	// 		url.searchParams.delete('q');
-	// 		goto(url.pathname + url.search, { replaceState: true });
-	// 	}
-	// }
 
 	// Handle category selection from MainPageSearchBar
 	function handleMainPageCategorySelect(categorySlug: string) {
 		goto(`/category/${categorySlug}`);
 	}
 
-	// Handle filter changes from MainPageSearchBar - unused
-	// function handleMainPageFilterChange(key: string, value: string | number | boolean) {
-	// 	const url = new URL('/search', window.location.origin);
-	// 	url.searchParams.set(key, value);
-	// 	goto(url.pathname + url.search);
-	// }
 
 	// Handle condition filter from MainPageSearchBar
 	function handleMainPageConditionFilter(condition: string) {
@@ -482,20 +445,6 @@
 		}
 	}
 
-	// Quick search for dropdown results - unused
-	// async function handleQuickSearch(query: string) {
-	// 	if (!query.trim() || !data.supabase) {
-	// 		return { data: [], error: null };
-	// 	}
-	//
-	// 	try {
-	// 		const { ProductService } = await import('$lib/services/products');
-	// 		const productService = new ProductService(data.supabase);
-	// 		return await productService.searchProducts(query, { limit: 6 });
-	// 	} catch (_error) {
-	// 		return { data: [], error: 'Search failed' };
-	// 	}
-	// }
 
 	function handleProductClick(product: Product) {
 		// Safety check: if product doesn't have required fields, fallback to legacy URL
@@ -506,57 +455,7 @@
 		goto(getProductUrl(product));
 	}
 	
-	// function handleSearchResultClick(result: { id: string; slug?: string; seller_username?: string; profiles?: { username?: string } }) {
-	// 	// Safety check: if result doesn't have required fields, fallback to legacy URL
-	// 	if (!result.slug || (!result.seller_username && !result.profiles?.username)) {
-	// 		goto(`/product/${result.id}`);
-	// 		return;
-	// 	}
-	// 	goto(getProductUrl(result));
-	// }
 
-	// SearchDropdown event handlers (unused with new MainPageSearchBar)
-	// function handleDropdownCategorySelect(category: { slug: string }) {
-	// 	goto(`/category/${category.slug}`);
-	// }
-
-	// function handleDropdownSellerSelect(seller: { username: string }) {
-	// 	goto(`/profile/${seller.username}`);
-	// }
-
-	// function handleDropdownCollectionSelect(collection: { key: string; slug?: string }) {
-	// 	if (collection.key.startsWith('category=')) {
-	// 		const categorySlug = collection.key.replace('category=', '');
-	// 		goto(`/category/${categorySlug}`);
-	// 	} else if (collection.key.startsWith('condition=')) {
-	// 		const condition = collection.key.replace('condition=', '');
-	// 		goto(`/search?condition=${condition}`);
-	// 	} else {
-	// 		// Handle other collection types (newest, under25, etc.)
-	// 		switch (collection.key) {
-	// 			case 'newest':
-	// 				goto('/search?sort=newest');
-	// 				break;
-	// 			case 'under25':
-	// 				goto('/search?max_price=25');
-	// 				break;
-	// 			case 'trending':
-	// 				goto('/search?sort=trending');
-	// 				break;
-	// 			case 'popular':
-	// 				goto('/search?sort=popular');
-	// 				break;
-	// 			case 'premium':
-	// 				goto('/search?sort=premium');
-	// 				break;
-	// 			case 'favorites':
-	// 				goto('/search?favorites=true');
-	// 				break;
-	// 			default:
-	// 				goto(`/collection/${collection.key}`);
-	// 		}
-	// 	}
-	// }
 
 	async function handleFavorite(productId: string) {
 		if (!data.user) {
@@ -680,49 +579,6 @@
 		}
 	}
 
-	// function handlePartnerClick(partner: { id: string; name: string; logo?: string; description?: string; website?: string }) {
-	// 	// Transform partner to seller format for the SellerQuickView component
-	// 	selectedPartner = {
-	// 		id: partner.id,
-	// 		username: partner.name,
-	// 		avatar_url: partner.logo,
-	// 		itemCount: 12, // Mock item count - will be real when they have a profile
-	// 		created_at: '2023-01-01', // Mock creation date
-	// 		bio: partner.description,
-	// 		location: 'Sofia, Bulgaria',
-	// 		totalSales: 28,
-	// 		rating: 4.8,
-	// 		recentProducts: [
-	// 			{
-	// 				id: 'p1',
-	// 				title: 'Minimalist Oversized Hoodie',
-	// 				price: 89,
-	// 				image: 'https://via.placeholder.com/200x200/2C2C2C/FFFFFF?text=HOODIE'
-	// 			},
-	// 			{
-	// 				id: 'p2',
-	// 				title: 'Cropped Wide Leg Jeans',
-	// 				price: 67,
-	// 				image: 'https://via.placeholder.com/200x200/6B73FF/FFFFFF?text=JEANS'
-	// 			},
-	// 			{
-	// 				id: 'p3',
-	// 				title: 'Statement Chain Necklace',
-	// 				price: 34,
-	// 				image: 'https://via.placeholder.com/200x200/FFD700/000000?text=CHAIN'
-	// 			},
-	// 			{
-	// 				id: 'p4',
-	// 				title: 'Vintage Band T-Shirt',
-	// 				price: 45,
-	// 				image: 'https://via.placeholder.com/200x200/8B4513/FFFFFF?text=VINTAGE'
-	// 			}
-	// 		],
-	// 		// Store partner-specific data for enhanced actions
-	// 		_partnerData: partner
-	// 	};
-	// 	showPartnerModal = true;
-	// }
 
 	function closePartnerModal() {
 		showPartnerModal = false;
@@ -735,50 +591,8 @@
 		selectedSeller = null;
 	}
 
-	// function handleFilter() {
-	// 	// Toggle category dropdown instead of navigating
-	// 	showCategoryDropdown = !showCategoryDropdown;
-	// }
 
-	// async function prefetchCategoryPage(categorySlug: string) {
-	// 	try {
-	// 		// Preload the category page
-	// 		await preloadCode(`/category/${categorySlug}`);
-	// 		// Preload category page data
-	// 		await preloadData(`/category/${categorySlug}`);
-	// 	} catch (_e) {
-	// 		// Preload failed, but continue navigation
-	// 		// Preload failed - continuing without preload
-	// 	}
-	// }
 	
-	// function handlePillKeyNav(e: KeyboardEvent, index: number) {
-	// 	const pills = document.querySelectorAll('#category-pills button');
-	// 	const totalPills = mainCategories.length + 1 + virtualCategories.length; // All + mainCategories + virtualCategories
-	//
-	// 	switch(e.key) {
-	// 		case 'ArrowRight':
-	// 			e.preventDefault();
-	// 			selectedPillIndex = Math.min(index + 1, totalPills - 1);
-	// 			(pills[selectedPillIndex] as HTMLElement)?.focus();
-	// 			break;
-	// 		case 'ArrowLeft':
-	// 			e.preventDefault();
-	// 			selectedPillIndex = Math.max(index - 1, 0);
-	// 			(pills[selectedPillIndex] as HTMLElement)?.focus();
-	// 			break;
-	// 		case 'Home':
-	// 			e.preventDefault();
-	// 			selectedPillIndex = 0;
-	// 			(pills[0] as HTMLElement)?.focus();
-	// 			break;
-	// 		case 'End':
-	// 			e.preventDefault();
-	// 			selectedPillIndex = totalPills - 1;
-	// 			(pills[totalPills - 1] as HTMLElement)?.focus();
-	// 			break;
-	// 	}
-	// }
 
 	// async function navigateToCategory(categorySlug: string) {
 	// 	loadingCategory = categorySlug;
@@ -860,29 +674,7 @@
 	// Selected condition state for main page
 	let selectedCondition = $state<string | null>(null);
 
-	// function handleQuickCondition(conditionKey: string) {
-	// 	// Toggle off if already selected, otherwise set new condition
-	// 	if (selectedCondition === conditionKey) {
-	// 		selectedCondition = null;
-	// 		// Navigate to search without condition
-	// 		goto('/search');
-	// 	} else {
-	// 		selectedCondition = conditionKey;
-	// 		// Navigate to search with selected condition
-	// 		goto(`/search?condition=${conditionKey}`);
-	// 	}
-	// }
 
-	// Prepare quick filters for hero search - unused
-	// const heroQuickFilters = [
-	// 	{ label: i18n.filter_under20(), value: 'price_under_20', style: 'price' },
-	// 	{ label: i18n.filter_newToday(), value: 'new_today', style: 'new' },
-	// 	{ label: i18n.condition_newWithTags(), value: 'condition_new', style: 'condition' },
-	// 	{ label: 'Nike', value: 'brand_Nike', style: 'brand' },
-	// 	{ label: 'Adidas', value: 'brand_Adidas', style: 'brand' },
-	// 	{ label: `${i18n.product_size()} M`, value: 'size_M', style: 'size' },
-	// 	{ label: `${i18n.product_size()} L`, value: 'size_L', style: 'size' }
-	// ];
 
 	// function handleHeroFilterClick(filterValue: string) {
 	// 	const url = new URL('/search', window.location.origin);
@@ -937,26 +729,6 @@
 
 	// Scroll detection removed for cleaner UX
 
-	// Promoted content filtering - unused
-	// let promotedFilter = $state<string>('all');
-
-	// Promoted content filter options - unused
-	// const promotedCategoryFilters = [
-	// 	{ key: 'all', label: i18n.search_all(), icon: '🌟' },
-	// 	{ key: 'men', label: i18n.category_men(), icon: '👔' },
-	// 	{ key: 'women', label: i18n.category_women(), icon: '👗' },
-	// 	{ key: 'kids', label: i18n.category_kids(), icon: '👶' }
-	// ];
-
-	// const promotedConditionFilters = [
-	// 	{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: 'нови с етикет' },
-	// 	{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: 'като ново' },
-	// 	{ key: 'newest', label: 'най-нови', shortLabel: 'най-нови' }
-	// ];
-
-	// function handlePromotedFilterChange(filterKey: string) {
-	// 	promotedFilter = promotedFilter === filterKey ? 'all' : filterKey;
-	// }
 
 	// MainPageSearchBar handlers
 	function handleMainPageSearch(query: string) {

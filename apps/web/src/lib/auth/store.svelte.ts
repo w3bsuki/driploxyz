@@ -13,7 +13,7 @@ import type {
   Profile,
   SupabaseAuthClient,
   AuthState
-} from './index.js';
+} from './index';
 import {
   createBrowserSupabase,
   canSell,
@@ -21,7 +21,7 @@ import {
   getDisplayName,
   getUserInitials,
   hasCompletedOnboarding
-} from './index.js';
+} from './index';
 
 /**
  * Auth store state interface

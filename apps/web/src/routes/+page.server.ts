@@ -74,9 +74,17 @@ const MANUALLY_PROMOTED_IDS: string[] = [
   // 'product-id-3'
 ];
 
-export const load = (async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
+export const load = (async ({ url, locals, setHeaders, depends }) => {
+  const { supabase, country, safeGetSession } = locals;
+  
   // Mark dependencies for client-side invalidation
   depends('home:data');
+  
+  // Debug logging disabled for performance
+  // if (dev) {
+  //   console.log('[DEBUG] Homepage load - supabase client:', supabase ? 'Available' : 'Missing');
+  //   console.log('[DEBUG] Homepage load - country:', country);
+  // }
   // Check if this is an auth callback that went to the wrong URL
   const code = url.searchParams.get('code');
   if (code) {
@@ -109,7 +117,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
 
   try {
     // OPTIMIZED: Consolidated queries to eliminate redundant data fetching
-    // Only 2 main queries instead of 5+ separate ones
+    // Only 2 main queries instead of 5+ separate queries
 
     // Query 1: Categories (unchanged - already efficient)
     const categoriesPromise = withTimeout(
@@ -122,6 +130,11 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       2500,
       { data: [], error: null, count: null, status: 200, statusText: 'OK' }
     );
+    
+    // Debug logging disabled for performance
+    // if (dev) {
+    //   console.log('[DEBUG] Homepage load - Starting categories query');
+    // }
 
     // Query 2: CONSOLIDATED - Featured products with seller info in single query
     // This replaces separate featured, topSellers, and topBrands queries
@@ -204,6 +217,15 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       consolidatedDataPromise,
       categoryCountsPromise
     ]);
+    
+    // Debug logging disabled for performance
+    // if (dev) {
+    //   console.log('[DEBUG] Homepage load - Query results:', {
+    //     categories: categoriesResult.data?.length || 0,
+    //     products: consolidatedResult.data?.length || 0,
+    //     categoryCounts: Array.isArray(categoryCountsResult) ? categoryCountsResult[0]?.data?.length || 0 : 0
+    //   });
+    // }
 
     // Process consolidated results
     const categories = categoriesResult.data || [];
@@ -447,8 +469,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       setHeaders({ 'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
     }
 
-    // Return critical data immediately, stream non-critical data
-    return {
+    // Return data without streaming to ensure reliability
+    const result = {
       // Critical data for initial render
       categories,
       country: country || 'BG',
@@ -457,17 +479,17 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       categoryProductCounts,
       virtualCategoryCounts,
 
-      // Stream featured products (below the fold)
-      featuredProducts: Promise.resolve(featuredProducts),
+      // Direct data instead of promises
+      featuredProducts,
 
-      // Stream non-critical data
-      topSellers: Promise.resolve(topSellers),
-      topBrands: Promise.resolve(topBrands),
-      sellers: Promise.resolve(sellers),
-      userFavorites: Promise.resolve(userFavorites),
+      // Non-critical data
+      topSellers,
+      topBrands,
+      sellers,
+      userFavorites,
 
-      // Stream seller product previews (server-side fetched)
-      sellerPreviews: Promise.resolve(sellerPreviews),
+      // Seller product previews (server-side fetched)
+      sellerPreviews,
 
       errors: {
         products: consolidatedResult.error ? 'Failed to load' : null,
@@ -476,6 +498,23 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         brands: consolidatedResult.error ? 'Failed to load' : null
       }
     };
+    
+    // Debug logging disabled for performance
+    // if (dev) {
+    //   console.log('[DEBUG] Homepage load - Returning result with', {
+    //     categories: result.categories.length,
+    //     featuredProducts: result.featuredProducts?.length || 0,
+    //     topSellers: result.topSellers?.length || 0,
+    //     topBrands: result.topBrands?.length || 0
+    //   });
+
+    //   // Log a sample product to verify data structure
+    //   if (result.featuredProducts && result.featuredProducts.length > 0) {
+    //     console.log('[DEBUG] Sample product:', result.featuredProducts[0]);
+    //   }
+    // }
+    
+    return result;
     
   } catch (error) {
     if (dev) {

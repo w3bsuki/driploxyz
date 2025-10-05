@@ -1,5 +1,9 @@
 @import 'tailwindcss';
-@import '@repo/ui/styles/index.css';
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/base.css';
+@import '@repo/ui/styles/components.css';
+@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/semantic.css';
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';

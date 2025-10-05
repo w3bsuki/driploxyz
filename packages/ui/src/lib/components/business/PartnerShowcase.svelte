@@ -72,8 +72,6 @@
         aria-label="Partner showcase"
         class="flex overflow-x-auto scrollbarhide gap-4 px-4 sm:px-0 pb-2
                {variant === 'marquee' ? 'scroll-smooth' : ''}"
-        onmouseenter={() => { if (variant === 'marquee') isScrolling = true; }}
-        onmouseleave={() => { if (variant === 'marquee') isScrolling = false; }}
       >
         {#each partners as partner}
           <button
@@ -175,12 +173,11 @@
   /* Respect prefers-reduced-motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
     .group img,
-    .group button,
     .group div {
       transition: none !important;
       transform: none !important;
     }
-    
+
     /* Remove smooth scrolling for reduced motion users */
     :global(.scroll-smooth) {
       scroll-behavior: auto !important;

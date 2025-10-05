@@ -51,8 +51,11 @@ const { trackSearch, trackSearchPerformance } = useAnalytics();
 
 let inputElement: HTMLInputElement;
 let focused = $state(false);
-let dropdownVisible = $derived(focused && showDropdown && searchValue.trim().length > 0);
+let dropdownVisible = $derived.by(() => {
+	return focused && showDropdown && searchValue.trim().length > 0;
+});
 const listboxId = $derived(`${searchId}-listbox`);
+
 
 function handleSubmit(event: Event) {
   event.preventDefault();
@@ -74,6 +77,9 @@ function handleSubmit(event: Event) {
 }
 
 function handleKeydown(event: KeyboardEvent) {
+  // Prevent event bubbling that could interfere with dropdown handling
+  event.stopPropagation();
+
   if (event.key === 'Enter') {
     handleSubmit(event);
   } else if (event.key === 'Escape') {
@@ -87,7 +93,7 @@ function handleProductSelect(product: ProductWithImages) {
 }
 </script>
 
-<div class="relative w-full {className}">
+<div class="search-input-container relative w-full {className}">
   <form onsubmit={handleSubmit} class="bg-[color:var(--surface-emphasis)] rounded-[var(--input-radius)] flex items-center relative shadow-none border border-[color:var(--border-subtle)] hover:bg-[color:var(--surface-muted)] focus-within:bg-[color:var(--surface-muted)] transition-colors">
     {#if leftSection}
       {@render leftSection()}

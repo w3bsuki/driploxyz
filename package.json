@@ -11,12 +11,19 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
-    "check-types": "turbo check-types"
+    "check-types": "turbo check-types",
+    "analyze": "node scripts/run-analyzers.mjs"
   },
   "devDependencies": {
     "@lhci/cli": "^0.12.0",
     "@playwright/test": "^1.55.0",
+    "depcheck": "^1.4.7",
+    "eslint-plugin-sonarjs": "^0.25.0",
+    "jscpd": "^4.0.0",
+    "knip": "^5.39.0",
     "prettier": "^3.6.0",
+    "svelte-check": "^4.0.10",
+    "ts-prune": "^0.10.3",
     "turbo": "2.5.4",
     "typescript": "^5.8.2",
     "web-vitals": "^3.5.0",

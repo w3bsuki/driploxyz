@@ -6,15 +6,16 @@ export { default as Tooltip } from './tooltip/Tooltip.svelte';
 export { Accordion } from './accordion/index';
 
 // Toast System - Comprehensive mobile-first toast components
-export { 
-  Toast, 
-  ToastProvider, 
+export {
+  Toast,
+  ToastProvider,
   ToastContainer,
   toasts,
   toastHelpers,
   toastStore,
   toastPatterns,
-  toastUtils
+  toastUtils,
+  setToastProvider
 } from './toast/index';
 
 // Export component-specific types

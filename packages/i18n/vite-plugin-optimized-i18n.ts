@@ -5,14 +5,39 @@
  * - Reduces initial bundle size
  */
 
-import type { Plugin } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
+
+interface BundleChunk {
+  code?: string;
+  [key: string]: unknown;
+}
+
+interface BundleOutput {
+  manualChunks?: Record<string, string[]> | { [key: string]: string[] };
+  [key: string]: unknown;
+}
+
+interface RollupOptions {
+  output?: BundleOutput | BundleOutput[];
+  [key: string]: unknown;
+}
+
+interface BuildOptions {
+  rollupOptions?: RollupOptions;
+  [key: string]: unknown;
+}
+
+interface ConfigWithBuild {
+  build?: BuildOptions;
+  [key: string]: unknown;
+}
 
 export function optimizedI18nPlugin(): Plugin {
   return {
     name: 'optimized-i18n',
 
     // Transform imports to use dynamic loading
-    resolveId(id: string, importer?: string) {
+    resolveId(id: string) {
       // Handle locale bundle imports
       if (id.includes('@repo/i18n/locales/')) {
         return id;
@@ -30,16 +55,17 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Configure build options
-    config(config: any, { command }: { command: string }) {
+    config(config: UserConfig, { command }: { command: string }) {
       if (command === 'build') {
         // Ensure locale bundles are split into separate chunks
-        config.build = config.build || {};
-        config.build.rollupOptions = config.build.rollupOptions || {};
-        config.build.rollupOptions.output = config.build.rollupOptions.output || {};
+        const configWithBuild = config as ConfigWithBuild;
+        configWithBuild.build = configWithBuild.build || {};
+        configWithBuild.build.rollupOptions = configWithBuild.build.rollupOptions || {};
+        configWithBuild.build.rollupOptions.output = configWithBuild.build.rollupOptions.output || {};
 
-        const output = Array.isArray(config.build.rollupOptions.output)
-          ? config.build.rollupOptions.output[0]
-          : config.build.rollupOptions.output;
+        const output = Array.isArray(configWithBuild.build.rollupOptions.output)
+          ? configWithBuild.build.rollupOptions.output[0]
+          : configWithBuild.build.rollupOptions.output;
 
         output.manualChunks = output.manualChunks || {};
 
@@ -53,7 +79,7 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Generate bundle metadata for analysis
-    generateBundle(options: any, bundle: Record<string, any>) {
+    generateBundle(_options: unknown, bundle: Record<string, BundleChunk>) {
       const i18nChunks = Object.keys(bundle).filter(key =>
         key.includes('i18n-') || key.includes('@repo/i18n')
       );

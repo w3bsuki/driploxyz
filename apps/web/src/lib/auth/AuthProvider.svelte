@@ -7,8 +7,8 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { authStore } from './store.svelte.js';
-  import type { AuthUser, AuthSession, Profile } from './index.js';
+  import { authStore } from './store.svelte';
+  import type { AuthUser, AuthSession, Profile } from './index';
 
   interface Props {
     user: AuthUser | null;

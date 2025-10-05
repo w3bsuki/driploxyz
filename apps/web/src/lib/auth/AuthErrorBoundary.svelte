@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { authStore } from './store.svelte.js';
 
   interface Props {
@@ -18,13 +18,22 @@
 
   let hasError = $state(false);
   let errorMessage = $state<string | null>(null);
+  let lastAuthState = $state<typeof authStore.isAuthenticated | null>(null);
 
-  // Reset error state when auth state changes
+  // Track auth state changes and reset errors when auth is determined
   $effect(() => {
-    if (authStore.isAuthenticated !== null) {
-      hasError = false;
-      errorMessage = null;
+    const currentAuthState = authStore.isAuthenticated;
+
+    // Reset error when auth state transitions from null (loading) to determined
+    if (lastAuthState === null && currentAuthState !== null) {
+      // Use untrack to avoid creating a reactive dependency cycle
+      untrack(() => {
+        hasError = false;
+        errorMessage = null;
+      });
     }
+
+    lastAuthState = currentAuthState;
   });
 
   // Global error handler for auth-related errors

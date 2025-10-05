@@ -101,11 +101,9 @@
   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
   onclick={handleBackdropClick}
   onkeydown={handleBackdropKeyDown}
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="modal-title-{product.id}"
-  aria-describedby="modal-desc-{product.id}"
-  tabindex="-1"
+  role="button"
+  tabindex="0"
+  aria-label="Close product quick view"
 >
   <!-- Modal content -->
   <div 

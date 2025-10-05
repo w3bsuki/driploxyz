@@ -22,9 +22,14 @@
         "@playwright/mcp@latest"
       ]
     },
-    "svelte-llm": {
-      "type": "http",
-      "url": "https://svelte-llm.stanislav.garden/mcp/mcp"
+    "svelte": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@sveltejs/mcp"
+      ]
     }
   }
 }

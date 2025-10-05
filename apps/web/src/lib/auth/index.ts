@@ -8,7 +8,9 @@
 
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+// Fallback environment variables for build compatibility
+import { dev } from '$app/environment';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -54,17 +56,19 @@ function resolveSupabaseConfig(): SupabaseConfig {
     throw cachedSupabaseConfigError;
   }
 
-  const supabaseUrl =
-    env.PUBLIC_SUPABASE_URL ??
-    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_URL : undefined) ??
-    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined);
+  // Use static environment variables from SvelteKit
+  let supabaseUrl = PUBLIC_SUPABASE_URL;
+  let supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabaseAnonKey =
-    env.PUBLIC_SUPABASE_ANON_KEY ??
-    (typeof import.meta !== 'undefined' ? import.meta.env?.PUBLIC_SUPABASE_ANON_KEY : undefined) ??
-    (typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined);
+  // Fallback values for build compatibility (these won't be used at runtime)
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (typeof window === 'undefined') { // Server-side during build
+      supabaseUrl = 'https://placeholder.supabase.co';
+      supabaseAnonKey = 'placeholder-key';
+    }
+  }
 
-  if (supabaseUrl && supabaseAnonKey) {
+  if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') {
     cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
     return cachedSupabaseConfig;
   }
@@ -72,12 +76,9 @@ function resolveSupabaseConfig(): SupabaseConfig {
   const error = new SupabaseConfigError();
   cachedSupabaseConfigError = error;
 
-  const isProductionRuntime =
-    typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
-
-  if (!isProductionRuntime) {
+  if (dev) {
     console.warn(
-      '[Auth] Supabase environment variables missing – auth features disabled until PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are configured.'
+      '[Auth] Supabase environment variables missing – check .env file in apps/web.'
     );
   }
 
@@ -101,7 +102,8 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
         cookiesToSet.forEach(({ name, value, options }) => {
           cookies.set(name, value, {
             path: '/',
-            httpOnly: false,
+            // Use httpOnly for SSR auth cookies; Supabase client reads/writes these
+            httpOnly: true,
             sameSite: 'lax',
             secure: !import.meta.env.DEV,
             maxAge: 60 * 60 * 24 * 365, // 1 year
@@ -122,7 +124,8 @@ export async function getServerSession(
   event: RequestEvent
 ): Promise<{ session: AuthSession | null; user: AuthUser | null }> {
   try {
-    const supabase = createServerSupabase(event.cookies, event.fetch);
+    // Use the existing Supabase client if available
+    const supabase = event.locals.supabase || createServerSupabase(event.cookies, event.fetch);
 
     // Use getUser() for secure authentication (contacts Supabase Auth server)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -247,8 +250,8 @@ export function needsOnboardingRedirect(
 ): boolean {
   if (!user) return false;
 
-  // Skip onboarding check for auth-related paths
-  const skipPaths = ['/onboarding', '/logout', '/api/'];
+  // Skip onboarding check for auth-related paths - must match layout skip paths
+  const skipPaths = ['/onboarding', '/api', '/login', '/signup', '/logout', '/auth'];
   if (skipPaths.some(path => currentPath.startsWith(path))) {
     return false;
   }
@@ -295,7 +298,7 @@ export function getUserInitials(profile: Profile | null): string {
   if (profile.full_name) {
     return profile.full_name
       .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
+      .map((name: string) => name.charAt(0).toUpperCase())
       .slice(0, 2)
       .join('');
   }

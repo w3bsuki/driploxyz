@@ -17,8 +17,8 @@
     lastPayoutAt: null
   });
 
-  let transactions = $state([]);
-  let payouts = $state([]);
+  let transactions = $state.raw([]);
+  let payouts = $state.raw([]);
   let loading = $state(true);
   let showPayoutModal = $state(false);
   let payoutAmount = $state('');

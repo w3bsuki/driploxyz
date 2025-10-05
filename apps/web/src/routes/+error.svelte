@@ -4,7 +4,7 @@
 	import { browser } from '$app/environment';
 	import { Button } from '@repo/ui';
 	import { parseError } from '$lib/utils/error-handling.svelte.ts';
-	import { toast } from '$lib/stores/toast.svelte';
+	import { toast } from '@repo/ui';
 
 	// Typed error from our App.Error interface - Svelte 5 runes
 	// eslint-disable-next-line no-undef

@@ -301,7 +301,7 @@
                 <div class="reviewer-name-row">
                   <span class="reviewer-name">{review.reviewer.username}</span>
                   {#if review.reviewer.verified}
-                    <Badge variant="success" size="xs">
+                    <Badge variant="success" size="sm">
                       <svg class="verified-icon" viewBox="0 0 16 16">
                         <path fill="currentColor" d="M16 8A8 8 0 11-1.83e-06 8 8 8 0 0116 8zm-3.97-3.03a.75.75 0 00-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 00-1.06 1.061L6.97 11.03a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 00-.01-1.05z"/>
                       </svg>
@@ -384,7 +384,7 @@
               </svg>
               <span>Helpful</span>
               {#if review.helpfulCount && review.helpfulCount > 0}
-                <Badge variant="subtle" size="xs">{review.helpfulCount}</Badge>
+                <Badge variant="secondary" size="sm">{review.helpfulCount}</Badge>
               {/if}
             </button>
           </div>
@@ -441,28 +441,34 @@
   <div
     class="image-modal-backdrop"
     onclick={closeImageModal}
-    role="presentation"
-  >
-    <div
-      class="image-modal-content"
-      onclick={(e) => e.stopPropagation()}
-      onkeydown={(e) => e.stopPropagation()}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Review image viewer"
-      tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Review image viewer"
+    tabindex="0"
+    onkeydown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          closeImageModal();
+              }
+      }}
     >
-      <button class="modal-close" onclick={closeImageModal} aria-label="Close image modal">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path fill="currentColor" d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
-        </svg>
-      </button>
+      <div
+        class="image-modal-content"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.stopPropagation()}
+        role="document"
+      >
+        <button class="modal-close" onclick={closeImageModal} aria-label="Close image modal">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path fill="currentColor" d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
+          </svg>
+        </button>
 
-      <img
-        src={selectedImageModal.images[selectedImageModal.index]}
-        alt="Review image {selectedImageModal.index + 1}"
-        class="modal-image"
-      />
+        <img
+          src={selectedImageModal.images[selectedImageModal.index]}
+          alt="Review image {selectedImageModal.index + 1}"
+          class="modal-image"
+        />
 
       {#if selectedImageModal.images.length > 1}
         <div class="modal-nav">

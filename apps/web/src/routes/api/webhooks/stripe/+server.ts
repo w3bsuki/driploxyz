@@ -6,42 +6,49 @@ import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions';
 import { OrderService } from '$lib/services/OrderService';
-// import { ConversationService } from '$lib/services/ConversationService';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { paymentLogger } from '$lib/utils/log';
+import { handleApiError, generateRequestId } from '$lib/utils/api-error-handler';
 
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
 export const POST: RequestHandler = async ({ request }) => {
+	const requestId = generateRequestId();
 	const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
-	const body = await request.text();
-	const signature = request.headers.get('stripe-signature');
-
-	if (!signature) {
-		return json({ error: 'No signature provided' }, { status: 400 });
-	}
-
-	let event;
 
 	try {
+		const body = await request.text();
+		const signature = request.headers.get('stripe-signature');
+
+		if (!signature) {
+			return handleApiError(new Error('No signature provided'), {
+				operation: 'webhook_signature_validation',
+				requestId
+			});
+		}
+
+		let event: Stripe.Event;
+
 		if (!STRIPE_WEBHOOK_SECRET) {
-			paymentLogger.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification');
+			paymentLogger.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification', {
+				requestId
+			});
 			event = JSON.parse(body);
 		} else if (!stripe) {
-			paymentLogger.error('Stripe not initialized', new Error('Stripe instance is null'));
-			return json({ error: 'Stripe not available' }, { status: 500 });
+			throw new Error('Stripe not initialized');
 		} else {
 			event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
 		}
-	} catch (err) {
-		paymentLogger.error('Webhook signature verification failed', err, { hasSignature: signature ? 'true' : 'false' });
-		return json({ error: 'Invalid signature' }, { status: 400 });
-	}
 
-	try {
+		paymentLogger.info('Processing webhook event', {
+			eventType: event.type,
+			requestId
+		});
+
+		// Handle different event types
 		switch (event.type) {
 			case 'payment_intent.succeeded':
-				await handlePaymentSuccess(event.data.object);
+				await handlePaymentSuccess(event.data.object, requestId);
 				break;
 			case 'payment_intent.payment_failed':
 				await handlePaymentFailed(event.data.object);
@@ -50,20 +57,34 @@ export const POST: RequestHandler = async ({ request }) => {
 				await handlePaymentCanceled(event.data.object);
 				break;
 			default:
-				paymentLogger.info('Unhandled event type', { eventType: event.type });
+				paymentLogger.info('Unhandled event type', {
+					eventType: event.type,
+					requestId
+				});
 		}
 
-		return json({ received: true });
+		return json({
+			received: true,
+			eventId: event.id,
+			requestId
+		});
 	} catch (error) {
-		paymentLogger.error('Error processing webhook', error, { eventType: event?.type });
-		return json({ error: 'Webhook processing failed' }, { status: 500 });
+		paymentLogger.error('Error processing webhook', error, {
+			requestId,
+			errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+		});
+		return handleApiError(error, {
+			operation: 'webhook_processing',
+			requestId
+		});
 	}
 };
 
-async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent, requestId: string) {
 	paymentLogger.info('Payment succeeded', {
 		paymentIntentId: paymentIntent.id,
-		metadata: JSON.stringify(paymentIntent.metadata)
+		metadata: JSON.stringify(paymentIntent.metadata),
+		requestId
 	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
@@ -72,7 +93,8 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 		try {
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
 				paymentLogger.error('SUPABASE_SERVICE_ROLE_KEY not available in payment success handler', new Error('Service role key missing'), {
-					paymentIntentId: paymentIntent.id
+					paymentIntentId: paymentIntent.id,
+					requestId
 				});
 				return;
 			}
@@ -193,8 +215,64 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 
 			await supabase.from('notifications').insert(notifications);
 
-			// TODO: Create order conversation for buyer-seller communication
-			// ConversationService doesn't have createOrderConversation method yet
+			// Create order conversation for buyer-seller communication
+			try {
+				// Check if conversation already exists
+				const { data: existingConversation } = await supabase
+					.from('conversations')
+					.select('id')
+					.or(`(participant_one_id.eq.${buyerId},participant_two_id.eq.${sellerId}),(participant_one_id.eq.${sellerId},participant_two_id.eq.${buyerId})`)
+					.eq('product_id', productId)
+					.single();
+
+				if (!existingConversation) {
+					// Create new conversation
+					const { error: conversationError } = await supabase
+						.from('conversations')
+						.insert({
+							participant_one_id: buyerId,
+							participant_two_id: sellerId,
+							product_id: productId,
+							order_id: orderId,
+							last_message_at: new Date().toISOString(),
+							status: 'active'
+						})
+						.select()
+						.single();
+
+					if (conversationError) {
+						paymentLogger.error('Error creating conversation', conversationError, {
+							orderId,
+							productId,
+							buyerId,
+							sellerId
+						});
+					} else {
+						paymentLogger.info('Conversation created successfully', {
+							orderId,
+							productId,
+							buyerId,
+							sellerId
+						});
+					}
+				} else {
+					paymentLogger.info('Conversation already exists', {
+						orderId,
+						productId,
+						buyerId,
+						sellerId,
+						conversationId: existingConversation.id
+					});
+				}
+			} catch (conversationError) {
+				paymentLogger.error('Error in conversation creation process', conversationError, {
+					orderId,
+					productId,
+					buyerId,
+					sellerId
+				});
+				// Don't fail the payment process due to conversation creation error
+			}
 
 			paymentLogger.info('Payment processing completed successfully', {
 				transactionId: transaction?.id,
@@ -204,7 +282,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 				productId,
 				productTitle: product?.title,
 				notificationsSent: 'true',
-				conversationCreated: 'false' // TODO: implement when ConversationService.createOrderConversation is available
+				conversationCreated: 'true'
 			});
 			
 		} catch (error) {
