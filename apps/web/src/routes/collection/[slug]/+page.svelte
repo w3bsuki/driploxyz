@@ -7,7 +7,7 @@
   import { authPopupActions } from '$lib/stores/auth-popup.svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
-  import type { BrandCollection } from '$lib/services/collections';
+  import type { BrandCollection } from '@repo/core/services/collections';
 
   let { data }: { data: PageData } = $props();
 

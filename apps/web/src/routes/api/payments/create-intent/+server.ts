@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { createStripeService } from '$lib/services/stripe';
-import { stripe } from '$lib/stripe/server';
+import { createStripeService } from '@repo/core/services/stripe';
+import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 import type { RequestHandler } from './$types';
 import type { PaymentIntentCreateParams, Currency } from '$lib/stripe/types';

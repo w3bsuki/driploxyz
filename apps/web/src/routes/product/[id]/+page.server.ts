@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
-import { getProductAdapter } from '$lib/services/products.domain';
+import { getProductAdapter } from '@repo/domain/services/adapters';
 import { isUUID } from '$lib/utils/seo-urls';
 
 export const load = (async ({ params, locals, depends, setHeaders }) => {
@@ -65,14 +65,21 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 			),
 		]);
 
-		const similarProducts: any[] = [];
-		const sellerProfile: any = null;
+		const similarProducts: unknown[] = [];
+		const sellerProfile = null as {
+			username?: string;
+			full_name?: string;
+			avatar_url?: string;
+			rating?: number;
+			sales_count?: number;
+			bio?: string;
+		} | null;
 		const userFavorite = false;
 
 		// Transform data for frontend
 		const transformedProduct = {
 			...product,
-			images: product.images?.map((img: any) => img.image_url) || [],
+			images: product.images?.map((img: { image_url: string }) => img.image_url) || [],
 			main_category_name: product.category_name,
 			category_name: product.category_name,
 			subcategory_name: null,

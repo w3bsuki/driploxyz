@@ -18,3 +18,6 @@ export * from './messaging/index.js';
 
 // Payment domain services
 export * from './payments/index.js';
+
+// Domain adapters (bridge between domain and application layers)
+export * from './adapters/index.js';

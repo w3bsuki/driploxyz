@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
-import { createServices } from '$lib/services';
+import { createServices } from '@repo/core/services';
 import { getUserCountry } from '$lib/country/detection';
 import { generateUniqueSlug, validateSlug } from '$lib/utils/slug';
 

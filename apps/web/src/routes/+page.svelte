@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { MainPageSearchBar, BottomNav, AuthPopup, FeaturedProducts, SellerQuickView, FeaturedSellers, PromotedListingsSection } from '@repo/ui';
+	import { MainPageSearchBar, BottomNav, FeaturedProducts, FeaturedSellers, PromotedListingsSection } from '@repo/ui';
 	import type { Product } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
@@ -11,36 +11,46 @@
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup.svelte';
 	import type { PageData } from './$types';
-	import type { ProductWithImages } from '$lib/services';
+	import type { ProductWithImages } from '@repo/core/services';
 	import type { Seller } from '$lib/types';
 	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
 	import { getProductUrl } from '$lib/utils/seo-urls';
+	import { startTiming, logInfo } from '$lib/utils/error-logger';
 
 
 	let { data }: { data: PageData } = $props();
 
-	let searchQuery = $state('');
-	let selectedSeller = $state<Seller | null>(null);
-	let selectedPartner = $state<{id: string; name: string; avatar?: string} | null>(null);
-	let showSellerModal = $state(false);
-	let showPartnerModal = $state(false);
-	// let showCategoryDropdown = $state(false);
-	let loadingCategory = $state<string | null>(null);
-	let selectedPillIndex = $state(-1);
-	let activeTab = $state<'sellers' | 'brands'>('sellers');
+	// Lazy-loaded components
+	let SellerQuickView: any = $state(null);
+	let AuthPopup: any = $state(null);
+	let sellerQuickViewLoaded = $state(false);
+	let authPopupLoaded = $state(false);
 
-	// Handle streamed data
-	let featuredProductsData = $state<Product[]>([]);
-	let topBrandsData = $state<Array<{id: string; full_name?: string; username: string; avatar_url?: string; verified?: boolean; products?: Product[]; weekly_sales_count?: number; sales_count?: number; monthly_views?: number}>>([]);
-	let topSellersData = $state<Array<{id: string; username?: string; full_name?: string; avatar_url?: string; verified?: boolean; products?: Product[]; rating?: number; sales_count?: number; account_type?: string}>>([]);
-		let dataLoaded = $state(false);
+	// UI State grouped into a single object
+	let uiState = $state({
+		searchQuery: '',
+		selectedSeller: null as Seller | null,
+		selectedPartner: null as {id: string; name: string; avatar?: string} | null,
+		showSellerModal: false,
+		showPartnerModal: false,
+		loadingCategory: null as string | null,
+		selectedPillIndex: -1,
+		activeTab: 'sellers' as 'sellers' | 'brands',
+		selectedCondition: null as string | null
+	});
 
-	// Batched preview map for sellers/brands (populated client-side without MCP)
-	let sellerPreviewMap = $state<Record<string, Product[]>>({});
+	// Data State grouped into a single object
+	let dataState = $state({
+		featuredProducts: [] as Product[],
+		topBrands: [] as Array<{id: string; full_name?: string; username: string; avatar_url?: string; verified?: boolean; products?: Product[]; weekly_sales_count?: number; sales_count?: number; monthly_views?: number}>,
+		topSellers: [] as Array<{id: string; username?: string; full_name?: string; avatar_url?: string; verified?: boolean; products?: Product[]; rating?: number; sales_count?: number; account_type?: string}>,
+		sellerPreviewMap: {} as Record<string, Product[]>,
+		dataLoaded: false
+	});
 
 	// Top brands data - clean data from dedicated server query
 	const topBrands = $derived(
-		(topBrandsData || []).map(brand => {
+		(dataState.topBrands || []).map(brand => {
 			// Calculate trending percentage based on recent activity
 			const weeklySales = brand.weekly_sales_count || 0;
 			const totalSales = brand.sales_count || 0;
@@ -73,7 +83,7 @@
 
 	// Top sellers data - clean data for MainPageSearchBar
 	const displayTopSellers = $derived(
-		(topSellersData || []).map(seller => ({
+		(dataState.topSellers || []).map(seller => ({
 			id: seller.id,
 			name: seller.username || seller.full_name,
 			items: seller.products?.length || 0,
@@ -93,7 +103,7 @@
 	if (browser) {
 		const urlSearchQuery = page.url.searchParams.get('q') || '';
 		if (urlSearchQuery) {
-			searchQuery = urlSearchQuery;
+			uiState.searchQuery = urlSearchQuery;
 		}
 	}
 
@@ -161,47 +171,21 @@
 
 	// Initialize data directly from server (no promises)
 	$effect(() => {
-		// Debug logging disabled for performance
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: Initializing data from server');
-		// 	console.log('[DEBUG] Client: data object:', data);
-		// 	console.log('[DEBUG] Client: featuredProducts from data:', data.featuredProducts?.length);
-		// 	console.log('[DEBUG] Client: featuredProductsData before assignment:', featuredProductsData.length);
-		// }
-
+		const endTiming = startTiming('Homepage Data Initialization');
+		
 		// Set featured products directly
-		featuredProductsData = data.featuredProducts || [];
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: Featured products loaded:', featuredProductsData.length);
-		// }
+		dataState.featuredProducts = data.featuredProducts || [];
 
 		// Set top brands directly
-		topBrandsData = data.topBrands || [];
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: Top brands loaded:', topBrandsData.length);
-		// }
+		dataState.topBrands = data.topBrands || [];
 
 		// Set top sellers directly
-		topSellersData = data.topSellers || [];
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: Top sellers loaded:', topSellersData.length);
-		// }
-
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: User favorites loaded:', Object.keys(userFavoritesData).length);
-		// }
+		dataState.topSellers = data.topSellers || [];
 
 		// Mark data as loaded
-		dataLoaded = true;
-		// if (browser && dev) {
-		// 	console.log('[DEBUG] Client: Data loaded flag set to true');
-		// 	console.log('[DEBUG] Client: Final data state:', {
-		// 		featuredProducts: featuredProductsData.length,
-		// 		topBrands: topBrandsData.length,
-		// 		topSellers: topSellersData.length,
-		// 		dataLoaded
-		// 	});
-		// }
+		dataState.dataLoaded = true;
+		
+		endTiming();
 	});
 
 	// Optimized promoted products computation using $derived.by() for better performance - unused
@@ -231,10 +215,14 @@
 
 	// Optimized products transformation using $derived.by()
 	const products = $derived.by(() => {
-		const rawProducts = featuredProductsData || [];
-		if (rawProducts.length === 0) return [];
+		const endTiming = startTiming('Products Transformation');
+		const rawProducts = dataState.featuredProducts || [];
+		if (rawProducts.length === 0) {
+			endTiming();
+			return [];
+		}
 
-		return rawProducts.map(product => {
+		const result = rawProducts.map(product => {
 			const transformed = transformProduct(product);
 			return {
 				...transformed,
@@ -242,6 +230,9 @@
 				main_category_name: transformed.main_category_name || transformed.category_name || 'Uncategorized'
 			};
 		});
+		
+		endTiming();
+		return result;
 	});
 
 	// Optimized product filtering using $derived.by()
@@ -255,7 +246,7 @@
 
 	// Optimized sellers transformation using $derived.by()
 	const sellers = $derived.by(() => {
-		const rawSellers = topSellersData || [];
+		const rawSellers = dataState.topSellers || [];
 		if (rawSellers.length === 0) return [];
 
 		return rawSellers
@@ -294,7 +285,7 @@
 
 	// Optimized brands transformation using $derived.by()
 	const brands = $derived.by(() => {
-		const rawBrands = topBrandsData || [];
+		const rawBrands = dataState.topBrands || [];
 		if (rawBrands.length === 0) return [];
 
 		return rawBrands.map(brand => {
@@ -328,7 +319,7 @@
 		if (entities.length === 0) return map;
 
 		for (const entity of entities) {
-			const serverPreviews = sellerPreviewMap[entity.id];
+			const serverPreviews = dataState.sellerPreviewMap[entity.id];
 			if (serverPreviews && serverPreviews.length > 0) {
 				map[entity.id] = serverPreviews.slice(0, 3);
 			}
@@ -339,7 +330,7 @@
 	// Initialize seller previews directly
 	$effect(() => {
 		// Set seller previews directly
-		sellerPreviewMap = data.sellerPreviews || {};
+		dataState.sellerPreviewMap = data.sellerPreviews || {};
 	});
 
 	// Production cleanup - debug logs removed for better performance
@@ -387,22 +378,22 @@
 
 	// Handle condition filter from MainPageSearchBar
 	function handleMainPageConditionFilter(condition: string) {
-		if (selectedCondition === condition) {
-			selectedCondition = null;
+		if (uiState.selectedCondition === condition) {
+			uiState.selectedCondition = null;
 			goto('/search');
 		} else {
-			selectedCondition = condition;
+			uiState.selectedCondition = condition;
 			goto(`/search?condition=${condition}`);
 		}
 	}
 
 	// Handle navigate to all from MainPageSearchBar
 	async function handleMainPageNavigateToAll() {
-		loadingCategory = 'all';
+		uiState.loadingCategory = 'all';
 		try {
 			await goto('/search');
 		} finally {
-			loadingCategory = null;
+			uiState.loadingCategory = null;
 		}
 	}
 
@@ -414,22 +405,22 @@
 		switch(e.key) {
 			case 'ArrowRight':
 				e.preventDefault();
-				selectedPillIndex = Math.min(index + 1, totalPills - 1);
-				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				uiState.selectedPillIndex = Math.min(index + 1, totalPills - 1);
+				(pills[uiState.selectedPillIndex] as HTMLElement)?.focus();
 				break;
 			case 'ArrowLeft':
 				e.preventDefault();
-				selectedPillIndex = Math.max(index - 1, 0);
-				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				uiState.selectedPillIndex = Math.max(index - 1, 0);
+				(pills[uiState.selectedPillIndex] as HTMLElement)?.focus();
 				break;
 			case 'Home':
 				e.preventDefault();
-				selectedPillIndex = 0;
+				uiState.selectedPillIndex = 0;
 				(pills[0] as HTMLElement)?.focus();
 				break;
 			case 'End':
 				e.preventDefault();
-				selectedPillIndex = totalPills - 1;
+				uiState.selectedPillIndex = totalPills - 1;
 				(pills[totalPills - 1] as HTMLElement)?.focus();
 				break;
 		}
@@ -458,25 +449,53 @@
 
 
 	async function handleFavorite(productId: string) {
+		const endTiming = startTiming('Favorite Toggle');
+		
 		if (!data.user) {
+			// Lazy load AuthPopup if not already loaded
+			if (!authPopupLoaded && !AuthPopup) {
+				const module = await import('@repo/ui');
+				AuthPopup = module.AuthPopup;
+				authPopupLoaded = true;
+			}
 			authPopupActions.showForFavorite();
+			endTiming();
 			return;
 		}
 
 		try {
 			await favoritesActions.toggleFavorite(productId);
-		} catch {
-			// Failed to toggle favorite
+			logInfo('Favorite toggled successfully', { productId });
+		} catch (error) {
+			logError('Failed to toggle favorite', error as Error, { productId });
+		} finally {
+			endTiming();
 		}
 	}
 
 	async function handlePurchase(productId: string, selectedSize?: string) {
+		const endTiming = startTiming('Purchase Initiation');
+		
 		if (!data.user) {
+			// Lazy load AuthPopup if not already loaded
+			if (!authPopupLoaded && !AuthPopup) {
+				const module = await import('@repo/ui');
+				AuthPopup = module.AuthPopup;
+				authPopupLoaded = true;
+			}
 			authPopupActions.showForPurchase();
+			endTiming();
 			return;
 		}
 
-		await purchaseActions.initiatePurchase(productId, selectedSize);
+		try {
+			await purchaseActions.initiatePurchase(productId, selectedSize);
+			logInfo('Purchase initiated successfully', { productId, selectedSize });
+		} catch (error) {
+			logError('Failed to initiate purchase', error as Error, { productId, selectedSize });
+		} finally {
+			endTiming();
+		}
 	}
 
 	function handleBrowseAll() {
@@ -556,8 +575,19 @@
 		return categoryMap[categoryName] || categoryName;
 	}
 
-	function handleSellerClick(seller: Seller) {
+	async function handleSellerClick(seller: Seller) {
+		const endTiming = startTiming('Seller Quick View');
+		
 		if (seller.premium) {
+			// Lazy load SellerQuickView if not already loaded
+			if (!sellerQuickViewLoaded && !SellerQuickView) {
+				const moduleLoadStart = startTiming('SellerQuickView Module Load');
+				const module = await import('@repo/ui');
+				SellerQuickView = module.SellerQuickView;
+				sellerQuickViewLoaded = true;
+				moduleLoadStart();
+			}
+			
 			// Get seller's products with proper image data
 			const sellerProductsList = sellerProducts[seller.id] || [];
 			const recentProducts = sellerProductsList.slice(0, 9).map(product => ({
@@ -568,27 +598,31 @@
 			}));
 			
 			// Open quick view for premium sellers with product data
-			selectedSeller = {
+			uiState.selectedSeller = {
 				...seller,
 				recentProducts
 			};
-			showSellerModal = true;
+			uiState.showSellerModal = true;
+			
+			logInfo('Seller quick view opened', { sellerId: seller.id, sellerName: seller.name });
 		} else {
 			// Navigate directly to profile for non-premium
 			goto(`/profile/${seller.username || seller.id}`);
 		}
+		
+		endTiming();
 	}
 
 
 	function closePartnerModal() {
-		showPartnerModal = false;
-		selectedPartner = null;
+		uiState.showPartnerModal = false;
+		uiState.selectedPartner = null;
 	}
 
 
 	function closeSellerModal() {
-		showSellerModal = false;
-		selectedSeller = null;
+		uiState.showSellerModal = false;
+		uiState.selectedSeller = null;
 	}
 
 
@@ -671,8 +705,6 @@
 		{ key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
 	];
 
-	// Selected condition state for main page
-	let selectedCondition = $state<string | null>(null);
 
 
 
@@ -795,7 +827,7 @@
 <div class="sticky top-[60px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100" data-testid="main-search-bar">
 	<MainPageSearchBar
 		supabase={data.supabase}
-		bind:searchQuery={searchQuery}
+		bind:searchQuery={uiState.searchQuery}
 		topBrands={topBrands}
 		topSellers={displayTopSellers}
 		mainCategories={mainCategories}
@@ -803,8 +835,8 @@
 		conditionFilters={quickConditionFilters}
 		{i18n}
 		{currentLang}
-		{selectedCondition}
-		{loadingCategory}
+		selectedCondition={uiState.selectedCondition}
+		loadingCategory={uiState.loadingCategory}
 		onSearch={handleMainPageSearch}
 		onQuickSearch={handleMainPageQuickSearch}
 		onCategorySelect={handleMainPageCategorySelect}
@@ -816,7 +848,7 @@
 </div>
 
 <!-- Promoted Products Section (motivation for sellers) -->
-{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
+{#if dataState.dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
 	<div class="relative z-0">
 		<PromotedListingsSection
 			promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
@@ -846,17 +878,17 @@
 {/if}
 
 <!-- Highlight Sellers/Brands Section -->
-{#if dataLoaded && sellers.length > 0}
+{#if dataState.dataLoaded && sellers.length > 0}
   <FeaturedSellers
-		sellers={(activeTab === 'brands' ? brands : sellers)}
+		sellers={(uiState.activeTab === 'brands' ? brands : sellers)}
 		sellerProducts={sellerProducts}
 		onSellerClick={handleSellerClick}
 		title={i18n.highlight_sellers()}
-		description={activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers()}
+		description={uiState.activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers()}
 		class="pt-3 sm:pt-4"
 		showToggle={true}
-		activeTab={activeTab}
-		onToggle={(tab) => { activeTab = tab }}
+		activeTab={uiState.activeTab}
+		onToggle={(tab) => { uiState.activeTab = tab }}
 	/>
 {/if}
 
@@ -867,7 +899,7 @@
 
 
 		<!-- Regular Products (Newest Listings) -->
-		{#if dataLoaded && (regularProducts.length > 0)}
+		{#if dataState.dataLoaded && (regularProducts.length > 0)}
 			<FeaturedProducts
 				products={regularProducts}
 				errors={data.errors}
@@ -904,7 +936,7 @@
 					categoryTranslation: translateCategory
 				}}
 			/>
-		{:else if !dataLoaded}
+		{:else if !dataState.dataLoaded}
 			<!-- Loading skeleton for featured products -->
 			<div class="px-2 sm:px-4 lg:px-6 py-4">
 				<div class="mb-6">
@@ -952,8 +984,16 @@
 								{i18n.nav_sell()}
 							</button>
 						{:else}
-							<button 
-								onclick={() => authPopupActions.showForSignUp()}
+							<button
+								onclick={async () => {
+									// Lazy load AuthPopup if not already loaded
+									if (!authPopupLoaded && !AuthPopup) {
+										const module = await import('@repo/ui');
+										AuthPopup = module.AuthPopup;
+										authPopupLoaded = true;
+									}
+									authPopupActions.showForSignUp();
+								}}
 								class="w-full border border-[color:var(--border-primary)] text-[color:var(--brand-primary)] px-6 py-3 rounded-lg font-medium hover:bg-[color:var(--surface-secondary)] transition-colors"
 							>
 								{i18n.auth_signUp()}
@@ -985,21 +1025,21 @@
 	}}
 />
 
-<!-- Quick View Dialog for Premium Sellers -->
-{#if selectedSeller}
+<!-- Quick View Dialog for Premium Sellers (lazy loaded) -->
+{#if uiState.selectedSeller && sellerQuickViewLoaded && SellerQuickView}
 	<SellerQuickView
-		seller={selectedSeller} 
-		bind:isOpen={showSellerModal}
+		seller={uiState.selectedSeller}
+		bind:isOpen={uiState.showSellerModal}
 		onClose={closeSellerModal}
 		onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
 	/>
 {/if}
 
-<!-- Partner Quick View Dialog -->
-{#if selectedPartner}
+<!-- Partner Quick View Dialog (lazy loaded) -->
+{#if uiState.selectedPartner && sellerQuickViewLoaded && SellerQuickView}
 	<SellerQuickView
-		seller={selectedPartner}
-		bind:isOpen={showPartnerModal}
+		seller={uiState.selectedPartner}
+		bind:isOpen={uiState.showPartnerModal}
 		onClose={closePartnerModal}
 		onViewProfile={(partnerId) => {
 			// When they get a real profile, this will navigate to their profile
@@ -1016,14 +1056,16 @@
 	/>
 {/if}
 
-<!-- Auth Popup -->
-<AuthPopup
-	isOpen={authPopupStore.state.isOpen}
-	action={authPopupStore.state.action}
-	onClose={authPopupActions.close}
-	onSignIn={authPopupActions.signIn}
-	onSignUp={authPopupActions.signUp}
-/>
+<!-- Auth Popup (lazy loaded) -->
+{#if authPopupLoaded && AuthPopup}
+	<AuthPopup
+		isOpen={authPopupStore.state.isOpen}
+		action={authPopupStore.state.action}
+		onClose={authPopupActions.close}
+		onSignIn={authPopupActions.signIn}
+		onSignUp={authPopupActions.signUp}
+	/>
+{/if}
 
 <!-- Subtle browsing hint for unauthenticated users -->
 {#if !data.user}
@@ -1032,8 +1074,16 @@
 			<p class="text-xs text-[color:var(--text-secondary)] mb-2">
 				{i18n.engagement_banner_description ? i18n.engagement_banner_description() : 'Join thousands of fashion lovers'}
 			</p>
-			<button 
-				onclick={() => authPopupActions.showForSignUp()}
+			<button
+				onclick={async () => {
+					// Lazy load AuthPopup if not already loaded
+					if (!authPopupLoaded && !AuthPopup) {
+						const module = await import('@repo/ui');
+						AuthPopup = module.AuthPopup;
+						authPopupLoaded = true;
+					}
+					authPopupActions.showForSignUp();
+				}}
 				class="text-xs font-medium text-[color:var(--brand-primary)] hover:underline"
 			>
 				{i18n.auth_signUp()}

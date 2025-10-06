@@ -1,7 +1,6 @@
 <script lang="ts">
 import type { Database } from '@repo/database';
 import type { Snippet } from 'svelte';
-import { useAnalytics } from '../../hooks/analytics.js';
 import SearchDropdown from '../navigation/SearchDropdown.svelte';
 
 // Define ProductWithImages type locally
@@ -46,8 +45,8 @@ let {
   mode = 'full'
 }: Props = $props();
 
-// Analytics hooks
-const { trackSearch, trackSearchPerformance } = useAnalytics();
+// Analytics functionality removed for build optimization
+// TODO: Implement analytics tracking when needed
 
 let inputElement: HTMLInputElement;
 let focused = $state(false);
@@ -62,12 +61,12 @@ function handleSubmit(event: Event) {
   if (searchValue.trim()) {
     const startTime = performance.now();
 
-    // Track search submission
-    trackSearch({
-      query: searchValue.trim(),
-      mode: mode as any,
-      session_id: '' // Will be set by analytics service
-    });
+    // Analytics tracking would go here when implemented
+    // trackSearch({
+    //   query: searchValue.trim(),
+    //   mode: mode as any,
+    //   session_id: '' // Will be set by analytics service
+    // });
 
     onSearch?.(searchValue.trim());
     inputElement.blur();

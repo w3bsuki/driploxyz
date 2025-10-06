@@ -829,7 +829,7 @@
   <div class="px-2 sm:px-4 lg:px-6 py-3" data-testid="search-results-container">
     {#if displayProductsWithCategory.length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each displayProductsWithCategory as product}
+        {#each displayProductsWithCategory as product (product.id)}
           <ProductCard
             {product}
             onclick={() => goto(getProductUrl(product))}

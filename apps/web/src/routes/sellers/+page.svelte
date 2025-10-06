@@ -114,7 +114,7 @@
           </div>
           
           <div class="flex flex-wrap gap-2">
-            {#each data.availableSorts as sort}
+            {#each data.availableSorts as sort (sort.key)}
               <button
                 onclick={() => handleSortChange(sort.key)}
                 class="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors {
@@ -156,7 +156,7 @@
       <!-- Leaderboard -->
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div class="divide-y divide-gray-100">
-          {#each data.sellers as seller}
+          {#each data.sellers as seller (seller.id)}
             <div class="p-4 hover:bg-gray-50 transition-colors">
               <div class="flex items-center gap-4">
                 <!-- Rank -->

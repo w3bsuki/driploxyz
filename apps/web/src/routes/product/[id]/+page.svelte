@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard } from '@repo/ui';
+	import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard, ErrorBoundary } from '@repo/ui';
 	import { Heart, Clock } from '@lucide/svelte';
 	import { buildProductUrl } from '$lib/utils/seo-urls';
 	import type { PageData } from './$types';
@@ -132,18 +132,22 @@
 	}
 </script>
 
-<!-- SEO Meta -->
-<SEOMetaTags
-	title={seoTitle}
-	description={seoDescription}
-	url={canonicalUrl}
-	image={data.product.images?.[0]}
-	type="product"
-	product={data.product}
-	seller={data.product.seller}
-	canonical={`https://driplo.xyz${canonicalUrl}`}
-	enableImageOptimization={true}
-/>
+<ErrorBoundary name="ProductPageSEO">
+	<!-- SEO Meta -->
+	<SEOMetaTags
+		title={seoTitle}
+		description={seoDescription}
+		url={canonicalUrl}
+		image={data.product.images?.[0]}
+		type="product"
+		product={data.product}
+		seller={data.product.seller}
+		canonical={`https://driplo.xyz${canonicalUrl}`}
+		enableImageOptimization={true}
+	/>
+</ErrorBoundary>
+
+<ErrorBoundary name="ProductPageContent">
 
 <!-- Simple breadcrumb for legacy route -->
 <ProductBreadcrumb
@@ -366,7 +370,8 @@
 			</div>
 		</section>
 	{/if}
-</div>
+	</div>
+	</ErrorBoundary>
 
 <!-- Mobile sticky actions bar -->
 <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-gray-200 md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">

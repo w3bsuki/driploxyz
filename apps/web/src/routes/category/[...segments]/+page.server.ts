@@ -1,7 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { ProductDomainAdapter } from '$lib/services/products.domain';
-import { CategoryDomainAdapter } from '$lib/services/category.domain';
+import { ProductDomainAdapter, CategoryDomainAdapter } from '@repo/domain/services/adapters';
 import type { Database } from '@repo/database';
 
 export const load = (async ({ params, url, locals: { country, supabase }, setHeaders }) => {

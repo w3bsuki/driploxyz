@@ -16,7 +16,7 @@
     "check-types": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage --threshold=40"
   },
   "main": "./lib/src/index.js",
   "types": "./lib/src/index.d.ts",

@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
-import { ProductDomainAdapter } from '$lib/services/products.domain';
+import { ProductDomainAdapter } from '@repo/core/services';
 
 export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
@@ -86,7 +86,11 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
       setTimeout(() => reject(new Error('Search timeout')), 5000)
     );
 
-    const result = await Promise.race([searchPromise, timeoutPromise]) as any;
+    const result = await Promise.race([searchPromise, timeoutPromise]) as {
+      data?: unknown[];
+      total?: number;
+      error?: unknown;
+    };
 
     if (result.error) {
       console.error('[API Search] Domain error:', result.error);

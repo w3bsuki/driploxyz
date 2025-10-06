@@ -1,5 +1,4 @@
 import { Resend } from 'resend';
-import { env } from '$env/dynamic/private';
 
 // Type definitions for email templates
 interface OrderEmailData {
@@ -35,13 +34,14 @@ interface UserEmailData {
 let resendInstance: Resend | null = null;
 
 function getResendInstance(): Resend | null {
-	if (!env.RESEND_API_KEY) {
+	const apiKey = typeof process !== 'undefined' ? process.env.RESEND_API_KEY : null;
+	if (!apiKey) {
 		
 		return null;
 	}
 	
 	if (!resendInstance) {
-		resendInstance = new Resend(env.RESEND_API_KEY);
+		resendInstance = new Resend(apiKey);
 	}
 	
 	return resendInstance;

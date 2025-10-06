@@ -321,7 +321,7 @@
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Live Chat</h3>
 				<p class="text-gray-600 text-sm mb-4">Chat with our support team in real-time</p>
-				<button class="text-blue-600 font-medium text-sm hover:text-blue-700">Start Chat →</button>
+				<button class="text-blue-600 font-medium text-sm hover:text-blue-700" aria-label="Start live chat with support team">Start Chat →</button>
 			</div>
 			<div class="bg-white p-6 rounded-xl shadow-sm">
 				<div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

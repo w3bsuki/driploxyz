@@ -263,5 +263,10 @@ class EmailService {
 // Export singleton instance
 export const emailService = new EmailService();
 
+// Export factory function
+export function createEmailService(): EmailService {
+  return new EmailService();
+}
+
 // Export types
 export type { SendEmailOptions, EmailConfig };

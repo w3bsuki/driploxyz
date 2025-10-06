@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { OrderService } from '$lib/services/OrderService';
+import { OrderService } from '@repo/core/services/OrderService';
 
 export const PATCH: RequestHandler = async (event) => {
 	const { request, params, locals } = event;

@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServices } from '$lib/services';
-import { stripe } from '$lib/stripe/server';
+import { createServices } from '@repo/core/services';
+import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession }, getClientAddress }) => {

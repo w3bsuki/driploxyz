@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { createServices } from '$lib/services';
+import { createServices } from '@repo/core/services';
 
 export const load = (async ({ params, locals }) => {
   const { session, user } = await locals.safeGetSession();

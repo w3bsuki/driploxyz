@@ -9,6 +9,7 @@
 		resetKeys?: unknown[];
 		resetOnPropsChange?: boolean;
 		isolate?: boolean;
+		name?: string; // Component name for better error tracking
 	}
 	
 	interface ErrorInfo {
@@ -24,7 +25,8 @@
 		onError,
 		resetKeys = [],
 		resetOnPropsChange = true,
-		isolate = false
+		isolate = false,
+		name = 'Unknown'
 	}: Props = $props();
 	
 	let error = $state<Error | null>(null);
@@ -48,9 +50,25 @@
 		error = err;
 		errorInfo = info;
 		
-		// Log to console in development
+		// Log to console with context
 		if (isBrowser) {
+			const errorContext = {
+				component: name,
+				componentStack: info.componentStack,
+				errorBoundary: info.errorBoundary,
+				errorBoundaryFound: info.errorBoundaryFound,
+				isolate,
+				timestamp: new Date().toISOString(),
+				userAgent: navigator.userAgent,
+				url: window.location.href
+			};
 			
+			console.error(`[ErrorBoundary: ${name}]`, err, errorContext);
+			
+			// In production, you could send this to an error tracking service
+			if (window.location.hostname !== 'localhost') {
+				// Example: sendToErrorService(err, errorContext);
+			}
 		}
 		
 		// Call error handler if provided
@@ -58,7 +76,9 @@
 			try {
 				onError(err, info);
 			} catch (handlerError) {
-				
+				if (isBrowser) {
+					console.error('Error in onError handler:', handlerError);
+				}
 			}
 		}
 	}

@@ -45,7 +45,22 @@ export default defineConfig({
 		minify: 'terser',
 		manifest: true,
 		rollupOptions: {
-			output: {}
+			// Externalize large dependencies to reduce bundle size
+			external: [
+				'stripe',
+				'@stripe/stripe-js',
+				'resend',
+				'sharp',
+				'sveltekit-rate-limiter',
+				'@sentry/sveltekit'
+			],
+			output: {
+				// Optimize chunk splitting for better caching
+				manualChunks: {
+					// UI components chunk
+					ui: ['@repo/ui']
+				}
+			}
 		},
 		// Optimize chunks
 		chunkSizeWarningLimit: 1000,

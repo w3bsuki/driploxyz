@@ -32,31 +32,20 @@
   let modalContentRef = $state<HTMLDivElement>();
   let announcement = $state('');
 
-  // Create dialog with proper accessibility
-  const {
-    elements: { trigger: triggerEl, overlay, content, title: titleEl, close },
-    states: { open: isOpen }
-  } = createDialog({
-    onOpenChange: ({ next }) => {
-      if (next) {
+  // Track dialog open state
+  let isOpen = $state(false);
+  
+  // Sync external open state with internal state
+  $effect(() => {
+    if (open !== isOpen) {
+      isOpen = open;
+      if (open) {
         // Store current focus before opening
         triggerElement = document.activeElement as HTMLElement;
       } else {
         // Restore focus when closing
         restoreFocus();
       }
-      open = next;
-      return next;
-    },
-    preventScroll: true,
-    closeOnOutsideClick: true,
-    portal: 'body'
-  });
-  
-  // Sync external open state with Melt UI's internal state
-  $effect(() => {
-    if (open !== $isOpen) {
-      isOpen.set(open);
     }
   });
   
@@ -90,7 +79,7 @@
   }
   
   function handleKeydown(event: KeyboardEvent) {
-    if (!$isOpen) return;
+    if (!isOpen) return;
     
     const { key, shiftKey } = event;
     
@@ -130,7 +119,7 @@
   
   // Setup focus trap when modal opens
   $effect(() => {
-    if ($isOpen && modalContentRef) {
+    if (isOpen && modalContentRef) {
       setupFocusTrap();
       document.addEventListener('keydown', handleKeydown);
       
@@ -157,9 +146,14 @@
     return initial;
   });
 
+  // Check if local filters need initialization
+  const needsInitialization = $derived(() =>
+    Object.keys(localFilters).length === 0
+  );
+
   // Sync derived filters to state
   $effect(() => {
-    if (Object.keys(localFilters).length === 0) {
+    if (needsInitialization()) {
       untrack(() => {
         localFilters = initialFilters();
       });
@@ -259,13 +253,13 @@
 
 <!-- Trigger Button (if provided) -->
 {#if trigger}
-  <button 
-    use:triggerEl
-    class="relative flex items-center gap-1.5 h-8 px-3 rounded-[var(--radius-lg)] text-xs font-medium 
+  <button
+    onclick={() => open = true}
+    class="relative flex items-center gap-1.5 h-8 px-3 rounded-[var(--radius-lg)] text-xs font-medium
            transition-colors duration-[var(--duration-base)]
            min-h-[var(--touch-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2
-           {activeFilterCount > 0 
-             ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)]' 
+           {activeFilterCount > 0
+             ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)]'
              : 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] hover:bg-[color:var(--primary-600)]'}"
     aria-label="Open filters"
   >
@@ -274,18 +268,17 @@
 {/if}
 
 <!-- Modal Dialog -->
-{#if $isOpen}
+{#if isOpen}
   <!-- Backdrop -->
-  <div 
-    use:overlay 
+  <div
+    onclick={() => open = false}
     class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
     style="z-index: 9999;"
   ></div>
 
   <!-- Dialog Content - Mobile-first responsive -->
-  <div 
+  <div
     bind:this={modalContentRef}
-    use:content
     class="fixed inset-x-0 bottom-0 z-50 sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:inset-x-auto
            bg-[color:var(--modal-bg)] sm:rounded-[var(--modal-radius)] shadow-[var(--modal-shadow)] border-t border-[color:var(--border-subtle)] sm:border
            max-h-[85vh] overflow-hidden flex flex-col {className}"
@@ -298,8 +291,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)]">
       <div>
-        <h2 
-          use:titleEl
+        <h2
           id="filter-modal-title"
           class="text-lg font-semibold text-[color:var(--text-primary)] leading-6"
         >
@@ -311,8 +303,8 @@
       </div>
       
       <button
-        use:close
-        class="p-2 rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)] 
+        onclick={() => open = false}
+        class="p-2 rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)]
                transition-colors duration-[var(--duration-base)]
                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
         aria-label={closeLabel}
@@ -427,7 +419,7 @@
       
       <!-- Close Button (Mobile) -->
       <button
-        use:close
+        onclick={() => open = false}
         class="sm:hidden w-full px-4 py-3 text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)]
                rounded-[var(--radius-md)] font-medium text-sm
                min-h-[var(--touch-primary)]

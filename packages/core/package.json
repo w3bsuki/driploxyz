@@ -25,6 +25,26 @@
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.js",
       "default": "./dist/utils/index.js"
+    },
+    "./services": {
+      "types": "./dist/services/index.d.ts",
+      "import": "./dist/services/index.js",
+      "default": "./dist/services/index.js"
+    },
+    "./stripe": {
+      "types": "./dist/stripe/index.d.ts",
+      "import": "./dist/stripe/index.js",
+      "default": "./dist/stripe/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "import": "./dist/email/index.js",
+      "default": "./dist/email/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/services/analytics.d.ts",
+      "import": "./dist/services/analytics.js",
+      "default": "./dist/services/analytics.js"
     }
   },
   "files": [
@@ -37,7 +57,8 @@
     "dev": "tsup --watch",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --threshold=70"
   },
   "dependencies": {
     "@repo/database": "workspace:*",

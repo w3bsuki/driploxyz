@@ -89,23 +89,25 @@
     }
   }
 
+  // Calculate scrollbar width
+  const scrollbarWidth = $derived(() => {
+    if (typeof window === 'undefined') return 0;
+    return window.innerWidth - document.documentElement.clientWidth;
+  });
+
   $effect(() => {
     if (!open || typeof document === 'undefined') return;
 
     previouslyFocused = document.activeElement as HTMLElement;
     focusFirstElement();
 
-    const scrollbarWidth =
-      typeof window === 'undefined'
-        ? 0
-        : window.innerWidth - document.documentElement.clientWidth;
     bodyScrollDepth += 1;
     const bodyStyle = document.body.style;
     const originalOverflow = bodyStyle.overflow;
     const originalPadding = bodyStyle.paddingRight;
     bodyStyle.overflow = 'hidden';
-    if (scrollbarWidth > 0) {
-      bodyStyle.paddingRight = `${scrollbarWidth}px`;
+    if (scrollbarWidth() > 0) {
+      bodyStyle.paddingRight = `${scrollbarWidth()}px`;
     }
 
     return () => {

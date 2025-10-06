@@ -1,5 +1,4 @@
 <script lang="ts">
-import { useAnalytics } from '../../hooks/analytics.js';
 import SearchInput from '../forms/SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
 import CategoryPill from '../ui/CategoryPill.svelte';
@@ -39,8 +38,8 @@ let {
   onClearAllFilters
 }: SearchPageSearchBarProps = $props();
 
-// Analytics hooks
-const { trackFilterUsage, trackMegaMenuNavigation } = useAnalytics();
+// Analytics functionality removed for build optimization
+// TODO: Implement analytics tracking when needed
 
 // Component state
 let showCategoryDropdown = $state(false);
@@ -133,8 +132,8 @@ function handleCategoryDropdownClose() {
 }
 
 function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
-  // Track mega menu navigation
-  trackMegaMenuNavigation(level, categorySlug, path.join('/'));
+  // Analytics tracking would go here when implemented
+  // trackMegaMenuNavigation(level, categorySlug, path.join('/'));
 
   onCategorySelect(categorySlug, level, path);
   handleCategoryDropdownClose();
@@ -142,8 +141,8 @@ function handleMegaMenuCategorySelect(categorySlug: string, level: number, path:
 
 // Handle smart pill clicks
 function handleSmartPillClick(pillKey: string, level: number) {
-  // Track filter usage
-  trackFilterUsage(level === 1 ? 'category' : level === 2 ? 'subcategory' : 'specific', pillKey, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage(level === 1 ? 'category' : level === 2 ? 'subcategory' : 'specific', pillKey, searchValue || '');
 
   if (level === 1) {
     // Main category selection
@@ -168,8 +167,8 @@ function handleCategoryPillClick(categoryKey: string) {
 function handleConditionPillClick(conditionKey: string) {
   const currentCondition = appliedFilters?.condition;
 
-  // Track filter usage
-  trackFilterUsage('condition', conditionKey, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('condition', conditionKey, searchValue || '');
 
   if (currentCondition === conditionKey) {
     onFilterRemove('condition');
@@ -208,8 +207,8 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
 // Handle collection selection from dropdown
 function handleCollectionSelect(collection: Collection) {
-  // Track filter usage
-  trackFilterUsage('collection', collection.key, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('collection', collection.key, searchValue || '');
 
   if (collection.key.startsWith('category=')) {
     const categorySlug = collection.key.replace('category=', '');
@@ -243,28 +242,32 @@ function handleCollectionSelect(collection: Collection) {
 // Handle condition selection from dropdown
 function handleConditionSelect(condition: FilterOption) {
   const key: FilterValue = condition.key ?? condition.value;
-  trackFilterUsage('condition', key, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('condition', key, searchValue || '');
   setFilter('condition', key);
   handleCategoryDropdownClose();
 }
 
 // Handle size selection from dropdown
 function handleSizeSelect(size: string) {
-  trackFilterUsage('size', size, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('size', size, searchValue || '');
   setFilter('size', size);
   handleCategoryDropdownClose();
 }
 
 // Handle color selection from dropdown
 function handleColorSelect(color: string) {
-  trackFilterUsage('color', color, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('color', color, searchValue || '');
   setFilter('color', color);
   handleCategoryDropdownClose();
 }
 
 // Handle brand selection from dropdown
 function handleBrandSelect(brand: string) {
-  trackFilterUsage('brand', brand, searchValue || '');
+  // Analytics tracking would go here when implemented
+  // trackFilterUsage('brand', brand, searchValue || '');
   setFilter('brand', brand);
   handleCategoryDropdownClose();
 }

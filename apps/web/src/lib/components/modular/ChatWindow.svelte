@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar } from '@repo/ui';
   import * as i18n from '@repo/i18n';
-  import type { Conversation } from '$lib/services/ConversationService';
+  import type { Conversation } from '@repo/core/services/ConversationService';
   // Message type not used directly in this component
 
   interface Props {

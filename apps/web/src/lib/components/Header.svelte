@@ -22,12 +22,12 @@
     messageToastActions
   } from '$lib/stores/notifications.svelte';
   import { unreadMessageCount as unreadMessageCountStore } from '$lib/stores/messageNotifications.svelte';
-  import { RealtimeNotificationService } from '$lib/services/realtimeNotifications';
+  import { RealtimeNotificationService } from '@repo/core/services/realtimeNotifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { afterNavigate } from '$app/navigation';
-  import { ProductService } from '$lib/services/products';
+  import { ProductService } from '@repo/core/services/products';
   
   interface Props {
     showSearch?: boolean;
@@ -59,21 +59,26 @@
   const currentUser = $derived(propsUser);
   const currentProfile = $derived(propsProfile);
   const isLoggedIn = $derived(!!currentUser);
-  const userCanSell = $derived(canSell(currentProfile));
+  const userCanSell = $derived(canSell(currentProfile || null));
   const userDisplayName = $derived(
     currentProfile?.full_name || currentProfile?.username || 'User'
   );
   const initials = $derived(
-    (currentProfile?.full_name?.split(' ') || []).map(n => n[0]).slice(0, 2).join('').toUpperCase() || 
-    currentProfile?.username?.[0]?.toUpperCase() || 
+    (currentProfile?.full_name?.split(' ') || []).map(n => n[0]).slice(0, 2).join('').toUpperCase() ||
+    currentProfile?.username?.[0]?.toUpperCase() ||
     '?'
   );
   
   // Language handling
   let currentLang = $state(initialLanguage || i18n.getLocale());
   
+  // Check if language needs to be set from initial prop
+  const needsLanguageInit = $derived(() =>
+    initialLanguage && initialLanguage !== i18n.getLocale()
+  );
+
   $effect(() => {
-    if (initialLanguage && initialLanguage !== i18n.getLocale()) {
+    if (needsLanguageInit() && initialLanguage) {
       i18n.setLocale(initialLanguage);
       currentLang = initialLanguage;
     }
@@ -114,9 +119,14 @@
     });
   }
 
+  // Check if notification service should be initialized
+  const shouldInitNotifications = $derived(() =>
+    currentUser && supabase && !notificationService
+  );
+
   // Initialize notification service when user logs in
   $effect(() => {
-    if (currentUser && supabase && !notificationService) {
+    if (shouldInitNotifications() && currentUser) {
       notificationService = new RealtimeNotificationService(supabase, currentUser.id);
       notificationService.initialize();
     } else if (!currentUser && notificationService) {

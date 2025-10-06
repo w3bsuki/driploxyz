@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Input } from '@repo/ui';
-  import { PayoutService } from '$lib/services/payouts';
-  import { TransactionService } from '$lib/services/transactions';
+  import { PayoutService } from '@repo/core/services/payouts';
+  import { TransactionService } from '@repo/core/services/transactions';
   import type { PageData } from './$types';
 
   interface Props {

@@ -1,4 +1,5 @@
-import type { SearchBarMode } from '../types/search.js';
+// Define SearchBarMode locally to avoid circular dependency
+export type SearchBarMode = 'main' | 'category' | 'search_page' | 'mobile';
 
 interface AnalyticsEvent {
   event: string;

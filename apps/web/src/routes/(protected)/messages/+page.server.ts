@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Message, Conversation, UserInfo } from '$lib/services/ConversationService';
+import type { Message, Conversation, UserInfo } from '@repo/core/services/ConversationService';
 import type { Database } from '@repo/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];

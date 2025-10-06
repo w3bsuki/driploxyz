@@ -1,11 +1,11 @@
-import type { 
-	Currency, 
-	PaymentCalculation, 
+import type {
+	Currency,
+	PaymentCalculation,
 	CommissionCalculation,
 	PaymentFormData,
 	PayoutMethod,
 	StripeError
-} from '$lib/stripe/types';
+} from '@repo/core/stripe';
 
 // =====================================
 // CURRENCY & FORMATTING

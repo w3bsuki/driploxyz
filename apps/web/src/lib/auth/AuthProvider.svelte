@@ -22,6 +22,16 @@
 
   let { user, session, profile, children }: Props = $props();
 
+  // Check if server data differs from current client state
+  const serverDataChanged = $derived(() => {
+    if (!browser || !authStore.initialized) return false;
+    
+    const currentUserChanged = authStore.user?.id !== user?.id;
+    const currentSessionChanged = authStore.session?.access_token !== session?.access_token;
+    
+    return currentUserChanged || currentSessionChanged;
+  });
+
   // CRITICAL FIX: Initialize client-side Supabase and sync with server data
   $effect(() => {
     if (!browser) return;
@@ -31,41 +41,13 @@
 
     // Initialize client-side listener if not already done
     if (!authStore.initialized) {
-      const supabase = createBrowserSupabase();
-
-      // Set up auth state listener
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        // Only log in development for debugging
-        if (import.meta.env.DEV) {
-          console.log('[AuthProvider] Auth state changed:', event, session?.user?.id);
-        }
-
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          authStore.handleAuthChange(session?.user ?? null, session);
-        } else if (event === 'SIGNED_OUT') {
-          authStore.handleAuthChange(null, null);
-        }
-      });
-
-      // Set the client and mark as initialized
-      authStore.setSupabaseClient(supabase);
-      authStore.initialized = true;
-
-      return () => {
-        subscription.unsubscribe();
-      };
+      authStore.initialize();
     }
   });
 
   // CRITICAL FIX: Update store when server data changes (navigation, etc.)
   $effect(() => {
-    if (!browser || !authStore.initialized) return;
-
-    // Only update if server data differs from current client state
-    const currentUserChanged = authStore.user?.id !== user?.id;
-    const currentSessionChanged = authStore.session?.access_token !== session?.access_token;
-
-    if (currentUserChanged || currentSessionChanged) {
+    if (serverDataChanged()) {
       console.log('[AuthProvider] Server data changed, updating store');
       authStore.setServerAuth(user, session, profile);
     }

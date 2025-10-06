@@ -50,6 +50,11 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/types/index.js",
       "default": "./dist/types/index.js"
+    },
+    "./adapters": {
+      "types": "./dist/services/adapters/index.d.ts",
+      "import": "./dist/services/adapters/index.js",
+      "default": "./dist/services/adapters/index.js"
     }
   },
   "files": [
@@ -62,7 +67,8 @@
     "dev": "tsup --watch",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --threshold=80"
   },
   "dependencies": {
     "@repo/database": "workspace:*",

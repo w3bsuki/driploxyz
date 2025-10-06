@@ -39,21 +39,18 @@
     onblur
   }: Props = $props();
 
-  let generatedId = $state<string | null>(null);
-
-  $effect(() => {
-    if (!id && !generatedId) {
-      generatedId = typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `input-${Math.random().toString(36).slice(2)}`;
-    }
+  const generatedId = $derived.by(() => {
+    if (id) return id;
+    return typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `input-${Math.random().toString(36).slice(2)}`;
   });
 
-  const inputId = $derived(id ?? generatedId ?? 'input');
-  const descriptionId = $derived(description ? `${inputId}-description` : undefined);
-  const errorId = $derived(error ? `${inputId}-error` : undefined);
+  const inputId = $derived.by(() => id ?? generatedId ?? 'input');
+  const descriptionId = $derived.by(() => description ? `${inputId}-description` : undefined);
+  const errorId = $derived.by(() => error ? `${inputId}-error` : undefined);
 
-  const describedBy = $derived([
+  const describedBy = $derived.by(() => [
     descriptionId,
     errorId
   ].filter(Boolean).join(' ') || undefined);

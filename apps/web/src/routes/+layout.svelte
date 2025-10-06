@@ -31,7 +31,7 @@
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
-  import type { ProductWithImages } from '$lib/services';
+  import type { ProductWithImages } from '@repo/core/services';
   let headerContainer: HTMLDivElement | null = $state(null);
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
@@ -269,7 +269,7 @@
       return { data: [], error: null } as { data: ProductWithImages[]; error: string | null };
     }
     try {
-      const { ProductService } = await import('$lib/services/products');
+      const { ProductService } = await import('@repo/core/services/products');
       const productService = new ProductService(supabase);
       return await productService.searchProducts(query, { limit: 6 });
     } catch {

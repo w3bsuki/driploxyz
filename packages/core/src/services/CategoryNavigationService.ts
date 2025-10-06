@@ -152,3 +152,6 @@ export class CategoryNavigationService {
     return this.navigationStack.length > 1;
   }
 }
+
+// Export types for use in other packages
+export type { Category, NavigationLevel };

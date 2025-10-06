@@ -29,7 +29,7 @@
     }
     
     const { supabase } = await import('$lib/supabase/client');
-    const { ProfileService } = await import('$lib/services/profiles');
+    const { ProfileService } = await import('@repo/core/services');
     const profileService = new ProfileService(supabase);
     
     if (isFollowing) {
@@ -112,7 +112,7 @@
               if (!loadingFollowers && followers.length === 0) {
                 loadingFollowers = true;
                 const { supabase } = await import('$lib/supabase/client');
-                const { ProfileService } = await import('$lib/services/profiles');
+                const { ProfileService } = await import('@repo/core/services');
                 const profileService = new ProfileService(supabase);
                 const result = await profileService.getFollowers(data.profile.id);
                 if (!result.error) {
@@ -132,7 +132,7 @@
               if (!loadingFollowing && following.length === 0) {
                 loadingFollowing = true;
                 const { supabase } = await import('$lib/supabase/client');
-                const { ProfileService } = await import('$lib/services/profiles');
+                const { ProfileService } = await import('@repo/core/services');
                 const profileService = new ProfileService(supabase);
                 const result = await profileService.getFollowing(data.profile.id);
                 if (!result.error) {
@@ -210,7 +210,7 @@
       <!-- Social Links -->
       {#if data.profile.social_links && data.profile.social_links.length > 0}
         <div class="flex items-center space-x-2 mt-2">
-          {#each data.profile.social_links as link}
+          {#each data.profile.social_links as link (link.type + link.url)}
             <a href={link.url} target="_blank" class="text-blue-600 text-xs hover:underline">
               {link.type === 'instagram' ? '📷' : link.type === 'tiktok' ? '🎵' : '🌐'} {link.type}
             </a>
@@ -256,7 +256,7 @@
       <!-- Products Grid -->
       {#if data.products.length > 0}
         <div class="grid grid-cols-3 gap-1">
-          {#each data.products as product}
+          {#each data.products as product (product.id)}
             <a
               href="{getProductUrl(product)}"
               class="aspect-square bg-gray-100 rounded-sm overflow-hidden block"

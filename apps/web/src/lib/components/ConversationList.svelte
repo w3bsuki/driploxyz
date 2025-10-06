@@ -45,7 +45,7 @@
   <!-- Mobile Filter Pills (Full Width) -->
   <div class="sm:hidden">
     <div class="grid grid-cols-5 gap-1 px-4 pb-3">
-      {#each tabs as tab}
+      {#each tabs as tab (tab.id)}
         <button
           onclick={() => onTabChange(tab.id)}
           class="px-2 py-1.5 rounded-full text-xs font-medium transition-colors
@@ -80,7 +80,7 @@
     </div>
   {/if}
   
-  {#each conversations as conv}
+  {#each conversations as conv (conv.id)}
     <button
       type="button"
       class="w-full px-4 py-4 hover:bg-gray-50 border-b border-gray-200 transition-colors text-left min-h-[68px] cursor-pointer

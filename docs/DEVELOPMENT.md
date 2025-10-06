@@ -581,3 +581,211 @@ Pipeline runs on every PR:
 - [TESTING.md](./TESTING.md) - Testing strategy
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
 - [SUPABASE.md](./SUPABASE.md) - Database workflows
+
+---
+
+## Post-Refactor Development (2025)
+
+### Project Structure After 7-Phase Refactor
+
+The project has undergone a comprehensive 7-phase refactor to reduce dependencies and optimize performance. The current structure is:
+
+```
+packages/
+├── core/          # Core business logic, auth, payments, email
+├── ui/            # UI component library with Svelte 5 runes
+├── i18n/          # Paraglide internationalization
+├── domain/        # Domain types and interfaces
+├── testing/       # Testing utilities and configurations
+└── eslint-config/ # Shared ESLint configurations
+
+apps/
+└── web/           # Main SvelteKit application
+```
+
+### Key Changes from Refactor
+
+1. **Package Reduction**: Reduced total package count by [REDUCTION]%
+2. **Svelte 5 Migration**: Migrated to Svelte 5 with runes ($state, $derived, $effect)
+3. **Modern Patterns**: Implemented modern reactivity patterns throughout
+4. **Performance Optimizations**: Improved build times and runtime performance
+5. ** streamlined Dependencies**: Removed redundant and overlapping packages
+
+### Current Development Workflow
+
+After the refactor, follow this enhanced workflow:
+
+```bash
+# 1. Ensure project health after refactor
+node final-verification.js
+
+# 2. Start development server
+pnpm dev --filter web
+
+# 3. Make changes following Svelte 5 patterns
+# Use runes instead of stores where appropriate
+
+# 4. Run quality checks
+pnpm -w turbo run lint
+pnpm -w turbo run check-types
+pnpm -w turbo run test
+```
+
+### CLI Agent for Further Optimizations
+
+The project is now set up for CLI agent optimization using MCP servers:
+
+#### Available Optimization Tasks
+
+See [CLI_AGENT_TASKS.md](../CLI_AGENT_TASKS.md) for detailed tasks:
+
+1. **Svelte MCP Tasks**
+   - Component pattern verification
+   - Reactivity optimization
+   - Performance improvements
+
+2. **Supabase MCP Tasks**
+   - Query optimization
+   - RLS policy improvements
+   - Schema optimization
+
+3. **Paraglide i18n Tasks**
+   - Message bundle optimization
+   - Runtime performance
+
+4. **Tailwind CSS v4 Migration**
+   - Preparation for v4 upgrade
+   - Bundle optimization
+
+#### Using the CLI Agent
+
+```bash
+# Connect to Svelte MCP server
+npx -y @sveltejs/mcp
+
+# Verify component
+svelte-autofixer --file path/to/component.svelte --version 5
+
+# Connect to Supabase MCP server
+npx -y @supabase/mcp-server-supabase@latest --project-ref=koowfhsaqmarfdkwsfiz
+
+# Run security advisors
+get_advisors --type security
+```
+
+### Svelte 5 Development Guidelines
+
+#### Using Runes
+
+```typescript
+// Instead of stores, use runes
+const count = $state(0);           // Reactive state
+const doubled = $derived(count * 2); // Derived values
+
+// Effects with cleanup
+$effect(() => {
+  const timer = setInterval(() => count++, 1000);
+  return () => clearInterval(timer); // Cleanup
+});
+```
+
+#### Component Patterns
+
+```svelte
+<script lang="ts">
+  // Props with types
+  interface Props {
+    title: string;
+    onSubmit?: () => void;
+  }
+
+  let { title, onSubmit }: Props = $props();
+
+  // Local state
+  const isLoading = $state(false);
+  
+  // Handle events
+  async function handleSubmit() {
+    isLoading = true;
+    try {
+      await onSubmit?.();
+    } finally {
+      isLoading = false;
+    }
+  }
+</script>
+
+<button onclick={handleSubmit} disabled={isLoading}>
+  {title}
+</button>
+```
+
+### Type Safety Improvements
+
+The refactor improved type safety across the project:
+
+- Better TypeScript coverage ([PERCENTAGE]%)
+- Reduced `any` type usage by [PERCENTAGE]%
+- Improved type inference
+- Stricter type checking enabled
+
+### Performance Monitoring
+
+After the refactor, monitor these metrics:
+
+- Bundle size: Should be reduced by [SIZE_REDUCTION]%
+- Build time: Should be faster by [TIME_REDUCTION]%
+- Runtime performance: Improved Core Web Vitals
+- Development server: Faster hot module replacement
+
+### Troubleshooting Post-Refactor Issues
+
+#### TypeScript Errors
+
+If you encounter TypeScript errors after the refactor:
+
+```bash
+# Regenerate types
+pnpm svelte-kit sync
+pnpm --filter @repo/database db:types
+
+# Clear build cache
+pnpm turbo run build --force
+```
+
+#### Svelte 5 Migration Issues
+
+For Svelte 5 related issues:
+
+1. Check SVELTE_5_OPTIMIZATION_REPORT.md for known patterns
+2. Use the Svelte MCP server for component verification
+3. Ensure proper cleanup in effects
+
+#### Build Performance
+
+If build performance is degraded:
+
+1. Check for missing dependencies
+2. Verify package.json is correct
+3. Run `pnpm install` to refresh dependencies
+4. Clear Turborepo cache: `pnpm turbo run build --force`
+
+### Documentation Updates
+
+For more information about the refactor:
+
+- [REFACTOR_SUMMARY.md](../REFACTOR_SUMMARY.md) - Complete refactor overview
+- [CLI_AGENT_TASKS.md](../CLI_AGENT_TASKS.md) - Tasks for CLI agent
+- [SVELTE_5_OPTIMIZATION_REPORT.md](../SVELTE_5_OPTIMIZATION_REPORT.md) - Svelte 5 migration details
+
+### Future Development Guidelines
+
+When adding new features:
+
+1. Follow Svelte 5 patterns with runes
+2. Maintain the reduced package count
+3. Use the established component patterns
+4. Consider CLI agent optimization opportunities
+5. Run the verification script before committing
+
+The project is now in an optimized state ready for continued development with enhanced performance and maintainability.

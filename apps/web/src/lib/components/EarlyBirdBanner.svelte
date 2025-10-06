@@ -19,46 +19,74 @@
   let items = $state<Listing[]>([]);
   let visible = $state(true);
   
-  const current = $derived(items[idx]);
-  
-  // Initialize banner and check dismissal
-  $effect(() => {
-    if (!browser) return;
-    
-    // Check if banner was dismissed recently (within 12 hours)
+  const current = $derived.by(() => effectiveItems()[idx]);
+
+  // Check if banner should be dismissed based on stored time
+  const shouldDismiss = $derived.by(() => {
+    if (!browser) return true;
+
     const stored = localStorage.getItem('banner-dismissed-time');
     if (stored && Date.now() - +stored < DISMISS_DURATION) {
-      dismissed = true;
-      return; // Don't fetch if dismissed
+      return true;
     }
-    
-    // Reset dismissed state if it's been more than 12 hours
-    if (stored && Date.now() - +stored >= DISMISS_DURATION) {
-      localStorage.removeItem('banner-dismissed-time');
-    }
-    
-    // Check cache first (5 minute TTL to avoid hammering API)
+    return false;
+  });
+  
+  // Get cached listings if valid
+  function getCachedListings() {
+    if (!browser) return null;
+
     const cached = sessionStorage.getItem('banner-listings');
     const cacheTime = sessionStorage.getItem('banner-listings-time');
     if (cached && cacheTime && Date.now() - +cacheTime < 300000) { // 5 minutes
       try {
-        items = JSON.parse(cached);
-        return;
+        return JSON.parse(cached);
       } catch {
-        // Invalid cache, fetch fresh
+        return null;
       }
     }
-    
-    // Only fetch if not dismissed and no valid cache
-    if (!dismissed) {
+    return null;
+  }
+  
+  // Initialize banner state
+  const effectiveDismissed = $derived.by(() => shouldDismiss());
+  const effectiveItems = $derived.by(() => {
+    if (effectiveDismissed()) return [];
+
+    const cached = getCachedListings();
+    if (cached) return cached;
+
+    return items;
+  });
+
+  // Sync dismissed state with derived value
+  const syncDismissed = $derived.by(() => {
+    if (!browser) return false;
+
+    // Reset dismissed state if it's been more than 12 hours
+    const stored = localStorage.getItem('banner-dismissed-time');
+    if (stored && Date.now() - +stored >= DISMISS_DURATION) {
+      localStorage.removeItem('banner-dismissed-time');
+      return false;
+    }
+
+    return shouldDismiss();
+  });
+
+  // Side effects: fetch only
+  $effect(() => {
+    if (!browser) return;
+
+    // Fetch listings if needed
+    if (!syncDismissed && !getCachedListings() && items.length === 0) {
       fetchListings();
     }
   });
   
   // Rotation effect
   $effect(() => {
-    if (!browser || dismissed || items.length <= 1) return;
-    
+    if (!browser || syncDismissed || effectiveItems().length <= 1) return;
+
     const interval = setInterval(rotate, ROTATE_DELAY);
     return () => clearInterval(interval);
   });
@@ -81,10 +109,11 @@
   }
   
   function rotate() {
-    if (items.length <= 1) return;
+    const effectiveItemsList = effectiveItems();
+    if (effectiveItemsList.length <= 1) return;
     visible = false;
     setTimeout(() => {
-      idx = (idx + 1) % items.length;
+      idx = (idx + 1) % effectiveItemsList.length;
       visible = true;
     }, FADE_DURATION);
   }
@@ -95,7 +124,7 @@
   }
 </script>
 
-{#if !dismissed && current}
+{#if !syncDismissed && current}
   <aside 
     role="banner"
     aria-label={i18n.banner_recentListings()}

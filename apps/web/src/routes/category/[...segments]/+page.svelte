@@ -8,8 +8,8 @@
   import type { PageData } from './$types';
   import { invalidateAll } from '$app/navigation';
   import { getProductUrl } from '$lib/utils/seo-urls';
-  import { CategoryService } from '$lib/services/categories';
-  import { ProfileService } from '$lib/services/profiles';
+  import { CategoryService } from '@repo/core/services/categories';
+  import { ProfileService } from '@repo/core/services/profiles';
   import { browser } from '$app/environment';
   
   interface Props {

@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
-import { SubscriptionService } from '$lib/services/subscriptions';
-import { stripe } from '$lib/stripe/server';
+import { SubscriptionService } from '@repo/core/services/subscriptions';
+import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 import { env } from '$env/dynamic/private';
 

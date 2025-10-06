@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { ProfileService } from '$lib/services/profiles';
+import { ProfileService } from '@repo/core/services/profiles';
 
 export const load = (async ({ params, locals, setHeaders }) => {
   const { user } = await locals.safeGetSession();

@@ -81,7 +81,7 @@ describe('Locale Detection', () => {
         query: null,
         cookie: null,
         header: 'unknown-language'
-      })).toBe('bg'); // default locale
+      })).toBe('en'); // default locale
     });
   });
 
@@ -113,7 +113,7 @@ describe('Locale Detection', () => {
     it('should handle invalid locale setting', () => {
       const originalLocale = getLocale();
       setLocale('invalid' as never);
-      expect(getLocale()).toBe('bg'); // Should fallback to default
+      expect(getLocale()).toBe('en'); // Should fallback to default
       setLocale(originalLocale);
     });
   });

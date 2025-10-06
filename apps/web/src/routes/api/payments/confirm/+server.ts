@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { createStripeService } from '$lib/services/stripe';
-import { stripe } from '$lib/stripe/server';
+import { createStripeService } from '@repo/core/services/stripe';
+import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { createEmailService as _createEmailService } from '@repo/core/email';
 import type { RequestHandler } from './$types';
-import { sendEmail, emailTemplates } from '$lib/email/resend';
+import { sendEmail, emailTemplates } from '@repo/core/email/resend';
 import type { PaymentIntentConfirmParams } from '$lib/stripe/types';
 import { paymentLogger } from '$lib/utils/log';
 

@@ -1,8 +1,7 @@
 import Stripe from 'stripe';
-import { env } from '$env/dynamic/private';
 
 // Use dynamic env for better compatibility with Vercel
-const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
+const STRIPE_SECRET_KEY = typeof process !== 'undefined' ? process.env.STRIPE_SECRET_KEY : null;
 
 if (!STRIPE_SECRET_KEY) {
 	// Stripe will be disabled if no secret key is provided

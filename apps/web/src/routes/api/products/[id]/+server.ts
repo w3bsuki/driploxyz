@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { createServices } from '$lib/services';
+import { createServices } from '@repo/core/services';
 import type { RequestHandler } from './$types.js';
 
 export const GET: RequestHandler = async ({ params, locals: { supabase } }) => {
