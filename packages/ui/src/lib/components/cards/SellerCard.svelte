@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
   const m: any = i18n;
-  // @ts-ignore Svelte components are typed via svelte2tsx in build
+  // @ts-expect-error: Svelte component types are resolved by svelte2tsx during build
   import Avatar from '../ui/Avatar.svelte';
 
   interface SellerStats {
@@ -59,7 +59,7 @@
 </script>
 
 <div 
-  class="bg-white border border-gray-200 rounded-xl p-3 {className}"
+  class="bg-white border border-gray-200 rounded-[var(--card-radius)] p-3 {className}"
   role="region"
   aria-label="Seller information"
 >

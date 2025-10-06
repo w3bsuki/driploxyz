@@ -792,7 +792,7 @@
 {#key currentLang}
 
 <!-- Main Page Search Bar with real data and handlers -->
-<div class="sticky top-[60px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+<div class="sticky top-[60px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100" data-testid="main-search-bar">
 	<MainPageSearchBar
 		supabase={data.supabase}
 		bind:searchQuery={searchQuery}
@@ -840,7 +840,7 @@
 				condition_fair: i18n.condition_fair(),
 				categoryTranslation: translateCategory
 			}}
-			class="pt-2 sm:pt-3"
+			class="pt-1 sm:pt-2"
 		/>
 	</div>
 {/if}

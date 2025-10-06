@@ -5,34 +5,30 @@
  * - Reduces initial bundle size
  */
 
-import type { Plugin, UserConfig } from 'vite';
+// Minimal local types to avoid pulling in Vite/Rollup type packages
+type OutputLike = {
+  manualChunks?: Record<string, string[]> | ((id: string) => string | undefined);
+};
 
-interface BundleChunk {
-  code?: string;
-  [key: string]: unknown;
-}
+type BuildConfig = {
+  rollupOptions?: {
+    output?: OutputLike | OutputLike[];
+  };
+};
 
-interface BundleOutput {
-  manualChunks?: Record<string, string[]> | { [key: string]: string[] };
-  [key: string]: unknown;
-}
+type ViteUserConfig = {
+  build?: BuildConfig;
+};
 
-interface RollupOptions {
-  output?: BundleOutput | BundleOutput[];
-  [key: string]: unknown;
-}
+type VitePlugin = {
+  name: string;
+  resolveId?(id: string): string | null | undefined;
+  load?(id: string): string | null | undefined;
+  config?(config: ViteUserConfig, env: { command: string }): void | object | Promise<void | object>;
+  generateBundle?(_options: unknown, bundle: Record<string, { code?: string }>): void;
+};
 
-interface BuildOptions {
-  rollupOptions?: RollupOptions;
-  [key: string]: unknown;
-}
-
-interface ConfigWithBuild {
-  build?: BuildOptions;
-  [key: string]: unknown;
-}
-
-export function optimizedI18nPlugin(): Plugin {
+export function optimizedI18nPlugin(): VitePlugin {
   return {
     name: 'optimized-i18n',
 
@@ -55,17 +51,24 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Configure build options
-    config(config: UserConfig, { command }: { command: string }) {
+    config(config: ViteUserConfig, { command }: { command: string }) {
       if (command === 'build') {
         // Ensure locale bundles are split into separate chunks
-        const configWithBuild = config as ConfigWithBuild;
-        configWithBuild.build = configWithBuild.build || {};
-        configWithBuild.build.rollupOptions = configWithBuild.build.rollupOptions || {};
-        configWithBuild.build.rollupOptions.output = configWithBuild.build.rollupOptions.output || {};
+        config.build = config.build || {};
+        config.build.rollupOptions = config.build.rollupOptions || {};
+        config.build.rollupOptions.output = config.build.rollupOptions.output || {};
 
-        const output = Array.isArray(configWithBuild.build.rollupOptions.output)
-          ? configWithBuild.build.rollupOptions.output[0]
-          : configWithBuild.build.rollupOptions.output;
+        let output: OutputLike;
+        if (Array.isArray(config.build.rollupOptions.output)) {
+          // Ensure first output exists
+          const arr = config.build.rollupOptions.output;
+          arr[0] = (arr[0] || {}) as OutputLike;
+          output = arr[0] as OutputLike;
+        } else {
+          // Ensure object output exists
+          config.build.rollupOptions.output = (config.build.rollupOptions.output || {}) as OutputLike;
+          output = config.build.rollupOptions.output as OutputLike;
+        }
 
         output.manualChunks = output.manualChunks || {};
 
@@ -79,7 +82,7 @@ export function optimizedI18nPlugin(): Plugin {
     },
 
     // Generate bundle metadata for analysis
-    generateBundle(_options: unknown, bundle: Record<string, BundleChunk>) {
+    generateBundle(_options: unknown, bundle: Record<string, { code?: string }>) {
       const i18nChunks = Object.keys(bundle).filter(key =>
         key.includes('i18n-') || key.includes('@repo/i18n')
       );

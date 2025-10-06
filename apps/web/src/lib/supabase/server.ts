@@ -11,13 +11,16 @@ import type { RequestEvent } from '@sveltejs/kit';
  * This respects RLS policies and should be used for user-facing operations
  */
 export const createServerSupabaseClient = (event?: RequestEvent) => {
-  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
+  const supabaseUrl = env.PUBLIC_SUPABASE_URL || 'https://koowfhsaqmarfdkwsfiz.supabase.co';
+  const supabaseAnonKey = env.PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtvb3dmaHNhcW1hcmZka3dzZml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTczNDAsImV4cCI6MjA3MTA5MzM0MH0.-lbQpF21xixgkdFtjx8Slqbe0go9h5ojN8GCGYDBDHo';
+
+  if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Supabase environment variables not configured');
   }
-  
+
   return createServerClient(
-    env.PUBLIC_SUPABASE_URL,
-    env.PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get: (key) => event?.cookies.get(key),

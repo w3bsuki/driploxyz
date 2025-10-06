@@ -19,5 +19,14 @@ export default [
   })),
   {
     ignores: ['dist/*', 'src/generated/**/*']
+  },
+  // Disable project-based parsing for config files to prevent parser errors
+  {
+    files: ['eslint.config.ts', '*.config.ts', '*.config.js'],
+    languageOptions: {
+      parserOptions: {
+        project: false
+      }
+    }
   }
 ];

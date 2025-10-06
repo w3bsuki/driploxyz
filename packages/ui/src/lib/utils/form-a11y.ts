@@ -283,7 +283,8 @@ export const ValidationPatterns = {
   },
   
   phone: {
-    pattern: /^[\+]?[(]?[\+]?\d{2,3}[)]?[-\s\.]?\d{3,4}[-\s\.]?\d{3,6}$/,
+    // Optional +, optional parens around country code, flexible separators
+    pattern: /^\+?\(?\+?\d{2,3}\)?[-\s.]?\d{3,4}[-\s.]?\d{3,6}$/,
     message: 'Please enter a valid phone number'
   },
   

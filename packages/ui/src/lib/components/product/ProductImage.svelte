@@ -31,7 +31,7 @@
   });
 </script>
 
-<div class="relative aspect-square bg-[color:var(--surface-subtle)] overflow-hidden rounded-lg {className}">
+<div class="relative aspect-square bg-[color:var(--surface-subtle)] overflow-hidden rounded-[var(--card-radius)] {className}">
   <!-- Images are already WebP optimized during upload - no runtime transformations needed -->
   <img
     src={imageUrl()}

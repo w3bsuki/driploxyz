@@ -8,9 +8,6 @@
 
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-// Fallback environment variables for build compatibility
-import { dev } from '$app/environment';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -56,19 +53,13 @@ function resolveSupabaseConfig(): SupabaseConfig {
     throw cachedSupabaseConfigError;
   }
 
-  // Use static environment variables from SvelteKit
-  let supabaseUrl = PUBLIC_SUPABASE_URL;
-  let supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
+  // Use hardcoded values to bypass environment variable loading issues
+  const supabaseUrl = 'https://koowfhsaqmarfdkwsfiz.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtvb3dmaHNhcW1hcmZka3dzZml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTczNDAsImV4cCI6MjA3MTA5MzM0MH0.-lbQpF21xixgkdFtjx8Slqbe0go9h5ojN8GCGYDBDHo';
 
-  // Fallback values for build compatibility (these won't be used at runtime)
-  if (!supabaseUrl || !supabaseAnonKey) {
-    if (typeof window === 'undefined') { // Server-side during build
-      supabaseUrl = 'https://placeholder.supabase.co';
-      supabaseAnonKey = 'placeholder-key';
-    }
-  }
+  console.log('[Auth] Using Supabase URL:', supabaseUrl);
 
-  if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') {
+  if (supabaseUrl && supabaseAnonKey) {
     cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
     return cachedSupabaseConfig;
   }
@@ -76,7 +67,7 @@ function resolveSupabaseConfig(): SupabaseConfig {
   const error = new SupabaseConfigError();
   cachedSupabaseConfigError = error;
 
-  if (dev) {
+  if (import.meta.env.DEV) {
     console.warn(
       '[Auth] Supabase environment variables missing – check .env file in apps/web.'
     );

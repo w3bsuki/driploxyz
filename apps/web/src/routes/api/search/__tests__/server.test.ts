@@ -90,8 +90,10 @@ describe('/api/search endpoint', () => {
       })
     };
 
-    // Mock the constructor
-    ProductDomainAdapterMock.mockImplementation(() => mockAdapter as any);
+    // Mock the constructor with a properly typed return
+    ProductDomainAdapterMock.mockImplementation(
+      () => mockAdapter as unknown as InstanceType<typeof ProductDomainAdapterMock>
+    );
   });
 
   it('should search products successfully', async () => {

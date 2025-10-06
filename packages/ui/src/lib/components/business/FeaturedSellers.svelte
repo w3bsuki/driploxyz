@@ -94,9 +94,9 @@
 </script>
 
 <!-- Enhanced section with separator banner -->
-<section class="pb-3 sm:pb-4 {className}">
+<section class="pb-2 sm:pb-3 {className}">
   <!-- Section Banner with proper container -->
-  <div class="px-2 sm:px-4 lg:px-6">
+  <div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
     <FeaturedSellersBanner
       heading={title}
       copy={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}

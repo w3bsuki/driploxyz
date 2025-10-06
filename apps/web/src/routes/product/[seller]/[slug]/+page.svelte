@@ -328,7 +328,7 @@
             <!-- Price Section -->
             <div class="mt-5 pb-5 border-b border-[color:var(--gray-100)]">
               <div class="flex items-baseline gap-3">
-                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price">€{data.product.price}</span>
+                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price" data-testid="product-price">€{data.product.price}</span>
                 {#if data.product.original_price && data.product.original_price > data.product.price}
                   <span class="text-lg text-gray-500 line-through" aria-label="Original price">€{data.product.original_price}</span>
                   <span class="sr-only">Reduced from €{data.product.original_price} to €{data.product.price}</span>

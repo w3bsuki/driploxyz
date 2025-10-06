@@ -71,12 +71,12 @@
 
 {#if activePromotedProducts.length > 0}
 	<!-- Enhanced section with separator banner -->
-	<section class="pb-3 sm:pb-4 {className}">
+	<section class="pb-2 sm:pb-3 {className}">
 		<!-- Section Banner with proper container -->
-		<div class="px-2 sm:px-4 lg:px-6 mb-4 sm:mb-6">
+		<div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
 			<PromotedListingsBanner
 				heading={translations.promoted_listings}
-				copy="Stand out from the crowd. Get your listings seen by thousands of buyers daily."
+				copy="Featured listings from top sellers. Premium visibility for standout products."
 				itemCount={activePromotedProducts.length}
 				showNavigation={false}
 				{showToggle}

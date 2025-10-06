@@ -37,7 +37,7 @@
 
 <!-- Ultrathink: Clean flat design card - no shadows, no scale, perfect spacing -->
 <button
-  class="w-full h-full bg-white border border-gray-200 rounded-xl p-4
+  class="w-full h-full bg-white border border-gray-200 rounded-[var(--card-radius)] p-4
          hover:border-gray-300 hover:bg-gray-50
          transition-all duration-200
          touch-manipulation focus-visible:outline-none focus-visible:ring-2
@@ -120,7 +120,7 @@
   <!-- Ultrathink: Clean product previews - no gradients, no scale effects -->
   <div class="grid grid-cols-3 gap-2 mb-3">
     {#each previews as product}
-      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors">
+  <div class="aspect-square bg-gray-100 rounded-[var(--card-radius)] overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors">
         {#if (product.product_images && product.product_images[0]?.image_url) || product.images?.[0]}
           <img
             src={(product.product_images && product.product_images[0]?.image_url) || product.images?.[0]}
@@ -140,7 +140,7 @@
 
     <!-- Fill remaining slots with clean placeholders -->
     {#each Array(3 - previews.length) as _}
-      <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 border-dashed">
+  <div class="aspect-square bg-gray-100 rounded-[var(--card-radius)] flex items-center justify-center border border-gray-200 border-dashed">
         <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
@@ -149,7 +149,7 @@
   </div>
 
   <!-- Ultrathink: Clean Quick View button - no shadows -->
-  <div class="w-full bg-gray-800 hover:bg-gray-900 text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors duration-200 text-center">
+  <div class="w-full bg-gray-800 hover:bg-gray-900 text-white py-2.5 px-4 rounded-[var(--card-radius)] font-medium text-sm transition-colors duration-200 text-center">
     Quick View
   </div>
 </button>

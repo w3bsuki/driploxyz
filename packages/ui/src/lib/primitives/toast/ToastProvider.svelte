@@ -3,7 +3,7 @@
   Mobile-first toast container with positioning and limits
 -->
 <script lang="ts">
-  import { createToaster } from '@melt-ui/svelte';
+  // Removed Melt UI dependency - using simple portal implementation
   import { fly } from 'svelte/transition';
   import Toast from './Toast.svelte';
   import type { ToastProviderProps, Toast as ToastData } from './types';
@@ -21,11 +21,20 @@
     children
   }: Props = $props();
   
-  const {
-    actions: { portal }
-  } = createToaster({
-    closeDelay: duration
-  });
+  // Simple portal action since we removed Melt UI
+  function portal(node: HTMLElement) {
+    // Move node to body for proper z-index stacking
+    if (document && document.body && node.parentNode !== document.body) {
+      document.body.appendChild(node);
+    }
+    return {
+      destroy() {
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      }
+    };
+  }
   
   // Internal toast state
   let activeToasts = $state<ToastData[]>([]);

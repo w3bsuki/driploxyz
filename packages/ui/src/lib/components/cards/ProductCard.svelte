@@ -181,7 +181,7 @@
 
 <button
   type="button"
-  class="product-card cursor-pointer transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 rounded-[var(--radius-md)] {highlighted ? 'highlighted' : ''} {className} text-left block w-full p-0 border-0 bg-transparent"
+  class="product-card cursor-pointer transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 rounded-[var(--card-radius)] {highlighted ? 'highlighted' : ''} {className} text-left block w-full p-0 border-0 bg-transparent"
   onclick={handleClick}
   aria-label="{product.title} - Price: {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}"
 >
@@ -199,7 +199,7 @@
 
     <!-- Boost badge (top right) - clean design, no gradients -->
     {#if product.is_boosted && showBoostBadge}
-      <div class="absolute top-1 right-1 z-20">
+      <div class="absolute top-1 left-1 z-20">
         <div class="bg-purple-600 text-white px-2 py-0.5 rounded text-xs font-semibold">
           BOOST
         </div>
@@ -208,7 +208,7 @@
 
     <!-- Pro/Brand icon badges (top right, positioned precisely) -->
     {#if showSellerBadges && (product.seller_badges?.is_pro || product.seller_badges?.is_brand)}
-      <div class="absolute top-1 {product.is_boosted && showBoostBadge ? 'right-16' : 'right-1'} z-20">
+      <div class="absolute top-10 right-2 z-20">
         {#if product.seller_badges.is_brand}
           <BrandBadge
             size="sm"
@@ -226,34 +226,33 @@
       </div>
     {/if}
 
+    <!-- Wishlist (favorite) button overlay for tighter layout -->
+    <FavoriteButton
+      {product}
+      {favorited}
+      {favoritesState}
+      onFavorite={() => onFavorite?.(product.id)}
+      addToFavoritesText={translations.addToFavorites}
+      removeFromFavoritesText={translations.removeFromFavorites}
+      absolute={true}
+      showCount={false}
+      size="sm"
+    />
+
   </div>
   
   <!-- Content -->
-  <div class="px-1 pt-1.5 pb-1.5 relative">
+  <div class="px-1 pt-1 pb-1 relative">
 
     <!-- Top row: Condition badge (left) and Wishlist button (right) -->
-    <div class="flex items-start justify-between mb-0.5">
-      <div>
-        {#if product.condition}
-          {@render conditionBadgeWithTooltip(product.condition)}
-        {/if}
-      </div>
-      <div>
-        <FavoriteButton
-          {product}
-          {favorited}
-          {favoritesState}
-          onFavorite={() => onFavorite?.(product.id)}
-          addToFavoritesText={translations.addToFavorites}
-          removeFromFavoritesText={translations.removeFromFavorites}
-          absolute={false}
-          showCount={false}
-        />
-      </div>
+    <div class="flex items-start justify-start mb-0">
+      {#if product.condition}
+        {@render conditionBadgeWithTooltip(product.condition)}
+      {/if}
     </div>
 
     <!-- Main Category (clean layout) -->
-    <div class="min-h-3.5 mb-0.5 -mt-1 ml-1">
+    <div class="mb-0.5">
       {#if product.main_category_name || product.category_name}
         <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none truncate">
           {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
@@ -262,7 +261,7 @@
     </div>
 
     <!-- Title with tooltip for truncated text -->
-    <div class="ml-1">
+    <div>
       {@render titleWithTooltip(product.title, shouldShowTitleTooltip)}
     </div>
     
@@ -274,13 +273,13 @@
         product.size ? `${translations.size} ${product.size}` : null
       ].filter(Boolean).join(' • ')}
 
-      <div class="ml-1">
+      <div>
         {@render productDetailsText(fullDetailsText, shouldShowCategoryTooltip)}
       </div>
     {/if}
 
     <!-- Price -->
-    <div class="-mt-0.5 ml-1">
+    <div class="-mt-0.5">
       <ProductPrice
         price={product.price}
         currency={translations.currency}

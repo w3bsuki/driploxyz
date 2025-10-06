@@ -21,20 +21,23 @@
   }
 
   const classes = {
-    shell: 'relative isolate w-full overflow-hidden rounded-lg border border-white/12 bg-sky-600/95 px-4 py-5 text-white shadow-md shadow-sky-950/10 sm:px-6 sm:py-6 lg:px-8 lg:py-7',
-    layout: 'mx-auto flex w-full max-w-screen-xl flex-col gap-5 sm:gap-6 md:flex-row md:items-center md:justify-between md:gap-8',
-    copyStack: 'mx-auto flex w-full max-w-sm flex-col items-center gap-2.5 text-center sm:max-w-md md:mx-0 md:items-start md:text-left',
-    meta: 'inline-flex items-center gap-1 rounded-full bg-white/18 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur',
-    heading: 'text-[clamp(1.5rem,4vw,2.2rem)] font-semibold leading-tight',
-    description: 'text-sm text-white/75 sm:text-base',
-    controls: 'grid w-full gap-3 justify-items-stretch sm:max-w-md md:max-w-lg md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-4',
-    toggleGroup: 'grid w-full grid-cols-2 gap-1 rounded-full border border-white/18 bg-white/10 p-1 text-sm font-semibold text-white/80 backdrop-blur md:w-auto',
-    toggleButton: 'w-full rounded-full px-3 py-2 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
-    toggleButtonActive: 'bg-white text-sky-600 shadow-sm',
-    toggleButtonInactive: 'text-white/80 hover:bg-white/15',
-    navButtons: 'flex w-full items-center justify-center gap-2 md:w-auto md:justify-self-end',
-    navButton: 'inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white transition hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
-    ctaButton: 'inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-sky-600 transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-500 md:w-auto md:justify-self-end md:text-base'
+    // Professional white card shell
+    shell: 'relative isolate w-full overflow-hidden rounded-[var(--radius-sm)] border border-slate-200 bg-white px-4 py-4 text-slate-900 shadow-sm sm:px-6 sm:py-5 lg:px-8 lg:py-6',
+    layout: 'mx-auto flex w-full max-w-screen-xl flex-col items-center gap-3 sm:gap-4 text-center',
+    copyStack: 'flex flex-col items-center gap-1.5',
+    meta: 'inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-600 border border-slate-200',
+    heading: 'text-xl font-semibold leading-tight sm:text-2xl lg:text-2xl text-slate-900',
+    controls: 'flex flex-col items-center gap-3 sm:gap-4 w-full',
+    // Neutral segmented control with indigo accent for active
+    toggleGroup: 'grid grid-cols-2 gap-1 rounded-[var(--radius-sm)] border border-slate-300 bg-white p-1 text-sm font-medium text-slate-700',
+    toggleButton: 'rounded-[var(--radius-sm)] px-4 py-2.5 text-center transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white min-h-[44px]',
+    toggleButtonActive: 'bg-indigo-600 text-white',
+    toggleButtonInactive: 'text-slate-700 hover:bg-slate-50',
+    // Indigo accent CTA
+    ctaButton: 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:px-6 sm:py-3.5 sm:text-base min-h-[44px]',
+    // Optional navigation buttons (if enabled by consumer)
+    navButtons: 'hidden md:flex items-center gap-2',
+    navButton: 'inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 h-10 w-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
   } as const;
 
   let {
@@ -83,10 +86,7 @@
       {/if}
 
       <h2 class={classes.heading}>{heading}</h2>
-
-      {#if resolvedCopy}
-        <p class={`${classes.description} line-clamp-2`}>{resolvedCopy}</p>
-      {/if}
+      <p class="max-w-[60ch] text-xs sm:text-sm text-slate-600">{resolvedCopy}</p>
     </div>
 
     <div class={classes.controls}>

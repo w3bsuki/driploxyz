@@ -16,7 +16,7 @@
   }: Props = $props();
 
   function getVariantClasses(variant: string, active: boolean): string {
-    const baseClasses = 'shrink-0 px-3 py-1.5 min-h-[36px] rounded-full text-sm font-medium transition-all duration-200 cursor-pointer hover:scale-105 flex items-center gap-1.5 touch-manipulation';
+    const baseClasses = 'shrink-0 px-3 py-2 min-h-[44px] rounded-full text-sm font-medium transition-all duration-200 cursor-pointer hover:scale-105 flex items-center gap-1.5 touch-manipulation';
     
     switch (variant) {
       case 'primary':

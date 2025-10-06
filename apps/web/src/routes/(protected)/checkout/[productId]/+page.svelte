@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, Button } from '@repo/ui';
-	import type { Product, PaymentIntent } from '@repo/ui';
+	import type { Product } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 
 	interface Props {
@@ -15,8 +15,8 @@
 	let { data }: Props = $props();
 	let { product } = data;
 
-	let stripe: import('stripe').Stripe | null = $state(null);
-	let elements: import('stripe').StripeElements | null = $state(null);
+	let stripe: any = $state(null);
+	let elements: any = $state(null);
 	let clientSecret = $state('');
 	let loading = $state(false);
 	let error = $state('');
@@ -89,7 +89,7 @@
 		}
 	}
 
-	async function handlePaymentSuccess(paymentIntent: PaymentIntent) {
+	async function handlePaymentSuccess(paymentIntent: any) {
 		try {
 			// Confirm payment on server using our new API
 			const response = await fetch('/api/checkout/confirm', {
@@ -124,7 +124,7 @@
 		event.preventDefault();
 		
 		if (!stripe || !elements) {
-			error = i18n.checkout_paymentSystemNotInitialized();
+			error = 'Payment system not initialized';
 			return;
 		}
 
@@ -146,7 +146,7 @@
 				await handlePaymentSuccess(paymentIntent);
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : i18n.checkout_paymentFailed();
+			error = err instanceof Error ? err.message : 'Payment failed';
 		} finally {
 			loading = false;
 		}
@@ -154,27 +154,27 @@
 </script>
 
 <svelte:head>
-	<title>{i18n.checkout_checkout()} - {product.title} | Driplo</title>
+	<title>Checkout - {product.title} | Driplo</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 py-8">
 	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="mb-8">
-			<h1 class="text-2xl font-bold text-gray-900">{i18n.checkout_checkout()}</h1>
-			<p class="text-gray-600 mt-2">{i18n.checkout_completePurchase()}</p>
+			<h1 class="text-2xl font-bold text-gray-900">Checkout</h1>
+			<p class="text-gray-600 mt-2">Complete your purchase</p>
 		</div>
 
 		{#if loading && !clientSecret}
 			<div class="text-center py-8">
 				<div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-				<p class="mt-2 text-gray-600">{i18n.checkout_initializingPayment()}</p>
+				<p class="mt-2 text-gray-600">Initializing payment...</p>
 			</div>
 		{:else}
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 				<!-- Payment Form -->
 				<div class="space-y-6">
 					<div class="bg-white rounded-lg shadow-xs p-6">
-						<h2 class="text-lg font-semibold mb-4">{i18n.checkout_paymentDetails()}</h2>
+						<h2 class="text-lg font-semibold mb-4">Payment Details</h2>
 						
 						{#if error}
 							<div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -192,11 +192,12 @@
 								disabled={loading || !clientSecret}
 								class="w-full"
 								variant="primary"
+								data-testid="place-order-button"
 							>
 								{#if loading}
-									{i18n.checkout_processing()}
+									Processing...
 								{:else}
-									{i18n.checkout_completePurchaseButton()}
+									Complete Purchase
 								{/if}
 							</Button>
 						</form>
@@ -211,11 +212,11 @@
 						serviceFee={buyerProtectionFee}
 						currency="eur"
 						translations={{
-							orderSummary: i18n.checkout_orderSummary(),
-							subtotal: i18n.checkout_subtotal(),
-							shipping: i18n.checkout_shipping(),
+							orderSummary: 'Order Summary',
+							subtotal: 'Subtotal',
+							shipping: 'Shipping',
 							serviceFee: 'Buyer Protection',
-							total: i18n.checkout_total()
+							total: 'Total'
 						}}
 					/>
 				</div>

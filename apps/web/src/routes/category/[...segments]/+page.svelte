@@ -17,10 +17,19 @@
   }
   
   let { data }: Props = $props();
-  
+
+  // Use real category data from server with level-aware navigation
+  const category = data.category || { name: 'Categories', slug: 'categories', description: 'Browse all categories' };
+  const resolution = data.resolution;
+  const pillCategories = data.pillCategories || [];        // Level-appropriate categories for pills
+  const dropdownCategories = data.dropdownCategories || []; // Level-appropriate categories for dropdown
+  const products = data.products || [];
+  const sellers = data.sellers || [];
+  const breadcrumbs = data.breadcrumbs || [];
+
   // Track current segments to detect changes
   let currentSegments = $state(page.params.segments || '');
-  
+
   // React to URL parameter changes to refresh data
   $effect(() => {
     const newSegments = page.params.segments || '';
@@ -137,16 +146,7 @@
     };
     return translations[name] || name;
   }
-  
-  // Use real category data from server with level-aware navigation
-  const category = data.category || { name: 'Categories', slug: 'categories', description: 'Browse all categories' };
-  const resolution = data.resolution;
-  const pillCategories = data.pillCategories || [];        // Level-appropriate categories for pills
-  const dropdownCategories = data.dropdownCategories || []; // Level-appropriate categories for dropdown
-  const products = data.products || [];
-  const sellers = data.sellers || [];
-  const breadcrumbs = data.breadcrumbs || [];
-  
+
   // Backward compatibility for existing logic (deprecated)
   // const subcategories = dropdownCategories;
   // const level3Categories = pillCategories;

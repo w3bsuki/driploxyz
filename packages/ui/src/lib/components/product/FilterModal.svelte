@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createDialog } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick, untrack } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';

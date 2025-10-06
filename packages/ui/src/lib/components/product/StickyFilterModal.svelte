@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createDialog } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';
@@ -84,31 +83,48 @@
   let modalContentRef = $state<HTMLDivElement>();
   let announcement = $state('');
 
-  // Create dialog with proper accessibility
-  const {
-    elements: { trigger: triggerEl, overlay, content, title: titleEl, close },
-    states: { open: isOpen }
-  } = createDialog({
-    onOpenChange: ({ next }) => {
-      if (next) {
-        // Store current focus before opening
-        triggerElement = document.activeElement as HTMLElement;
-      } else {
-        // Restore focus when closing
-        restoreFocus();
-      }
-      open = next;
-      return next;
-    },
-    preventScroll: true,
-    closeOnOutsideClick: true,
-    portal: 'body'
+  // Simple dialog placeholder implementation
+  let isOpen = $state(open);
+
+  // Create dummy elements to match melt-ui interface
+  const triggerEl = $derived({
+    'data-melt-dialog-trigger': '',
+    onclick: () => {
+      isOpen = true;
+      triggerElement = document.activeElement as HTMLElement;
+    }
   });
-  
-  // Sync external open state with Melt UI's internal state
+
+  const overlay = $derived({
+    'data-melt-dialog-overlay': '',
+    onclick: () => {
+      isOpen = false;
+      restoreFocus();
+    }
+  });
+
+  const content = $derived({
+    'data-melt-dialog-content': '',
+    role: 'dialog',
+    'aria-modal': true
+  });
+
+  const titleEl = $derived({
+    'data-melt-dialog-title': ''
+  });
+
+  const close = $derived({
+    'data-melt-dialog-close': '',
+    onclick: () => {
+      isOpen = false;
+      restoreFocus();
+    }
+  });
+
+  // Sync external open state with internal state
   $effect(() => {
-    if (open !== $isOpen) {
-      isOpen.set(open);
+    if (open !== isOpen) {
+      isOpen = open;
     }
   });
   
@@ -142,19 +158,19 @@
   }
   
   function handleKeydown(event: KeyboardEvent) {
-    if (!$isOpen) return;
-    
+    if (!isOpen) return;
+
     const { key, shiftKey } = event;
-    
+
     if (key === 'Escape') {
       event.preventDefault();
       handleCancel();
       return;
     }
-    
+
     if (key === 'Tab') {
       if (!firstFocusableElement || !lastFocusableElement) return;
-      
+
       if (shiftKey) {
         // Shift + Tab
         if (document.activeElement === firstFocusableElement) {
@@ -182,10 +198,10 @@
   
   // Setup focus trap when modal opens
   $effect(() => {
-    if ($isOpen && modalContentRef) {
+    if (isOpen && modalContentRef) {
       setupFocusTrap();
       document.addEventListener('keydown', handleKeydown);
-      
+
       return () => {
         document.removeEventListener('keydown', handleKeydown);
       };
@@ -351,18 +367,25 @@
 {/if}
 
 <!-- Modal Dialog -->
-{#if $isOpen}
+{#if isOpen}
   <!-- Backdrop -->
-  <div 
-    use:overlay 
-    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
+  <button
+    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm cursor-default"
     style="z-index: 9999;"
-  ></div>
+    onclick={() => {
+      isOpen = false;
+      restoreFocus();
+    }}
+    onkeydown={(e) => e.key === 'Enter' && (() => {
+      isOpen = false;
+      restoreFocus();
+    })()}
+    aria-label="Close filter modal"
+  ></button>
 
   <!-- Dialog Content - Mobile-first responsive -->
-  <div 
+  <div
     bind:this={modalContentRef}
-    use:content
     class="fixed inset-x-0 bottom-0 z-50 sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:inset-x-auto
            bg-[color:var(--modal-bg)] sm:rounded-[var(--modal-radius)] shadow-[var(--modal-shadow)] border-t border-[color:var(--border-subtle)] sm:border
            max-h-[90vh] overflow-hidden flex flex-col {className}"
@@ -375,8 +398,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)]">
       <div class="flex-1">
-        <h2 
-          use:titleEl
+        <h2
           id="filter-modal-title"
           class="text-lg font-semibold text-[color:var(--text-primary)] leading-6"
         >
@@ -395,9 +417,11 @@
       </div>
       
       <button
-        use:close
-        onclick={handleCancel}
-        class="p-2 rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)] 
+        onclick={() => {
+          isOpen = false;
+          restoreFocus();
+        }}
+        class="p-2 rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)]
                transition-colors duration-[var(--duration-base)]
                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
         aria-label={closeLabel}

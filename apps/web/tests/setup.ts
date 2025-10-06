@@ -33,32 +33,4 @@ export const test = base.extend({
 
 export { expect } from '@playwright/test';
 
-// Global test setup
-test.beforeEach(async ({ page }) => {
-  // Disable animations for consistent testing
-  await page.addStyleTag({
-    content: `
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-delay: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-        transition-delay: 0.01ms !important;
-      }
-    `
-  });
-
-  // Mock external API calls
-  await page.route('**/api/**', async (route) => {
-    // Mock successful API responses
-    if (route.request().url().includes('/auth/')) {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ user: { id: 'test-user-id' } })
-      });
-    } else {
-      // Let other API calls through
-      await route.continue();
-    }
-  });
-});
+// Note: Global test setup should be in playwright.config.ts, not here

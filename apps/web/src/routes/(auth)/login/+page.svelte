@@ -8,8 +8,14 @@
   import { createFormValidator } from '$lib/utils/form-validation.svelte';
   import { announceToScreenReader, focusFirstErrorField } from '$lib/utils/form-accessibility';
   import { toasts } from '@repo/ui';
+  import { getOAuthProviders, signInWithOAuth, hasOAuthProviders, type OAuthProvider } from '$lib/auth/oauth';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
+
+  // OAuth state
+  let oauthSubmitting = $state<string | null>(null);
+  const oauthProviders = $derived(getOAuthProviders());
+  const hasOauth = $derived(hasOAuthProviders());
 
   let submitting = $state(false);
 
@@ -104,6 +110,24 @@
   // Get field errors for display (reactive computed)
   const emailError = $derived(validator.formState.errors.email);
   const passwordError = $derived(validator.formState.errors.password);
+
+  // OAuth sign in handler
+  async function handleOAuthSignIn(provider: OAuthProvider) {
+    if (oauthSubmitting) return;
+
+    try {
+      oauthSubmitting = provider.id;
+      toasts.info(`Signing in with ${provider.name}...`);
+
+      await signInWithOAuth(provider.id);
+
+      // OAuth will redirect, so we don't need to handle success here
+    } catch (error) {
+      console.error(`[Login] OAuth sign in failed for ${provider.id}:`, error);
+      toasts.error(`Failed to sign in with ${provider.name}. Please try again.`);
+      oauthSubmitting = null;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -131,6 +155,40 @@
 
 
   <!-- Form errors now handled by toast system only -->
+
+  <!-- OAuth Providers -->
+  {#if hasOauth}
+    <div class="space-y-3">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500">Or continue with</span>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        {#each oauthProviders as provider}
+          <button
+            type="button"
+            class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onclick={() => handleOAuthSignIn(provider)}
+            disabled={oauthSubmitting === provider.id}
+          >
+            <span class="text-lg">{provider.icon}</span>
+            <span>Continue with {provider.name}</span>
+            {#if oauthSubmitting === provider.id}
+              <svg class="animate-spin -mr-1 ml-3 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            {/if}
+          </button>
+        {/each}
+      </div>
+    </div>
+  {/if}
 
   <!-- Email/Password Form -->
   <form
@@ -174,6 +232,7 @@
             onchange={() => validator.setFieldValue('email', email)}
             onblur={() => validator.touchField('email')}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            data-testid="login-email-input"
           />
           {#if emailError}
             <p class="text-sm text-red-600">{emailError}</p>
@@ -195,6 +254,7 @@
             onchange={() => validator.setFieldValue('password', password)}
             onblur={() => validator.touchField('password')}
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            data-testid="login-password-input"
           />
           {#if passwordError}
             <p class="text-sm text-red-600">{passwordError}</p>
@@ -216,6 +276,7 @@
           disabled={submitting || (browser && validator.hasErrors)}
           class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-[color:var(--primary)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2.5 text-sm transition-colors duration-200"
           aria-describedby="submit-status"
+          data-testid="login-submit-button"
         >
           {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

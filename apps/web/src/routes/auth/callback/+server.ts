@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { handleOAuthError } from '$lib/auth/oauth';
 
 /**
  * Bulletproof Auth Callback Handler
@@ -20,7 +21,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
   // Handle provider-side errors immediately
   if (providerError) {
-    redirect(303, `/login?error=${encodeURIComponent(errorDescription || providerError)}`);
+    const errorMessage = handleOAuthError(providerError, errorDescription || undefined);
+    redirect(303, `/login?error=${encodeURIComponent(errorMessage)}`);
   }
 
   // Require auth code

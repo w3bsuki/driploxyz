@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createTooltip } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
 
   interface TooltipPosition {
@@ -12,74 +11,74 @@
      * Whether the tooltip is open
      */
     open?: boolean;
-    
+
     /**
      * Callback when open state changes
      */
     onOpenChange?: (open: boolean) => void;
-    
+
     /**
      * Tooltip content text
      */
     content: string;
-    
+
     /**
      * Positioning for the tooltip
      * @default { side: 'top', align: 'center' }
      */
     positioning?: TooltipPosition;
-    
+
     /**
      * Delay before showing tooltip on hover (ms)
      * @default 700
      */
     openDelay?: number;
-    
+
     /**
      * Delay before hiding tooltip after leaving (ms)
      * @default 300
      */
     closeDelay?: number;
-    
-    
+
+
     /**
      * Whether to close when trigger loses focus
      * @default true
      */
     closeOnPointerDown?: boolean;
-    
+
     /**
      * Whether tooltip is disabled
      * @default false
      */
     disabled?: boolean;
-    
+
     /**
      * Custom CSS classes for trigger
      */
     triggerClass?: string;
-    
+
     /**
      * Custom CSS classes for tooltip content
      */
     tooltipClass?: string;
-    
+
     /**
      * Custom CSS classes for tooltip arrow
      */
     arrowClass?: string;
-    
+
     /**
      * Whether to force mobile behavior (always show on tap)
      * @default false
      */
     forceTouch?: boolean;
-    
+
     /**
      * Trigger content (button, icon, etc.)
      */
     trigger?: Snippet;
-    
+
     /**
      * Children content for slot-based usage
      */
@@ -103,81 +102,110 @@
     children
   }: Props = $props();
 
-  // Build proper placement string for Melt UI
-  const buildPlacement = (pos: TooltipPosition) => {
-    if (!pos.align || pos.align === 'center') {
-      return pos.side;
+  // Simple state management
+  let triggerElement: HTMLElement | undefined = $state();
+  let tooltipElement: HTMLElement | undefined = $state();
+  let timeoutId: number | undefined;
+
+  // Show tooltip
+  function showTooltip() {
+    if (disabled) return;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      open = true;
+      onOpenChange?.(true);
+    }, openDelay);
+  }
+
+  // Hide tooltip
+  function hideTooltip() {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      open = false;
+      onOpenChange?.(false);
+    }, closeDelay);
+  }
+
+  // Handle mouse events
+  function handleMouseEnter() {
+    showTooltip();
+  }
+
+  function handleMouseLeave() {
+    hideTooltip();
+  }
+
+  // Handle touch events for mobile
+  function handleTouchInteraction(event: Event) {
+    event.preventDefault();
+    open = !open;
+    onOpenChange?.(open);
+  }
+
+  // Handle click events
+  function handleClick(event: Event) {
+    if (closeOnPointerDown) {
+      open = false;
+      onOpenChange?.(false);
     }
-    return `${pos.side}-${pos.align}` as const;
-  };
+  }
 
-  const {
-    elements: { 
-      trigger: triggerElement, 
-      content: contentElement, 
-      arrow: arrowElement 
-    },
-    states: { open: tooltipOpen }
-  } = createTooltip({
-    positioning: {
-      placement: buildPlacement(positioning)
-    },
-    openDelay,
-    closeDelay,
-    closeOnPointerDown,
-    onOpenChange: onOpenChange ? (details: any) => {
-      onOpenChange(details.next);
-      return details.next;
-    } : undefined,
-    disableHoverableContent: forceTouch,
-    group: undefined, // Allow multiple tooltips
-    forceVisible: false
-  });
+  // Handle keyboard events
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      open = false;
+      onOpenChange?.(false);
+    }
+  }
 
-  // Sync bindable open state
-  $effect(() => {
-    open = $tooltipOpen;
-  });
-
-  // Check if we're on a touch device (initialize once, browser-only)
+  // Check if we're on a touch device
   let isTouchDevice = $state(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
 
-  // Default styling classes following design system
+  // Default styling classes
   const defaultTriggerClasses = 'inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] focus-visible:ring-offset-2 transition-all duration-150';
-  
+
   const defaultTooltipClasses = 'tooltip z-50 px-3 py-2 text-xs font-medium text-white bg-[color:var(--gray-900)] border border-[color:var(--gray-800)] rounded-md shadow-lg max-w-xs break-words animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95';
-  
+
   const defaultArrowClasses = 'fill-[color:var(--gray-900)]';
 
   const computedTriggerClasses = $derived(`${defaultTriggerClasses} ${triggerClass}`.trim());
   const computedTooltipClasses = $derived(`${defaultTooltipClasses} ${tooltipClass}`.trim());
   const computedArrowClasses = $derived(`${defaultArrowClasses} ${arrowClass}`.trim());
 
-  // Handle touch interactions for mobile
-  const handleTouchInteraction = (event: Event) => {
-    if (isTouchDevice || forceTouch) {
-      event.preventDefault();
-      $tooltipOpen = !$tooltipOpen;
-    }
-  };
+  // Calculate tooltip position
+  const tooltipStyle = $derived(() => {
+    const baseClasses = 'absolute z-50 pointer-events-none';
+
+    const positionClasses = {
+      'top': 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
+      'bottom': 'top-full left-1/2 transform -translate-x-1/2 mt-2',
+      'left': 'right-full top-1/2 transform -translate-y-1/2 mr-2',
+      'right': 'left-full top-1/2 transform -translate-y-1/2 ml-2'
+    };
+
+    const alignClasses = {
+      'start': positioning.side === 'top' || positioning.side === 'bottom' ? 'left-0 transform -translate-x-0' : 'top-0 transform -translate-y-0',
+      'center': 'left-1/2 transform -translate-x-1/2',
+      'end': positioning.side === 'top' || positioning.side === 'bottom' ? 'right-0 transform -translate-x-0' : 'bottom-0 transform -translate-y-0'
+    };
+
+    return `${baseClasses} ${positionClasses[positioning.side]} ${positioning.align ? alignClasses[positioning.align] : ''}`;
+  });
 </script>
 
 <!-- Trigger Element -->
 <span
-  use:triggerElement
+  bind:this={triggerElement}
   class={computedTriggerClasses}
   role="button"
   tabindex={disabled ? -1 : 0}
-  aria-describedby={$tooltipOpen ? 'tooltip-content' : undefined}
-  aria-expanded={$tooltipOpen}
+  aria-describedby={open ? 'tooltip-content' : undefined}
+  aria-expanded={open}
   data-tooltip-trigger
-  onclick={isTouchDevice || forceTouch ? handleTouchInteraction : undefined}
-  onkeydown={(e: KeyboardEvent) => {
-    if ((e.key === 'Enter' || e.key === ' ') && (isTouchDevice || forceTouch)) {
-      e.preventDefault();
-      handleTouchInteraction(e);
-    }
-  }}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
+  onclick={handleClick}
+  onkeydown={handleKeydown}
 >
   {#if trigger}
     {@render trigger()}
@@ -187,23 +215,31 @@
 </span>
 
 <!-- Tooltip Content -->
-{#if $tooltipOpen && !disabled && content}
+{#if open && !disabled && content}
   <div
-    use:contentElement
+    bind:this={tooltipElement}
     id="tooltip-content"
     class={computedTooltipClasses}
+    class:tooltip-top={positioning.side === 'top'}
+    class:tooltip-bottom={positioning.side === 'bottom'}
+    class:tooltip-left={positioning.side === 'left'}
+    class:tooltip-right={positioning.side === 'right'}
     role="tooltip"
     data-tooltip-content
     data-side={positioning.side}
     data-align={positioning.align}
+    style={tooltipStyle()}
   >
     <!-- Arrow -->
     <div
-      use:arrowElement
       class={computedArrowClasses}
+      class:arrow-top={positioning.side === 'top'}
+      class:arrow-bottom={positioning.side === 'bottom'}
+      class:arrow-left={positioning.side === 'left'}
+      class:arrow-right={positioning.side === 'right'}
       data-tooltip-arrow
     ></div>
-    
+
     <!-- Content -->
     <span class="relative z-10">
       {content}
@@ -212,30 +248,37 @@
 {/if}
 
 <style>
-  /* Positioning based on side for arrow */
-  :global([data-tooltip-content][data-side="top"] [data-tooltip-arrow]) {
+  /* Arrow positioning */
+  .arrow-top {
+    position: absolute;
     bottom: -4px;
-    transform: rotate(45deg);
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
   }
 
-  :global([data-tooltip-content][data-side="bottom"] [data-tooltip-arrow]) {
+  .arrow-bottom {
+    position: absolute;
     top: -4px;
-    transform: rotate(45deg);
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
   }
 
-  :global([data-tooltip-content][data-side="left"] [data-tooltip-arrow]) {
+  .arrow-left {
+    position: absolute;
     right: -4px;
-    transform: rotate(45deg);
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
   }
 
-  :global([data-tooltip-content][data-side="right"] [data-tooltip-arrow]) {
+  .arrow-right {
+    position: absolute;
     left: -4px;
-    transform: rotate(45deg);
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
   }
 
   /* Arrow base styling */
-  :global([data-tooltip-arrow]) {
-    position: absolute;
+  [data-tooltip-arrow] {
     width: 8px;
     height: 8px;
     border: 1px solid var(--gray-800);
@@ -246,7 +289,7 @@
 
   /* Mobile-first responsive design */
   @media (max-width: 640px) {
-    :global([data-tooltip-content]) {
+    [data-tooltip-content] {
       max-width: calc(100vw - 2rem);
       font-size: 14px;
       padding: 8px 12px;
@@ -255,12 +298,12 @@
 
   /* Touch device optimizations */
   @media (pointer: coarse) {
-    :global([data-tooltip-trigger]) {
+    [data-tooltip-trigger] {
       min-width: var(--touch-standard);
       min-height: var(--touch-standard);
     }
-    
-    :global([data-tooltip-content]) {
+
+    [data-tooltip-content] {
       font-size: 16px; /* Prevent zoom on iOS */
       padding: 12px 16px;
     }
@@ -268,12 +311,12 @@
 
   /* High contrast mode support */
   @media (prefers-contrast: high) {
-    :global([data-tooltip-content]) {
+    [data-tooltip-content] {
       border: 2px solid;
       border-color: var(--gray-0);
     }
-    
-    :global([data-tooltip-arrow]) {
+
+    [data-tooltip-arrow] {
       border-width: 2px;
       border-color: var(--gray-0);
     }
@@ -281,14 +324,14 @@
 
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
-    :global([data-tooltip-content]) {
+    [data-tooltip-content] {
       animation: none;
     }
   }
 
   /* Focus visible improvements */
   @supports selector(:focus-visible) {
-    :global([data-tooltip-trigger]:focus:not(:focus-visible)) {
+    [data-tooltip-trigger]:focus:not(:focus-visible) {
       outline: none;
       box-shadow: none;
     }
@@ -296,39 +339,15 @@
 
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
-    :global([data-tooltip-content]) {
+    [data-tooltip-content] {
       background-color: var(--gray-50);
       color: var(--gray-900);
       border-color: var(--gray-200);
     }
-    
-    :global([data-tooltip-arrow]) {
+
+    [data-tooltip-arrow] {
       background-color: var(--gray-50);
       border-color: var(--gray-200);
     }
-  }
-
-  /* Animation improvements */
-  :global([data-tooltip-content]) {
-    transform-origin: var(--radix-tooltip-content-transform-origin);
-    animation-duration: 150ms;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* State-based positioning adjustments */
-  :global([data-tooltip-content][data-side="top"]) {
-    margin-bottom: 6px;
-  }
-
-  :global([data-tooltip-content][data-side="bottom"]) {
-    margin-top: 6px;
-  }
-
-  :global([data-tooltip-content][data-side="left"]) {
-    margin-right: 6px;
-  }
-
-  :global([data-tooltip-content][data-side="right"]) {
-    margin-left: 6px;
   }
 </style>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createDropdownMenu } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
 
   interface MenuItemData {
@@ -44,61 +43,128 @@
     ariaLabel = ''
   }: Props = $props();
 
-  const {
-    elements: { 
-      trigger: triggerElement, 
-      menu: menuElement, 
-      item: itemElement,
-      separator: separatorElement
-    },
-    states: { open: menuOpen }
-  } = createDropdownMenu({
-    onOpenChange: onOpenChange ? (details: any) => {
-      onOpenChange(details.next);
-      return details.next;
-    } : undefined,
-    positioning: {
-      placement: positioning,
-      gutter,
-      sameWidth: false
-    },
-    loop,
-    preventScroll: false,
-    escapeBehavior: 'close',
-    closeOnOutsideClick: true,
-    portal: portalTarget,
-    forceVisible: false,
-    closeFocus: undefined,
-  });
+  // Simple state management
+  let triggerElement: HTMLElement | undefined = $state();
+  let menuElement: HTMLElement | undefined = $state();
+  let focusedIndex = $state(-1);
 
-  // Sync bindable open state
-  $effect(() => {
-    open = $menuOpen;
-  });
+  // Toggle dropdown
+  function toggleDropdown() {
+    open = !open;
+    onOpenChange?.(open);
+    if (open) {
+      focusedIndex = 0;
+    }
+  }
+
+  // Close dropdown
+  function closeDropdown() {
+    open = false;
+    onOpenChange?.(false);
+    focusedIndex = -1;
+  }
 
   // Handle item selection
-  const handleItemSelect = (item: MenuItemData) => {
+  function handleItemSelect(item: MenuItemData) {
     if (item.disabled) return;
     item.onSelect?.();
-  };
+    closeDropdown();
+  }
+
+  // Handle click outside
+  function handleClickOutside(event: MouseEvent) {
+    if (!triggerElement?.contains(event.target as HTMLElement) &&
+        !menuElement?.contains(event.target as HTMLElement)) {
+      closeDropdown();
+    }
+  }
+
+  // Handle keyboard navigation
+  function handleTriggerKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) {
+        toggleDropdown();
+      }
+    }
+  }
+
+  function handleMenuKeydown(event: KeyboardEvent) {
+    const activeItems = items.filter(item => !item.disabled && !item.separator);
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        focusedIndex = (focusedIndex + 1) % activeItems.length;
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        focusedIndex = focusedIndex <= 0 ? activeItems.length - 1 : focusedIndex - 1;
+        break;
+      case 'Escape':
+        event.preventDefault();
+        closeDropdown();
+        triggerElement?.focus();
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        if (focusedIndex >= 0 && focusedIndex < activeItems.length) {
+          const item = activeItems[focusedIndex];
+          handleItemSelect(item);
+        }
+        break;
+    }
+  }
+
+  // Set up global listeners
+  $effect(() => {
+    if (open) {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('keydown', handleMenuKeydown);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleMenuKeydown);
+    };
+  });
 
   const defaultTriggerClasses = 'btn btn-ghost min-h-[44px] px-4 py-2 font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 transition-colors duration-200 inline-flex items-center justify-center';
-  
+
   const defaultMenuClasses = 'menu';
-  
+
   // If triggerClass is provided, use it directly without defaults to avoid btn styling conflicts
   const triggerClasses = $derived(triggerClass ? `${triggerClass} ${className}` : `${defaultTriggerClasses} ${className}`);
   const menuClasses = $derived(menuClass || defaultMenuClasses);
+
+  // Calculate position based on positioning prop
+  const menuStyle = $derived(() => {
+    const baseStyles = 'z-50 min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2';
+
+    const positionClasses = {
+      'bottom-start': 'top-full left-0 mt-1',
+      'bottom-end': 'top-full right-0 mt-1',
+      'top-start': 'bottom-full left-0 mb-1',
+      'top-end': 'bottom-full right-0 mb-1',
+      'bottom': 'top-full left-1/2 transform -translate-x-1/2 mt-1',
+      'top': 'bottom-full left-1/2 transform -translate-x-1/2 mb-1'
+    };
+
+    return `${baseStyles} ${positionClasses[positioning]}`;
+  });
 </script>
 
 <!-- Trigger Button -->
-<button 
-  use:triggerElement
+<button
+  bind:this={triggerElement}
   class="{triggerClasses} focus:!outline-none active:!outline-none"
   aria-haspopup="true"
-  aria-expanded={$menuOpen}
+  aria-expanded={open}
   aria-label={ariaLabel || undefined}
   style="outline: none !important; box-shadow: none !important;"
+  onclick={toggleDropdown}
+  onkeydown={handleTriggerKeydown}
 >
   {#if trigger}
     {@render trigger()}
@@ -111,42 +177,47 @@
 </button>
 
 <!-- Menu Content -->
-{#if $menuOpen}
-  <div 
-    use:menuElement
-    class={menuClasses}
+{#if open}
+  <div
+    bind:this={menuElement}
+    class="{menuClasses} {menuStyle}"
     role="menu"
     tabindex="-1"
   >
     <!-- Static Menu Items from Array -->
-    {#each items as item (item.id)}
-      {#if item.separator}
-        <div class="menu-separator" role="separator"></div>
-      {:else}
-        <button
-          use:itemElement
-          class="menu-item"
-          disabled={item.disabled}
-          role="menuitem"
-          onclick={() => handleItemSelect(item)}
-        >
-          <div class="flex items-center gap-3">
-            {#if item.icon}
-              <span class="w-4 h-4 text-gray-500">{item.icon}</span>
-            {/if}
-            <span>{item.label}</span>
-          </div>
-          {#if item.shortcut}
-            <span class="text-xs text-gray-400 font-mono">{item.shortcut}</span>
+    {#each items.filter(item => !item.separator) as item, index (item.id)}
+      <button
+        class="menu-item relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        disabled={item.disabled}
+        role="menuitem"
+        tabindex={index === focusedIndex ? 0 : -1}
+        onclick={() => handleItemSelect(item)}
+      >
+        <div class="flex items-center gap-3 flex-1">
+          {#if item.icon}
+            <span class="w-4 h-4 text-gray-500">{item.icon}</span>
           {/if}
-        </button>
-      {/if}
+          <span>{item.label}</span>
+        </div>
+        {#if item.shortcut}
+          <span class="text-xs text-gray-400 font-mono ml-auto">{item.shortcut}</span>
+        {/if}
+      </button>
+    {/each}
+
+    <!-- Separators -->
+    {#each items.filter(item => item.separator) as item (item.id)}
+      <div class="menu-separator px-1 py-1" role="separator">
+        <div class="h-px bg-gray-200 my-1"></div>
+      </div>
     {/each}
 
     <!-- Custom Menu Items via Snippet -->
     {#if children}
       {#if items.length > 0}
-        <div class="menu-separator" role="separator"></div>
+        <div class="menu-separator px-1 py-1" role="separator">
+          <div class="h-px bg-gray-200 my-1"></div>
+        </div>
       {/if}
       {@render children()}
     {/if}
@@ -154,33 +225,6 @@
 {/if}
 
 <style>
-  /* Perfect dropdown animation - clean slide down from top */
-  :global([data-side="bottom"][data-align="end"]) {
-    transform-origin: top right !important;
-  }
-
-  /* Custom dropdown entrance animation */
-  :global(.menu[data-side="bottom"][data-align="end"]) {
-    animation: dropdown-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
-  }
-
-  @keyframes dropdown-slide-in {
-    0% {
-      opacity: 0;
-      transform: translateY(-12px) scale(0.95);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* Disable any conflicting Melt UI animations */
-  :global([data-side="bottom"][data-align="end"] > *) {
-    transition: none !important;
-    animation: none !important;
-  }
-
   /* Menu item hover states */
   .menu-item:hover:not(:disabled) {
     background-color: oklch(98% 0.01 250);
@@ -194,19 +238,9 @@
 
   /* Mobile-first responsive design */
   @media (max-width: 640px) {
-    :global([data-menu-content]) {
-      min-width: 14rem;
-      max-width: calc(100vw - 2rem);
-    }
-    
-    /* Ensure touch targets are at least 44px on mobile for primary actions */
     .menu-item {
       min-height: 44px;
       padding: 12px 16px;
-    }
-    
-    /* Adjust font size for mobile readability */
-    .menu-item {
       font-size: 16px;
       line-height: 1.5;
     }
@@ -218,7 +252,7 @@
       background-color: oklch(85% 0.05 250);
       color: oklch(10% 0.02 250);
     }
-    
+
     .menu-item:focus-visible {
       outline-width: 3px;
     }
@@ -226,10 +260,6 @@
 
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
-    :global([data-menu-content]) {
-      animation: none;
-    }
-    
     .menu-item {
       transition: none;
     }

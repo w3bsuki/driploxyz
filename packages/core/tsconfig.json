@@ -6,6 +6,6 @@
     "declarationMap": true,
     "incremental": false
   },
-  "include": ["src/**/*", "eslint.config.js", "tsup.config.ts"],
+  "include": ["src/**/*", "tsup.config.ts"],
   "exclude": ["dist", "node_modules"]
 }

@@ -39,7 +39,7 @@ Admin App Root Layout - Secure admin interface
 								{#each menuItems.slice(0, 5) as item}
 									<a
 										href={item.href}
-										class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+										class="flex items-center min-h-[44px] px-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
 									>
 										<span class="mr-2">{item.icon}</span>
 										{item.label}
@@ -58,7 +58,7 @@ Admin App Root Layout - Secure admin interface
 						<form method="POST" action="/logout">
 							<button
 								type="submit"
-								class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+								class="min-h-[44px] px-4 bg-red-600 hover:bg-red-700 rounded-md text-sm font-medium transition-colors"
 							>
 								Logout
 							</button>
@@ -75,7 +75,7 @@ Admin App Root Layout - Secure admin interface
 					{#each menuItems as item}
 						<a
 							href={item.href}
-							class="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-100 text-gray-900 mb-1"
+							class="group flex items-center min-h-[44px] px-2 text-sm font-medium rounded-md hover:bg-gray-100 text-gray-900 mb-1"
 						>
 							<span class="mr-3 text-lg">{item.icon}</span>
 							{item.label}

@@ -1,5 +1,4 @@
-﻿<script lang="ts">
-  import { createSelect } from '@melt-ui/svelte';
+<script lang="ts">
   import type { Snippet } from 'svelte';
 
   interface SelectOption {
@@ -37,8 +36,6 @@
     id,
     onValueChange,
     onBlur,
-    positioning = 'bottom',
-    portal = 'body',
     class: className = '',
     triggerClass = '',
     menuClass = '',
@@ -46,60 +43,68 @@
     children
   }: Props = $props();
 
+  // Simple state management
+  let isOpen = $state(false);
+  let triggerElement: HTMLElement | undefined = $state();
+  let menuElement: HTMLElement | undefined = $state();
+
   // Find selected option
   const selectedOption = $derived(
     value ? options.find(option => option.value === value) : null
   );
 
-  const {
-    elements: { trigger, menu, option },
-    states: { open },
-    helpers: { isSelected }
-  } = createSelect({
-    forceVisible: true,
-    positioning: {
-      placement:
-        positioning === 'top'
-          ? 'top'
-          : positioning === 'left'
-            ? 'left'
-            : positioning === 'right'
-              ? 'right'
-              : 'bottom',
-      gutter: 4,
-      sameWidth: true
-    },
-    portal,
-    onSelectedChange: ({ next }) => {
-      const newValue = next ? (next.value as string) : null;
-      value = newValue;
-      onValueChange?.(newValue);
-      return next;
+  // Toggle dropdown
+  function toggleDropdown() {
+    if (disabled) return;
+    isOpen = !isOpen;
+  }
+
+  // Close dropdown
+  function closeDropdown() {
+    isOpen = false;
+  }
+
+  // Select option
+  function selectOption(option: SelectOption) {
+    if (option.disabled) return;
+    value = option.value;
+    onValueChange?.(option.value);
+    closeDropdown();
+  }
+
+  // Handle click outside
+  function handleClickOutside(event: MouseEvent) {
+    if (!triggerElement?.contains(event.target as HTMLElement) &&
+        !menuElement?.contains(event.target as HTMLElement)) {
+      closeDropdown();
     }
-  });
+  }
 
-  const optionAction = option as unknown as (
-    node: HTMLElement,
-    props: { value: string; label: string; disabled?: boolean }
-  ) => void;
+  // Handle escape key
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      closeDropdown();
+    }
+  }
 
-  // Sync initial value with Melt UI
+  // Set up global listeners
   $effect(() => {
-    if (value !== null) {
-      const selectedOpt = options.find(opt => opt.value === value);
-      if (selectedOpt && !$isSelected(value)) {
-        // Set initial selection if not already selected
-        const optionToSelect = { value: selectedOpt.value, label: selectedOpt.label };
-        // Force the selection without triggering change callback
-      }
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('keydown', handleKeydown);
     }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleKeydown);
+    };
   });
 
-  // Default CSS classes following design system
+  // Default CSS classes
   const defaultTriggerClasses = 'input input-select relative w-full min-h-[var(--touch-primary)] px-[var(--input-padding)] py-0 text-[var(--input-font)] bg-[var(--input-bg)] border border-[var(--input-border)] rounded-[var(--input-radius)] focus:border-[var(--input-focus-border)] focus:ring-2 focus:ring-[var(--input-focus-ring)] focus:ring-offset-0 focus:outline-none transition-colors duration-[var(--duration-fast)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between gap-2';
-  
+
   const defaultMenuClasses = 'menu z-[var(--z-50)] max-h-60 w-full overflow-auto rounded-[var(--radius-md)] bg-[var(--surface-base)] border border-[var(--border-default)] shadow-[var(--shadow-lg)] py-1 focus:outline-none';
-  
+
   const defaultOptionClasses = 'menu-item relative w-full cursor-pointer select-none px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-base)] text-[var(--text-primary)] hover:bg-[var(--state-hover)] focus:bg-[var(--state-active)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-fast)]';
 
   // Computed classes
@@ -120,14 +125,15 @@
 
 <!-- Select Trigger -->
 <button
-  use:trigger
+  bind:this={triggerElement}
   class={triggerClasses}
   {id}
   {disabled}
   aria-haspopup="listbox"
-  aria-expanded={$open}
+  aria-expanded={isOpen}
   type="button"
   onblur={onBlur}
+  onclick={toggleDropdown}
 >
   <span class="flex-1 text-left truncate">
     {#if selectedOption}
@@ -136,11 +142,11 @@
       <span class="text-[var(--text-muted)]">{placeholder}</span>
     {/if}
   </span>
-  
+
   <!-- Dropdown chevron icon -->
   <svg
     class="w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-[var(--duration-fast)]"
-    class:rotate-180={$open}
+    class:rotate-180={isOpen}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -151,9 +157,9 @@
 </button>
 
 <!-- Select Menu -->
-{#if $open}
+{#if isOpen}
   <div
-    use:menu
+    bind:this={menuElement}
     class={menuClasses}
     role="listbox"
     tabindex="-1"
@@ -161,19 +167,19 @@
     <!-- Options from props -->
     {#each options as opt (opt.value)}
       <button
-        use:optionAction={{ value: opt.value, label: opt.label, disabled: opt.disabled }}
-        class="{optionClasses} {$isSelected(opt.value) ? 'bg-[var(--state-active)] font-medium' : ''}"
+        class="{optionClasses} {value === opt.value ? 'bg-[var(--state-active)] font-medium' : ''}"
         disabled={opt.disabled}
         role="option"
-        aria-selected={$isSelected(opt.value)}
+        aria-selected={value === opt.value}
         type="button"
+        onclick={() => selectOption(opt)}
       >
         <span class="flex-1 text-left truncate">
           {opt.label}
         </span>
-        
+
         <!-- Selected checkmark -->
-        {#if $isSelected(opt.value)}
+        {#if value === opt.value}
           <svg
             class="w-4 h-4 text-[var(--brand-primary)] ml-2 flex-shrink-0"
             fill="currentColor"
@@ -202,9 +208,9 @@
 
 <style>
   /* Menu animations */
-  :global([data-melt-select-content]) {
+  .menu {
     animation: menu-in var(--duration-fast) cubic-bezier(0, 0, 0.2, 1);
-    transform-origin: var(--transform-origin, top);
+    transform-origin: top;
   }
 
   @keyframes menu-in {
@@ -231,23 +237,23 @@
 
   /* Mobile-first responsive design */
   @media (max-width: var(--screen-sm)) {
-    :global([data-melt-select-content]) {
+    .menu {
       min-width: calc(100vw - 2rem);
       max-width: calc(100vw - 2rem);
     }
-    
+
     /* Ensure touch targets are at least 44px on mobile */
     .menu-item {
       min-height: var(--touch-primary);
       padding: var(--space-3) var(--space-4);
     }
-    
+
     /* Adjust font size for mobile readability */
     .menu-item {
       font-size: var(--text-base);
       line-height: var(--leading-normal);
     }
-    
+
     /* Trigger button mobile optimization */
     .input-select {
       min-height: var(--touch-primary);
@@ -261,11 +267,11 @@
       background-color: var(--state-active);
       outline: 1px solid var(--state-focus);
     }
-    
+
     .menu-item:focus-visible {
       outline-width: 3px;
     }
-    
+
     .input-select:focus-visible {
       outline: 3px solid var(--state-focus);
       outline-offset: 2px;
@@ -274,10 +280,10 @@
 
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
-    :global([data-melt-select-content]) {
+    .menu {
       animation: none;
     }
-    
+
     .menu-item,
     .input-select,
     svg {
@@ -290,7 +296,7 @@
     .menu-item:hover:not(:disabled) {
       background-color: var(--state-hover);
     }
-    
+
     .menu-item:focus:not(:disabled) {
       background-color: var(--state-active);
     }

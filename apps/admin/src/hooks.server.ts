@@ -1,5 +1,5 @@
 import { createAuthHelpers } from '@repo/core/auth';
-import { error, redirect, type Handle } from '@sveltejs/kit';
+import { error, redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { env } from '$env/dynamic/private';
@@ -49,8 +49,8 @@ const ipCheckHandler: Handle = async ({ event, resolve }) => {
 
 // Supabase Auth Handler
 const authHandler: Handle = async ({ event, resolve }) => {
-	// Create Supabase client via shared helper
-	const { createSupabaseServerClient, safeGetSession } = createAuthHelpers<Database>({
+		// Create Supabase client via shared helper
+		const { createSupabaseServerClient, safeGetSession } = createAuthHelpers({
 		url: PUBLIC_SUPABASE_URL,
 		anonKey: PUBLIC_SUPABASE_ANON_KEY,
 		cookieDefaults: { sameSite: 'lax' }
@@ -160,7 +160,7 @@ export const handle = sequence(
 );
 
 // Global error handler for admin app
-export const handleError = ({ error, event }) => {
+export const handleError: HandleServerError = ({ error, event }) => {
 	// Log all errors with context
 	console.error('Admin app error:', {
 		error,

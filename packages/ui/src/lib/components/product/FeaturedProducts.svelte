@@ -78,11 +78,11 @@
 
 <!-- Product Grid Section with standardized spacing (tokens) -->
 <section
-  class="pb-3 sm:pb-4 {className}"
+  class="pb-2 sm:pb-3 {className}"
   aria-label={sectionTitle}
 >
   <!-- Section Banner with proper container -->
-  <div class="px-2 sm:px-4 lg:px-6 mb-4 sm:mb-6">
+  <div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
     <NewestListingsBanner
       heading={sectionTitle}
       copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}

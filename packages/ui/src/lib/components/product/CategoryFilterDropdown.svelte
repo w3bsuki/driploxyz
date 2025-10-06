@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createSelect } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import * as i18n from '@repo/i18n';

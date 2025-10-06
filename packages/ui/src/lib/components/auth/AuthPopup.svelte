@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { lockScroll, unlockScroll } from '../../utils/scrollLock';
+
   interface Props {
     isOpen: boolean;
     action: string; // "favorite", "purchase", "add to wishlist", etc.
@@ -14,11 +16,27 @@
       onClose();
     }
   };
+
+  // Handle scroll locking when modal opens/closes
+  $effect(() => {
+    if (isOpen) {
+      lockScroll();
+    } else {
+      unlockScroll();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      unlockScroll();
+    };
+  });
 </script>
 
 {#if isOpen}
+  <!-- Backdrop -->
   <div
-    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-[color:var(--modal-overlay)] z-[var(--z-modal-backdrop)] flex items-center justify-center p-4"
+    style="padding-top: max(var(--safe-area-top), 1rem); padding-bottom: max(var(--safe-area-bottom), 1rem); padding-left: max(var(--safe-area-left), 1rem); padding-right: max(var(--safe-area-right), 1rem);"
     onclick={handleBackdropClick}
     onkeydown={(e) => e.key === 'Escape' && onClose()}
     role="dialog"
@@ -26,11 +44,12 @@
     aria-labelledby="auth-popup-title"
     tabindex="-1"
   >
-    <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-sm md:shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
+    <!-- Modal Content -->
+    <div class="bg-[color:var(--modal-bg)] rounded-[var(--modal-radius)] w-full max-w-sm p-[var(--modal-padding)] shadow-[var(--modal-shadow)] relative max-h-[90vh] overflow-y-auto z-[var(--z-modal)] animate-in fade-in-0 scale-in-95 duration-200">
       <!-- Close button -->
       <button
         onclick={onClose}
-        class="absolute top-4 right-4 p-1 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] text-[color:var(--text-disabled)] hover:text-[color:var(--text-muted)] rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+        class="absolute top-4 right-4 p-1 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] text-[color:var(--text-disabled)] hover:text-[color:var(--text-muted)] rounded-full hover:bg-[color:var(--state-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--brand-primary-strong)]"
         aria-label="Close dialog"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,13 +59,13 @@
 
       <!-- Icon -->
       <div class="flex justify-center mb-4">
-        <div class="w-16 h-16 {action === 'favorite' ? 'bg-pink-100' : action === 'purchase' ? 'bg-green-100' : 'bg-blue-100'} rounded-full flex items-center justify-center">
+        <div class="w-16 h-16 {action === 'favorite' ? 'bg-[color:var(--status-error-bg)]' : action === 'purchase' ? 'bg-[color:var(--status-success-bg)]' : 'bg-[color:var(--status-info-bg)]'} rounded-full flex items-center justify-center">
           {#if action === 'favorite'}
-            <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-[color:var(--status-error-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           {:else if action === 'purchase'}
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-[color:var(--status-success-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
             </svg>
           {:else}
@@ -87,13 +106,13 @@
       <div class="space-y-3">
         <button
           onclick={onSignIn}
-          class="w-full min-h-[var(--touch-primary)] bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+          class="w-full min-h-[var(--touch-primary)] bg-[color:var(--surface-brand-strong)] text-[color:var(--text-inverse)] py-3 px-4 rounded-[var(--btn-radius)] font-[var(--btn-font-weight)] hover:bg-[color:var(--surface-brand)] transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)]"
         >
           Sign In
         </button>
         <button
           onclick={onSignUp}
-          class="w-full min-h-[var(--touch-primary)] border border-gray-300 text-[color:var(--text-primary)] py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+          class="w-full min-h-[var(--touch-primary)] border border-[color:var(--border-default)] text-[color:var(--text-primary)] py-3 px-4 rounded-[var(--btn-radius)] font-[var(--btn-font-weight)] hover:bg-[color:var(--state-hover)] transition-colors duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)]"
         >
           Create Account
         </button>

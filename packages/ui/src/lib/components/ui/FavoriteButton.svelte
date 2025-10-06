@@ -12,6 +12,7 @@
     favoritesState?: { favoriteCounts: Record<string, number> };
     absolute?: boolean;
     customPosition?: string;
+    size?: 'sm' | 'md';
   }
 
   let { 
@@ -23,7 +24,8 @@
     showCount = true,
     favoritesState,
     absolute = true,
-    customPosition = ''
+    customPosition = '',
+    size = 'md'
   }: Props = $props();
 
   let isLoading = $state(false);
@@ -96,14 +98,14 @@
     forceTouch={true}
   >
     {#snippet trigger()}
-      <button 
+      <button
         onclick={handleFavorite}
         disabled={isLoading || product.is_sold}
-        class="group flex items-center gap-1 p-1.5 bg-black/20 backdrop-blur-sm shadow-sm rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/30 hover:scale-105 active:scale-95'}"
+        class="group flex items-center justify-center gap-1 {size === 'sm' ? 'p-2 min-h-[36px] min-w-[36px]' : 'p-3 min-h-[44px] min-w-[44px]'} bg-[color:var(--surface-brand)]/20 backdrop-blur-sm shadow-sm rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[color:var(--surface-brand)]/30 hover:scale-105 active:scale-95'}"
         aria-label={product.is_sold ? 'Sold – likes frozen' : (currentFavorited ? removeFromFavoritesText : addToFavoritesText)}
       >
         <svg 
-          class="w-3.5 h-3.5 transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--favorite-solid)] fill-[color:var(--favorite-solid)] scale-110' : 'text-white group-hover:text-[color:var(--favorite-solid)] group-hover:scale-110')}"
+          class="{size === 'sm' ? 'w-3 h-3' : 'w-3.5 h-3.5'} transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--favorite-solid)] fill-[color:var(--favorite-solid)] scale-110' : 'text-white group-hover:text-[color:var(--favorite-solid)] group-hover:scale-110')}"
           aria-hidden="true" 
           viewBox="0 0 24 24"
           stroke="currentColor"

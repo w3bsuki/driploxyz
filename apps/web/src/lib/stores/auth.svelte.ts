@@ -64,12 +64,13 @@ export function createAuthStore(): {
   };
 } {
   // Core state using $state rune
-  const state = $state<AuthStoreState>({
+  const state = $state<AuthStoreState & { initialized: boolean }>({
     user: null,
     session: null,
     profile: null,
     loading: true,
-    supabase: null
+    supabase: null,
+    initialized: false
   });
 
   // Derived computed values using $derived
@@ -144,6 +145,76 @@ export function createAuthStore(): {
     state.supabase = null;
   }
 
+  // CRITICAL FIXES: New methods for proper server-client sync
+
+  /**
+   * Set server auth data during hydration
+   * This is called by AuthProvider with SSR data
+   */
+  function setServerAuth(user: User | null, session: Session | null, profile: Profile | null) {
+    state.user = user;
+    state.session = session;
+    state.profile = profile;
+    state.loading = false;
+  }
+
+  /**
+   * Handle auth state changes from client-side listener
+   * Called when Supabase auth state changes on client
+   */
+  async function handleAuthChange(user: User | null, session: Session | null) {
+    console.log('[AuthStore] Handling auth change:', user?.id);
+
+    // Update basic auth state
+    state.user = user;
+    state.session = session;
+
+    // If user changed, fetch new profile
+    if (user && state.supabase) {
+      try {
+        const { data: profile } = await state.supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        state.profile = profile;
+      } catch (error) {
+        console.warn('[AuthStore] Failed to fetch profile:', error);
+        state.profile = null;
+      }
+    } else {
+      state.profile = null;
+    }
+
+    state.loading = false;
+  }
+
+  /**
+   * Initialize client-side auth system
+   * Called once when AuthProvider first loads
+   */
+  async function initialize() {
+    if (!state.supabase) return;
+
+    console.log('[AuthStore] Initializing client-side auth');
+
+    try {
+      // Get current session from client
+      const { data: { session } } = await state.supabase.auth.getSession();
+      const { data: { user } } = await state.supabase.auth.getUser();
+
+      if (user && session) {
+        await handleAuthChange(user, session);
+      } else {
+        state.loading = false;
+      }
+    } catch (error) {
+      console.warn('[AuthStore] Initialization failed:', error);
+      state.loading = false;
+    }
+  }
+
   // Local storage helpers (browser only)
   const authStorage = {
     setRememberMe(remember: boolean) {
@@ -178,13 +249,14 @@ export function createAuthStore(): {
     }
   };
 
-  return {
+  const storeInterface = {
     // State getters
     get user() { return state.user; },
     get session() { return state.session; },
     get profile() { return state.profile; },
     get loading() { return state.loading; },
     get supabase() { return state.supabase; },
+    get initialized() { return state.initialized; },
 
     // Derived state
     get authState() { return authState; },
@@ -203,9 +275,16 @@ export function createAuthStore(): {
     getSupabaseClient,
     clearAuth,
 
+    // CRITICAL FIXES: New methods for proper server-client sync
+    setServerAuth,
+    handleAuthChange,
+    initialize,
+
     // Storage helpers
     authStorage
   };
+
+  return storeInterface as typeof storeInterface & { initialized: boolean };
 }
 
 // Global instance for shared state

@@ -14,8 +14,7 @@
   // Deploy to driplo.xyz - force redeploy
   import { invalidate, preloadCode, goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
-  import { injectAnalytics } from '@vercel/analytics/sveltekit';
-  // Consolidated auth system
+    // Consolidated auth system
   import AuthProvider from '$lib/auth/AuthProvider.svelte';
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
@@ -390,9 +389,6 @@
   // Initialize performance optimizations and analytics on mount
   $effect(() => {
     if (browser) {
-      // Initialize Vercel Analytics
-      injectAnalytics({ mode: dev ? 'development' : 'production' });
-      
       // Critical resource hints for faster loading
       const preconnectUrls = [
         'https://fonts.googleapis.com',

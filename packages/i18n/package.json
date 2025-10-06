@@ -11,7 +11,7 @@
     "generate": "node ./scripts/generate-message-exports.mjs",
     "types": "tsc",
     "dev": "pnpm run generate && tsc --watch",
-    "clean": "rimraf lib dist",
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('lib',{recursive:true,force:true});fs.rmSync('dist',{recursive:true,force:true});\"",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
     "test": "vitest run",
@@ -37,7 +37,6 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "eslint": "^9.31.0",
-    "rimraf": "^6.0.1",
     "typescript": "^5.8.2",
     "vitest": "^2.0.0"
   }

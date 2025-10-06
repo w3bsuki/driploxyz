@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createToggleGroup } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import { filter_ui_applied, filter_ui_removed, filter_modal_filter } from '@repo/i18n';
@@ -26,70 +25,63 @@
   let containerRef: HTMLDivElement;
   let announcement = $state('');
 
-  // Create Melt UI toggle group with proper accessibility
-  const {
-    elements: { root, item },
-    helpers: { isPressed },
-    states: { value: toggleValue }
-  } = createToggleGroup(multiple ? {
-    type: 'multiple',
-    defaultValue: value ? [value] : undefined,
-    onValueChange: ({ next }) => {
-      // Handle multiple selection mode
-      const newValue = Array.isArray(next) ? next[0] || null : next || null;
-      const changedOption = options.find(opt => opt.value === newValue);
+  // Simple toggle group placeholder implementation
+  let toggleValue = $state(value ?? undefined);
 
-      onValueChange?.(newValue);
-
-      // Announce changes to screen readers
-      if (announceChanges && changedOption) {
-        const isActive = newValue !== null;
-        if (announcementTemplate) {
-          announcement = announcementTemplate(changedOption, isActive);
-        } else {
-          const statusText = isActive ? filter_ui_applied() : filter_ui_removed();
-          announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
-        }
-      }
-
-      return next;
-    },
-    disabled
-  } : {
-    type: 'single',
-    defaultValue: value ?? undefined,
-    onValueChange: ({ next }) => {
-      // Handle single selection mode
-      const newValue = (typeof next === 'string' ? next : null) || null;
-      const changedOption = options.find(opt => opt.value === newValue);
-
-      onValueChange?.(newValue);
-
-      // Announce changes to screen readers
-      if (announceChanges && changedOption) {
-        const isActive = newValue !== null;
-        if (announcementTemplate) {
-          announcement = announcementTemplate(changedOption, isActive);
-        } else {
-          const statusText = isActive ? filter_ui_applied() : filter_ui_removed();
-          announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
-        }
-      }
-
-      return next;
-    },
-    disabled
+  // Create dummy elements to match melt-ui interface
+  const root = $derived({
+    'data-melt-toggle-group-root': '',
+    role: 'group'
   });
-  
-  // Sync external value with internal toggle group state  
-  $effect(() => {
-    // When value changes externally, update the toggle group's internal state
-    if ($toggleValue !== value) {
-      if (multiple) {
-        toggleValue.set(value ? [value] : undefined);
+
+  const item = $derived({
+    'data-melt-toggle-group-item': '',
+    role: 'button'
+  });
+
+  // Helper function to check if a value is pressed
+  function isPressed(itemValue: string) {
+    return multiple ?
+      (Array.isArray(toggleValue) ? toggleValue.includes(itemValue) : false) :
+      toggleValue === itemValue;
+  }
+
+  // Simple toggle function
+  function handleToggle(itemValue: string) {
+    let newValue: any;
+    const changedOption = options.find(opt => opt.value === itemValue);
+
+    if (multiple) {
+      const currentValues = Array.isArray(toggleValue) ? toggleValue : [];
+      if (currentValues.includes(itemValue)) {
+        newValue = currentValues.filter(v => v !== itemValue);
       } else {
-        toggleValue.set(value ?? undefined);
+        newValue = [...currentValues, itemValue];
       }
+    } else {
+      newValue = toggleValue === itemValue ? undefined : itemValue;
+    }
+
+    toggleValue = newValue;
+    value = multiple ? (Array.isArray(newValue) ? newValue[0] || null : null) : (newValue || null);
+    onValueChange?.(value);
+
+    // Announce changes to screen readers
+    if (announceChanges && changedOption) {
+      const isActive = value !== null;
+      if (announcementTemplate) {
+        announcement = announcementTemplate(changedOption, isActive);
+      } else {
+        const statusText = isActive ? filter_ui_applied() : filter_ui_removed();
+        announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
+      }
+    }
+  }
+
+  // Sync external value with internal state
+  $effect(() => {
+    if (toggleValue !== value) {
+      toggleValue = value ?? undefined;
     }
   });
 
@@ -132,23 +124,7 @@
         if (currentIndex >= 0 && currentIndex < options.length) {
           event.preventDefault();
           const option = options[currentIndex];
-          const newValue = $isPressed(option.value) ? null : option.value;
-          if (multiple) {
-            toggleValue.set(newValue ? [newValue] : undefined);
-          } else {
-            toggleValue.set(newValue ?? undefined);
-          }
-          onValueChange?.(newValue);
-          
-          // Announce the change
-          if (announceChanges) {
-            if (announcementTemplate) {
-              announcement = announcementTemplate(option, newValue !== null);
-            } else {
-              const statusText = newValue !== null ? filter_ui_applied() : filter_ui_removed();
-              announcement = `${option.label} ${filter_modal_filter()} ${statusText}`;
-            }
-          }
+          handleToggle(option.value);
         }
         break;
     }
@@ -212,7 +188,7 @@
   onkeydown={handleKeydown}
 >
   {#each options as option, index (option.value)}
-    {@const isActive = $isPressed(option.value)}
+    {@const isActive = isPressed(option.value)}
     {@const activeClasses = isActive 
       ? (option.bgGradient 
           ? `${option.bgGradient} text-white shadow-md border-transparent ${activePillClass}` 
@@ -221,7 +197,6 @@
     }
     
     <button
-      use:item
       data-value={option.value}
       class="{basePillClasses} {activeClasses}"
       tabindex={focusedIndex === index ? 0 : -1}
@@ -229,6 +204,7 @@
       aria-label="{option.label} {filter_modal_filter()} {isActive ? filter_ui_applied() : filter_ui_removed()}"
       aria-describedby={`filter-help-${option.value}`}
       onfocus={() => handleButtonFocus(index)}
+      onclick={() => handleToggle(option.value)}
     >
       {#if children}
         {@render children(option)}

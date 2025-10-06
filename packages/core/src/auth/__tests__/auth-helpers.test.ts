@@ -28,7 +28,9 @@ const createMockCookies = (): Cookies => ({
   serialize: vi.fn()
 });
 
-const createMockRequestEvent = (locals: Record<string, unknown> = {}): RequestEvent => ({
+type LocalsWithCache = Record<string, unknown> & { __sessionCache?: unknown };
+
+const createMockRequestEvent = (locals: LocalsWithCache = {}): RequestEvent => ({
   locals,
   cookies: createMockCookies(),
   fetch: global.fetch,
@@ -38,10 +40,11 @@ const createMockRequestEvent = (locals: Record<string, unknown> = {}): RequestEv
   route: { id: 'test' },
   setHeaders: vi.fn(),
   url: new URL('http://localhost'),
-  isDataRequest: false,
-  isSubRequest: false,
+  // The following fields may vary across SvelteKit versions; they are not used in tests
+  isDataRequest: false as any,
+  isSubRequest: false as any,
   platform: undefined
-});
+}) as unknown as RequestEvent;
 
 describe('createAuthHelpers', () => {
   beforeEach(() => {
@@ -113,8 +116,8 @@ describe('createAuthHelpers', () => {
 
       const result = await helpers.safeGetSession(event);
 
-      expect(result).toEqual({ session: null, user: null });
-      expect(event.locals.__sessionCache).toEqual({ session: null, user: null });
+  expect(result).toEqual({ session: null, user: null });
+  expect((event.locals as unknown as LocalsWithCache).__sessionCache).toEqual({ session: null, user: null });
     });
 
     it('fetches and caches session from Supabase', async () => {
@@ -140,8 +143,8 @@ describe('createAuthHelpers', () => {
 
       const result = await helpers.safeGetSession(event);
 
-      expect(result).toEqual({ session: mockSession, user: mockUser });
-      expect(event.locals.__sessionCache).toEqual({ session: mockSession, user: mockUser });
+  expect(result).toEqual({ session: mockSession, user: mockUser });
+  expect((event.locals as unknown as LocalsWithCache).__sessionCache).toEqual({ session: mockSession, user: mockUser });
     });
 
     it('handles auth errors gracefully', async () => {

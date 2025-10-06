@@ -97,7 +97,8 @@ export { default as AccountTypeSelector } from './components/auth/AccountTypeSel
 export { default as AvatarSelector } from './components/forms/AvatarSelector.svelte';
 export { default as SocialLinksEditor } from './components/business/SocialLinksEditor.svelte';
 export { default as PayoutMethodSelector } from './components/forms/PayoutMethodSelector.svelte';
-// REMOVED: OnboardingSuccessModal - onboarding-specific
+export { default as OnboardingSuccessModal } from './components/modals/OnboardingSuccessModal.svelte';
+export { default as BrandPaymentModal } from './components/modals/BrandPaymentModal.svelte';
 
 // Specialized badges (domain-specific)
 export { default as ProBadge } from './components/badges/ProBadge.svelte';

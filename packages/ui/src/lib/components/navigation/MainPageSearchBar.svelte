@@ -228,7 +228,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
             <button
               type="button"
               onclick={() => showTrendingDropdown = !showTrendingDropdown}
-              class="h-11 px-3 bg-transparent hover:bg-[color:var(--surface-subtle)] transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-[color:var(--surface-subtle)] border-r border-[color:var(--border-subtle)] rounded-l-lg"
+              class="h-11 px-3 bg-transparent hover:bg-[color:var(--surface-subtle)] transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-[color:var(--surface-subtle)] border-r border-[color:var(--border-subtle)] rounded-l-[var(--input-radius)] focus-visible:ring-2 focus-visible:ring-[color:var(--input-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--surface-emphasis)]"
               aria-expanded={showTrendingDropdown}
               aria-haspopup="listbox"
               aria-label={i18n.search_categories()}
@@ -243,23 +243,23 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
         {#if showTrendingDropdown}
           <div class="absolute top-full left-0 right-0 mt-1 z-50">
-            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] shadow-lg p-[var(--space-4)] min-h-[300px] max-h-[80vh] overflow-y-auto">
-              <div class="flex items-center gap-1 mb-3 bg-[color:var(--surface-subtle)] p-1 rounded-[var(--radius-md)]">
+            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-sm)] shadow-lg p-[var(--space-4)] min-h-[300px] max-h-[80vh] overflow-y-auto">
+              <div class="flex items-center gap-1 mb-3 bg-[color:var(--surface-subtle)] p-1 rounded-[var(--radius-sm)]">
                 <button
                   onclick={() => activeDropdownTab = 'trending'}
-                  class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-[color:var(--surface-base)] text-[color:var(--text-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                  class="flex-1 px-4 py-2.5 text-sm font-medium rounded-[var(--radius-sm)] transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-[color:var(--surface-base)] text-[color:var(--text-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
                 >
                   {i18n.nav_topBrands()}
                 </button>
                 <button
                   onclick={() => activeDropdownTab = 'sellers'}
-                  class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                  class="flex-1 px-4 py-2.5 text-sm font-medium rounded-[var(--radius-sm)] transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                 >
                   {i18n.nav_topSellers()}
                 </button>
                 <button
                   onclick={() => activeDropdownTab = 'quickshop'}
-                  class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'quickshop' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                  class="flex-1 px-4 py-2.5 text-sm font-medium rounded-[var(--radius-sm)] transition-all duration-200 {activeDropdownTab === 'quickshop' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                 >
                   {i18n.nav_quickShop()}
                 </button>
@@ -277,7 +277,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                     placeholder={activeDropdownTab === 'trending' ? 'Search brands...' :
                                 activeDropdownTab === 'sellers' ? 'Search sellers...' :
                                 'Search quick actions...'}
-                    class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)] bg-gray-50 hover:bg-white transition-colors"
+                    class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)] bg-gray-50 hover:bg-white transition-colors"
                   />
                   {#if dropdownSearchQuery.trim()}
                     <button
@@ -303,7 +303,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           onNavigateToBrand?.(brand.name);
                           showTrendingDropdown = false;
                         }}
-                        class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                        class="w-full flex items-center gap-3 p-2.5 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-[var(--radius-sm)] border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                       >
                         <img
                           src={brand.avatar || '/avatars/1.png'}
@@ -346,7 +346,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           onNavigateToSeller?.(seller.name ?? seller.username ?? "");
                           showTrendingDropdown = false;
                         }}
-                        class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                        class="w-full flex items-center gap-3 p-2.5 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-[var(--radius-sm)] border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                       >
                         <img
                           src={seller.avatar || '/avatars/1.png'}
@@ -403,7 +403,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           }
                           showTrendingDropdown = false;
                         }}
-                        class="w-full flex items-center gap-2 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                        class="w-full flex items-center gap-2.5 p-2.5 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-[var(--radius-sm)] border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                       >
                         <span class="text-lg">{item.icon}</span>
                         <div class="flex-1 min-w-0">

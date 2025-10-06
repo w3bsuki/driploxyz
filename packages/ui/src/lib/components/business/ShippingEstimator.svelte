@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createDialog, melt } from '@melt-ui/svelte';
   import Button from '../ui/Button.svelte';
   import Select from '../forms/Select.svelte';
 
@@ -31,19 +30,46 @@
     className = ''
   }: Props = $props();
 
-  // Dialog setup
-  const {
-    elements: { trigger, portalled, overlay, content, close, title, description },
-    states: { open: dialogOpen }
-  } = createDialog({
-    preventScroll: true,
-    closeOnOutsideClick: true,
-    onOpenChange: ({ next }) => {
-      if (!next) {
-        onClose?.();
-      }
-      return next;
-    }
+  // Simple dialog placeholder implementation
+  let dialogOpen = $state(open);
+
+  // Create dummy elements to match melt-ui interface
+  const trigger = $derived({
+    'data-melt-dialog-trigger': '',
+    'aria-expanded': dialogOpen,
+    'aria-controls': 'dialog-content'
+  });
+
+  const portalled = $derived({
+    'data-melt-dialog-portalled': ''
+  });
+
+  const overlay = $derived({
+    'data-melt-dialog-overlay': '',
+    onclick: () => { dialogOpen = false; onClose?.(); }
+  });
+
+  const content = $derived({
+    'data-melt-dialog-content': '',
+    role: 'dialog',
+    'aria-modal': true,
+    'aria-labelledby': 'dialog-title',
+    'aria-describedby': 'dialog-description'
+  });
+
+  const close = $derived({
+    'data-melt-dialog-close': '',
+    onclick: () => { dialogOpen = false; onClose?.(); }
+  });
+
+  const title = $derived({
+    'data-melt-dialog-title': '',
+    id: 'dialog-title'
+  });
+
+  const description = $derived({
+    'data-melt-dialog-description': '',
+    id: 'dialog-description'
   });
 
   // State
@@ -66,12 +92,8 @@
 
   // Sync external open state
   $effect(() => {
-    if (open !== $dialogOpen) {
-      if (open) {
-        dialogOpen.set(true);
-      } else {
-        dialogOpen.set(false);
-      }
+    if (open !== dialogOpen) {
+      dialogOpen = open;
     }
   });
 
@@ -149,7 +171,7 @@
   function handleSelectShipping() {
     if (selectedOption) {
       onEstimateSelected?.(selectedOption);
-      dialogOpen.set(false);
+      dialogOpen = false;
     }
   }
 
@@ -173,7 +195,7 @@
   <Button
     variant="ghost"
     size="sm"
-    use={[melt, $trigger]}
+    onclick={() => dialogOpen = true}
     class="text-[color:var(--brand-primary)] hover:text-[color:var(--primary-600)] font-medium {className}"
   >
     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,34 +206,37 @@
 {/if}
 
 <!-- Modal -->
-<div use:melt={$portalled}>
-  {#if $dialogOpen}
-    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50"></div>
-    <div
-      use:melt={$content}
-      class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[--radius-xl] bg-[color:var(--surface-base)] shadow-[--shadow-2xl]"
-    >
-      <div class="p-6">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h2 use:melt={$title} class="text-lg font-semibold text-[color:var(--text-primary)]">
-              Shipping Calculator
-            </h2>
-            <p use:melt={$description} class="text-sm text-[color:var(--text-secondary)]">
-              Get shipping estimates for your location
-            </p>
-          </div>
-          <button
-            use:melt={$close}
-            class="w-8 h-8 rounded-[--radius-full] flex items-center justify-center hover:bg-[color:var(--surface-muted)] transition-colors"
-            aria-label="Close"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
+{#if dialogOpen}
+  <button
+    class="fixed inset-0 z-50 bg-black/50 cursor-default"
+    onclick={() => { dialogOpen = false; onClose?.(); }}
+    onkeydown={(e) => e.key === 'Enter' && (() => { dialogOpen = false; onClose?.(); })()}
+    aria-label="Close shipping calculator"
+  ></button>
+  <div
+    class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[--radius-xl] bg-[color:var(--surface-base)] shadow-[--shadow-2xl]"
+  >
+    <div class="p-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-semibold text-[color:var(--text-primary)]">
+            Shipping Calculator
+          </h2>
+          <p class="text-sm text-[color:var(--text-secondary)]">
+            Get shipping estimates for your location
+          </p>
         </div>
+        <button
+          onclick={() => { dialogOpen = false; onClose?.(); }}
+          class="w-8 h-8 rounded-[--radius-full] flex items-center justify-center hover:bg-[color:var(--surface-muted)] transition-colors"
+          aria-label="Close"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
 
         <!-- Ship From/To -->
         <div class="mb-6 p-4 bg-[color:var(--surface-subtle)] rounded-[--radius-lg]">
@@ -302,7 +327,7 @@
           <Button
             variant="outline"
             size="md"
-            onclick={() => dialogOpen.set(false)}
+            onclick={() => dialogOpen = false}
             class="flex-1"
           >
             Cancel
@@ -328,9 +353,8 @@
           </div>
         {/if}
       </div>
-    </div>
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style>
   input[type="radio"] {

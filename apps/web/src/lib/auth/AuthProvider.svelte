@@ -1,13 +1,16 @@
 <!--
-  CONSOLIDATED AUTH PROVIDER
+  FIXED AUTH PROVIDER - Svelte 5 Runes + Proper SSR Hydration
 
-  Initializes and manages client-side auth state for the entire app.
-  Connects server-side auth data to client-side Svelte 5 runes store.
+  CRITICAL FIXES:
+  - Proper server-client state synchronization
+  - Single source of truth for auth state
+  - Eliminates race conditions during hydration
 -->
 
 <script lang="ts">
   import { browser } from '$app/environment';
   import { authStore } from './store.svelte';
+  import { createBrowserSupabase } from './index';
   import type { AuthUser, AuthSession, Profile } from './index';
 
   interface Props {
@@ -19,25 +22,52 @@
 
   let { user, session, profile, children }: Props = $props();
 
-  // Initialize auth store with server data
+  // CRITICAL FIX: Initialize client-side Supabase and sync with server data
   $effect(() => {
-    if (browser) {
-      authStore.setServerAuth(user, session, profile);
+    if (!browser) return;
 
-      // Initialize client-side auth listener
-      if (!authStore.initialized) {
-        authStore.initialize();
-      }
+    // Initialize auth store with server data FIRST
+    authStore.setServerAuth(user, session, profile);
+
+    // Initialize client-side listener if not already done
+    if (!authStore.initialized) {
+      const supabase = createBrowserSupabase();
+
+      // Set up auth state listener
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        // Only log in development for debugging
+        if (import.meta.env.DEV) {
+          console.log('[AuthProvider] Auth state changed:', event, session?.user?.id);
+        }
+
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          authStore.handleAuthChange(session?.user ?? null, session);
+        } else if (event === 'SIGNED_OUT') {
+          authStore.handleAuthChange(null, null);
+        }
+      });
+
+      // Set the client and mark as initialized
+      authStore.setSupabaseClient(supabase);
+      authStore.initialized = true;
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   });
 
-  // Update store when server data changes
+  // CRITICAL FIX: Update store when server data changes (navigation, etc.)
   $effect(() => {
-    if (browser && authStore.initialized) {
-      // Only update if the data is actually different
-      if (authStore.user?.id !== user?.id || authStore.profile?.id !== profile?.id) {
-        authStore.setServerAuth(user, session, profile);
-      }
+    if (!browser || !authStore.initialized) return;
+
+    // Only update if server data differs from current client state
+    const currentUserChanged = authStore.user?.id !== user?.id;
+    const currentSessionChanged = authStore.session?.access_token !== session?.access_token;
+
+    if (currentUserChanged || currentSessionChanged) {
+      console.log('[AuthProvider] Server data changed, updating store');
+      authStore.setServerAuth(user, session, profile);
     }
   });
 </script>
