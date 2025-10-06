@@ -19,19 +19,19 @@
 
   const classes = {
     // Professional white card shell
-  shell: 'relative isolate w-full overflow-hidden rounded-[var(--radius-sm)] border border-slate-200 bg-white px-4 py-4 text-slate-900 shadow-sm sm:px-6 sm:py-5 lg:px-8 lg:py-6',
-    layout: 'mx-auto flex w-full max-w-screen-xl flex-col items-center gap-3 sm:gap-4 text-center',
-    copyStack: 'flex flex-col items-center gap-1.5',
-    meta: 'inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-600 border border-slate-200',
-    heading: 'text-xl font-semibold leading-tight sm:text-2xl lg:text-2xl text-slate-900',
-    controls: 'flex flex-col items-center gap-3 sm:gap-4 w-full',
+  shell: 'relative isolate w-full overflow-hidden rounded-[var(--radius-sm)] border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm sm:px-5 sm:py-4 lg:px-7 lg:py-[18px]',
+    layout: 'mx-auto flex w-full max-w-screen-xl flex-col items-center gap-1 sm:gap-1.5 text-center',
+    copyStack: 'flex flex-col items-center gap-0.5',
+    meta: 'inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600 border border-slate-200',
+    heading: 'text-[1.4rem] font-semibold leading-tight text-slate-900 sm:text-[1.675rem] lg:text-[1.75rem]',
+    controls: 'flex flex-col items-center gap-1 sm:gap-1.5 w-full md:flex-row md:flex-wrap md:justify-center md:gap-1.5',
     // Neutral segmented control with emerald accent for active
   toggleGroup: 'grid grid-cols-2 gap-1 rounded-[var(--radius-sm)] border border-slate-300 bg-white p-1 text-sm font-medium text-slate-700',
-    toggleButton: 'rounded-[var(--radius-sm)] px-4 py-2.5 text-center transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white min-h-[44px]',
+    toggleButton: 'rounded-[var(--radius-sm)] px-3.5 py-2.5 text-center transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white min-h-[44px]',
     toggleButtonActive: 'bg-emerald-600 text-white',
     toggleButtonInactive: 'text-slate-700 hover:bg-slate-50',
     // Emerald accent CTA
-  ctaButton: 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:px-6 sm:py-3.5 sm:text-base min-h-[44px]'
+  ctaButton: 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:px-5 sm:py-3 sm:text-base min-h-[44px]'
   } as const;
 
   let {
@@ -50,7 +50,7 @@
     { id: 'brands', label: 'Brands' }
   ] as const;
 
-  const resolvedCopy = $derived(copy ?? 'Spotlighted sellers with stellar reviews and fast shipping.');
+  const resolvedCopy = $derived(copy ?? 'Standout sellers with great ratings and fast shipping.');
 
   function handleTabChange(tab: SellerTab) {
     if (tab !== activeTab) {
@@ -67,7 +67,7 @@
       {/if}
 
       <h2 class={classes.heading}>{heading}</h2>
-      <p class="max-w-[60ch] text-xs sm:text-sm text-slate-600">{resolvedCopy}</p>
+  <p class="max-w-[60ch] text-[13px] leading-snug text-slate-600 sm:text-sm">{resolvedCopy}</p>
     </div>
 
     <div class={classes.controls}>
@@ -105,5 +105,6 @@
         </button>
       {/if}
     </div>
+
   </div>
 </section>

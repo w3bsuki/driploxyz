@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["@repo/i18n#build", "@repo/database#build", "@repo/ui#build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".svelte-kit/**", ".vercel/**", "dist/**", "build/**", "lib/**"],
       "env": [

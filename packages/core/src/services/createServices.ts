@@ -1,18 +1,17 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Stripe } from 'stripe';
-import { createStripeService } from './stripe';
+import { stripe } from '../stripe/server';
 import { createEmailService } from '../email';
 
 export interface ServiceContainer {
 	supabase: SupabaseClient;
-	stripe: ReturnType<typeof createStripeService>;
+	stripe: typeof stripe;
 	email: ReturnType<typeof createEmailService>;
 }
 
-export function createServices(supabase: SupabaseClient, stripe: Stripe): ServiceContainer {
+export function createServices(supabase: SupabaseClient): ServiceContainer {
 	return {
 		supabase,
-		stripe: createStripeService(supabase, stripe),
+		stripe,
 		email: createEmailService()
 	};
 }

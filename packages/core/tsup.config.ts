@@ -12,5 +12,5 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['@sveltejs/kit']
+  external: ['@sveltejs/kit', 'stripe', '@stripe/stripe-js', 'resend', '$env/*', '$app/*', '$lib/*', '@supabase/postgrest-js']
 });

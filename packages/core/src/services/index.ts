@@ -15,7 +15,6 @@ export * from './profiles';
 export * from './realtime.svelte';
 export * from './realtimeNotifications';
 export * from './ReviewService';
-export * from './stripe';
 export * from './subscriptions';
 export * from './transactions';
 export * from './trending';
