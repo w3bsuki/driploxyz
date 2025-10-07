@@ -1,7 +1,7 @@
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import type { CountryCode } from '$lib/country/detection';
-import type { LanguageTag } from '@repo/i18n';
+import type { LanguageTag } from '$lib/i18n-types';
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -34,6 +34,7 @@ declare module '$env/static/public' {
 	export const PUBLIC_SITE_URL: string;
 }
 
-// Module declarations are in @repo/i18n/src/types.d.ts
+// Legacy @repo/i18n module declarations are in src/types/modules.d.ts
+// @deprecated - Use $lib/paraglide/runtime instead
 
 export {};
