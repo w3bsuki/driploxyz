@@ -1,394 +1,366 @@
-# 🔍 COPILOT AUDIT CHECKLIST - Phase 4C Verification
+# COPILOT AUDIT CHECKLIST: Phase 4C - Apps/Web Restructure
 
-## 📋 Purpose
-
-This checklist helps **GitHub Copilot** audit Claude CLI's Phase 4C execution systematically.
-
-After Claude CLI completes Phase 4C (Core Package Audit), use this checklist to verify the audit quality.
+> **Your Role**: You are GitHub Copilot auditing Claude CLI Agent's execution of Phase 4C.  
+> **Objective**: Score the apps/web restructure work based on this 120-point checklist.
 
 ---
 
-## ✅ AUDIT SECTIONS
+## 📊 SCORING SYSTEM
 
-### 1. AUDIT COMPLETENESS (20 points)
+**Total Points: 120**
 
-**Did Claude follow all 10 steps?**
-
-- [ ] Step 1: Core package structure audited
-- [ ] Step 2: Framework independence checked thoroughly
-- [ ] Step 3: Export structure verified
-- [ ] Step 4: Dependencies audited
-- [ ] Step 5: Import usage patterns documented
-- [ ] Step 6: Core package build tested
-- [ ] Step 7: TypeScript errors checked
-- [ ] Step 8: Circular dependencies verified
-- [ ] Step 9: Exports updated (if needed)
-- [ ] Step 10: Summary created and committed (if changes made)
-
-**Score: ___/20**
+- **110-120**: EXCELLENT - Approve and proceed to Phase 4D
+- **90-109**: GOOD - Minor issues, fix before proceeding
+- **70-89**: ACCEPTABLE - Several issues, requires fixes
+- **< 70**: NEEDS REWORK - Major issues, redo phase
 
 ---
 
-### 2. FRAMEWORK INDEPENDENCE VERIFICATION (25 points)
+## ✅ AUDIT CHECKLIST
 
-**Most critical check for Phase 4C**
+### 1. LAYOUT GROUPS STRUCTURE (20 points)
 
-#### Search Thoroughness (15 points)
-- [ ] Searched for `from 'svelte'` imports
-- [ ] Searched for `from '$app/*'` imports
-- [ ] Searched for `from '$env/*'` imports
-- [ ] Searched for `from '@sveltejs/*'` imports
-- [ ] Searched for `window.`, `document.`, `localStorage`
-- [ ] Searched for Supabase client usage
-- [ ] Documented search results clearly
-- [ ] Verified ZERO framework imports
+#### 1.1 Layout Group Creation (10 points)
+- [ ] **`(app)/+layout.svelte` exists** (2 pts)
+- [ ] **`(app)/(shop)/+layout.svelte` exists** (2 pts)
+- [ ] **`(app)/(account)/+layout.svelte` exists** (2 pts)
+- [ ] **`(marketing)/+layout.svelte` exists** (2 pts)
+- [ ] **All layout files have valid Svelte 5 syntax** (2 pts)
 
-**Score: ___/15**
+#### 1.2 Route Organization (10 points)
+Check `phase4c-route-map.json`:
+- [ ] **All shop routes moved to `(app)/(shop)/`** (3 pts)
+  - search, product, category, brands, collection, designer, wishlist, sellers
+- [ ] **All account routes moved to `(app)/(account)/`** (3 pts)
+  - profile, pro
+- [ ] **All marketing routes moved to `(marketing)/`** (3 pts)
+  - about, blog, careers, help, privacy, terms, returns, trust-safety
+- [ ] **No loose routes at root level (except homepage, error, api/)** (1 pt)
 
-#### Result Accuracy (10 points)
-- [ ] If violations found, they were documented
-- [ ] If clean, that was clearly stated
-- [ ] No false negatives (missed violations)
-- [ ] No false positives (incorrect flagging)
-- [ ] Overall assessment is accurate
-
-**Score: ___/10**
-
-**Section Total: ___/25**
+**Score: ___ / 20**
 
 ---
 
-### 3. EXPORT STRUCTURE VERIFICATION (15 points)
+### 2. ROUTE COLOCATION (25 points)
 
-#### Export Configuration (10 points)
-- [ ] Checked package.json exports section
-- [ ] Verified main export
-- [ ] Verified utils export
-- [ ] Verified services export (if exists)
-- [ ] Verified validation export (if exists)
-- [ ] Verified types export (if exists)
-- [ ] Documented current vs. target structure
+#### 2.1 Component Moves (15 points)
+Check `phase4c-component-map.json`:
+- [ ] **Route-specific components moved to route `components/` folders** (10 pts)
+  - modular/* → (protected)/messages/components/
+  - Other route-specific components colocated
+- [ ] **No route-specific components remain in `lib/components/`** (5 pts)
+  - Scan lib/components/ for any that should be colocated
 
-**Score: ___/10**
+#### 2.2 Shared Components Preserved (10 points)
+Verify these STAY in `lib/components/`:
+- [ ] **Header.svelte** (2 pts)
+- [ ] **layout/** directory (2 pts)
+- [ ] **error/** directory (2 pts)
+- [ ] **ErrorBoundary.svelte, FormErrorBoundary.svelte, etc.** (2 pts)
+- [ ] **OptimizedImage.svelte, PageLoader.svelte, etc.** (2 pts)
 
-#### Fix Quality (if needed) (5 points)
-- [ ] If exports were incorrect, fixes are proper
-- [ ] If exports were correct, that was documented
-- [ ] Export paths use correct format
-- [ ] No exports breaking existing code
-
-**Score: ___/5**
-
-**Section Total: ___/15**
+**Score: ___ / 25**
 
 ---
 
-### 4. DEPENDENCY AUDIT (15 points)
+### 3. $lib/server/ SEPARATION (25 points)
 
-#### Dependency Check (10 points)
-- [ ] Listed all dependencies
-- [ ] Verified NO Svelte in dependencies
-- [ ] Verified NO SvelteKit in dependencies
-- [ ] Verified NO Supabase client (types OK)
-- [ ] All dependencies are framework-agnostic
-- [ ] Dev dependencies are appropriate
+#### 3.1 Server Code Moved (20 points)
+Check `phase4c-server-code-map.json`:
+- [ ] **Auth server code in `lib/server/auth/`** (5 pts)
+  - No *.server.ts files in lib/auth/
+- [ ] **Supabase admin client in `lib/server/supabase/`** (5 pts)
+  - serviceRole usage is server-only
+- [ ] **Stripe code in `lib/server/stripe/`** (5 pts)
+  - All Stripe SDK usage is server-only
+- [ ] **Analytics/monitoring in `lib/server/`** (5 pts)
 
-**Score: ___/10**
+#### 3.2 No Server Leaks (5 points)
+Verify NO private env vars or secrets in non-server code:
+- [ ] **No `$env/static/private` imports outside `lib/server/`** (2 pts)
+- [ ] **No `$env/dynamic/private` imports outside `lib/server/`** (2 pts)
+- [ ] **No `PRIVATE_` or `SECRET_` vars outside `lib/server/`** (1 pt)
 
-#### Circular Dependency Check (5 points)
-- [ ] Verified core doesn't import @repo/ui
-- [ ] Verified core doesn't import @repo/domain
-- [ ] Documented dependency direction
-- [ ] Database imports are types only
-
-**Score: ___/5**
-
-**Section Total: ___/15**
+**Score: ___ / 25**
 
 ---
 
-### 5. BUILD & TYPE VERIFICATION (15 points)
+### 4. IMPORT UPDATES (25 points)
 
-#### Build Test (8 points)
-- [ ] Core package build executed
-- [ ] Build completed successfully
-- [ ] No build errors introduced
-- [ ] Build output is clean
+#### 4.1 Route Component Imports (10 points)
+- [ ] **Colocated components use relative imports** (5 pts)
+  - Example: `from './components/Component.svelte'` (not $lib/components/)
+- [ ] **No broken component imports** (5 pts)
+  - Search for old modular/ imports
 
-**Score: ___/8**
+#### 4.2 Server Code Imports (10 points)
+- [ ] **All server imports use `$lib/server/` path** (5 pts)
+  - Check for `from '$lib/auth/*.server'` (should be `$lib/server/auth/`)
+  - Check for `from '$lib/stripe/'` (should be `$lib/server/stripe/`)
+- [ ] **No circular imports introduced** (5 pts)
 
-#### Type Safety (7 points)
-- [ ] TypeScript type check performed
-- [ ] Zero TypeScript errors (or documented)
-- [ ] Type exports working correctly
-- [ ] No unsafe `any` types (or justified)
+#### 4.3 Import Mapping Documented (5 points)
+- [ ] **`phase4c-import-map.json` exists and complete** (3 pts)
+- [ ] **All import patterns documented** (2 pts)
 
-**Score: ___/7**
-
-**Section Total: ___/15**
-
----
-
-### 6. DOCUMENTATION QUALITY (20 points)
-
-#### Audit File (15 points)
-- [ ] PHASE_4C_CORE_AUDIT.md created
-- [ ] Structure analysis documented
-- [ ] Framework independence findings documented
-- [ ] Export structure documented
-- [ ] Dependency audit documented
-- [ ] Import usage patterns documented
-- [ ] Issues clearly listed (if any)
-- [ ] Recommendations provided
-
-**Score: ___/15**
-
-#### Execution Report (5 points)
-- [ ] Clear summary provided
-- [ ] Step-by-step execution documented
-- [ ] Results clearly stated
-- [ ] Ready for Copilot audit
-
-**Score: ___/5**
-
-**Section Total: ___/20**
+**Score: ___ / 25**
 
 ---
 
-### 7. COMMIT & CHANGES (10 points)
+### 5. VERIFICATION (15 points)
 
-**IF changes were made:**
-- [ ] Changes are minimal and necessary
-- [ ] Changes don't break existing code
-- [ ] Commit message is descriptive
-- [ ] Changes tested before commit
+#### 5.1 Build Success (8 points)
+- [ ] **`pnpm run check` passes** (4 pts)
+  - Or minimal errors (not import-related)
+- [ ] **`pnpm run build` succeeds** (4 pts)
 
-**IF no changes needed:**
-- [ ] Clearly documented "no changes required"
-- [ ] Audit findings still valuable
-- [ ] Documentation explains why no changes
+#### 5.2 Dev Server Works (7 points)
+- [ ] **Dev server starts on http://localhost:5173/** (2 pts)
+- [ ] **Homepage loads** (1 pt)
+- [ ] **Shop routes work** (e.g., /search, /products) (1 pt)
+- [ ] **Account routes work** (e.g., /profile) (1 pt)
+- [ ] **Marketing routes work** (e.g., /about) (1 pt)
+- [ ] **No console errors related to imports** (1 pt)
 
-**Score: ___/10**
-
----
-
-## 📊 SCORING SUMMARY
-
-| Section | Points | Score |
-|---------|--------|-------|
-| 1. Audit Completeness | 20 | ___ |
-| 2. Framework Independence | 25 | ___ |
-| 3. Export Structure | 15 | ___ |
-| 4. Dependency Audit | 15 | ___ |
-| 5. Build & Type Verification | 15 | ___ |
-| 6. Documentation Quality | 20 | ___ |
-| 7. Commit & Changes | 10 | ___ |
-| **TOTAL** | **120** | **___** |
+**Score: ___ / 15**
 
 ---
 
-## 🎯 GRADE SCALE
+### 6. DOCUMENTATION (10 points)
 
-- **110-120**: 🌟 **EXCELLENT** - Claude nailed it! Comprehensive audit.
-- **90-109**: ✅ **GOOD** - Solid audit with minor gaps.
-- **70-89**: ⚠️ **ACCEPTABLE** - Audit complete but needs improvement.
-- **50-69**: ❌ **NEEDS WORK** - Significant gaps in audit.
-- **0-49**: 🚨 **FAILED** - Incomplete or inaccurate audit.
+#### 6.1 Required Files (8 points)
+- [ ] **`PHASE_4C_RESTRUCTURE_SUMMARY.md` exists** (2 pts)
+- [ ] **`phase4c-route-map.json` exists** (1 pt)
+- [ ] **`phase4c-component-map.json` exists** (1 pt)
+- [ ] **`phase4c-server-code-map.json` exists** (1 pt)
+- [ ] **`phase4c-import-map.json` exists** (1 pt)
+- [ ] **`phase4c-final-routes-tree.txt` exists** (1 pt)
+- [ ] **All docs are complete and accurate** (1 pt)
+
+#### 6.2 Summary Quality (2 points)
+- [ ] **Summary includes counts** (routes moved, components colocated, etc.) (1 pt)
+- [ ] **Summary includes verification results** (1 pt)
+
+**Score: ___ / 10**
 
 ---
 
-## 🔍 VERIFICATION COMMANDS
+## 📝 AUDIT PROCEDURE
 
-### 1. Verify Framework Independence
-
+### Step 1: Read Summary
 ```powershell
-# Search for Svelte imports
-cd K:\driplo-turbo-1\packages\core
-rg "from ['\"]svelte" src/
-# Expected: 0 results
-
-# Search for SvelteKit imports
-rg "from ['\"]\\$app" src/
-rg "from ['\"]\\$env" src/
-# Expected: 0 results
-
-# Search for browser APIs
-rg "(window\.|document\.|localStorage)" src/
-# Expected: 0 results (or justified)
-
-# Search for Supabase client
-rg "createClient|new SupabaseClient" src/
-# Expected: 0 results
+cat K:\driplo-turbo-1\PHASE_4C_RESTRUCTURE_SUMMARY.md
 ```
 
-### 2. Check Exports
-
+### Step 2: Check Layout Groups
 ```powershell
-# Check package.json exports
-cd K:\driplo-turbo-1\packages\core
-cat package.json | Select-String "exports" -Context 0,20
+# Verify layout files exist
+Test-Path "K:\driplo-turbo-1\apps\web\src\routes\(app)\+layout.svelte"
+Test-Path "K:\driplo-turbo-1\apps\web\src\routes\(app)\(shop)\+layout.svelte"
+Test-Path "K:\driplo-turbo-1\apps\web\src\routes\(app)\(account)\+layout.svelte"
+Test-Path "K:\driplo-turbo-1\apps\web\src\routes\(marketing)\+layout.svelte"
 
-# Expected: Proper export configuration
+# List routes to verify organization
+tree /F "K:\driplo-turbo-1\apps\web\src\routes" | more
 ```
 
-### 3. Check Dependencies
-
+### Step 3: Verify Route Colocation
 ```powershell
-# Check for framework dependencies
-cat package.json | Select-String "dependencies" -Context 0,10
+# Check component map
+cat K:\driplo-turbo-1\phase4c-component-map.json | ConvertFrom-Json | Format-Table
 
-# Should NOT contain: svelte, @sveltejs/*, @supabase/supabase-js (only @supabase/ssr types OK)
+# Verify modular components moved
+Test-Path "K:\driplo-turbo-1\apps\web\src\routes\(protected)\messages\components"
+!(Test-Path "K:\driplo-turbo-1\apps\web\src\lib\components\modular")
+
+# Check lib/components for any remaining route-specific components
+ls K:\driplo-turbo-1\apps\web\src\lib\components
 ```
 
-### 4. Test Build
-
+### Step 4: Verify $lib/server/ Separation
 ```powershell
-cd K:\driplo-turbo-1\packages\core
+# Check server code map
+cat K:\driplo-turbo-1\phase4c-server-code-map.json | ConvertFrom-Json | Format-Table
+
+# Verify server directories exist
+Test-Path "K:\driplo-turbo-1\apps\web\src\lib\server\auth"
+Test-Path "K:\driplo-turbo-1\apps\web\src\lib\server\supabase"
+Test-Path "K:\driplo-turbo-1\apps\web\src\lib\server\stripe"
+
+# Search for private env vars outside server/
+Select-String -Path "K:\driplo-turbo-1\apps\web\src\lib" -Pattern "\$env/static/private|\$env/dynamic/private" -Recurse | Where-Object { $_.Path -notlike "*\server\*" }
+# Should return ZERO results
+```
+
+### Step 5: Check Import Updates
+```powershell
+# Check import map
+cat K:\driplo-turbo-1\phase4c-import-map.json | ConvertFrom-Json
+
+# Search for old import patterns (should find NONE)
+Select-String -Path "K:\driplo-turbo-1\apps\web\src" -Pattern "from ['\`"]\$lib/components/modular" -Recurse
+Select-String -Path "K:\driplo-turbo-1\apps\web\src" -Pattern "from ['\`"]\$lib/auth/.*\.server" -Recurse
+Select-String -Path "K:\driplo-turbo-1\apps\web\src" -Pattern "from ['\`"]\$lib/stripe/" -Recurse -Exclude *server*
+
+# Search for colocated component imports (should use relative paths)
+Select-String -Path "K:\driplo-turbo-1\apps\web\src\routes\(protected)\messages" -Pattern "from '\./components/" -Recurse
+```
+
+### Step 6: Test Build
+```powershell
+cd K:\driplo-turbo-1\apps\web
+
+# TypeScript check
+pnpm run check
+# Note number of errors
+
+# Build
 pnpm run build
+# Should succeed
 
-# Expected: Clean build with 0 errors
+# Dev server (background)
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd K:\driplo-turbo-1\apps\web; pnpm run dev"
+# Wait 10 seconds, then test http://localhost:5173/ in browser
 ```
 
-### 5. Check TypeScript Errors
-
+### Step 7: Review Git Commit
 ```powershell
-cd K:\driplo-turbo-1\packages\core
-pnpm run check-types
-
-# Expected: 0 errors
+cd K:\driplo-turbo-1
+git log -1 --stat
+git show --name-status | head -50
 ```
 
-### 6. Check Circular Dependencies
-
-```powershell
-# Check if core imports from ui or domain
-cd K:\driplo-turbo-1\packages\core
-rg "@repo/(ui|domain)" src/
-
-# Expected: 0 results (core shouldn't depend on ui or domain)
-```
+Check:
+- [ ] Commit message is detailed
+- [ ] Includes all file moves
+- [ ] Commit is atomic (one commit for Phase 4C)
 
 ---
 
-## 📝 AUDIT REPORT TEMPLATE
+## 📊 FINAL SCORE CALCULATION
+
+| Category | Points Earned | Points Possible |
+|----------|---------------|-----------------|
+| 1. Layout Groups Structure | ___ | 20 |
+| 2. Route Colocation | ___ | 25 |
+| 3. $lib/server/ Separation | ___ | 25 |
+| 4. Import Updates | ___ | 25 |
+| 5. Verification | ___ | 15 |
+| 6. Documentation | ___ | 10 |
+| **TOTAL** | **___** | **120** |
+
+---
+
+## 🎯 AUDIT REPORT TEMPLATE
 
 ```markdown
 # Phase 4C Audit Report
 
 **Auditor:** GitHub Copilot  
-**Date:** [Date]  
-**Claude CLI Execution:** Phase 4C - Core Package Audit
+**Date:** [DATE]  
+**Commit:** [HASH]
 
-## Overall Grade: ___/120 ([GRADE])
+## Overall Score: ___ / 120
 
-## Summary
-[Brief summary of Claude's audit quality]
+**Rating:** [EXCELLENT / GOOD / ACCEPTABLE / NEEDS REWORK]
 
-## Section Scores
-1. Audit Completeness: ___/20
-2. Framework Independence: ___/25
-3. Export Structure: ___/15
-4. Dependency Audit: ___/15
-5. Build & Type Verification: ___/15
-6. Documentation Quality: ___/20
-7. Commit & Changes: ___/10
+## Category Breakdown
 
-## Framework Independence Verification
-- Svelte imports: [X found / 0 found ✅]
-- SvelteKit imports: [X found / 0 found ✅]
-- Browser APIs: [X found / justified]
-- Supabase client: [X found / 0 found ✅]
-- **Result:** [PASS / FAIL]
+### 1. Layout Groups Structure: ___ / 20
+- ✅ / ❌ Layout files created
+- ✅ / ❌ Routes properly organized
+- **Issues:** [list any]
 
-## Export Structure
-- Current exports: [list]
-- Issues found: [list or "none"]
-- Fixes made: [list or "not needed"]
-- **Status:** [CORRECT / FIXED / NEEDS WORK]
+### 2. Route Colocation: ___ / 25
+- ✅ / ❌ Route-specific components colocated
+- ✅ / ❌ Shared components preserved
+- **Issues:** [list any]
 
-## Dependencies
-- Framework-agnostic: [YES / NO]
-- Circular dependencies: [NONE / FOUND]
-- Issues: [list or "none"]
+### 3. $lib/server/ Separation: ___ / 25
+- ✅ / ❌ Server code moved to server/
+- ✅ / ❌ No server leaks
+- **Issues:** [list any]
 
-## Build & Types
-- Core build: [✅ PASS / ❌ FAIL]
-- TypeScript errors: [X]
-- Type exports: [WORKING / BROKEN]
+### 4. Import Updates: ___ / 25
+- ✅ / ❌ Component imports updated
+- ✅ / ❌ Server imports updated
+- **Issues:** [list any]
 
-## Documentation
-- Audit file: [EXCELLENT / GOOD / POOR]
-- Completeness: [X/10]
-- Clarity: [X/10]
+### 5. Verification: ___ / 15
+- ✅ / ❌ Build succeeds
+- ✅ / ❌ Dev server works
+- **Issues:** [list any]
 
-## Strengths
-- ✅ [What Claude did well]
-- ✅ [Good patterns followed]
+### 6. Documentation: ___ / 10
+- ✅ / ❌ All docs generated
+- ✅ / ❌ Docs are complete
+- **Issues:** [list any]
 
-## Issues Found
-- ❌ [Issue 1] - Severity: [HIGH/MEDIUM/LOW]
-- ❌ [Issue 2] - Severity: [HIGH/MEDIUM/LOW]
+## Detailed Findings
 
-## Required Fixes
-1. [Fix needed or "None"]
+### Critical Issues (Blockers)
+[List any issues that MUST be fixed before proceeding]
 
-## Approval Status
-- [ ] ✅ APPROVED - Ready for Phase 4D
-- [ ] ⚠️ APPROVED WITH CONDITIONS - Minor fixes needed
-- [ ] ❌ REJECTED - Significant rework required
+### Non-Critical Issues (Suggestions)
+[List any minor improvements]
 
-## Notes
-[Additional observations]
+### Exemplary Work
+[Highlight anything done exceptionally well]
+
+## Recommendation
+- [ ] ✅ APPROVE - Proceed to Phase 4D
+- [ ] ⚠️ CONDITIONAL APPROVE - Fix minor issues first
+- [ ] ❌ REJECT - Rework required
+
+## Action Items
+1. [If conditional/reject, list required fixes]
+
+---
+
+**Audit Complete**
 ```
 
 ---
 
-## 🎯 CRITICAL CHECKS (Must Pass)
+## 🚀 NEXT STEPS
 
-**These MUST pass for approval:**
+**If score ≥ 110:**
+✅ Phase 4C APPROVED → Proceed to Phase 4D (Core Package Audit)
 
-1. ✅ Framework independence verified (0 framework imports)
-2. ✅ Core package builds successfully
-3. ✅ No circular dependencies with ui/domain
-4. ✅ Audit documentation complete
-5. ✅ Dependencies are framework-agnostic
+**If score 90-109:**
+⚠️ Fix minor issues, then re-audit
 
-**If any critical check fails → REJECT and request fixes**
-
----
-
-## 💡 SPECIAL NOTES FOR PHASE 4C
-
-**This is an AUDIT phase, not a restructure:**
-- It's OK if Claude finds NO issues (means core is already perfect)
-- Focus should be on thorough verification
-- Documentation quality is crucial
-- Changes should only be made if issues are found
-
-**What makes a good Phase 4C audit:**
-1. Comprehensive framework independence checks
-2. Clear documentation of findings
-3. Accurate assessment of current state
-4. Actionable recommendations (if issues found)
-
-**What makes a bad Phase 4C audit:**
-1. Superficial checks without thorough searches
-2. Missing documentation
-3. Claiming issues exist when they don't (false positives)
-4. Missing real issues (false negatives)
+**If score < 90:**
+❌ Significant rework needed - identify and fix issues
 
 ---
 
-## 🚀 USAGE INSTRUCTIONS
+## 💡 COMMON ISSUES TO WATCH FOR
 
-1. **After Claude CLI finishes**, they will provide an audit report
-2. **Read their report** to understand their findings
-3. **Use this checklist** to verify their audit quality
-4. **Run verification commands** to confirm their findings
-5. **Score each section** based on audit thoroughness
-6. **Calculate total score** and assign grade
-7. **Provide audit report** with findings and approval status
+### Issue: Routes not fully organized
+- Some routes still at root level (should be in layout groups)
+- Check `phase4c-route-map.json` for completeness
+
+### Issue: Components not fully colocated
+- Route-specific components still in lib/components/
+- Check component usage count
+
+### Issue: Server code still exposed
+- *.server.ts files outside lib/server/
+- Private env var imports in client code
+
+### Issue: Broken imports
+- Old import paths not updated
+- Relative paths incorrect after moves
+
+### Issue: Build failures
+- TypeScript errors from missing imports
+- Module resolution issues
+
+### Issue: Incomplete documentation
+- JSON maps missing or incomplete
+- Summary lacks details
 
 ---
 
-Good luck auditing! Verify thoroughly! 🔍💚
+**Remember:** This is THE BIG restructure. Be thorough in your audit. The goal is apps/web following SvelteKit 2 best practices perfectly. 🎯
