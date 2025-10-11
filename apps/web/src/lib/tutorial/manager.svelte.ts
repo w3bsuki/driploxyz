@@ -101,8 +101,11 @@ function saveState(state: TutorialState) {
 let tutorialState = $state<TutorialState>(getStoredState());
 
 // Auto-save to localStorage whenever state changes
-$effect(() => {
-  saveState(tutorialState);
+// Using $effect.root() for module-level effect management
+$effect.root(() => {
+  $effect(() => {
+    saveState(tutorialState);
+  });
 });
 
 export const tutorial = {
@@ -113,10 +116,13 @@ export const tutorial = {
 
   // For backward compatibility with existing store-based code
   subscribe(run: (value: TutorialState) => void) {
-    $effect(() => {
-      run(tutorialState);
-    });
-    return () => {}; // Cleanup handled by effect
+    // Call immediately with current value
+    run(tutorialState);
+    
+    // Note: This is a simple readonly subscription.
+    // For true reactivity, use the tutorial object directly in .svelte components
+    // where runes work properly, rather than the subscribe method.
+    return () => {}; // No cleanup needed for readonly access
   },
 
   // Get current step for a specific route

@@ -1,4 +1,4 @@
-<svelte:head>
+﻿<svelte:head>
   <link rel="canonical" href={data.seo?.canonicalHref} />
   {#each data.seo?.hreflangs || [] as hreflang}
     <link rel="alternate" hreflang={hreflang.hrefLang} href={hreflang.href} />
@@ -139,26 +139,26 @@
 
     // Fallback to basic categories if database is empty
     return [
-      { key: 'women', label: i18n.category_women(), icon: '👗', slug: 'women', name: i18n.category_women(), product_count: 0 },
-      { key: 'men', label: i18n.category_men(), icon: '👔', slug: 'men', name: i18n.category_men(), product_count: 0 },
-      { key: 'kids', label: i18n.category_kids(), icon: '👶', slug: 'kids', name: i18n.category_kids(), product_count: 0 },
-      { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', slug: 'unisex', name: i18n.category_unisex(), product_count: 0 }
+      { key: 'women', label: i18n.category_women(), icon: 'ðŸ‘—', slug: 'women', name: i18n.category_women(), product_count: 0 },
+      { key: 'men', label: i18n.category_men(), icon: 'ðŸ‘”', slug: 'men', name: i18n.category_men(), product_count: 0 },
+      { key: 'kids', label: i18n.category_kids(), icon: 'ðŸ‘¶', slug: 'kids', name: i18n.category_kids(), product_count: 0 },
+      { key: 'unisex', label: i18n.category_unisex(), icon: 'ðŸŒ', slug: 'unisex', name: i18n.category_unisex(), product_count: 0 }
     ];
   });
 
   // Helper function to get icon for category
   function getIconForCategory(slug: string): string {
     const iconMap: Record<string, string> = {
-      'women': '👗',
-      'men': '👔',
-      'kids': '👶',
-      'unisex': '🌍',
-      'clothing': '👕',
-      'shoes': '👟',
-      'bags': '👜',
-      'accessories': '💍'
+      'women': 'ðŸ‘—',
+      'men': 'ðŸ‘”',
+      'kids': 'ðŸ‘¶',
+      'unisex': 'ðŸŒ',
+      'clothing': 'ðŸ‘•',
+      'shoes': 'ðŸ‘Ÿ',
+      'bags': 'ðŸ‘œ',
+      'accessories': 'ðŸ’'
     };
-    return iconMap[slug] || '📁';
+    return iconMap[slug] || 'ðŸ“';
   }
   const conditionFilters = [
     { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
@@ -216,25 +216,25 @@
     {
       key: 'trending',
       label: i18n.trending_now ? i18n.trending_now() : 'Trending Now',
-      emoji: '🔥',
+      emoji: 'ðŸ”¥',
       product_count: 234
     },
     {
       key: 'new-arrivals',
       label: i18n.nav_newArrivals ? i18n.nav_newArrivals() : 'New Arrivals',
-      emoji: '✨',
+      emoji: 'âœ¨',
       product_count: 89
     },
     {
       key: 'vintage',
       label: i18n.category_vintage ? i18n.category_vintage() : 'Vintage',
-      emoji: '🕰️',
+      emoji: 'ðŸ•°ï¸',
       product_count: 312
     },
     {
       key: 'designer',
       label: i18n.category_designer ? i18n.category_designer() : 'Designer',
-      emoji: '💎',
+      emoji: 'ðŸ’Ž',
       product_count: 156
     }
   ];
@@ -269,7 +269,7 @@
       return { data: [], error: null } as { data: ProductWithImages[]; error: string | null };
     }
     try {
-      const { ProductService } = await import('@repo/core/services/products');
+      const { ProductService } = await import('@repo/domain/products');
       const productService = new ProductService(supabase);
       return await productService.searchProducts(query, { limit: 6 });
     } catch {

@@ -1,0 +1,285 @@
+[
+  {
+    "CurrentPath": "env/server.ts",
+    "TargetPath": "server/env/server.ts",
+    "Reason": "Contains service role keys, private environment variables, and server-side configuration",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["env_private", "server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "env/validation.ts",
+    "TargetPath": "server/env/validation.ts",
+    "Reason": "Validates server environment variables and secrets",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["env_private"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "supabase/server.ts",
+    "TargetPath": "server/supabase/server.ts",
+    "Reason": "Creates server-side Supabase client, requires RequestEvent and cookies",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["supabase_admin", "server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "cookies/production-cookie-system.ts",
+    "TargetPath": "server/cookies/production-cookie-system.ts",
+    "Reason": "Handles secure cookie operations for production environment",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth", "security"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "middleware/error-handler.ts",
+    "TargetPath": "server/middleware/error-handler.ts",
+    "Reason": "Server middleware for error handling and logging",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "middleware/rate-limiter.ts",
+    "TargetPath": "server/middleware/rate-limiter.ts",
+    "Reason": "Server-side rate limiting middleware",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth", "http_server"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "middleware/security.ts",
+    "TargetPath": "server/middleware/security.ts",
+    "Reason": "Security middleware with CORS, CSRF protection",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth", "security"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "middleware/validation.ts",
+    "TargetPath": "server/middleware/validation.ts",
+    "Reason": "Server-side request validation middleware",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "cache.ts",
+    "TargetPath": "server/cache.ts",
+    "Reason": "Server-side caching logic and cache management",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "jobs/slug-processor.ts",
+    "TargetPath": "server/jobs/slug-processor.ts",
+    "Reason": "Background job processing for slug generation",
+    "Priority": "Medium",
+    "ServerOnlyPatterns": ["database_direct"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "monitoring/performance.ts",
+    "TargetPath": "server/monitoring/performance.ts",
+    "Reason": "Server performance monitoring and metrics collection",
+    "Priority": "Medium",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "utils/payments.ts",
+    "TargetPath": "server/utils/payments.ts",
+    "Reason": "Payment processing utilities with commission calculations",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["stripe_api", "server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "utils/rate-limiting.ts",
+    "TargetPath": "server/utils/rate-limiting.ts",
+    "Reason": "Rate limiting implementation for API endpoints",
+    "Priority": "High",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "security/rate-limiter.ts",
+    "TargetPath": "server/security/rate-limiter.ts",
+    "Reason": "Additional rate limiting security utilities",
+    "Priority": "Medium",
+    "ServerOnlyPatterns": ["server_auth"],
+    "ClientSafe": false
+  },
+  {
+    "CurrentPath": "auth.ts",
+    "TargetPath": "lib/auth.ts",
+    "Reason": "Contains client-side auth utilities and type guards, but also server-side functions",
+    "Priority": "Medium",
+    "ServerOnlyPatterns": ["database_direct"],
+    "ClientSafe": true,
+    "Action": "Split - move server-only functions to server/auth.ts"
+  },
+  {
+    "CurrentPath": "auth/hooks.ts",
+    "TargetPath": "lib/auth/hooks.ts",
+    "Reason": "Auth hooks that work on both client and server",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - review for server-specific code"
+  },
+  {
+    "CurrentPath": "auth/index.ts",
+    "TargetPath": "lib/auth/index.ts",
+    "Reason": "Auth barrel export, likely client-safe",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify imports"
+  },
+  {
+    "CurrentPath": "auth/oauth.ts",
+    "TargetPath": "lib/auth/oauth.ts",
+    "Reason": "OAuth utilities, likely client-safe",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server secrets"
+  },
+  {
+    "CurrentPath": "auth/onboarding.ts",
+    "TargetPath": "lib/auth/onboarding.ts",
+    "Reason": "Onboarding utilities, likely client-safe",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "auth/store.svelte.ts",
+    "TargetPath": "lib/auth/store.svelte.ts",
+    "Reason": "Svelte store for auth state",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - client-side store"
+  },
+  {
+    "CurrentPath": "stripe/client.ts",
+    "TargetPath": "lib/stripe/client.ts",
+    "Reason": "Client-side Stripe SDK wrapper",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - client-side only"
+  },
+  {
+    "CurrentPath": "analytics/product.ts",
+    "TargetPath": "lib/analytics/product.ts",
+    "Reason": "Analytics utilities, likely client-safe",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "categories/mapping.ts",
+    "TargetPath": "lib/categories/mapping.ts",
+    "Reason": "Category mapping utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - data transformation only"
+  },
+  {
+    "CurrentPath": "categories/translation-test.ts",
+    "TargetPath": "lib/categories/translation-test.ts",
+    "Reason": "Translation testing utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - test utilities"
+  },
+  {
+    "CurrentPath": "country/detection.ts",
+    "TargetPath": "lib/country/detection.ts",
+    "Reason": "Country detection utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "data/collections.ts",
+    "TargetPath": "lib/data/collections.ts",
+    "Reason": "Data collection utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "links.ts",
+    "TargetPath": "lib/links.ts",
+    "Reason": "Link generation utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - URL utilities"
+  },
+  {
+    "CurrentPath": "locale/detection.ts",
+    "TargetPath": "lib/locale/detection.ts",
+    "Reason": "Locale detection utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "realtime/notifications.ts",
+    "TargetPath": "lib/realtime/notifications.ts",
+    "Reason": "Realtime notification utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server secrets"
+  },
+  {
+    "CurrentPath": "seo.ts",
+    "TargetPath": "lib/seo.ts",
+    "Reason": "SEO utilities and meta tag generation",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - verify no server calls"
+  },
+  {
+    "CurrentPath": "tutorial/manager.svelte.ts",
+    "TargetPath": "lib/tutorial/manager.svelte.ts",
+    "Reason": "Tutorial manager Svelte store",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - client-side state"
+  },
+  {
+    "CurrentPath": "validation/auth.ts",
+    "TargetPath": "lib/validation/auth.ts",
+    "Reason": "Auth validation schemas and utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - validation utilities"
+  },
+  {
+    "CurrentPath": "validation/product.ts",
+    "TargetPath": "lib/validation/product.ts",
+    "Reason": "Product validation schemas and utilities",
+    "Priority": "Low",
+    "ServerOnlyPatterns": [],
+    "ClientSafe": true,
+    "Action": "Keep in lib/ - validation utilities"
+  }
+]

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { 
     Button, 
     NotificationBell, 
@@ -27,7 +27,7 @@
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { afterNavigate } from '$app/navigation';
-  import { ProductService } from '@repo/core/services/products';
+  import { ProductService } from '@repo/domain/products';
   
   interface Props {
     showSearch?: boolean;

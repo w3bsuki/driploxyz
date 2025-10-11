@@ -1,23 +1,6 @@
-// Services module exports
-export * from './boost';
-export * from './brandService';
-export * from './categories';
-export { CategoryService as CategoryBasicService } from './category';
-export * from './collections';
-export * from './ConversationService';
-export * from './favorites';
-export * from './notifications';
-export * from './OrderService';
-export * from './payouts';
-export * from './products';
-export * from './products.domain';
-export * from './profiles';
-export * from './realtime.svelte';
-export * from './realtimeNotifications';
-export * from './ReviewService';
-export * from './subscriptions';
-export * from './transactions';
-export * from './trending';
-export * from './CategoryNavigationService';
-export * from './analytics';
-export * from './createServices';
+// Services module exports - Framework-agnostic only
+// Note: Most services have been moved to framework-specific packages
+// This now only exports pure business logic utilities
+
+// Placeholder for future framework-agnostic services
+// export * from './some-pure-service';

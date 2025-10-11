@@ -1,0 +1,34 @@
+﻿[
+    {
+        "PatternMatches":  {
+
+                           },
+        "Reason":  "File path indicates server-only code",
+        "TargetPath":  "server/middleware/error-handler.ts",
+        "CurrentPath":  "middleware/error-handler.ts"
+    },
+    {
+        "PatternMatches":  {
+
+                           },
+        "Reason":  "File path indicates server-only code",
+        "TargetPath":  "server/middleware/rate-limiter.ts",
+        "CurrentPath":  "middleware/rate-limiter.ts"
+    },
+    {
+        "PatternMatches":  {
+
+                           },
+        "Reason":  "File path indicates server-only code",
+        "TargetPath":  "server/middleware/validation.ts",
+        "CurrentPath":  "middleware/validation.ts"
+    },
+    {
+        "PatternMatches":  {
+
+                           },
+        "Reason":  "Rate limiting should be server-side",
+        "TargetPath":  "server/utils/rate-limiting.ts",
+        "CurrentPath":  "utils/rate-limiting.ts"
+    }
+]

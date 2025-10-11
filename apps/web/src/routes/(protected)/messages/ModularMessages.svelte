@@ -4,7 +4,7 @@
   import { BottomNav } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
-  import { ConversationService, type Conversation, type Message } from '@repo/core/services/ConversationService';
+  import { ConversationService, type Conversation, type Message } from '@repo/domain/conversations';
   // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
   import ConversationSidebar from '$lib/components/modular/ConversationSidebar.svelte';
   // eslint-disable-next-line no-restricted-imports -- App-specific messaging component

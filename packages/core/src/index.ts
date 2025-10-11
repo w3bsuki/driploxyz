@@ -1,15 +1,9 @@
 /**
- * @repo/core - Consolidated core utilities for the Driplo marketplace
+ * @repo/core - Framework-agnostic core utilities for the Driplo marketplace
  *
- * This package consolidates auth, cookies, utils, services, stripe, and email functionality
- * that was previously split across multiple micro-packages.
+ * This package provides pure utilities, services, validation schemas, and types
+ * that are completely framework-agnostic.
  */
-
-// Re-export all auth utilities
-export * from './auth/index.js';
-
-// Re-export all cookie utilities
-export * from './cookies/index.js';
 
 // Re-export all utils
 export * from './utils/index.js';
@@ -17,8 +11,8 @@ export * from './utils/index.js';
 // Re-export all services
 export * from './services/index.js';
 
-// Re-export all stripe utilities
-export * from './stripe/index.js';
+// Re-export all validation schemas
+export * from './validation/index.js';
 
-// Re-export all email utilities
-export * from './email/index.js';
+// Re-export all types
+export * from './types/index.js';

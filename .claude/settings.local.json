@@ -126,7 +126,8 @@
       "mcp__tailwindcss-mcp-server__get_tailwind_colors",
       "mcp__tailwindcss-mcp-server__search_tailwind_docs",
       "mcp__tailwindcss-mcp-server__generate_color_palette",
-      "mcp__svelte__svelte-autofixer"
+      "mcp__svelte__svelte-autofixer",
+      "mcp__context7__resolve-library-id"
     ]
   },
   "enableAllProjectMcpServers": true,

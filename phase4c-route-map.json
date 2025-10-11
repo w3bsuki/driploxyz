@@ -1,0 +1,373 @@
+﻿[
+  {
+    "Path": "(admin)/admin",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(admin)/admin"
+  },
+  {
+    "Path": "(admin)/admin/payouts",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(admin)/admin/payouts"
+  },
+  {
+    "Path": "(auth)/auth-code-error",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(auth)/auth-code-error"
+  },
+  {
+    "Path": "(auth)/forgot-password",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(auth)/forgot-password"
+  },
+  {
+    "Path": "(auth)/login",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(auth)/login"
+  },
+  {
+    "Path": "(auth)/signup",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(auth)/signup"
+  },
+  {
+    "Path": "(auth)/verify-email",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(auth)/verify-email"
+  },
+  {
+    "Path": "(protected)/account",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/account"
+  },
+  {
+    "Path": "(protected)/become-seller",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/become-seller"
+  },
+  {
+    "Path": "(protected)/checkout/bundle",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/checkout/bundle"
+  },
+  {
+    "Path": "(protected)/dashboard",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard"
+  },
+  {
+    "Path": "(protected)/dashboard/earnings",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/earnings"
+  },
+  {
+    "Path": "(protected)/dashboard/order-management",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/order-management"
+  },
+  {
+    "Path": "(protected)/dashboard/profile",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/profile"
+  },
+  {
+    "Path": "(protected)/dashboard/profile/edit",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/profile/edit"
+  },
+  {
+    "Path": "(protected)/dashboard/purchases",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/purchases"
+  },
+  {
+    "Path": "(protected)/dashboard/sales",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/sales"
+  },
+  {
+    "Path": "(protected)/dashboard/sold",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/sold"
+  },
+  {
+    "Path": "(protected)/dashboard/upgrade",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/upgrade"
+  },
+  {
+    "Path": "(protected)/dashboard/upgrade/success",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/dashboard/upgrade/success"
+  },
+  {
+    "Path": "(protected)/favorites",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/favorites"
+  },
+  {
+    "Path": "(protected)/listings",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/listings"
+  },
+  {
+    "Path": "(protected)/messages",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/messages"
+  },
+  {
+    "Path": "(protected)/messages/new",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/messages/new"
+  },
+  {
+    "Path": "(protected)/onboarding",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/onboarding"
+  },
+  {
+    "Path": "(protected)/orders",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/orders"
+  },
+  {
+    "Path": "(protected)/payment/success",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/payment/success"
+  },
+  {
+    "Path": "(protected)/profile",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/profile"
+  },
+  {
+    "Path": "(protected)/profile/edit",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/profile/edit"
+  },
+  {
+    "Path": "(protected)/purchases",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/purchases"
+  },
+  {
+    "Path": "(protected)/sell",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/sell"
+  },
+  {
+    "Path": "(protected)/settings",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/settings"
+  },
+  {
+    "Path": "(protected)/welcome",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(protected)/welcome"
+  },
+  {
+    "Path": "about",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/about"
+  },
+  {
+    "Path": "auth/verified",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "auth/verified"
+  },
+  {
+    "Path": "blog",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/blog"
+  },
+  {
+    "Path": "brands",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/brands"
+  },
+  {
+    "Path": "careers",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/careers"
+  },
+  {
+    "Path": "designer",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/designer"
+  },
+  {
+    "Path": "drip",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/drip"
+  },
+  {
+    "Path": "help",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/help"
+  },
+  {
+    "Path": "logout",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "logout"
+  },
+  {
+    "Path": "offline",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "offline"
+  },
+  {
+    "Path": "privacy",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/privacy"
+  },
+  {
+    "Path": "privacy/cookies",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/privacy/cookies"
+  },
+  {
+    "Path": "pro",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(account)/pro"
+  },
+  {
+    "Path": "register",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "register"
+  },
+  {
+    "Path": "returns",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/returns"
+  },
+  {
+    "Path": "search",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/search"
+  },
+  {
+    "Path": "sellers",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/sellers"
+  },
+  {
+    "Path": "terms",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/terms"
+  },
+  {
+    "Path": "trust-safety",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(marketing)/trust-safety"
+  },
+  {
+    "Path": "wishlist",
+    "HasPage": true,
+    "HasLayout": false,
+    "HasServer": false,
+    "ProposedGroup": "(app)/(shop)/wishlist"
+  }
+]

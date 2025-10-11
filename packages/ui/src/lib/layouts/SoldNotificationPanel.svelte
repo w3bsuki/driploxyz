@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Avatar from '../../primitives/avatar/Avatar.svelte';
-  import Button from '../../primitives/button/Button.svelte';
+  import Avatar from '../primitives/avatar/Avatar.svelte';
+  import Button from '../primitives/button/Button.svelte';
   
   interface SoldNotification {
     id: string;
@@ -146,7 +146,7 @@
         {#if loading}
           <!-- Loading State -->
           <div class="p-4 space-y-3">
-            {#each Array(3) as _}
+            {#each Array(3) as _, index (index)}
               <div class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50/50 animate-pulse">
                 <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
                 <div class="flex-1 space-y-2">
@@ -166,7 +166,7 @@
         {:else}
           <!-- Sold Items -->
           <div class="p-2">
-            {#each notifications as notification}
+            {#each notifications as notification (notification.id)}
               <button
                 onclick={() => handleNotificationClick(notification)}
                 class="w-full text-left p-3 rounded-xl hover:bg-gray-50/50 transition-colors
