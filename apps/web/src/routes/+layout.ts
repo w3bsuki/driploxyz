@@ -30,37 +30,40 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
       });
 
   /**
-   * It's safe to use getSession() here because on the client, getSession() is safe,
-   * and on the server, it reads session from LayoutData which was safely checked
-   * using safeGetSession() in +layout.server.ts
+   * Use secure authentication pattern: getUser() first for security
+   * On the client, getUser() validates the JWT with Supabase servers
+   * On the server, this data is safely validated by +layout.server.ts
    */
   let session: import('@supabase/supabase-js').Session | null = null;
   let user: import('@supabase/supabase-js').User | null = null;
-  
+
   try {
-    const sessionPromise = supabase.auth.getSession();
-    const userPromise = supabase.auth.getUser();
-    
-    // Add timeout to prevent hanging
-    const [sessionResult, userResult] = await Promise.allSettled([
-      Promise.race([sessionPromise, new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Session timeout')), 3000)
-      )]),
-      Promise.race([userPromise, new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('User timeout')), 3000)
-      )])
+    // Use secure authentication: getUser() first
+    const userPromise = Promise.race([
+      supabase.auth.getUser(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('User timeout')), 3000))
     ]);
-    
-    if (sessionResult.status === 'fulfilled') {
-      const sessionData = (sessionResult.value as { data: { session: import('@supabase/supabase-js').Session | null } })?.data?.session;
+
+    const userResult = await userPromise;
+
+    if (userResult.data?.user && typeof userResult.data.user === 'object' && 'id' in userResult.data.user) {
+      user = userResult.data.user;
+
+      // User is valid, now get session efficiently
+      const sessionPromise = Promise.race([
+        supabase.auth.getSession(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Session timeout')), 3000))
+      ]);
+
+      const sessionResult = await sessionPromise;
+      const sessionData = sessionResult.data?.session;
       session = sessionData && typeof sessionData === 'object' && 'access_token' in sessionData ? sessionData : null;
-    }
-    if (userResult.status === 'fulfilled') {
-      const userData = (userResult.value as { data: { user: import('@supabase/supabase-js').User | null } })?.data?.user;
-      user = userData && typeof userData === 'object' && 'id' in userData ? userData : null;
     }
   } catch (error) {
     console.error('Error loading user session:', error);
+    // Clear both user and session on any error for security
+    user = null;
+    session = null;
   }
 
   // Try to load top-level categories for sticky search/pills
@@ -78,7 +81,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 
   return {
     session,
-    supabase,
     user,
     profile: data?.profile || null,
     language: data?.language || 'en',

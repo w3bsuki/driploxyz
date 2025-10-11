@@ -28,6 +28,7 @@
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/state';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
@@ -89,8 +90,9 @@
     }
   });
 
-  // Get Supabase client from load function (following official pattern)
-  const { supabase, session, user } = $derived(data);
+  // Get session and user from load function, supabase from client utility
+  const { session, user } = $derived(data);
+  const supabase = createBrowserSupabaseClient();
   const isAuthPage = $derived(page.route.id?.includes('(auth)'));
   const isSellPage = $derived(page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived(page.route.id?.includes('/onboarding'));
@@ -269,10 +271,45 @@
       return { data: [], error: null } as { data: ProductWithImages[]; error: string | null };
     }
     try {
-      const { ProductService } = await import('@repo/domain/products');
-      const productService = new ProductService(supabase);
-      return await productService.searchProducts(query, { limit: 6 });
-    } catch {
+      // Use the SearchProducts domain service instead of ProductService
+      const { SearchProducts } = await import('@repo/domain/products');
+
+      // Create a simple repository adapter for Supabase
+      const productRepo = {
+        async search(params: any) {
+          const { data, error } = await supabase
+            .from('products')
+            .select(`
+              *,
+              images:product_images(*)
+            `)
+            .or(`title.ilike.%${params.query}%,description.ilike.%${params.query}%`)
+            .eq('is_active', true)
+            .eq('is_sold', false)
+            .limit(params.limit || 6)
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+
+          return {
+            success: true,
+            data: {
+              products: data || [],
+              total: data?.length || 0
+            }
+          };
+        }
+      };
+
+      const searchService = new SearchProducts(productRepo);
+      const result = await searchService.execute({ query, limit: 6 });
+
+      if (result.success) {
+        return { data: result.data.products, error: null };
+      } else {
+        return { data: [], error: result.error?.message || 'Search failed' };
+      }
+    } catch (error) {
       return { data: [], error: 'Search failed' } as { data: ProductWithImages[]; error: string | null };
     }
   }
@@ -432,19 +469,32 @@
       }, 100); // Batch multiple auth events within 100ms
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      // Only invalidate for events that actually change user state
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      // Use secure authentication: validate with getUser() for security-sensitive events
       switch (event) {
         case 'SIGNED_IN':
         case 'SIGNED_OUT':
         case 'USER_UPDATED':
-          batchedInvalidate();
+          // For security-sensitive events, verify with getUser()
+          try {
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            if (!userError && user) {
+              batchedInvalidate();
+            }
+          } catch (error) {
+            console.warn('Auth validation failed:', error);
+          }
           break;
 
         case 'TOKEN_REFRESHED':
-          // Only invalidate if session actually changed
-          if (newSession?.expires_at !== session?.expires_at) {
-            batchedInvalidate();
+          // For token refresh, only invalidate if we can validate the user
+          try {
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            if (!userError && user && newSession?.expires_at !== session?.expires_at) {
+              batchedInvalidate();
+            }
+          } catch (error) {
+            console.warn('Token refresh validation failed:', error);
           }
           break;
 

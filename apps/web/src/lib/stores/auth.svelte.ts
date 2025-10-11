@@ -200,15 +200,26 @@ export function createAuthStore(): {
     console.log('[AuthStore] Initializing client-side auth');
 
     try {
-      // Get current session from client
-      const { data: { session } } = await state.supabase.auth.getSession();
-      const { data: { user } } = await state.supabase.auth.getUser();
+      // Use secure authentication pattern: getUser() first for security
+      const { data: { user }, error: userError } = await state.supabase.auth.getUser();
 
-      if (user && session) {
-        await handleAuthChange(user, session);
-      } else {
+      if (userError || !user) {
+        // No valid user, clear state
         state.loading = false;
+        return;
       }
+
+      // User is valid, now get session
+      const { data: { session }, error: sessionError } = await state.supabase.auth.getSession();
+
+      if (sessionError || !session) {
+        // User exists but session is invalid, clear state
+        state.loading = false;
+        return;
+      }
+
+      // Both user and session are valid
+      await handleAuthChange(user, session);
     } catch (error) {
       console.warn('[AuthStore] Initialization failed:', error);
       state.loading = false;

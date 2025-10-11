@@ -83,13 +83,32 @@ function createAuthStore() {
         async (event: string, session: AuthSession | null) => {
           console.log('[Auth] State change:', event);
 
+          // Use secure authentication: validate user with getUser() for security
+          let validatedUser: AuthUser | null = null;
+
+          if (session) {
+            try {
+              const { data: { user }, error: userError } = await supabase.auth.getUser();
+              if (!userError && user) {
+                validatedUser = user;
+              }
+            } catch (error) {
+              console.warn('[Auth] User validation failed:', error);
+            }
+          }
+
           state.session = session;
-          state.user = session?.user ?? null;
+          state.user = validatedUser;
 
           // Handle auth events
           switch (event) {
             case 'SIGNED_IN':
-              await handleSignIn(session);
+              // Only proceed if user validation succeeded
+              if (validatedUser) {
+                await handleSignIn(session);
+              } else {
+                state.loading = false;
+              }
               break;
             case 'SIGNED_OUT':
               handleSignOut();
@@ -123,17 +142,20 @@ function createAuthStore() {
    * Handle successful sign in
    */
   async function handleSignIn(session: AuthSession | null) {
-    if (!session?.user || !supabase) {
+    // Use validated user from state instead of session.user for security
+    const validatedUser = state.user;
+
+    if (!validatedUser || !supabase) {
       state.loading = false;
       return;
     }
 
     try {
-      // Fetch user profile
+      // Fetch user profile using validated user ID
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', session.user.id)
+        .eq('id', validatedUser.id)
         .single();
 
       state.profile = profile;

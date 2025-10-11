@@ -1,7 +1,7 @@
 <script lang="ts">
 	// import { page } from '$app/state'; // Currently unused
 	import { goto } from '$app/navigation';
-	import { getStripe } from '@repo/core/stripe';
+	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, Button, ErrorBoundary } from '@repo/ui';
 	import type { Product } from '@repo/ui';
 	import * as i18n from '@repo/i18n';

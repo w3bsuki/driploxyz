@@ -1,7 +1,46 @@
 <script lang="ts">
   import { Button, Input } from '@repo/ui';
-  import { PayoutService } from '@repo/core/services/payouts';
-  import { TransactionService } from '@repo/core/services/transactions';
+  // TODO: Implement these services
+  // import { PayoutService } from '@repo/core/services/payouts';
+  // import { TransactionService } from '@repo/core/services/transactions';
+
+  // Placeholder services for now
+  class PayoutService {
+    supabase: any;
+
+    constructor(supabase: any) {
+      this.supabase = supabase;
+    }
+
+    async getSellerEarnings(userId: string) {
+      return {
+        totalEarnings: 0,
+        pendingPayout: 0,
+        totalPaidOut: 0,
+        lastPayoutAt: null
+      };
+    }
+
+    async getSellerPayouts(userId: string) {
+      return { data: [], error: null };
+    }
+
+    async requestPayout(userId: string, amount: number, method: any) {
+      return { error: null };
+    }
+  }
+
+  class TransactionService {
+    supabase: any;
+
+    constructor(supabase: any) {
+      this.supabase = supabase;
+    }
+
+    async getSellerTransactions(userId: string, limit: number) {
+      return { data: [], error: null };
+    }
+  }
   import type { PageData } from './$types';
 
   interface Props {

@@ -194,9 +194,10 @@
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
     isUploadingImages = true;
     try {
-      const userId = data.session?.user?.id;
+      // Use secure pattern: user data from server is already validated by safeGetSession()
+      const userId = data.user?.id;
       const accessToken = data.session?.access_token;
-      
+
       if (!userId || !accessToken) {
         throw new Error('User not authenticated - please refresh the page');
       }

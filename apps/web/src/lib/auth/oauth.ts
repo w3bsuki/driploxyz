@@ -6,7 +6,25 @@
  */
 
 import { browser } from '$app/environment';
-import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_FACEBOOK_CLIENT_ID, PUBLIC_GITHUB_CLIENT_ID } from '$env/static/public';
+
+// Helper function to safely get OAuth environment variables
+async function getOAuthEnvVars() {
+  try {
+    const env = await import('$env/static/public');
+    return {
+      PUBLIC_GOOGLE_CLIENT_ID: env.PUBLIC_GOOGLE_CLIENT_ID,
+      PUBLIC_FACEBOOK_CLIENT_ID: env.PUBLIC_FACEBOOK_CLIENT_ID,
+      PUBLIC_GITHUB_CLIENT_ID: env.PUBLIC_GITHUB_CLIENT_ID
+    };
+  } catch {
+    // Environment variables not available, return undefined values
+    return {
+      PUBLIC_GOOGLE_CLIENT_ID: undefined,
+      PUBLIC_FACEBOOK_CLIENT_ID: undefined,
+      PUBLIC_GITHUB_CLIENT_ID: undefined
+    };
+  }
+}
 
 export interface OAuthProvider {
   id: 'google' | 'facebook' | 'github';
@@ -24,10 +42,11 @@ export interface OAuthConfig {
 /**
  * Get available OAuth providers based on environment variables
  */
-export function getOAuthProviders(): OAuthProvider[] {
+export async function getOAuthProviders(): Promise<OAuthProvider[]> {
   const providers: OAuthProvider[] = [];
+  const envVars = await getOAuthEnvVars();
 
-  if (PUBLIC_GOOGLE_CLIENT_ID) {
+  if (envVars.PUBLIC_GOOGLE_CLIENT_ID) {
     providers.push({
       id: 'google',
       name: 'Google',
@@ -37,7 +56,7 @@ export function getOAuthProviders(): OAuthProvider[] {
     });
   }
 
-  if (PUBLIC_FACEBOOK_CLIENT_ID) {
+  if (envVars.PUBLIC_FACEBOOK_CLIENT_ID) {
     providers.push({
       id: 'facebook',
       name: 'Facebook',
@@ -47,7 +66,7 @@ export function getOAuthProviders(): OAuthProvider[] {
     });
   }
 
-  if (PUBLIC_GITHUB_CLIENT_ID) {
+  if (envVars.PUBLIC_GITHUB_CLIENT_ID) {
     providers.push({
       id: 'github',
       name: 'GitHub',
@@ -63,8 +82,9 @@ export function getOAuthProviders(): OAuthProvider[] {
 /**
  * Check if any OAuth providers are configured
  */
-export function hasOAuthProviders(): boolean {
-  return getOAuthProviders().length > 0;
+export async function hasOAuthProviders(): Promise<boolean> {
+  const providers = await getOAuthProviders();
+  return providers.length > 0;
 }
 
 /**
@@ -195,11 +215,12 @@ export const OAUTH_PROVIDER_CONFIG = {
 /**
  * Validate OAuth configuration
  */
-export function validateOAuthConfig(): { valid: boolean; errors: string[] } {
+export async function validateOAuthConfig(): Promise<{ valid: boolean; errors: string[] }> {
   const errors: string[] = [];
+  const envVars = await getOAuthEnvVars();
 
   // Check for required Supabase config
-  if (!PUBLIC_GOOGLE_CLIENT_ID && !PUBLIC_FACEBOOK_CLIENT_ID && !PUBLIC_GITHUB_CLIENT_ID) {
+  if (!envVars.PUBLIC_GOOGLE_CLIENT_ID && !envVars.PUBLIC_FACEBOOK_CLIENT_ID && !envVars.PUBLIC_GITHUB_CLIENT_ID) {
     errors.push('No OAuth providers configured. Set environment variables for at least one provider.');
   }
 

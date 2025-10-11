@@ -126,7 +126,11 @@ export async function getServerSession(
     }
 
     // Get the session for the authenticated user
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError) {
+      return { session: null, user: null };
+    }
 
     return { session, user };
   } catch (error) {

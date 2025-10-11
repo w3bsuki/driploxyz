@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/log';
-import { CollectionService } from '@repo/core/services/collections';
+import { CollectionService } from '@repo/core';
 
 const log = createLogger('designer-collections-page');
 

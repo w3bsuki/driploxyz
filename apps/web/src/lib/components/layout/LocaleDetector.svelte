@@ -21,8 +21,11 @@
   $effect(async () => {
     // Skip if user is authenticated and has a stored preference in their profile
     const session = page.data.session;
-    if (session?.user) {
-      // User locale is handled by the profile
+    const user = page.data.user;
+
+    // Use secure pattern: only trust user data if it's been validated
+    if (user && session) {
+      // User locale is handled by the profile (user data from server is already validated)
       return;
     }
     

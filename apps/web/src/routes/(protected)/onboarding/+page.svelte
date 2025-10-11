@@ -108,7 +108,7 @@
   // Dynamic import functions for modals
   async function loadSuccessModal() {
     if (!successModalLoaded && !OnboardingSuccessModal) {
-      const module = await import('@repo/ui/lib/components/modals/OnboardingSuccessModal.svelte');
+      const module = await import('@repo/ui/lib/compositions/modals/OnboardingSuccessModal.svelte');
       OnboardingSuccessModal = module.default;
       successModalLoaded = true;
     }
@@ -155,7 +155,7 @@
     }
     
     // Validate current step before proceeding
-    if (!canProceed()) {
+    if (!canProceed) {
       // Show validation error in toast instead of state variable
       
       // Show specific error messages based on current step
@@ -232,7 +232,7 @@
       // Reset payment status for personal accounts
       brandPaid = false;
     }
-    log.debug('Account type state updated', { accountType, canProceed: canProceed() });
+    log.debug('Account type state updated', { accountType, canProceed: canProceed });
   }
   
   function handleDiscountCodeChange(code: string) {
@@ -474,7 +474,7 @@
         </Button>
         <Button
           onclick={nextStep}
-          disabled={!canProceed()}
+          disabled={!canProceed}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
           {m.onboarding_continue()}
@@ -518,7 +518,7 @@
         </Button>
         <Button
           onclick={nextStep}
-          disabled={!canProceed()}
+          disabled={!canProceed}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
           {m.onboarding_continue()}

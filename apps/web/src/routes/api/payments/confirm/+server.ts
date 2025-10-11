@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { createStripeService } from '@repo/core/services/stripe';
+import { createStripeService } from '@repo/core';
 import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 import { createEmailService as _createEmailService } from '@repo/core/email';

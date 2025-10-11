@@ -19,9 +19,8 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   }
 
   try {
-    // Create Supabase client
-    const supabase = createServerSupabase(event.cookies, event.fetch);
-    event.locals.supabase = supabase;
+    // Create Supabase client and store in locals
+    event.locals.supabase = createServerSupabase(event.cookies, event.fetch);
 
     // Create session getter - must be an async function
     event.locals.safeGetSession = async () => await getServerSession(event);
@@ -31,8 +30,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   } catch (error: unknown) {
     console.warn('[Auth] Setup failed:', error);
     // Don't break the app if auth setup fails
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    event.locals.supabase = null as any;
+    event.locals.supabase = null;
     event.locals.safeGetSession = async () => ({ session: null, user: null });
   }
 }

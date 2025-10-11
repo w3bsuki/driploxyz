@@ -1,9 +1,47 @@
-import { createAuthHelpers } from '@repo/core/auth';
+import { createServerClient } from '@supabase/ssr';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import type { Database } from '@repo/database';
+
+// Create auth helpers inline
+function createAuthHelpers({ url, anonKey }: { url: string; anonKey: string }) {
+  function createSupabaseServerClient(cookies: any, fetch?: any) {
+    return createServerClient<Database>(url, anonKey, {
+      cookies: {
+        getAll() {
+          return cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }: any) => {
+            cookies.set(name, value, { ...options, path: '/' });
+          });
+        },
+      },
+      global: {
+        fetch: fetch || globalThis.fetch
+      }
+    });
+  }
+
+  async function safeGetSession(event: any) {
+    const supabase = createSupabaseServerClient(event.cookies, event.fetch);
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        return { session: null, user: null };
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      return { session, user };
+    } catch {
+      return { session: null, user: null };
+    }
+  }
+
+  return { createSupabaseServerClient, safeGetSession };
+}
+
 import { error, redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { env } from '$env/dynamic/private';
-import type { Database } from '@repo/database';
 
 /**
  * CRITICAL SECURITY MIDDLEWARE FOR ADMIN APP

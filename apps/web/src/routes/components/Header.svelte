@@ -27,7 +27,7 @@
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { afterNavigate } from '$app/navigation';
-  import { ProductService } from '@repo/domain/products';
+  // import { SearchProducts } from '@repo/domain/products';
   
   interface Props {
     showSearch?: boolean;
@@ -46,8 +46,8 @@
   // Create supabase client when needed (browser only)
   const supabase = browser ? createBrowserSupabaseClient() : null;
   
-  // Create product service for search functionality
-  const productService = supabase ? new ProductService(supabase) : null;
+  // Create product service for search functionality - disabled for now
+  // const productService = supabase ? new SearchProducts(productRepo) : null;
   
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
@@ -199,14 +199,23 @@
     supportLabel: i18n.common_support ? i18n.common_support() : 'Support'
   });
 
-  // Search function for quick results dropdown
+  // Search function for quick results dropdown - simplified for now
   async function handleQuickSearch(query: string) {
-    if (!productService || !query.trim()) {
+    if (!query.trim() || !supabase) {
       return { data: [], error: null };
     }
-    
+
     try {
-      return await productService.searchProducts(query, { limit: 6 });
+      // Simple direct Supabase query for now
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, title, price, product_images(image_url)')
+        .ilike('title', `%${query}%`)
+        .eq('is_active', true)
+        .eq('is_sold', false)
+        .limit(6);
+
+      return { data: data || [], error: error?.message };
     } catch {
       return { data: [], error: 'Search failed' };
     }

@@ -16,3 +16,6 @@ export * from './validation/index.js';
 
 // Re-export all types
 export * from './types/index.js';
+
+// Re-export Stripe utilities and types
+export * from './stripe/index.js';

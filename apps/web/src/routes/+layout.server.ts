@@ -70,7 +70,15 @@ export const load = (async (event) => {
   // CRITICAL DATA - Load immediately and block page render
   // Fallback in case auth setup failed
   const { session, user } = locals.safeGetSession ? await locals.safeGetSession() : { session: null, user: null };
-  const supabase = locals.supabase;
+
+  // Create Supabase client server-side for this request
+  let supabase: import('@supabase/supabase-js').SupabaseClient<Database> | null = null;
+  try {
+    const { createServerSupabase } = await import('$lib/auth/index');
+    supabase = createServerSupabase(event.cookies, event.fetch);
+  } catch (error) {
+    console.warn('[Layout] Failed to create Supabase client:', error);
+  }
   const language = locals.locale || 'bg';
   const country = locals.country || 'BG';
   const countryConfig = COUNTRY_CONFIGS[country];

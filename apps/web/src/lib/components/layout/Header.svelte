@@ -27,8 +27,6 @@
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { afterNavigate } from '$app/navigation';
-  import { ProductService } from '@repo/domain/products';
-  
   interface Props {
     showSearch?: boolean;
     initialLanguage?: string;
@@ -46,8 +44,7 @@
   // Create supabase client when needed (browser only)
   const supabase = browser ? createBrowserSupabaseClient() : null;
   
-  // Create product service for search functionality
-  const productService = supabase ? new ProductService(supabase) : null;
+  // Product service removed - search functionality will be handled by parent components
   
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
@@ -199,17 +196,10 @@
     supportLabel: i18n.common_support ? i18n.common_support() : 'Support'
   });
 
-  // Search function for quick results dropdown
+  // Search function for quick results dropdown - delegate to parent
   async function handleQuickSearch(query: string) {
-    if (!productService || !query.trim()) {
-      return { data: [], error: null };
-    }
-    
-    try {
-      return await productService.searchProducts(query, { limit: 6 });
-    } catch {
-      return { data: [], error: 'Search failed' };
-    }
+    // Return empty results - parent components should handle search
+    return { data: [], error: null };
   }
 </script>
 

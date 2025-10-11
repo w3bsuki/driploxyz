@@ -224,6 +224,11 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
   const sortBy = url.searchParams.get('sort') || 'relevance';
 
   try {
+    // Check if Supabase client is available
+    if (!locals.supabase) {
+      throw new Error('Supabase client not initialized');
+    }
+
     // Simple parallel queries for categories and filtering
     const [categoriesResult, categoryCountsResult] = await Promise.all([
       // Query 1: Fetch all categories for hierarchy

@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
-import { getProductAdapter } from '@repo/core/services';
-import type { ProductWithImages } from '@repo/core/services/products';
+import { getProductAdapter } from '@repo/core';
+import type { ProductWithImages } from '@repo/core';
 
 // Define product interfaces
 interface ProductImage {

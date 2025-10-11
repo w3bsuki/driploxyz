@@ -1,7 +1,7 @@
 import { env as publicEnv } from '$env/dynamic/public';
 import { building } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
-import { createAuthHelpers } from '@repo/core/auth';
+import { createSupabaseServerClient, getServerSession } from './auth';
 
 /**
  * Setup Supabase client with auth handling for hooks
@@ -23,17 +23,12 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   }
 
   // Create Supabase client via shared helper
-  const { createSupabaseServerClient, safeGetSession } = createAuthHelpers({
-    url: PUBLIC_SUPABASE_URL,
-    anonKey: PUBLIC_SUPABASE_ANON_KEY,
-    cookieDefaults: { sameSite: 'lax' }
-  });
   event.locals.supabase = createSupabaseServerClient(event.cookies, event.fetch) as unknown as App.Locals['supabase'];
 
   /**
    * Safe session getter with per-request caching and proper validation order
    * Following Supabase best practices: getSession() first, then validate if needed
    */
-  event.locals.safeGetSession = () => safeGetSession(event);
+  event.locals.safeGetSession = () => getServerSession(event.cookies);
 }
 

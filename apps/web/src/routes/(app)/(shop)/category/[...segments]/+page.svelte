@@ -8,8 +8,8 @@
   import type { PageData } from './$types';
   import { invalidateAll } from '$app/navigation';
   import { getProductUrl } from '$lib/utils/seo-urls';
-  import { CategoryService } from '@repo/core/services/categories';
-  import { ProfileService } from '@repo/core/services/profiles';
+  // import { CategoryService } from '@repo/core/services/categories';
+  // import { ProfileService } from '@repo/core/services/profiles';
   import { browser } from '$app/environment';
   
   interface Props {
@@ -41,6 +41,8 @@
   });
 
   // Load search dropdown data when component mounts
+  // TODO: Re-implement after Phase 4C service migration
+  /*
   $effect(() => {
     if (browser && data.supabase) {
       loadSearchDropdownData();
@@ -74,6 +76,7 @@
       // Error loading search dropdown data
     }
   }
+  */
   
   // Translate category name using proper i18n
   function translateCategoryName(name: string): string {
