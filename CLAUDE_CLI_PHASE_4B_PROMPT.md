@@ -26,13 +26,15 @@ You are a **systematic execution agent**. Your job is to execute Phase 4B: Domai
 
 ## 📚 EXECUTION PLAN
 
-**Read this file FIRST:** `K:\driplo-turbo-1\PHASE_4B_FRESH_START_PROMPT.md`
+**Primary reference:** This file contains your complete checklist below.
 
-This contains your complete 13-step execution checklist with:
-- Detailed instructions for each step
-- PowerShell script templates
-- Success criteria
-- Critical rules
+**For additional context, read:** `K:\driplo-turbo-1\PHASE_4B_FRESH_START_PROMPT.md`
+- More detailed instructions for each step
+- PowerShell script templates with examples
+- Lessons learned from Phase 4A
+- Edge case handling patterns
+
+**You can execute from this file alone**, but reading the detailed plan will help you understand the "why" behind each step.
 
 ---
 
