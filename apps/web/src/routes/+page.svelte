@@ -305,6 +305,48 @@
 					categoryTranslation: translateCategory
 				}}
 			/>
+
+		<!-- Featured Sellers Section -->
+		{#if topSellers && topSellers.length > 0}
+			<FeaturedSellers
+				sellers={topSellers}
+				onSellerClick={(seller) => {
+					selectedSeller = seller;
+					showSellerModal = true;
+				}}
+				onViewAll={() => goto('/sellers')}
+				loading={false}
+				title={i18n.home_topSellers?.() || 'Featured Sellers'}
+				class="pt-4 sm:pt-6"
+			/>
+		{/if}
+
+		<!-- Promoted Listings Section -->
+		{#if displayProducts.length > 0}
+			<PromotedListingsSection
+				promotedProducts={displayProducts.slice(0, 8)}
+				onProductClick={handleProductClick}
+				onFavorite={handleFavorite}
+				favoritesState={favoritesStore}
+				{formatPrice}
+				translations={{
+					promoted_listings: i18n.home_promotedListings?.() || 'Promoted Listings',
+					promoted_description: i18n.home_promotedDescription?.() || 'Featured items from our top sellers',
+					common_currency: i18n.common_currency(),
+					product_addToFavorites: i18n.product_addToFavorites(),
+					seller_unknown: i18n.seller_unknown(),
+					condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+					condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
+					condition_new: i18n.condition_new(),
+					condition_likeNew: i18n.condition_likeNew(),
+					condition_good: i18n.condition_good(),
+					condition_worn: i18n.sell_condition_worn(),
+					condition_fair: i18n.sell_condition_fair(),
+					categoryTranslation: translateCategory
+				}}
+				class="pt-4 sm:pt-6"
+			/>
+		{/if}
 		{:else}
 			<!-- No products found - show call to action -->
 			<div class="px-2 sm:px-4 lg:px-6 py-8 text-center">

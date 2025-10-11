@@ -1,36 +1,40 @@
-export * from './generated/messages';
+// Re-export all Paraglide-generated message functions
+// Following Paraglide v2 + SvelteKit 2 best practices
+export * from './paraglide/messages.js';
 
+// Re-export Paraglide runtime functions
+export * from './paraglide/runtime.js';
+
+// Legacy custom runtime (kept for backward compatibility)
 import {
   LOCALE_ALIASES,
   applyLocale,
   baseLocale,
   detectLanguage,
   detectLocale,
-  getLocale,
+  getLocale as customGetLocale,
   getMessage,
-  isLocale,
+  isLocale as customIsLocale,
   languageNames,
-  locales,
-  setLocale
+  locales as customLocales,
+  setLocale as customSetLocale
 } from './runtime';
 
 export type { Locale, MessageFunction, MessageInputs, MessageOptions } from './runtime';
 
+// Export legacy custom functions (may be used in existing code)
 export {
   LOCALE_ALIASES,
   applyLocale,
   baseLocale,
   detectLanguage,
   detectLocale,
-  getLocale,
   getMessage,
-  isLocale,
-  languageNames,
-  locales,
-  setLocale
+  languageNames
 };
 
-export const languageTag = getLocale;
-export const setLanguageTag = setLocale;
-export const availableLanguageTags = locales;
-export const isAvailableLanguageTag = isLocale;
+// Aliases for compatibility
+export const languageTag = customGetLocale;
+export const setLanguageTag = customSetLocale;
+export const availableLanguageTags = customLocales;
+export const isAvailableLanguageTag = customIsLocale;

@@ -97,3 +97,8 @@ export class EmailService {
     return this.sendEmail(email);
   }
 }
+
+// Factory function for creating EmailService instances
+export function createEmailService(config?: { from: string; replyTo?: string }): EmailService {
+  return new EmailService(config);
+}

@@ -32,6 +32,7 @@
     "messages"
   ],
   "dependencies": {
+    "@inlang/paraglide-js": "2.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

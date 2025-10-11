@@ -8,6 +8,8 @@ import { ProfileService } from './profiles';
 import { CollectionService } from './collections';
 import { TransactionService } from './transactions';
 import { ProductDomainAdapter } from './ProductDomainAdapter';
+import { OrderService } from './OrderService';
+import { activateBrandStatus } from './brandService';
 
 // Placeholder for future framework-agnostic services
 // export * from './some-pure-service';
@@ -29,4 +31,4 @@ export function getProductAdapter(locals: { supabase: any }) {
 }
 
 // Export service classes for direct use
-export { StripeService, SubscriptionService, ProfileService, CollectionService, TransactionService, ProductDomainAdapter };
+export { StripeService, SubscriptionService, ProfileService, CollectionService, TransactionService, ProductDomainAdapter, OrderService, activateBrandStatus };

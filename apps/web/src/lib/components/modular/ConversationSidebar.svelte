@@ -43,6 +43,15 @@
   function handleConversationClick(conversationId: string) {
     onConversationSelect(conversationId);
   }
+
+  // Tab label mappings (following Paraglide best practices)
+  const tabLabels: Record<string, () => string> = {
+    all: () => i18n.conversation_allMessages?.() || 'All',
+    unread: () => i18n.conversation_unread?.() || 'Unread',
+    buying: () => i18n.conversation_buying?.() || 'Buying',
+    selling: () => i18n.conversation_selling?.() || 'Selling',
+    offers: () => i18n.conversation_offers?.() || 'Offers'
+  };
 </script>
 
 <div class="h-full flex flex-col bg-white border-r border-gray-200">
@@ -57,7 +66,7 @@
         }"
         onclick={() => handleTabClick(tab)}
       >
-        {i18n.messages[`tab_${tab}`]()}
+        {tabLabels[tab]()}
       </button>
     {/each}
   </div>

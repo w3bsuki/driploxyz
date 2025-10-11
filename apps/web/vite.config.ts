@@ -13,8 +13,8 @@ export default defineConfig({
 		enhancedImages(),
 		paraglideVitePlugin({
 			project: '../../packages/i18n/project.inlang',
-			outdir: '../../packages/i18n/lib/paraglide',
-			strategy: ['cookie', 'url', 'baseLocale']
+			outdir: './src/lib/paraglide',
+			strategy: ['url', 'cookie', 'baseLocale']
 		}),
 		sveltekit(),
 		// Bundle analyzer for performance optimization (temporarily disabled)

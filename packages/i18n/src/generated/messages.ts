@@ -4,7 +4,7 @@
 import { createMessage } from '../runtime';
 import type { MessageFunction } from '../runtime';
 
-export type MessageKey = 'addFavorite' | 'add_to_favorites' | 'admin_amount' | 'admin_back' | 'admin_backToSite' | 'admin_buyer' | 'admin_commission' | 'admin_created' | 'admin_dashboard' | 'admin_date' | 'admin_delivered' | 'admin_driploAdmin' | 'admin_loading' | 'admin_managePayouts' | 'admin_markCompleted' | 'admin_markFailed' | 'admin_monitorMetrics' | 'admin_noOrders' | 'admin_noPendingPayouts' | 'admin_noProcessingPayouts' | 'admin_orderId' | 'admin_payoutManagement' | 'admin_payoutsAppearHere' | 'admin_pending' | 'admin_pendingPayouts' | 'admin_platformCommission' | 'admin_processing' | 'admin_recentOrders' | 'admin_ref' | 'admin_refresh' | 'admin_seller' | 'admin_startProcessing' | 'admin_status' | 'admin_totalOrders' | 'admin_totalPendingAmount' | 'admin_totalProducts' | 'admin_totalRevenue' | 'admin_totalUsers' | 'admin_trackProcessPayouts' | 'admin_viewMainSite' | 'auth_alreadyHaveAccount' | 'auth_and' | 'auth_confirmPassword' | 'auth_createAccount' | 'auth_dontHaveAccount' | 'auth_email' | 'auth_firstName' | 'auth_forgotPassword' | 'auth_lastName' | 'auth_orContinueWith' | 'auth_password' | 'auth_privacyPolicy' | 'auth_rememberMe' | 'auth_signIn' | 'auth_signOut' | 'auth_signUp' | 'auth_termsAgreement' | 'auth_termsOfService' | 'auth_username' | 'badge_admin' | 'badge_brand' | 'badge_new' | 'badge_pro' | 'banner_business' | 'banner_by' | 'banner_close' | 'banner_currentlyActive' | 'banner_earlyBird' | 'banner_endsSoon' | 'banner_firstMonth' | 'banner_freeBoostEarly' | 'banner_freeShipping' | 'banner_joinCommunity' | 'banner_justAdded' | 'banner_limitedTime' | 'banner_live' | 'banner_mostPopular' | 'banner_newArrivals' | 'banner_off' | 'banner_offApplied' | 'banner_percentOff' | 'banner_priorityPlacement' | 'banner_recentListings' | 'banner_register' | 'banner_sale' | 'banner_sellBuySecond' | 'banner_shopNow' | 'banner_spotsLeft' | 'banner_startSelling' | 'banner_startSellingFree' | 'banner_v1Launch' | 'banner_viewProduct' | 'banner_welcomeToDriplo' | 'boosted_listings' | 'brands_discover_description' | 'brands_view_profile' | 'breadcrumb_dashboard' | 'breadcrumb_orders' | 'breadcrumb_sales' | 'breadcrumb_settings' | 'breadcrumb_upgrade' | 'bundle_addFiveItems' | 'bundle_addMoreFrom' | 'bundle_addThreeItems' | 'bundle_addTwoItems' | 'bundle_checkoutItems' | 'bundle_continueToCheckout' | 'bundle_item' | 'bundle_items' | 'bundle_itemsTotal' | 'bundle_justThisItem' | 'bundle_loading' | 'bundle_noOtherItems' | 'bundle_quickOptions' | 'bundle_saveAmount' | 'bundle_saveOnShipping' | 'bundle_savePerItem' | 'bundle_serviceFee' | 'bundle_shipTogether' | 'bundle_shipping' | 'bundle_showAll' | 'bundle_subtitle' | 'bundle_title' | 'bundle_total' | 'bundle_youSave' | 'bundle_yourBundle' | 'buyNow' | 'buyer_protection' | 'category_accessories' | 'category_accessoriesList' | 'category_accessoriesType' | 'category_activewear' | 'category_all' | 'category_backpacks' | 'category_bags' | 'category_bagsAndPurses' | 'category_bagsType' | 'category_bandanas' | 'category_beauty' | 'category_belts' | 'category_bibs' | 'category_boots' | 'category_bottomsheet_all' | 'category_bottomsheet_allCategory' | 'category_bottomsheet_back' | 'category_bottomsheet_categories' | 'category_bottomsheet_close' | 'category_briefcases' | 'category_categories' | 'category_clearAll' | 'category_clothing' | 'category_clutches' | 'category_crossbody' | 'category_crossbodyBags' | 'category_cufflinks' | 'category_designer' | 'category_dresses' | 'category_dropdown_allCategories' | 'category_dropdown_allCategoriesSelected' | 'category_dropdown_allFiltersCleared' | 'category_dropdown_allSpecificSelected' | 'category_dropdown_allSubcategorySelected' | 'category_dropdown_ariaLabel' | 'category_dropdown_backToCategories' | 'category_dropdown_categories' | 'category_dropdown_listboxAriaLabel' | 'category_dropdown_navigatedBack' | 'category_dropdown_navigatedBackMain' | 'category_dropdown_navigatedBackSubcategories' | 'category_dropdown_selectedCategory' | 'category_dropdown_selectedSpecific' | 'category_dropdown_selectedSubcategory' | 'category_duffelBags' | 'category_filters' | 'category_flats' | 'category_formalShoes' | 'category_gloves' | 'category_glovesAndMittens' | 'category_gymBags' | 'category_hairAccessories' | 'category_handbags' | 'category_hatsAndCaps' | 'category_heels' | 'category_home' | 'category_hoodies' | 'category_includes' | 'category_itemsCount' | 'category_jackets' | 'category_jacketsCoats' | 'category_jeans' | 'category_jewelry' | 'category_keychains' | 'category_kids' | 'category_kids_title' | 'category_laptopBags' | 'category_lingerie' | 'category_lingerieUnderwear' | 'category_loadMore' | 'category_lunchBags' | 'category_makeupBags' | 'category_men' | 'category_men_title' | 'category_messengerBags' | 'category_miniBags' | 'category_pantsJeans' | 'category_pantsTrousers' | 'category_pets' | 'category_phoneCases' | 'category_pocketSquares' | 'category_sandals' | 'category_sandalsSlides' | 'category_scarves' | 'category_schoolBags' | 'category_searchPlaceholder' | 'category_selected' | 'category_shawls' | 'category_shirts' | 'category_shirtsBlouses' | 'category_shoes' | 'category_shoesType' | 'category_shorts' | 'category_shoulderBags' | 'category_skirts' | 'category_sneakers' | 'category_suitsBlazers' | 'category_sunglasses' | 'category_suspenders' | 'category_sweatersHoodies' | 'category_swimwear' | 'category_ties' | 'category_topsTshirts' | 'category_toteBags' | 'category_totes' | 'category_translation_fallback_used' | 'category_translation_missing' | 'category_travel' | 'category_travelBags' | 'category_tshirts' | 'category_underwear' | 'category_unisex' | 'category_vintage' | 'category_wallets' | 'category_walletsAndPurses' | 'category_watches' | 'category_women' | 'category_women_title' | 'checkout_addAddress' | 'checkout_addCard' | 'checkout_billingAddress' | 'checkout_checkout' | 'checkout_completePurchase' | 'checkout_completePurchaseButton' | 'checkout_continueShopping' | 'checkout_emailConfirmation' | 'checkout_initializingPayment' | 'checkout_orderPlaced' | 'checkout_orderSummary' | 'checkout_pay' | 'checkout_paymentDetails' | 'checkout_paymentFailed' | 'checkout_paymentMethod' | 'checkout_paymentReference' | 'checkout_paymentSuccessful' | 'checkout_paymentSuccessfulDesc' | 'checkout_paymentSystemNotInitialized' | 'checkout_placeOrder' | 'checkout_proceedToPayment' | 'checkout_processing' | 'checkout_sameAsShipping' | 'checkout_serviceFee' | 'checkout_shipping' | 'checkout_shippingAddress' | 'checkout_subtotal' | 'checkout_summary' | 'checkout_tax' | 'checkout_total' | 'checkout_viewYourOrders' | 'close' | 'collections_designer' | 'collections_designerPremium' | 'collections_drip' | 'collections_likeNew' | 'collections_newWithTags' | 'collections_under25' | 'common_back' | 'common_cancel' | 'common_close' | 'common_confirm' | 'common_currency' | 'common_delete' | 'common_edit' | 'common_next' | 'common_no' | 'common_ok' | 'common_previous' | 'common_quickActions' | 'common_save' | 'common_scroll' | 'common_submit' | 'common_support' | 'common_yes' | 'condition_fair' | 'condition_good' | 'condition_likeNew' | 'condition_new' | 'condition_newWithTags' | 'currency_symbol' | 'dashboard_action' | 'dashboard_actions' | 'dashboard_activeListings' | 'dashboard_activeListingsTitle' | 'dashboard_adminPanel' | 'dashboard_age18to24' | 'dashboard_age25to34' | 'dashboard_age35to44' | 'dashboard_age45plus' | 'dashboard_allOrders' | 'dashboard_allTime' | 'dashboard_analytics' | 'dashboard_availableBalance' | 'dashboard_bankAccount' | 'dashboard_buyer' | 'dashboard_cancelled' | 'dashboard_change' | 'dashboard_chartImplemented' | 'dashboard_completeProfile' | 'dashboard_completeProfileDesc' | 'dashboard_completeSetup' | 'dashboard_conversionRate' | 'dashboard_createFirstListing' | 'dashboard_createListing' | 'dashboard_currentlyLive' | 'dashboard_customerDemographics' | 'dashboard_daily' | 'dashboard_date' | 'dashboard_daysAgo' | 'dashboard_defaultShippingPrice' | 'dashboard_delivered' | 'dashboard_direct' | 'dashboard_earnings' | 'dashboard_edit' | 'dashboard_export' | 'dashboard_filter' | 'dashboard_hoursAgo' | 'dashboard_justNow' | 'dashboard_lastMonthIncrease' | 'dashboard_listings' | 'dashboard_logIn' | 'dashboard_manageListings' | 'dashboard_minutesAgo' | 'dashboard_monthSales' | 'dashboard_monthly' | 'dashboard_newListing' | 'dashboard_noActiveListings' | 'dashboard_noRecentOrders' | 'dashboard_orderId' | 'dashboard_orderManagement' | 'dashboard_orders' | 'dashboard_overview' | 'dashboard_paymentSettings' | 'dashboard_payoutSchedule' | 'dashboard_pendingShipment' | 'dashboard_performanceOverview' | 'dashboard_pleaseLogin' | 'dashboard_price' | 'dashboard_processingTime' | 'dashboard_processingTime1Week' | 'dashboard_processingTime1to2Days' | 'dashboard_processingTime3to5Days' | 'dashboard_product' | 'dashboard_recentOrders' | 'dashboard_sales' | 'dashboard_saveSettings' | 'dashboard_search' | 'dashboard_searchListings' | 'dashboard_settings' | 'dashboard_ship' | 'dashboard_shipped' | 'dashboard_shippingSettings' | 'dashboard_shopCurrentlyActive' | 'dashboard_shopDescription' | 'dashboard_shopDescriptionPlaceholder' | 'dashboard_shopName' | 'dashboard_shopSettings' | 'dashboard_shopStatus' | 'dashboard_social' | 'dashboard_soldItems' | 'dashboard_status' | 'dashboard_thisMonth' | 'dashboard_time' | 'dashboard_topPerformingProducts' | 'dashboard_total' | 'dashboard_totalEarned' | 'dashboard_totalRevenue' | 'dashboard_totalViews' | 'dashboard_trafficSources' | 'dashboard_upgrade' | 'dashboard_vacationMode' | 'dashboard_view' | 'dashboard_viewAll' | 'dashboard_views' | 'dashboard_viewsToSales' | 'dashboard_weekly' | 'dashboard_welcomeBack' | 'dashboard_yourActiveListings' | 'empty_exploreItems' | 'empty_noFavorites' | 'empty_noMessages' | 'empty_noOrders' | 'empty_noProducts' | 'empty_startBrowsing' | 'engagement_banner_description' | 'engagement_banner_dismiss' | 'engagement_banner_later' | 'engagement_banner_signUp' | 'engagement_banner_title' | 'error_atLeastOnePhoto' | 'error_categoryRequired' | 'error_failedToCreateProduct' | 'error_generic' | 'error_network' | 'error_notAuthenticated' | 'error_notFound' | 'error_tryAgain' | 'error_unauthorized' | 'error_validation' | 'explore_brands' | 'fast_shipping' | 'filter_allCategories' | 'filter_applied_activeFiltersCount' | 'filter_applied_allFiltersCleared' | 'filter_applied_ariaLabel' | 'filter_applied_clearAll' | 'filter_applied_filterRemoved' | 'filter_applied_removeFilter' | 'filter_apply' | 'filter_bestRated' | 'filter_brand' | 'filter_clearAll' | 'filter_color' | 'filter_condition' | 'filter_freeShipping' | 'filter_modal_applied' | 'filter_modal_applyFilters' | 'filter_modal_clearAll' | 'filter_modal_close' | 'filter_modal_filter' | 'filter_modal_filters' | 'filter_modal_maxPrice' | 'filter_modal_minPrice' | 'filter_modal_modalDescription' | 'filter_modal_title' | 'filter_mostPopular' | 'filter_newItems' | 'filter_newToday' | 'filter_newest' | 'filter_onSale' | 'filter_pills_ariaLabel' | 'filter_pills_ariaPressed' | 'filter_priceHighToLow' | 'filter_priceLowToHigh' | 'filter_priceRange' | 'filter_reset' | 'filter_showLess' | 'filter_showMore' | 'filter_size' | 'filter_sortBy' | 'filter_text_contraction_test' | 'filter_text_expansion_test' | 'filter_trending' | 'filter_ui_allFiltersCleared' | 'filter_ui_applied' | 'filter_ui_clearAllHelp' | 'filter_ui_filterApplied' | 'filter_ui_filterOptionsAriaLabel' | 'filter_ui_filterRemovalHelp' | 'filter_ui_filterRemoved' | 'filter_ui_filtersCleared' | 'filter_ui_keyboardNavHelp' | 'filter_ui_removed' | 'filter_under20' | 'footer_about' | 'footer_allRightsReserved' | 'footer_blog' | 'footer_bulgaria' | 'footer_careers' | 'footer_company' | 'footer_contact' | 'footer_cookies' | 'footer_followUs' | 'footer_help' | 'footer_in' | 'footer_legal' | 'footer_madeWith' | 'footer_newsletter' | 'footer_newsletterPlaceholder' | 'footer_press' | 'footer_privacy' | 'footer_returns' | 'footer_subscribe' | 'footer_support' | 'footer_terms' | 'footer_trustSafety' | 'hello' | 'highlight_sellers' | 'home_browseAll' | 'home_itemCount' | 'home_newestListings' | 'home_searchSuggestions_designerBags' | 'home_searchSuggestions_sneakers' | 'home_searchSuggestions_summerDresses' | 'home_searchSuggestions_vintageJackets' | 'home_trending_designerBagsUnder100' | 'home_trending_vintageJackets' | 'home_trending_y2kJeans' | 'home_updatedMomentsAgo' | 'listings_active' | 'listings_all' | 'listings_createFirst' | 'listings_draft' | 'listings_getStarted' | 'listings_manageProducts' | 'listings_myListings' | 'listings_newListing' | 'listings_noListings' | 'listings_pageTitle' | 'listings_sold' | 'listings_total' | 'loading' | 'makeOffer' | 'menu_browse' | 'menu_sellItems' | 'message' | 'message_block' | 'message_delete' | 'message_delivered' | 'message_markAsRead' | 'message_newMessage' | 'message_noMessages' | 'message_read' | 'message_report' | 'message_sendMessage' | 'message_startConversation' | 'message_typeMessage' | 'message_typing' | 'message_unread' | 'messages_acceptOffer' | 'messages_activeNow' | 'messages_all' | 'messages_bundle' | 'messages_bundleOffer' | 'messages_buying' | 'messages_chooseMessage' | 'messages_counterOffer' | 'messages_declineOffer' | 'messages_dismiss' | 'messages_inbox' | 'messages_location' | 'messages_makeOffer' | 'messages_messageInput' | 'messages_newMessage' | 'messages_noProducts' | 'messages_now' | 'messages_offers' | 'messages_photo' | 'messages_read' | 'messages_reply' | 'messages_save' | 'messages_selectConversation' | 'messages_selling' | 'messages_sent' | 'messages_today' | 'messages_unread' | 'nav_account' | 'nav_browseCategories' | 'nav_favorites' | 'nav_home' | 'nav_languageTheme' | 'nav_login' | 'nav_logout' | 'nav_messages' | 'nav_newArrivals' | 'nav_orders' | 'nav_profile' | 'nav_quickShop' | 'nav_search' | 'nav_sell' | 'nav_settings' | 'nav_signup' | 'nav_startSelling' | 'nav_supportCenter' | 'nav_topBrands' | 'nav_topSellers' | 'nav_wishlist' | 'notification_clearAll' | 'notification_itemLiked' | 'notification_itemSold' | 'notification_markAllRead' | 'notification_newFollower' | 'notification_offerReceived' | 'notification_priceDropped' | 'notification_reviewReceived' | 'notification_settings' | 'notifications_markAllRead' | 'notifications_noNotifications' | 'notifications_notifyWhenSomethingHappens' | 'notifications_title' | 'notifications_unread' | 'notifications_viewAll' | 'onboarding_accountTypeBrand' | 'onboarding_accountTypePersonal' | 'onboarding_addPayment' | 'onboarding_back' | 'onboarding_brandAccount' | 'onboarding_brandAccountDesc' | 'onboarding_brandFeature1' | 'onboarding_brandFeature2' | 'onboarding_brandFeature3' | 'onboarding_brandFeature4' | 'onboarding_brandPending' | 'onboarding_brandProfileComplete' | 'onboarding_brandProfileSetup' | 'onboarding_brandSetupComplete' | 'onboarding_chooseAccountType' | 'onboarding_chooseAvatar' | 'onboarding_choosePaymentMethod' | 'onboarding_chooseUniqueUsername' | 'onboarding_completeProfile' | 'onboarding_completeSetup' | 'onboarding_connectSocials' | 'onboarding_continue' | 'onboarding_createProfile' | 'onboarding_designer' | 'onboarding_discover' | 'onboarding_discoverDesc' | 'onboarding_finish' | 'onboarding_free' | 'onboarding_fullNameOptional' | 'onboarding_generateNew' | 'onboarding_getStarted' | 'onboarding_goToDashboard' | 'onboarding_happySellers' | 'onboarding_helpBuyersDiscover' | 'onboarding_next' | 'onboarding_of' | 'onboarding_paymentReady' | 'onboarding_perMonth' | 'onboarding_personalAccount' | 'onboarding_personalAccountDesc' | 'onboarding_personalFeature1' | 'onboarding_personalFeature2' | 'onboarding_personalFeature3' | 'onboarding_personalFeature4' | 'onboarding_pickProfilePicture' | 'onboarding_popular' | 'onboarding_profileComplete' | 'onboarding_profileCreated' | 'onboarding_profileVerified' | 'onboarding_ready' | 'onboarding_readyDesc' | 'onboarding_select' | 'onboarding_selectPerfectPlan' | 'onboarding_selected' | 'onboarding_sell' | 'onboarding_sellDesc' | 'onboarding_settingUp' | 'onboarding_setupComplete' | 'onboarding_setupPayouts' | 'onboarding_skip' | 'onboarding_startExploring' | 'onboarding_startSelling' | 'onboarding_step' | 'onboarding_tellAboutYourself' | 'onboarding_totalSales' | 'onboarding_trending' | 'onboarding_trustedMarketplace' | 'onboarding_tutorial_discoverContent' | 'onboarding_tutorial_discoverTitle' | 'onboarding_tutorial_listItemContentBrand' | 'onboarding_tutorial_listItemContentPersonal' | 'onboarding_tutorial_listItemTitle' | 'onboarding_tutorial_readyContent' | 'onboarding_tutorial_readyTitle' | 'onboarding_tutorial_stayConnectedContent' | 'onboarding_tutorial_stayConnectedTitle' | 'onboarding_tutorial_welcomeContent' | 'onboarding_tutorial_welcomeTitle' | 'onboarding_uploadCustom' | 'onboarding_usernameMinLength' | 'onboarding_verifyEmail' | 'onboarding_vintage' | 'onboarding_welcome' | 'onboarding_welcomeBrand' | 'onboarding_welcomePersonal' | 'orders_allOrders' | 'orders_buyer' | 'orders_cancelOrder' | 'orders_completed' | 'orders_issues' | 'orders_itemsToShip' | 'orders_leaveReview' | 'orders_markAsShipped' | 'orders_messageBuyer' | 'orders_messageSeller' | 'orders_myOrders' | 'orders_noImage' | 'orders_noOrdersFound' | 'orders_noOrdersYet' | 'orders_purchases' | 'orders_sales' | 'orders_seller' | 'orders_ship' | 'orders_shipTo' | 'orders_shipped' | 'orders_startShopping' | 'orders_statusCancelled' | 'orders_statusDelivered' | 'orders_statusPaid' | 'orders_statusPending' | 'orders_statusShipped' | 'orders_subtitle' | 'orders_title' | 'orders_toReview' | 'orders_totalOrders' | 'orders_trackingNumber' | 'orders_unknownProduct' | 'orders_updating' | 'orders_viewProduct' | 'pagination_goToPage' | 'pagination_of' | 'pagination_page' | 'pagination_results' | 'pagination_showing' | 'pdp_a11y_closeModal' | 'pdp_a11y_favoriteAdded' | 'pdp_a11y_favoriteRemoved' | 'pdp_a11y_galleryFullscreen' | 'pdp_a11y_galleryNext' | 'pdp_a11y_galleryPrevious' | 'pdp_a11y_mainContent' | 'pdp_a11y_priceUpdate' | 'pdp_a11y_productImage' | 'pdp_a11y_sidebar' | 'pdp_addToCart' | 'pdp_addToFavorites' | 'pdp_askQuestion' | 'pdp_authenticity' | 'pdp_brand' | 'pdp_buyNow' | 'pdp_buyerProtection' | 'pdp_careInstructions' | 'pdp_category' | 'pdp_color' | 'pdp_condition' | 'pdp_customerReviews' | 'pdp_daysAgo' | 'pdp_description' | 'pdp_details' | 'pdp_discount' | 'pdp_error' | 'pdp_estimatedDelivery' | 'pdp_fastShipping' | 'pdp_freeShipping' | 'pdp_goBack' | 'pdp_helpful' | 'pdp_hoursAgo' | 'pdp_justNow' | 'pdp_loading' | 'pdp_loginToBuy' | 'pdp_loginToFavorite' | 'pdp_loginrequired1' | 'pdp_makeOffer' | 'pdp_material' | 'pdp_measurements' | 'pdp_messageSeller' | 'pdp_metaDescription' | 'pdp_minutesAgo' | 'pdp_moreFromSeller' | 'pdp_networkError' | 'pdp_notHelpful' | 'pdp_originalPrice' | 'pdp_otherItemsFromSeller' | 'pdp_price' | 'pdp_processing' | 'pdp_productDetails' | 'pdp_productNotFound' | 'pdp_productUnavailable' | 'pdp_rating' | 'pdp_readMore' | 'pdp_recentlyViewed' | 'pdp_relatedProducts' | 'pdp_removeFromFavorites' | 'pdp_reportItem' | 'pdp_retry' | 'pdp_reviewVerified' | 'pdp_reviews' | 'pdp_reviewsCount' | 'pdp_reviewsCountOne' | 'pdp_reviewsCountZero' | 'pdp_secureCheckout' | 'pdp_securePayment' | 'pdp_seller' | 'pdp_sellerJoined' | 'pdp_sellerRating' | 'pdp_sellerResponseTime' | 'pdp_sellerSales' | 'pdp_sellerVerified' | 'pdp_share' | 'pdp_shipping' | 'pdp_shippingCalculate' | 'pdp_shippingChange' | 'pdp_shippingFrom' | 'pdp_shippingProtection' | 'pdp_showLess' | 'pdp_similarItems' | 'pdp_size' | 'pdp_sold' | 'pdp_soldBy' | 'pdp_soldOut' | 'pdp_specifications' | 'pdp_stars' | 'pdp_viewAll' | 'pdp_viewAllReviews' | 'pdp_viewMore' | 'pdp_viewSellerProfile' | 'pdp_views' | 'pdp_viewsOne' | 'pdp_writeReview' | 'pdp_youMayAlsoLike' | 'pdp_youMightAlsoLike' | 'pdp_yourItem' | 'price' | 'product_addToCart' | 'product_addToFavorites' | 'product_askQuestion' | 'product_available' | 'product_beFirstToLike' | 'product_brand' | 'product_businessDays' | 'product_buyNow' | 'product_category' | 'product_close' | 'product_condition' | 'product_copyLink' | 'product_daysAgo' | 'product_description' | 'product_disputeResolution' | 'product_driploProtection' | 'product_editListing' | 'product_expressShipping' | 'product_fair' | 'product_fairCondition' | 'product_fastDelivery' | 'product_favorite' | 'product_freeShipping' | 'product_freeShippingLower' | 'product_good' | 'product_goodCondition' | 'product_inStock' | 'product_itemDetails' | 'product_itemSold' | 'product_lastOne' | 'product_like' | 'product_likeNew' | 'product_likeNewCondition' | 'product_likes' | 'product_limitedStock' | 'product_location' | 'product_makeOffer' | 'product_message' | 'product_moneyBackGuarantee' | 'product_monthsAgo' | 'product_moreFromSeller' | 'product_new' | 'product_newWithTags' | 'product_oneSize' | 'product_originalCondition' | 'product_outOfStock' | 'product_payment' | 'product_peopleViewing' | 'product_postedTime' | 'product_protection' | 'product_readMore' | 'product_recentItems' | 'product_reportItem' | 'product_response' | 'product_returnPolicy' | 'product_returns' | 'product_reviews' | 'product_sales' | 'product_save' | 'product_saveForLater' | 'product_securePayments' | 'product_seller' | 'product_sellerStats' | 'product_share' | 'product_shipping' | 'product_shippingCosts' | 'product_shippingInfo' | 'product_shippingReturns' | 'product_shippingTimes' | 'product_shipsIn' | 'product_showLess' | 'product_similar' | 'product_size' | 'product_sizeGuide' | 'product_sizeGuideComingSoon' | 'product_sizingQuestions' | 'product_sold' | 'product_soldOut' | 'product_standardShipping' | 'product_today' | 'product_viewAll' | 'product_viewAnalytics' | 'product_viewFullShipping' | 'product_viewProfile' | 'product_viewedTimes' | 'product_weeksAgo' | 'product_yesterday' | 'product_youMightLike' | 'product_yourListing' | 'profile_about' | 'profile_addLink' | 'profile_anonymous' | 'profile_avatar' | 'profile_bio' | 'profile_cancel' | 'profile_changePhoto' | 'profile_customAvatar' | 'profile_dashboard' | 'profile_dropHere' | 'profile_editProfile' | 'profile_favorites' | 'profile_follow' | 'profile_following' | 'profile_fullName' | 'profile_instagram' | 'profile_itemsSold' | 'profile_joined' | 'profile_likes' | 'profile_location' | 'profile_memberSince' | 'profile_message' | 'profile_myProfile' | 'profile_noListingsYet' | 'profile_noRatingsYet' | 'profile_noReviewsYet' | 'profile_orders' | 'profile_policies' | 'profile_posts' | 'profile_premium' | 'profile_rating' | 'profile_responseTime' | 'profile_returnPolicy' | 'profile_reviews' | 'profile_sales' | 'profile_saveProfile' | 'profile_saving' | 'profile_securePayments' | 'profile_selectPhoto' | 'profile_sellerStats' | 'profile_settings' | 'profile_shipsWithin' | 'profile_socialLinks' | 'profile_sold' | 'profile_startSelling' | 'profile_tellPeopleAboutYourself' | 'profile_tiktok' | 'profile_uploadAvatar' | 'profile_uploadYourOwn' | 'profile_uploadingAvatar' | 'profile_url' | 'profile_username' | 'profile_website' | 'profile_yourAvatar' | 'profile_yourFullName' | 'profile_yourLocation' | 'profile_yourUsername' | 'promoted_description' | 'promoted_hotPicks' | 'promoted_listings' | 'promoted_premiumSellers' | 'quick_buy' | 'removeFavorite' | 'remove_from_favorites' | 'sales_activity' | 'sales_allTime' | 'sales_analytics' | 'sales_available' | 'sales_availableBalance' | 'sales_averageOrder' | 'sales_chartComingSoon' | 'sales_createFirstListing' | 'sales_earned' | 'sales_itemSold' | 'sales_itemsSold' | 'sales_manageSoldItems' | 'sales_newSales' | 'sales_noChange' | 'sales_noItemsSoldYet' | 'sales_noOrdersYet' | 'sales_noSalesYet' | 'sales_notifyWhenItemsSell' | 'sales_overview' | 'sales_paidOut' | 'sales_perSale' | 'sales_recentOrders' | 'sales_requestPayout' | 'sales_salesPerformance' | 'sales_soldItems' | 'sales_soldTo' | 'sales_startSelling' | 'sales_thisMonth' | 'sales_thisMonthEarnings' | 'sales_thisMonthSales' | 'sales_totalEarned' | 'sales_totalEarnings' | 'sales_totalOrders' | 'sales_totalSales' | 'sales_totalSalesPlural' | 'sales_viewAllSales' | 'sales_viewOrderDetails' | 'search_adjustFilters' | 'search_all' | 'search_allBrands' | 'search_allConditions' | 'search_applyFilters' | 'search_back' | 'search_bestSellers' | 'search_brand' | 'search_browseAll' | 'search_categories' | 'search_cheapest' | 'search_clearAll' | 'search_clearAllFilters' | 'search_condition' | 'search_designer' | 'search_fair' | 'search_fastShip' | 'search_filter' | 'search_filters' | 'search_findYourSize' | 'search_for' | 'search_good' | 'search_itemsFound' | 'search_itemsYouViewed' | 'search_likeNew' | 'search_max' | 'search_min' | 'search_myFavorites' | 'search_newToday' | 'search_newWithTags' | 'search_newest' | 'search_newestFirst' | 'search_noItemsFound' | 'search_noResults' | 'search_placeholder' | 'search_premium' | 'search_priceHighToLow' | 'search_priceLowToHigh' | 'search_priceRange' | 'search_quickAccess' | 'search_quickFilters' | 'search_quickShop' | 'search_recentViews' | 'search_relevance' | 'search_results' | 'search_savedItems' | 'search_shopByCondition' | 'search_shopByPreference' | 'search_shopByPrice' | 'search_shopSmarter' | 'search_size' | 'search_sort' | 'search_topSellers' | 'search_trendingNow' | 'search_under25' | 'search_viewAll' | 'search_viewAllResults' | 'search_whatLookingFor' | 'sell_accessoriesList' | 'sell_add' | 'sell_addBrandSize' | 'sell_addDetailsPlaceholder' | 'sell_addPhoto' | 'sell_addTag' | 'sell_analysis' | 'sell_applySuggestions' | 'sell_atLeastOnePhoto' | 'sell_back' | 'sell_basedOnImage' | 'sell_beMoreSpecific' | 'sell_boostDescription' | 'sell_boostYourListing' | 'sell_brand' | 'sell_brandCustomPlaceholder' | 'sell_brandLabel' | 'sell_brandOther' | 'sell_brandPlaceholder' | 'sell_brandPlanFeatures' | 'sell_brandRequired' | 'sell_brandSubscriptionDescription' | 'sell_brandSubscriptionRequired' | 'sell_brandVerificationBadge' | 'sell_businessAccountFeatures' | 'sell_category' | 'sell_categoryDescription' | 'sell_categoryLabel' | 'sell_categoryRequired' | 'sell_categoryTitle' | 'sell_chooseManually' | 'sell_color' | 'sell_colorBeige' | 'sell_colorBlack' | 'sell_colorBlue' | 'sell_colorBrown' | 'sell_colorCustomPlaceholder' | 'sell_colorGray' | 'sell_colorGreen' | 'sell_colorMulti' | 'sell_colorNavy' | 'sell_colorOptional' | 'sell_colorPink' | 'sell_colorPurple' | 'sell_colorRed' | 'sell_colorWhite' | 'sell_condition' | 'sell_conditionLabel' | 'sell_conditionRequired' | 'sell_condition_brandNewWithTags' | 'sell_condition_brandNewWithTags_desc' | 'sell_condition_brandNewWithoutTags' | 'sell_condition_fair' | 'sell_condition_fair_desc' | 'sell_condition_good' | 'sell_condition_good_desc' | 'sell_condition_likeNew' | 'sell_condition_likeNew_desc' | 'sell_condition_newWithoutTags' | 'sell_condition_newWithoutTags_desc' | 'sell_condition_satisfactory' | 'sell_condition_veryGood' | 'sell_condition_worn' | 'sell_condition_worn_desc' | 'sell_confidence' | 'sell_confirmPublish' | 'sell_cover' | 'sell_customBrandAriaLabel' | 'sell_description' | 'sell_descriptionOptional' | 'sell_descriptionPlaceholder' | 'sell_descriptionRequired' | 'sell_dismissSuggestions' | 'sell_dragDropPhotos' | 'sell_driploFee' | 'sell_dropHere' | 'sell_editDetails' | 'sell_enterBrandName' | 'sell_estimatedEarnings' | 'sell_featuredSearch' | 'sell_free' | 'sell_freeShippingAttractsBuyers' | 'sell_getVisibility' | 'sell_goToDashboard' | 'sell_good' | 'sell_highConfidence' | 'sell_homepageSpotlight' | 'sell_imagesOptimized' | 'sell_includes' | 'sell_kids' | 'sell_listAnother' | 'sell_listItem' | 'sell_listUnlimitedProducts' | 'sell_listingError' | 'sell_listingPrice' | 'sell_listingSuccess' | 'sell_lowConfidence' | 'sell_material' | 'sell_materialCotton' | 'sell_materialCustomPlaceholder' | 'sell_materialDenim' | 'sell_materialLeather' | 'sell_materialOptional' | 'sell_materialPolyester' | 'sell_materialSilk' | 'sell_materialWool' | 'sell_maxPhotosReached' | 'sell_mediumConfidence' | 'sell_men' | 'sell_minCharacters' | 'sell_minPhotosRequired' | 'sell_month' | 'sell_moreAllowed' | 'sell_morePhotos' | 'sell_moreTag' | 'sell_next' | 'sell_notAvailable' | 'sell_optimizedForWeb' | 'sell_optional' | 'sell_other' | 'sell_paymentFee' | 'sell_photoCount' | 'sell_photos' | 'sell_photosAndDetails' | 'sell_photosCount' | 'sell_photosHint' | 'sell_photosSection' | 'sell_photosUploaded' | 'sell_premiumBoost' | 'sell_premiumBoostActive' | 'sell_premiumLeft' | 'sell_previous' | 'sell_price' | 'sell_priceAndPublish' | 'sell_priceLabel' | 'sell_priceLabel2' | 'sell_priceRequired' | 'sell_prioritySupport' | 'sell_processingUpload' | 'sell_productAlt' | 'sell_productInfo' | 'sell_publish' | 'sell_publishing' | 'sell_pushNotifications' | 'sell_removeImage' | 'sell_removePhoto' | 'sell_reviewListing' | 'sell_reviewPublish' | 'sell_reviewYourListing' | 'sell_saveDraft' | 'sell_selectCategory' | 'sell_selectColor' | 'sell_selectCondition' | 'sell_selectGenderAge' | 'sell_selectMaterial' | 'sell_selectProductType' | 'sell_selectSize' | 'sell_selectSubcategory' | 'sell_selected' | 'sell_setCoverPhoto' | 'sell_setPricing' | 'sell_shippingCost' | 'sell_shippingCostLabel' | 'sell_shippingLabel' | 'sell_shippingPrice' | 'sell_shippingRequired' | 'sell_similarItems' | 'sell_size' | 'sell_sizeGroupNumbers' | 'sell_sizeGroupOther' | 'sell_sizeGroupUKEU' | 'sell_sizeGroupXSXL' | 'sell_sizeLabel' | 'sell_sizePlaceholder' | 'sell_sizeRequired' | 'sell_smartCategorySuggestions' | 'sell_specificCategoryLabel' | 'sell_step1' | 'sell_step2' | 'sell_step3' | 'sell_step4' | 'sell_subcategory' | 'sell_subcategoryRequired' | 'sell_subscribeToBrandPlan' | 'sell_suggested' | 'sell_summary' | 'sell_switchToPersonalAccount' | 'sell_tags' | 'sell_tagsHelp' | 'sell_tagsOptional' | 'sell_tagsPlaceholder' | 'sell_title' | 'sell_titleFieldLabel' | 'sell_titleLabel' | 'sell_titlePlaceholder' | 'sell_titleRequired' | 'sell_totalBuyerPays' | 'sell_typeCategoryPlaceholder' | 'sell_unisex' | 'sell_uploadError' | 'sell_uploadJPGPNG' | 'sell_uploadPhotos' | 'sell_uploadPhotos_description' | 'sell_uploadingImages' | 'sell_uploadingPhoto' | 'sell_validationError' | 'sell_viewListing' | 'sell_whatAreYouSelling' | 'sell_whatExactlyIsIt' | 'sell_whatTypeOfProduct' | 'sell_whoIsItFor' | 'sell_whoIsThisFor' | 'sell_women' | 'sell_yourEarnings' | 'seller_activeAgo' | 'seller_activeNow' | 'seller_avgShipping' | 'seller_day' | 'seller_days' | 'seller_follow' | 'seller_followers' | 'seller_following' | 'seller_hour' | 'seller_hours' | 'seller_items' | 'seller_memberFor' | 'seller_message' | 'seller_newMember' | 'seller_positiveReviews' | 'seller_premium' | 'seller_premiumSeller' | 'seller_premiumSellerDescription' | 'seller_profile' | 'seller_rating' | 'seller_recentActivity' | 'seller_respondsIn' | 'seller_respondsWithin' | 'seller_sales' | 'seller_shippedOnTime' | 'seller_soldBy' | 'seller_soldThisWeek' | 'seller_superstarSeller' | 'seller_trustedSeller' | 'seller_unknown' | 'seller_verified' | 'seller_viewFullProfile' | 'settings_account' | 'settings_changePassword' | 'settings_currency' | 'settings_darkMode' | 'settings_deleteAccount' | 'settings_downloadData' | 'settings_emailNotifications' | 'settings_language' | 'settings_notifications' | 'settings_payments' | 'settings_privacy' | 'settings_pushNotifications' | 'settings_security' | 'settings_shipping' | 'settings_theme' | 'settings_twoFactor' | 'size' | 'soldOut' | 'subcategory_accessories' | 'subcategory_activewear' | 'subcategory_art' | 'subcategory_athletic' | 'subcategory_baby' | 'subcategory_backpacks' | 'subcategory_bags' | 'subcategory_bagssPurses' | 'subcategory_bathBody' | 'subcategory_bedding' | 'subcategory_beds' | 'subcategory_boots' | 'subcategory_boys2to8' | 'subcategory_boys9to16' | 'subcategory_carriers' | 'subcategory_catAccessories' | 'subcategory_clutches' | 'subcategory_crossbody' | 'subcategory_decor' | 'subcategory_dogApparel' | 'subcategory_dressShoes' | 'subcategory_dresses' | 'subcategory_flats' | 'subcategory_foodBowls' | 'subcategory_formalShoes' | 'subcategory_fragrance' | 'subcategory_garden' | 'subcategory_girls2to8' | 'subcategory_girls9to16' | 'subcategory_hairCare' | 'subcategory_handbags' | 'subcategory_heels' | 'subcategory_jackets' | 'subcategory_jacketsCoats' | 'subcategory_jeans' | 'subcategory_jewelry' | 'subcategory_kitchen' | 'subcategory_laptopBags' | 'subcategory_leashes' | 'subcategory_lighting' | 'subcategory_lingerieUnderwear' | 'subcategory_makeup' | 'subcategory_nails' | 'subcategory_pantsJeans' | 'subcategory_pantsTraousers' | 'subcategory_petToys' | 'subcategory_sandals' | 'subcategory_sandalsSlides' | 'subcategory_school' | 'subcategory_sets' | 'subcategory_shirts' | 'subcategory_shirtsBBousesr' | 'subcategory_shorts' | 'subcategory_skincare' | 'subcategory_skirts' | 'subcategory_sneakers' | 'subcategory_storage' | 'subcategory_suiBbazers' | 'subcategory_suits' | 'subcategory_sweatersHoodies' | 'subcategory_swimwear' | 'subcategory_tShirts' | 'subcategory_textiles' | 'subcategory_tools' | 'subcategory_tops' | 'subcategory_topsShirts' | 'subcategory_totes' | 'subcategory_toys' | 'subcategory_travel' | 'subcategory_tshirts' | 'subcategory_underwear' | 'subcategory_watches' | 'success_copied' | 'success_deleted' | 'success_saved' | 'success_updated' | 'test' | 'top_rated_sellers' | 'trending_brands' | 'trending_featured' | 'trending_item' | 'trending_newSeller' | 'trending_now' | 'trending_promoted' | 'trending_title' | 'trending_topSellers' | 'ui_scroll' | 'upgrade_activePlan' | 'upgrade_brandFeature1' | 'upgrade_brandFeature2' | 'upgrade_brandFeature3' | 'upgrade_brandPlan' | 'upgrade_cancelConfirm' | 'upgrade_cancelPlan' | 'upgrade_cancelSubscriptionFailed' | 'upgrade_cancelSuccess' | 'upgrade_canceling' | 'upgrade_choosePlan' | 'upgrade_contactSupport' | 'upgrade_createSubscriptionFailed' | 'upgrade_current' | 'upgrade_currentPlan' | 'upgrade_discountFirstMonth' | 'upgrade_faqBusinessRequirements' | 'upgrade_faqBusinessRequirementsAnswer' | 'upgrade_faqChangePlans' | 'upgrade_faqChangePlansAnswer' | 'upgrade_faqEarlyBirdRecurring' | 'upgrade_faqEarlyBirdRecurringAnswer' | 'upgrade_faqRemainingBoosts' | 'upgrade_faqRemainingBoostsAnswer' | 'upgrade_faqSubtitle' | 'upgrade_faqTitle' | 'upgrade_features' | 'upgrade_freeFeature1' | 'upgrade_freeFeature2' | 'upgrade_freeFeature3' | 'upgrade_freePlan' | 'upgrade_getBrand' | 'upgrade_getPremium' | 'upgrade_month' | 'upgrade_mostPopular' | 'upgrade_paymentFailed' | 'upgrade_paymentSetupFailed' | 'upgrade_perMonth' | 'upgrade_popular' | 'upgrade_premiumFeature1' | 'upgrade_premiumFeature2' | 'upgrade_premiumFeature3' | 'upgrade_premiumPlan' | 'upgrade_processing' | 'upgrade_recommended' | 'upgrade_subscribe' | 'upgrade_subscriptionFailed' | 'upgrade_subtitle' | 'upgrade_supportSubtitle' | 'upgrade_supportTitle' | 'upgrade_title' | 'verified_brands' | 'view_details' | 'welcome' | 'welcome_modal_back' | 'welcome_modal_designer' | 'welcome_modal_discover' | 'welcome_modal_discoverDesc' | 'welcome_modal_getStarted' | 'welcome_modal_happySellers' | 'welcome_modal_next' | 'welcome_modal_ready' | 'welcome_modal_readyDesc' | 'welcome_modal_sell' | 'welcome_modal_sellDesc' | 'welcome_modal_skip' | 'welcome_modal_totalSales' | 'welcome_modal_trending' | 'welcome_modal_trustedMarketplace' | 'welcome_modal_vintage' | 'welcome_modal_welcome' | 'welcome_modal_welcomeBrand' | 'welcome_modal_welcomePersonal';
+export type MessageKey = 'addFavorite' | 'add_to_favorites' | 'admin_amount' | 'admin_back' | 'admin_backToSite' | 'admin_buyer' | 'admin_commission' | 'admin_created' | 'admin_dashboard' | 'admin_date' | 'admin_delivered' | 'admin_driploAdmin' | 'admin_loading' | 'admin_managePayouts' | 'admin_markCompleted' | 'admin_markFailed' | 'admin_monitorMetrics' | 'admin_noOrders' | 'admin_noPendingPayouts' | 'admin_noProcessingPayouts' | 'admin_orderId' | 'admin_payoutManagement' | 'admin_payoutsAppearHere' | 'admin_pending' | 'admin_pendingPayouts' | 'admin_platformCommission' | 'admin_processing' | 'admin_recentOrders' | 'admin_ref' | 'admin_refresh' | 'admin_seller' | 'admin_startProcessing' | 'admin_status' | 'admin_totalOrders' | 'admin_totalPendingAmount' | 'admin_totalProducts' | 'admin_totalRevenue' | 'admin_totalUsers' | 'admin_trackProcessPayouts' | 'admin_viewMainSite' | 'auth_alreadyHaveAccount' | 'auth_and' | 'auth_confirmPassword' | 'auth_createAccount' | 'auth_dontHaveAccount' | 'auth_email' | 'auth_firstName' | 'auth_forgotPassword' | 'auth_lastName' | 'auth_orContinueWith' | 'auth_password' | 'auth_privacyPolicy' | 'auth_rememberMe' | 'auth_signIn' | 'auth_signOut' | 'auth_signUp' | 'auth_termsAgreement' | 'auth_termsOfService' | 'auth_username' | 'badge_admin' | 'badge_brand' | 'badge_new' | 'badge_pro' | 'banner_business' | 'banner_by' | 'banner_close' | 'banner_currentlyActive' | 'banner_earlyBird' | 'banner_endsSoon' | 'banner_firstMonth' | 'banner_freeBoostEarly' | 'banner_freeShipping' | 'banner_joinCommunity' | 'banner_justAdded' | 'banner_limitedTime' | 'banner_live' | 'banner_mostPopular' | 'banner_newArrivals' | 'banner_off' | 'banner_offApplied' | 'banner_percentOff' | 'banner_priorityPlacement' | 'banner_recentListings' | 'banner_register' | 'banner_sale' | 'banner_sellBuySecond' | 'banner_shopNow' | 'banner_spotsLeft' | 'banner_startSelling' | 'banner_startSellingFree' | 'banner_v1Launch' | 'banner_viewProduct' | 'banner_welcomeToDriplo' | 'boosted_listings' | 'brands_discover_description' | 'brands_view_profile' | 'breadcrumb_dashboard' | 'breadcrumb_orders' | 'breadcrumb_sales' | 'breadcrumb_settings' | 'breadcrumb_upgrade' | 'bundle_addFiveItems' | 'bundle_addMoreFrom' | 'bundle_addThreeItems' | 'bundle_addTwoItems' | 'bundle_checkoutItems' | 'bundle_continueToCheckout' | 'bundle_item' | 'bundle_items' | 'bundle_itemsTotal' | 'bundle_justThisItem' | 'bundle_loading' | 'bundle_noOtherItems' | 'bundle_quickOptions' | 'bundle_saveAmount' | 'bundle_saveOnShipping' | 'bundle_savePerItem' | 'bundle_serviceFee' | 'bundle_shipTogether' | 'bundle_shipping' | 'bundle_showAll' | 'bundle_subtitle' | 'bundle_title' | 'bundle_total' | 'bundle_youSave' | 'bundle_yourBundle' | 'buyNow' | 'buyer_protection' | 'category_accessories' | 'category_accessoriesList' | 'category_accessoriesType' | 'category_activewear' | 'category_all' | 'category_backpacks' | 'category_bags' | 'category_bagsAndPurses' | 'category_bagsType' | 'category_bandanas' | 'category_beauty' | 'category_belts' | 'category_bibs' | 'category_boots' | 'category_bottomsheet_all' | 'category_bottomsheet_allCategory' | 'category_bottomsheet_back' | 'category_bottomsheet_categories' | 'category_bottomsheet_close' | 'category_briefcases' | 'category_categories' | 'category_clearAll' | 'category_clothing' | 'category_clutches' | 'category_crossbody' | 'category_crossbodyBags' | 'category_cufflinks' | 'category_designer' | 'category_dresses' | 'category_dropdown_allCategories' | 'category_dropdown_allCategoriesSelected' | 'category_dropdown_allFiltersCleared' | 'category_dropdown_allSpecificSelected' | 'category_dropdown_allSubcategorySelected' | 'category_dropdown_ariaLabel' | 'category_dropdown_backToCategories' | 'category_dropdown_categories' | 'category_dropdown_listboxAriaLabel' | 'category_dropdown_navigatedBack' | 'category_dropdown_navigatedBackMain' | 'category_dropdown_navigatedBackSubcategories' | 'category_dropdown_selectedCategory' | 'category_dropdown_selectedSpecific' | 'category_dropdown_selectedSubcategory' | 'category_duffelBags' | 'category_filters' | 'category_flats' | 'category_formalShoes' | 'category_gloves' | 'category_glovesAndMittens' | 'category_gymBags' | 'category_hairAccessories' | 'category_handbags' | 'category_hatsAndCaps' | 'category_heels' | 'category_home' | 'category_hoodies' | 'category_includes' | 'category_itemsCount' | 'category_jackets' | 'category_jacketsCoats' | 'category_jeans' | 'category_jewelry' | 'category_keychains' | 'category_kids' | 'category_kids_title' | 'category_laptopBags' | 'category_lingerie' | 'category_lingerieUnderwear' | 'category_loadMore' | 'category_lunchBags' | 'category_makeupBags' | 'category_men' | 'category_men_title' | 'category_messengerBags' | 'category_miniBags' | 'category_pantsJeans' | 'category_pantsTrousers' | 'category_pets' | 'category_phoneCases' | 'category_pocketSquares' | 'category_sandals' | 'category_sandalsSlides' | 'category_scarves' | 'category_schoolBags' | 'category_searchPlaceholder' | 'category_selected' | 'category_shawls' | 'category_shirts' | 'category_shirtsBlouses' | 'category_shoes' | 'category_shoesType' | 'category_shorts' | 'category_shoulderBags' | 'category_skirts' | 'category_sneakers' | 'category_suitsBlazers' | 'category_sunglasses' | 'category_suspenders' | 'category_sweaters' | 'category_sweatersHoodies' | 'category_swimwear' | 'category_ties' | 'category_tops' | 'category_topsTshirts' | 'category_toteBags' | 'category_totes' | 'category_translation_fallback_used' | 'category_translation_missing' | 'category_travel' | 'category_travelBags' | 'category_tshirts' | 'category_underwear' | 'category_unisex' | 'category_vintage' | 'category_wallets' | 'category_walletsAndPurses' | 'category_watches' | 'category_women' | 'category_women_title' | 'checkout_addAddress' | 'checkout_addCard' | 'checkout_billingAddress' | 'checkout_checkout' | 'checkout_completePurchase' | 'checkout_completePurchaseButton' | 'checkout_continueShopping' | 'checkout_emailConfirmation' | 'checkout_initializingPayment' | 'checkout_orderPlaced' | 'checkout_orderSummary' | 'checkout_pay' | 'checkout_paymentDetails' | 'checkout_paymentFailed' | 'checkout_paymentMethod' | 'checkout_paymentReference' | 'checkout_paymentSuccessful' | 'checkout_paymentSuccessfulDesc' | 'checkout_paymentSystemNotInitialized' | 'checkout_placeOrder' | 'checkout_proceedToPayment' | 'checkout_processing' | 'checkout_sameAsShipping' | 'checkout_serviceFee' | 'checkout_shipping' | 'checkout_shippingAddress' | 'checkout_subtotal' | 'checkout_summary' | 'checkout_tax' | 'checkout_total' | 'checkout_viewYourOrders' | 'close' | 'collection_addItem' | 'collection_addToCollection' | 'collection_allProducts' | 'collection_confirmDelete' | 'collection_createCollection' | 'collection_createNew' | 'collection_deleteCollection' | 'collection_description' | 'collection_editCollection' | 'collection_emptyCollection' | 'collection_items' | 'collection_myCollections' | 'collection_name' | 'collection_noCollections' | 'collection_private' | 'collection_public' | 'collection_removeFromCollection' | 'collection_saveChanges' | 'collection_selectCollection' | 'collection_visibility' | 'collections_designer' | 'collections_designerPremium' | 'collections_drip' | 'collections_likeNew' | 'collections_newWithTags' | 'collections_under25' | 'common_back' | 'common_cancel' | 'common_close' | 'common_confirm' | 'common_currency' | 'common_delete' | 'common_edit' | 'common_next' | 'common_no' | 'common_ok' | 'common_previous' | 'common_quickActions' | 'common_save' | 'common_scroll' | 'common_submit' | 'common_support' | 'common_yes' | 'condition_all' | 'condition_brandNew' | 'condition_brandNewWithTags' | 'condition_excellent' | 'condition_fair' | 'condition_good' | 'condition_likeNew' | 'condition_new' | 'condition_newWithTags' | 'condition_newWithoutTags' | 'condition_poor' | 'condition_used' | 'condition_worn' | 'conversation_archiveChat' | 'conversation_block' | 'conversation_deleteConversation' | 'conversation_markAsRead' | 'conversation_markAsUnread' | 'conversation_muteNotifications' | 'conversation_noMessages' | 'conversation_report' | 'conversation_startConversation' | 'conversation_unarchive' | 'conversation_unmute' | 'currency_symbol' | 'dashboard_action' | 'dashboard_actions' | 'dashboard_activeListings' | 'dashboard_activeListingsTitle' | 'dashboard_adminPanel' | 'dashboard_age18to24' | 'dashboard_age25to34' | 'dashboard_age35to44' | 'dashboard_age45plus' | 'dashboard_allOrders' | 'dashboard_allTime' | 'dashboard_analytics' | 'dashboard_availableBalance' | 'dashboard_bankAccount' | 'dashboard_buyer' | 'dashboard_cancelled' | 'dashboard_change' | 'dashboard_chartImplemented' | 'dashboard_completeProfile' | 'dashboard_completeProfileDesc' | 'dashboard_completeSetup' | 'dashboard_conversionRate' | 'dashboard_createFirstListing' | 'dashboard_createListing' | 'dashboard_currentlyLive' | 'dashboard_customerDemographics' | 'dashboard_daily' | 'dashboard_date' | 'dashboard_daysAgo' | 'dashboard_defaultShippingPrice' | 'dashboard_delivered' | 'dashboard_direct' | 'dashboard_earnings' | 'dashboard_edit' | 'dashboard_export' | 'dashboard_filter' | 'dashboard_hoursAgo' | 'dashboard_inventory' | 'dashboard_justNow' | 'dashboard_lastMonthIncrease' | 'dashboard_listings' | 'dashboard_logIn' | 'dashboard_manageListings' | 'dashboard_minutesAgo' | 'dashboard_monthSales' | 'dashboard_monthly' | 'dashboard_myListings' | 'dashboard_newListing' | 'dashboard_noActiveListings' | 'dashboard_noRecentOrders' | 'dashboard_orderId' | 'dashboard_orderManagement' | 'dashboard_orders' | 'dashboard_overview' | 'dashboard_paymentSettings' | 'dashboard_payoutSchedule' | 'dashboard_pendingShipment' | 'dashboard_performance' | 'dashboard_performanceOverview' | 'dashboard_pleaseLogin' | 'dashboard_price' | 'dashboard_processingTime' | 'dashboard_processingTime1Week' | 'dashboard_processingTime1to2Days' | 'dashboard_processingTime3to5Days' | 'dashboard_product' | 'dashboard_purchases' | 'dashboard_recentOrders' | 'dashboard_sales' | 'dashboard_saveSettings' | 'dashboard_search' | 'dashboard_searchListings' | 'dashboard_settings' | 'dashboard_ship' | 'dashboard_shipped' | 'dashboard_shippingSettings' | 'dashboard_shopCurrentlyActive' | 'dashboard_shopDescription' | 'dashboard_shopDescriptionPlaceholder' | 'dashboard_shopName' | 'dashboard_shopSettings' | 'dashboard_shopStatus' | 'dashboard_social' | 'dashboard_soldItems' | 'dashboard_statistics' | 'dashboard_status' | 'dashboard_thisMonth' | 'dashboard_time' | 'dashboard_topPerformingProducts' | 'dashboard_total' | 'dashboard_totalEarned' | 'dashboard_totalRevenue' | 'dashboard_totalViews' | 'dashboard_trafficSources' | 'dashboard_upgrade' | 'dashboard_vacationMode' | 'dashboard_view' | 'dashboard_viewAll' | 'dashboard_views' | 'dashboard_viewsToSales' | 'dashboard_weekly' | 'dashboard_welcome' | 'dashboard_welcomeBack' | 'dashboard_yourActiveListings' | 'empty_exploreItems' | 'empty_noFavorites' | 'empty_noItems' | 'empty_noListings' | 'empty_noMessages' | 'empty_noOrders' | 'empty_noProducts' | 'empty_noResults' | 'empty_noSales' | 'empty_startBrowsing' | 'empty_startSelling' | 'engagement_banner_description' | 'engagement_banner_dismiss' | 'engagement_banner_later' | 'engagement_banner_signUp' | 'engagement_banner_title' | 'error_atLeastOnePhoto' | 'error_categoryRequired' | 'error_failedToCreateProduct' | 'error_fetchingData' | 'error_generic' | 'error_genericError' | 'error_invalidEmail' | 'error_invalidInput' | 'error_loadingFailed' | 'error_network' | 'error_networkError' | 'error_notAuthenticated' | 'error_notFound' | 'error_pageNotFound' | 'error_pleaseTryAgain' | 'error_requiredField' | 'error_serverError' | 'error_tryAgain' | 'error_unauthorized' | 'error_uploadFailed' | 'error_validation' | 'explore_brands' | 'fast_shipping' | 'favorites_addToFavorites' | 'favorites_myFavorites' | 'favorites_removeFromFavorites' | 'favorites_removed' | 'favorites_saved' | 'filter_allCategories' | 'filter_applied_activeFiltersCount' | 'filter_applied_allFiltersCleared' | 'filter_applied_ariaLabel' | 'filter_applied_clearAll' | 'filter_applied_filterRemoved' | 'filter_applied_removeFilter' | 'filter_apply' | 'filter_bestRated' | 'filter_brand' | 'filter_category' | 'filter_clearAll' | 'filter_color' | 'filter_condition' | 'filter_freeShipping' | 'filter_maxPrice' | 'filter_minPrice' | 'filter_modal_applied' | 'filter_modal_applyFilters' | 'filter_modal_clearAll' | 'filter_modal_close' | 'filter_modal_filter' | 'filter_modal_filters' | 'filter_modal_maxPrice' | 'filter_modal_minPrice' | 'filter_modal_modalDescription' | 'filter_modal_title' | 'filter_mostPopular' | 'filter_newItems' | 'filter_newToday' | 'filter_newest' | 'filter_onSale' | 'filter_pills_ariaLabel' | 'filter_pills_ariaPressed' | 'filter_price' | 'filter_priceHighToLow' | 'filter_priceLowToHigh' | 'filter_priceRange' | 'filter_reset' | 'filter_showLess' | 'filter_showMore' | 'filter_showResults' | 'filter_size' | 'filter_sortBy' | 'filter_text_contraction_test' | 'filter_text_expansion_test' | 'filter_trending' | 'filter_ui_allFiltersCleared' | 'filter_ui_applied' | 'filter_ui_clearAllHelp' | 'filter_ui_filterApplied' | 'filter_ui_filterOptionsAriaLabel' | 'filter_ui_filterRemovalHelp' | 'filter_ui_filterRemoved' | 'filter_ui_filtersCleared' | 'filter_ui_keyboardNavHelp' | 'filter_ui_removed' | 'filter_under20' | 'footer_about' | 'footer_aboutUs' | 'footer_allRightsReserved' | 'footer_blog' | 'footer_bulgaria' | 'footer_buyerProtection' | 'footer_careers' | 'footer_company' | 'footer_contact' | 'footer_contactUs' | 'footer_cookies' | 'footer_copyright' | 'footer_faq' | 'footer_followUs' | 'footer_help' | 'footer_howItWorks' | 'footer_in' | 'footer_legal' | 'footer_madeWith' | 'footer_newsletter' | 'footer_newsletterPlaceholder' | 'footer_press' | 'footer_privacy' | 'footer_privacyPolicy' | 'footer_returnPolicy' | 'footer_returns' | 'footer_sellerGuide' | 'footer_shippingInfo' | 'footer_subscribe' | 'footer_support' | 'footer_terms' | 'footer_termsOfService' | 'footer_trustAndSafety' | 'footer_trustSafety' | 'form_cancel' | 'form_confirm' | 'form_delete' | 'form_edit' | 'form_remove' | 'form_save' | 'form_saveChanges' | 'form_submit' | 'form_update' | 'hello' | 'highlight_sellers' | 'home_browseAll' | 'home_itemCount' | 'home_newestListings' | 'home_promotedDescription' | 'home_promotedListings' | 'home_searchSuggestions_designerBags' | 'home_searchSuggestions_sneakers' | 'home_searchSuggestions_summerDresses' | 'home_searchSuggestions_vintageJackets' | 'home_topSellers' | 'home_trending_designerBagsUnder100' | 'home_trending_vintageJackets' | 'home_trending_y2kJeans' | 'home_updatedMomentsAgo' | 'listing_active' | 'listing_archived' | 'listing_delete' | 'listing_deleteListing' | 'listing_draft' | 'listing_edit' | 'listing_editListing' | 'listing_markAsSold' | 'listing_pause' | 'listing_publish' | 'listing_reactivate' | 'listing_sold' | 'listing_status' | 'listing_unpause' | 'listing_viewListing' | 'listings_active' | 'listings_all' | 'listings_createFirst' | 'listings_draft' | 'listings_getStarted' | 'listings_manageProducts' | 'listings_myListings' | 'listings_newListing' | 'listings_noListings' | 'listings_pageTitle' | 'listings_sold' | 'listings_total' | 'loading' | 'loading_loading' | 'loading_pleaseWait' | 'loading_processing' | 'makeOffer' | 'menu_browse' | 'menu_sellItems' | 'message' | 'message_block' | 'message_delete' | 'message_delivered' | 'message_markAsRead' | 'message_newMessage' | 'message_noMessages' | 'message_read' | 'message_report' | 'message_sendMessage' | 'message_startConversation' | 'message_typeMessage' | 'message_typing' | 'message_unread' | 'messages_acceptOffer' | 'messages_activeNow' | 'messages_all' | 'messages_bundle' | 'messages_bundleOffer' | 'messages_buying' | 'messages_chooseMessage' | 'messages_conversationWith' | 'messages_counterOffer' | 'messages_declineOffer' | 'messages_dismiss' | 'messages_inbox' | 'messages_location' | 'messages_makeOffer' | 'messages_messageDeleted' | 'messages_messageInput' | 'messages_messageSent' | 'messages_new' | 'messages_newMessage' | 'messages_noConversations' | 'messages_noProducts' | 'messages_now' | 'messages_offers' | 'messages_photo' | 'messages_read' | 'messages_reply' | 'messages_save' | 'messages_selectConversation' | 'messages_selling' | 'messages_sendMessage' | 'messages_sent' | 'messages_today' | 'messages_typeMessage' | 'messages_unread' | 'nav_account' | 'nav_back' | 'nav_browse' | 'nav_browseCategories' | 'nav_cart' | 'nav_close' | 'nav_favorites' | 'nav_help' | 'nav_home' | 'nav_inbox' | 'nav_languageTheme' | 'nav_login' | 'nav_logout' | 'nav_menu' | 'nav_messages' | 'nav_myAccount' | 'nav_myListings' | 'nav_myOrders' | 'nav_myPurchases' | 'nav_mySales' | 'nav_newArrivals' | 'nav_notifications' | 'nav_orders' | 'nav_profile' | 'nav_purchases' | 'nav_quickShop' | 'nav_sales' | 'nav_search' | 'nav_sell' | 'nav_settings' | 'nav_shop' | 'nav_signIn' | 'nav_signOut' | 'nav_signUp' | 'nav_signup' | 'nav_startSelling' | 'nav_supportCenter' | 'nav_topBrands' | 'nav_topSellers' | 'nav_wishlist' | 'notification_clearAll' | 'notification_error' | 'notification_info' | 'notification_itemLiked' | 'notification_itemSold' | 'notification_markAllRead' | 'notification_newFollower' | 'notification_offerReceived' | 'notification_priceDropped' | 'notification_reviewReceived' | 'notification_settings' | 'notification_success' | 'notification_warning' | 'notifications_markAllRead' | 'notifications_noNotifications' | 'notifications_notifyWhenSomethingHappens' | 'notifications_title' | 'notifications_unread' | 'notifications_viewAll' | 'onboarding_accountTypeBrand' | 'onboarding_accountTypePersonal' | 'onboarding_addPayment' | 'onboarding_back' | 'onboarding_brandAccount' | 'onboarding_brandAccountDesc' | 'onboarding_brandFeature1' | 'onboarding_brandFeature2' | 'onboarding_brandFeature3' | 'onboarding_brandFeature4' | 'onboarding_brandPending' | 'onboarding_brandProfileComplete' | 'onboarding_brandProfileSetup' | 'onboarding_brandSetupComplete' | 'onboarding_chooseAccountType' | 'onboarding_chooseAvatar' | 'onboarding_choosePaymentMethod' | 'onboarding_chooseUniqueUsername' | 'onboarding_completeProfile' | 'onboarding_completeSetup' | 'onboarding_connectSocials' | 'onboarding_continue' | 'onboarding_createProfile' | 'onboarding_designer' | 'onboarding_discover' | 'onboarding_discoverDesc' | 'onboarding_finish' | 'onboarding_free' | 'onboarding_fullNameOptional' | 'onboarding_generateNew' | 'onboarding_getStarted' | 'onboarding_goToDashboard' | 'onboarding_happySellers' | 'onboarding_helpBuyersDiscover' | 'onboarding_next' | 'onboarding_of' | 'onboarding_paymentReady' | 'onboarding_perMonth' | 'onboarding_personalAccount' | 'onboarding_personalAccountDesc' | 'onboarding_personalFeature1' | 'onboarding_personalFeature2' | 'onboarding_personalFeature3' | 'onboarding_personalFeature4' | 'onboarding_pickProfilePicture' | 'onboarding_popular' | 'onboarding_profileComplete' | 'onboarding_profileCreated' | 'onboarding_profileVerified' | 'onboarding_ready' | 'onboarding_readyDesc' | 'onboarding_select' | 'onboarding_selectPerfectPlan' | 'onboarding_selected' | 'onboarding_sell' | 'onboarding_sellDesc' | 'onboarding_settingUp' | 'onboarding_setupComplete' | 'onboarding_setupPayouts' | 'onboarding_skip' | 'onboarding_startExploring' | 'onboarding_startSelling' | 'onboarding_step' | 'onboarding_tellAboutYourself' | 'onboarding_totalSales' | 'onboarding_trending' | 'onboarding_trustedMarketplace' | 'onboarding_tutorial_discoverContent' | 'onboarding_tutorial_discoverTitle' | 'onboarding_tutorial_listItemContentBrand' | 'onboarding_tutorial_listItemContentPersonal' | 'onboarding_tutorial_listItemTitle' | 'onboarding_tutorial_readyContent' | 'onboarding_tutorial_readyTitle' | 'onboarding_tutorial_stayConnectedContent' | 'onboarding_tutorial_stayConnectedTitle' | 'onboarding_tutorial_welcomeContent' | 'onboarding_tutorial_welcomeTitle' | 'onboarding_uploadCustom' | 'onboarding_usernameMinLength' | 'onboarding_verifyEmail' | 'onboarding_vintage' | 'onboarding_welcome' | 'onboarding_welcomeBrand' | 'onboarding_welcomePersonal' | 'order_buyer' | 'order_cancel' | 'order_cancelOrder' | 'order_cancelReason' | 'order_cancelled' | 'order_completed' | 'order_confirmDelivery' | 'order_confirmReceived' | 'order_contactBuyer' | 'order_contactSeller' | 'order_date' | 'order_delivered' | 'order_details' | 'order_id' | 'order_inTransit' | 'order_markAsShipped' | 'order_number' | 'order_orderDetails' | 'order_orderHistory' | 'order_orderNumber' | 'order_orderSummary' | 'order_pending' | 'order_price' | 'order_processing' | 'order_quantity' | 'order_refund' | 'order_refunded' | 'order_requestRefund' | 'order_seller' | 'order_shipped' | 'order_shipping' | 'order_shippingAddress' | 'order_shippingMethod' | 'order_status' | 'order_subtotal' | 'order_tax' | 'order_total' | 'order_trackOrder' | 'order_trackShipment' | 'order_trackingNumber' | 'order_viewOrder' | 'orders_allOrders' | 'orders_buyer' | 'orders_cancelOrder' | 'orders_completed' | 'orders_issues' | 'orders_itemsToShip' | 'orders_leaveReview' | 'orders_markAsShipped' | 'orders_messageBuyer' | 'orders_messageSeller' | 'orders_myOrders' | 'orders_noImage' | 'orders_noOrdersFound' | 'orders_noOrdersYet' | 'orders_purchases' | 'orders_sales' | 'orders_seller' | 'orders_ship' | 'orders_shipTo' | 'orders_shipped' | 'orders_startShopping' | 'orders_statusCancelled' | 'orders_statusDelivered' | 'orders_statusPaid' | 'orders_statusPending' | 'orders_statusShipped' | 'orders_subtitle' | 'orders_title' | 'orders_toReview' | 'orders_totalOrders' | 'orders_trackingNumber' | 'orders_unknownProduct' | 'orders_updating' | 'orders_viewProduct' | 'pagination_goToPage' | 'pagination_of' | 'pagination_page' | 'pagination_results' | 'pagination_showing' | 'payment_addPaymentMethod' | 'payment_billingAddress' | 'payment_cardNumber' | 'payment_cvv' | 'payment_expiryDate' | 'payment_failed' | 'payment_method' | 'payment_nameOnCard' | 'payment_payNow' | 'payment_paymentDetails' | 'payment_paymentFailed' | 'payment_paymentMethod' | 'payment_paymentSuccessful' | 'payment_processing' | 'payment_saveCard' | 'payment_securePayment' | 'payment_selectPaymentMethod' | 'payment_success' | 'pdp_a11y_closeModal' | 'pdp_a11y_favoriteAdded' | 'pdp_a11y_favoriteRemoved' | 'pdp_a11y_galleryFullscreen' | 'pdp_a11y_galleryNext' | 'pdp_a11y_galleryPrevious' | 'pdp_a11y_mainContent' | 'pdp_a11y_priceUpdate' | 'pdp_a11y_productImage' | 'pdp_a11y_sidebar' | 'pdp_addToCart' | 'pdp_addToFavorites' | 'pdp_askQuestion' | 'pdp_authenticity' | 'pdp_brand' | 'pdp_buyNow' | 'pdp_buyerProtection' | 'pdp_careInstructions' | 'pdp_category' | 'pdp_color' | 'pdp_condition' | 'pdp_customerReviews' | 'pdp_daysAgo' | 'pdp_description' | 'pdp_details' | 'pdp_discount' | 'pdp_error' | 'pdp_estimatedDelivery' | 'pdp_fastShipping' | 'pdp_freeShipping' | 'pdp_goBack' | 'pdp_helpful' | 'pdp_hoursAgo' | 'pdp_justNow' | 'pdp_loading' | 'pdp_loginToBuy' | 'pdp_loginToFavorite' | 'pdp_loginrequired1' | 'pdp_makeOffer' | 'pdp_material' | 'pdp_measurements' | 'pdp_messageSeller' | 'pdp_metaDescription' | 'pdp_minutesAgo' | 'pdp_moreFromSeller' | 'pdp_networkError' | 'pdp_notHelpful' | 'pdp_originalPrice' | 'pdp_otherItemsFromSeller' | 'pdp_price' | 'pdp_processing' | 'pdp_productDetails' | 'pdp_productNotFound' | 'pdp_productUnavailable' | 'pdp_rating' | 'pdp_readMore' | 'pdp_recentlyViewed' | 'pdp_relatedProducts' | 'pdp_removeFromFavorites' | 'pdp_reportItem' | 'pdp_retry' | 'pdp_reviewVerified' | 'pdp_reviews' | 'pdp_reviewsCount' | 'pdp_reviewsCountOne' | 'pdp_reviewsCountZero' | 'pdp_secureCheckout' | 'pdp_securePayment' | 'pdp_seller' | 'pdp_sellerJoined' | 'pdp_sellerRating' | 'pdp_sellerResponseTime' | 'pdp_sellerSales' | 'pdp_sellerVerified' | 'pdp_share' | 'pdp_shipping' | 'pdp_shippingCalculate' | 'pdp_shippingChange' | 'pdp_shippingFrom' | 'pdp_shippingProtection' | 'pdp_showLess' | 'pdp_similarItems' | 'pdp_size' | 'pdp_sold' | 'pdp_soldBy' | 'pdp_soldOut' | 'pdp_specifications' | 'pdp_stars' | 'pdp_viewAll' | 'pdp_viewAllReviews' | 'pdp_viewMore' | 'pdp_viewSellerProfile' | 'pdp_views' | 'pdp_viewsOne' | 'pdp_writeReview' | 'pdp_youMayAlsoLike' | 'pdp_youMightAlsoLike' | 'pdp_yourItem' | 'price' | 'price_free' | 'price_makeAnOffer' | 'price_negotiable' | 'price_priceReduced' | 'product_addToCart' | 'product_addToFavorites' | 'product_askQuestion' | 'product_availability' | 'product_available' | 'product_beFirstToLike' | 'product_brand' | 'product_businessDays' | 'product_buyNow' | 'product_category' | 'product_close' | 'product_color' | 'product_condition' | 'product_contactSeller' | 'product_copyLink' | 'product_daysAgo' | 'product_description' | 'product_details' | 'product_disputeResolution' | 'product_driploProtection' | 'product_editListing' | 'product_expressShipping' | 'product_fair' | 'product_fairCondition' | 'product_fastDelivery' | 'product_favorite' | 'product_freeShipping' | 'product_freeShippingLower' | 'product_good' | 'product_goodCondition' | 'product_inStock' | 'product_itemDetails' | 'product_itemSold' | 'product_lastOne' | 'product_like' | 'product_likeNew' | 'product_likeNewCondition' | 'product_likes' | 'product_limitedStock' | 'product_location' | 'product_makeOffer' | 'product_material' | 'product_message' | 'product_moneyBackGuarantee' | 'product_monthsAgo' | 'product_moreFromSeller' | 'product_new' | 'product_newWithTags' | 'product_oneSize' | 'product_originalCondition' | 'product_outOfStock' | 'product_payment' | 'product_peopleViewing' | 'product_postedTime' | 'product_price' | 'product_productDetails' | 'product_protection' | 'product_quantity' | 'product_readMore' | 'product_recentItems' | 'product_relatedProducts' | 'product_reportItem' | 'product_response' | 'product_returnPolicy' | 'product_returns' | 'product_reviews' | 'product_sales' | 'product_save' | 'product_saveForLater' | 'product_securePayments' | 'product_seller' | 'product_sellerStats' | 'product_share' | 'product_shipping' | 'product_shippingCosts' | 'product_shippingInfo' | 'product_shippingReturns' | 'product_shippingTimes' | 'product_shipsIn' | 'product_showLess' | 'product_similar' | 'product_size' | 'product_sizeGuide' | 'product_sizeGuideComingSoon' | 'product_sizingQuestions' | 'product_sku' | 'product_sold' | 'product_soldOut' | 'product_specifications' | 'product_standardShipping' | 'product_today' | 'product_unavailable' | 'product_viewAll' | 'product_viewAnalytics' | 'product_viewDetails' | 'product_viewFullShipping' | 'product_viewProduct' | 'product_viewProfile' | 'product_viewedTimes' | 'product_weeksAgo' | 'product_yesterday' | 'product_youMayAlsoLike' | 'product_youMightLike' | 'product_yourListing' | 'profile_about' | 'profile_addLink' | 'profile_anonymous' | 'profile_avatar' | 'profile_bio' | 'profile_cancel' | 'profile_changePhoto' | 'profile_customAvatar' | 'profile_dashboard' | 'profile_dropHere' | 'profile_editProfile' | 'profile_favorites' | 'profile_feedback' | 'profile_follow' | 'profile_followers' | 'profile_following' | 'profile_fullName' | 'profile_instagram' | 'profile_items' | 'profile_itemsSold' | 'profile_joinDate' | 'profile_joined' | 'profile_likes' | 'profile_listings' | 'profile_location' | 'profile_memberSince' | 'profile_message' | 'profile_myProfile' | 'profile_noListingsYet' | 'profile_noRatingsYet' | 'profile_noReviewsYet' | 'profile_orders' | 'profile_policies' | 'profile_posts' | 'profile_premium' | 'profile_profilePicture' | 'profile_rating' | 'profile_responseTime' | 'profile_returnPolicy' | 'profile_reviews' | 'profile_sales' | 'profile_saveProfile' | 'profile_saving' | 'profile_securePayments' | 'profile_selectPhoto' | 'profile_seller' | 'profile_sellerProfile' | 'profile_sellerStats' | 'profile_settings' | 'profile_shipsWithin' | 'profile_socialLinks' | 'profile_sold' | 'profile_startSelling' | 'profile_tellPeopleAboutYourself' | 'profile_tiktok' | 'profile_uploadAvatar' | 'profile_uploadYourOwn' | 'profile_uploadingAvatar' | 'profile_url' | 'profile_username' | 'profile_verifiedSeller' | 'profile_viewProfile' | 'profile_website' | 'profile_yourAvatar' | 'profile_yourFullName' | 'profile_yourLocation' | 'profile_yourUsername' | 'promoted_description' | 'promoted_hotPicks' | 'promoted_listings' | 'promoted_premiumSellers' | 'quick_buy' | 'rating_excellent' | 'rating_good' | 'rating_poor' | 'rating_rateExperience' | 'rating_rating' | 'rating_reviews' | 'removeFavorite' | 'remove_from_favorites' | 'sales_activity' | 'sales_allTime' | 'sales_analytics' | 'sales_available' | 'sales_availableBalance' | 'sales_averageOrder' | 'sales_chartComingSoon' | 'sales_createFirstListing' | 'sales_earned' | 'sales_itemSold' | 'sales_itemsSold' | 'sales_manageSoldItems' | 'sales_newSales' | 'sales_noChange' | 'sales_noItemsSoldYet' | 'sales_noOrdersYet' | 'sales_noSalesYet' | 'sales_notifyWhenItemsSell' | 'sales_overview' | 'sales_paidOut' | 'sales_perSale' | 'sales_recentOrders' | 'sales_requestPayout' | 'sales_salesPerformance' | 'sales_soldItems' | 'sales_soldTo' | 'sales_startSelling' | 'sales_thisMonth' | 'sales_thisMonthEarnings' | 'sales_thisMonthSales' | 'sales_totalEarned' | 'sales_totalEarnings' | 'sales_totalOrders' | 'sales_totalSales' | 'sales_totalSalesPlural' | 'sales_viewAllSales' | 'sales_viewOrderDetails' | 'search_adjustFilters' | 'search_all' | 'search_allBrands' | 'search_allCategories' | 'search_allConditions' | 'search_applyFilters' | 'search_back' | 'search_bestSellers' | 'search_brand' | 'search_browseAll' | 'search_categories' | 'search_cheapest' | 'search_clearAll' | 'search_clearAllFilters' | 'search_clearFilters' | 'search_clearSearch' | 'search_condition' | 'search_designer' | 'search_fair' | 'search_fastShip' | 'search_filter' | 'search_filterBy' | 'search_filters' | 'search_findYourSize' | 'search_for' | 'search_good' | 'search_itemsFound' | 'search_itemsYouViewed' | 'search_likeNew' | 'search_max' | 'search_min' | 'search_myFavorites' | 'search_newToday' | 'search_newWithTags' | 'search_newest' | 'search_newestFirst' | 'search_noItemsFound' | 'search_noResults' | 'search_noResultsFor' | 'search_placeholder' | 'search_popularSearches' | 'search_premium' | 'search_priceHighToLow' | 'search_priceLowToHigh' | 'search_priceRange' | 'search_quickAccess' | 'search_quickFilters' | 'search_quickShop' | 'search_recentSearches' | 'search_recentViews' | 'search_relevance' | 'search_results' | 'search_resultsFor' | 'search_savedItems' | 'search_search' | 'search_searchPlaceholder' | 'search_searchProducts' | 'search_searchResults' | 'search_shopByCondition' | 'search_shopByPreference' | 'search_shopByPrice' | 'search_shopSmarter' | 'search_showing' | 'search_size' | 'search_sort' | 'search_sortBy' | 'search_suggestions' | 'search_topSellers' | 'search_trendingNow' | 'search_tryAdjustingFilters' | 'search_under25' | 'search_viewAll' | 'search_viewAllResults' | 'search_whatLookingFor' | 'sell_accessoriesList' | 'sell_add' | 'sell_addBrandSize' | 'sell_addDetailsPlaceholder' | 'sell_addImages' | 'sell_addListing' | 'sell_addPhoto' | 'sell_addPhotos' | 'sell_addTag' | 'sell_analysis' | 'sell_applySuggestions' | 'sell_atLeastOnePhoto' | 'sell_back' | 'sell_basedOnImage' | 'sell_beMoreSpecific' | 'sell_boostDescription' | 'sell_boostYourListing' | 'sell_brand' | 'sell_brandCustomPlaceholder' | 'sell_brandLabel' | 'sell_brandOther' | 'sell_brandPlaceholder' | 'sell_brandPlanFeatures' | 'sell_brandRequired' | 'sell_brandSubscriptionDescription' | 'sell_brandSubscriptionRequired' | 'sell_brandVerificationBadge' | 'sell_businessAccountFeatures' | 'sell_category' | 'sell_categoryDescription' | 'sell_categoryLabel' | 'sell_categoryRequired' | 'sell_categoryTitle' | 'sell_chooseManually' | 'sell_color' | 'sell_colorBeige' | 'sell_colorBlack' | 'sell_colorBlue' | 'sell_colorBrown' | 'sell_colorCustomPlaceholder' | 'sell_colorGray' | 'sell_colorGreen' | 'sell_colorMulti' | 'sell_colorNavy' | 'sell_colorOptional' | 'sell_colorPink' | 'sell_colorPurple' | 'sell_colorRed' | 'sell_colorWhite' | 'sell_condition' | 'sell_conditionLabel' | 'sell_conditionRequired' | 'sell_condition_brandNewWithTags' | 'sell_condition_brandNewWithTags_desc' | 'sell_condition_brandNewWithoutTags' | 'sell_condition_fair' | 'sell_condition_fair_desc' | 'sell_condition_good' | 'sell_condition_good_desc' | 'sell_condition_likeNew' | 'sell_condition_likeNew_desc' | 'sell_condition_newWithoutTags' | 'sell_condition_newWithoutTags_desc' | 'sell_condition_satisfactory' | 'sell_condition_veryGood' | 'sell_condition_worn' | 'sell_condition_worn_desc' | 'sell_confidence' | 'sell_confirmPublish' | 'sell_cover' | 'sell_createListing' | 'sell_customBrandAriaLabel' | 'sell_description' | 'sell_descriptionOptional' | 'sell_descriptionPlaceholder' | 'sell_descriptionRequired' | 'sell_dismissSuggestions' | 'sell_dragDropPhotos' | 'sell_driploFee' | 'sell_dropHere' | 'sell_editDetails' | 'sell_enterBrandName' | 'sell_estimatedEarnings' | 'sell_featuredSearch' | 'sell_free' | 'sell_freeShippingAttractsBuyers' | 'sell_getVisibility' | 'sell_goToDashboard' | 'sell_good' | 'sell_highConfidence' | 'sell_homepageSpotlight' | 'sell_imagesOptimized' | 'sell_includes' | 'sell_kids' | 'sell_listAnother' | 'sell_listItem' | 'sell_listUnlimitedProducts' | 'sell_listYourItem' | 'sell_listingError' | 'sell_listingPrice' | 'sell_listingSuccess' | 'sell_lowConfidence' | 'sell_material' | 'sell_materialCotton' | 'sell_materialCustomPlaceholder' | 'sell_materialDenim' | 'sell_materialLeather' | 'sell_materialOptional' | 'sell_materialPolyester' | 'sell_materialSilk' | 'sell_materialWool' | 'sell_maxPhotosReached' | 'sell_mediumConfidence' | 'sell_men' | 'sell_minCharacters' | 'sell_minPhotosRequired' | 'sell_month' | 'sell_moreAllowed' | 'sell_morePhotos' | 'sell_moreTag' | 'sell_next' | 'sell_notAvailable' | 'sell_optimizedForWeb' | 'sell_optional' | 'sell_other' | 'sell_paymentFee' | 'sell_photoCount' | 'sell_photos' | 'sell_photosAndDetails' | 'sell_photosCount' | 'sell_photosHint' | 'sell_photosSection' | 'sell_photosUploaded' | 'sell_premiumBoost' | 'sell_premiumBoostActive' | 'sell_premiumLeft' | 'sell_previous' | 'sell_price' | 'sell_priceAndPublish' | 'sell_priceLabel' | 'sell_priceLabel2' | 'sell_priceRequired' | 'sell_prioritySupport' | 'sell_processingUpload' | 'sell_productAlt' | 'sell_productDetails' | 'sell_productInfo' | 'sell_publish' | 'sell_publishing' | 'sell_pushNotifications' | 'sell_removeImage' | 'sell_removePhoto' | 'sell_reviewListing' | 'sell_reviewPublish' | 'sell_reviewYourListing' | 'sell_saveDraft' | 'sell_selectCategory' | 'sell_selectColor' | 'sell_selectCondition' | 'sell_selectGenderAge' | 'sell_selectMaterial' | 'sell_selectProductType' | 'sell_selectSize' | 'sell_selectSubcategory' | 'sell_selected' | 'sell_sellAnItem' | 'sell_setCoverPhoto' | 'sell_setPricing' | 'sell_shipping' | 'sell_shippingCost' | 'sell_shippingCostLabel' | 'sell_shippingLabel' | 'sell_shippingPrice' | 'sell_shippingRequired' | 'sell_similarItems' | 'sell_size' | 'sell_sizeGroupNumbers' | 'sell_sizeGroupOther' | 'sell_sizeGroupUKEU' | 'sell_sizeGroupXSXL' | 'sell_sizeLabel' | 'sell_sizePlaceholder' | 'sell_sizeRequired' | 'sell_smartCategorySuggestions' | 'sell_specificCategoryLabel' | 'sell_startSelling' | 'sell_step1' | 'sell_step2' | 'sell_step3' | 'sell_step4' | 'sell_subcategory' | 'sell_subcategoryRequired' | 'sell_subscribeToBrandPlan' | 'sell_suggested' | 'sell_summary' | 'sell_switchToPersonalAccount' | 'sell_tags' | 'sell_tagsHelp' | 'sell_tagsOptional' | 'sell_tagsPlaceholder' | 'sell_title' | 'sell_titleFieldLabel' | 'sell_titleLabel' | 'sell_titlePlaceholder' | 'sell_titleRequired' | 'sell_totalBuyerPays' | 'sell_typeCategoryPlaceholder' | 'sell_unisex' | 'sell_uploadError' | 'sell_uploadJPGPNG' | 'sell_uploadPhotos' | 'sell_uploadPhotos_description' | 'sell_uploadingImages' | 'sell_uploadingPhoto' | 'sell_validationError' | 'sell_viewListing' | 'sell_whatAreYouSelling' | 'sell_whatExactlyIsIt' | 'sell_whatTypeOfProduct' | 'sell_whoIsItFor' | 'sell_whoIsThisFor' | 'sell_women' | 'sell_yourEarnings' | 'seller_aboutSeller' | 'seller_activeAgo' | 'seller_activeNow' | 'seller_allListings' | 'seller_avgShipping' | 'seller_contactSeller' | 'seller_day' | 'seller_days' | 'seller_follow' | 'seller_followers' | 'seller_following' | 'seller_hour' | 'seller_hours' | 'seller_items' | 'seller_memberFor' | 'seller_message' | 'seller_newMember' | 'seller_positiveReviews' | 'seller_premium' | 'seller_premiumSeller' | 'seller_premiumSellerDescription' | 'seller_profile' | 'seller_rating' | 'seller_ratings' | 'seller_recentActivity' | 'seller_respondsIn' | 'seller_respondsWithin' | 'seller_reviews' | 'seller_sales' | 'seller_seller' | 'seller_sellerInfo' | 'seller_sellerProfile' | 'seller_shippedOnTime' | 'seller_since' | 'seller_soldBy' | 'seller_soldThisWeek' | 'seller_superstarSeller' | 'seller_totalSales' | 'seller_trustedSeller' | 'seller_unknown' | 'seller_verified' | 'seller_viewAllListings' | 'seller_viewFullProfile' | 'seller_viewProfile' | 'settings_account' | 'settings_appearance' | 'settings_billing' | 'settings_changePassword' | 'settings_currency' | 'settings_currentPassword' | 'settings_darkMode' | 'settings_deleteAccount' | 'settings_downloadData' | 'settings_email' | 'settings_emailNotifications' | 'settings_language' | 'settings_newPassword' | 'settings_notifications' | 'settings_password' | 'settings_paymentMethods' | 'settings_payments' | 'settings_privacy' | 'settings_profile' | 'settings_pushNotifications' | 'settings_security' | 'settings_shipping' | 'settings_shippingAddress' | 'settings_theme' | 'settings_twoFactor' | 'settings_twoFactorAuth' | 'settings_updateEmail' | 'settings_updatePassword' | 'shipping_carrier' | 'shipping_deliveryDate' | 'shipping_estimatedDelivery' | 'shipping_freeShipping' | 'shipping_overnight' | 'shipping_selectShipping' | 'shipping_shippingAddress' | 'shipping_shippingCost' | 'shipping_shippingDetails' | 'shipping_shippingInfo' | 'shipping_shippingMethod' | 'shipping_standard' | 'shipping_trackingNumber' | 'shipping_twoDay' | 'size' | 'soldOut' | 'sort_mostRecent' | 'sort_popular' | 'sort_priceHighToLow' | 'sort_priceLowToHigh' | 'sort_relevance' | 'status_active' | 'status_cancelled' | 'status_completed' | 'status_draft' | 'status_inactive' | 'status_pending' | 'status_processing' | 'subcategory_accessories' | 'subcategory_activewear' | 'subcategory_art' | 'subcategory_athletic' | 'subcategory_baby' | 'subcategory_backpacks' | 'subcategory_bags' | 'subcategory_bagssPurses' | 'subcategory_bathBody' | 'subcategory_bedding' | 'subcategory_beds' | 'subcategory_boots' | 'subcategory_boys2to8' | 'subcategory_boys9to16' | 'subcategory_carriers' | 'subcategory_catAccessories' | 'subcategory_clutches' | 'subcategory_crossbody' | 'subcategory_decor' | 'subcategory_dogApparel' | 'subcategory_dressShoes' | 'subcategory_dresses' | 'subcategory_flats' | 'subcategory_foodBowls' | 'subcategory_formalShoes' | 'subcategory_fragrance' | 'subcategory_garden' | 'subcategory_girls2to8' | 'subcategory_girls9to16' | 'subcategory_hairCare' | 'subcategory_handbags' | 'subcategory_heels' | 'subcategory_jackets' | 'subcategory_jacketsCoats' | 'subcategory_jeans' | 'subcategory_jewelry' | 'subcategory_kitchen' | 'subcategory_laptopBags' | 'subcategory_leashes' | 'subcategory_lighting' | 'subcategory_lingerieUnderwear' | 'subcategory_makeup' | 'subcategory_nails' | 'subcategory_pantsJeans' | 'subcategory_pantsTraousers' | 'subcategory_petToys' | 'subcategory_sandals' | 'subcategory_sandalsSlides' | 'subcategory_school' | 'subcategory_sets' | 'subcategory_shirts' | 'subcategory_shirtsBBousesr' | 'subcategory_shorts' | 'subcategory_skincare' | 'subcategory_skirts' | 'subcategory_sneakers' | 'subcategory_storage' | 'subcategory_suiBbazers' | 'subcategory_suits' | 'subcategory_sweatersHoodies' | 'subcategory_swimwear' | 'subcategory_tShirts' | 'subcategory_textiles' | 'subcategory_tools' | 'subcategory_tops' | 'subcategory_topsShirts' | 'subcategory_totes' | 'subcategory_toys' | 'subcategory_travel' | 'subcategory_tshirts' | 'subcategory_underwear' | 'subcategory_watches' | 'success_accountCreated' | 'success_accountUpdated' | 'success_copied' | 'success_deleted' | 'success_listingCreated' | 'success_listingDeleted' | 'success_listingUpdated' | 'success_messageSent' | 'success_orderPlaced' | 'success_passwordChanged' | 'success_paymentReceived' | 'success_profileUpdated' | 'success_saved' | 'success_updated' | 'test' | 'time_daysAgo' | 'time_hoursAgo' | 'time_justNow' | 'time_minutesAgo' | 'time_monthsAgo' | 'time_weeksAgo' | 'time_yearsAgo' | 'top_rated_sellers' | 'transaction_amount' | 'transaction_date' | 'transaction_details' | 'transaction_history' | 'transaction_id' | 'transaction_method' | 'transaction_status' | 'transaction_type' | 'trending_brands' | 'trending_featured' | 'trending_hotDeals' | 'trending_item' | 'trending_newArrivals' | 'trending_newSeller' | 'trending_now' | 'trending_popularBrands' | 'trending_promoted' | 'trending_title' | 'trending_topSellers' | 'trending_trendingNow' | 'ui_scroll' | 'upgrade_activePlan' | 'upgrade_brandFeature1' | 'upgrade_brandFeature2' | 'upgrade_brandFeature3' | 'upgrade_brandPlan' | 'upgrade_cancelConfirm' | 'upgrade_cancelPlan' | 'upgrade_cancelSubscriptionFailed' | 'upgrade_cancelSuccess' | 'upgrade_canceling' | 'upgrade_choosePlan' | 'upgrade_contactSupport' | 'upgrade_createSubscriptionFailed' | 'upgrade_current' | 'upgrade_currentPlan' | 'upgrade_discountFirstMonth' | 'upgrade_faqBusinessRequirements' | 'upgrade_faqBusinessRequirementsAnswer' | 'upgrade_faqChangePlans' | 'upgrade_faqChangePlansAnswer' | 'upgrade_faqEarlyBirdRecurring' | 'upgrade_faqEarlyBirdRecurringAnswer' | 'upgrade_faqRemainingBoosts' | 'upgrade_faqRemainingBoostsAnswer' | 'upgrade_faqSubtitle' | 'upgrade_faqTitle' | 'upgrade_features' | 'upgrade_freeFeature1' | 'upgrade_freeFeature2' | 'upgrade_freeFeature3' | 'upgrade_freePlan' | 'upgrade_getBrand' | 'upgrade_getPremium' | 'upgrade_month' | 'upgrade_mostPopular' | 'upgrade_paymentFailed' | 'upgrade_paymentSetupFailed' | 'upgrade_perMonth' | 'upgrade_popular' | 'upgrade_premiumFeature1' | 'upgrade_premiumFeature2' | 'upgrade_premiumFeature3' | 'upgrade_premiumPlan' | 'upgrade_processing' | 'upgrade_recommended' | 'upgrade_subscribe' | 'upgrade_subscriptionFailed' | 'upgrade_subtitle' | 'upgrade_supportSubtitle' | 'upgrade_supportTitle' | 'upgrade_title' | 'user_buyer' | 'user_member' | 'user_seller' | 'user_username' | 'user_verifiedBuyer' | 'user_verifiedSeller' | 'verified_brands' | 'view_details' | 'welcome' | 'welcome_modal_back' | 'welcome_modal_designer' | 'welcome_modal_discover' | 'welcome_modal_discoverDesc' | 'welcome_modal_getStarted' | 'welcome_modal_happySellers' | 'welcome_modal_next' | 'welcome_modal_ready' | 'welcome_modal_readyDesc' | 'welcome_modal_sell' | 'welcome_modal_sellDesc' | 'welcome_modal_skip' | 'welcome_modal_totalSales' | 'welcome_modal_trending' | 'welcome_modal_trustedMarketplace' | 'welcome_modal_vintage' | 'welcome_modal_welcome' | 'welcome_modal_welcomeBrand' | 'welcome_modal_welcomePersonal';
 
 const messageFunctions: Record<MessageKey, MessageFunction> = {
   'addFavorite': createMessage('addFavorite', `Add to favorites`),
@@ -234,9 +234,11 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'category_suitsBlazers': createMessage('category_suitsBlazers', `Suits & Blazers`),
   'category_sunglasses': createMessage('category_sunglasses', `Sunglasses`),
   'category_suspenders': createMessage('category_suspenders', `Suspenders`),
+  'category_sweaters': createMessage('category_sweaters', `Sweaters`),
   'category_sweatersHoodies': createMessage('category_sweatersHoodies', `Sweaters & Hoodies`),
   'category_swimwear': createMessage('category_swimwear', `Swimwear`),
   'category_ties': createMessage('category_ties', `Ties`),
+  'category_tops': createMessage('category_tops', `Tops`),
   'category_topsTshirts': createMessage('category_topsTshirts', `Tops & T-Shirts`),
   'category_toteBags': createMessage('category_toteBags', `Tote Bags`),
   'category_totes': createMessage('category_totes', `Totes`),
@@ -285,6 +287,26 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'checkout_total': createMessage('checkout_total', `Total`),
   'checkout_viewYourOrders': createMessage('checkout_viewYourOrders', `View Your Orders`),
   'close': createMessage('close', `Close`),
+  'collection_addItem': createMessage('collection_addItem', `Add Item`),
+  'collection_addToCollection': createMessage('collection_addToCollection', `Add to Collection`),
+  'collection_allProducts': createMessage('collection_allProducts', `All Products`),
+  'collection_confirmDelete': createMessage('collection_confirmDelete', `Are you sure you want to delete this collection?`),
+  'collection_createCollection': createMessage('collection_createCollection', `Create Collection`),
+  'collection_createNew': createMessage('collection_createNew', `Create New Collection`),
+  'collection_deleteCollection': createMessage('collection_deleteCollection', `Delete Collection`),
+  'collection_description': createMessage('collection_description', `Description`),
+  'collection_editCollection': createMessage('collection_editCollection', `Edit Collection`),
+  'collection_emptyCollection': createMessage('collection_emptyCollection', `This collection is empty`),
+  'collection_items': createMessage('collection_items', `Items`),
+  'collection_myCollections': createMessage('collection_myCollections', `My Collections`),
+  'collection_name': createMessage('collection_name', `Collection Name`),
+  'collection_noCollections': createMessage('collection_noCollections', `No collections yet`),
+  'collection_private': createMessage('collection_private', `Private`),
+  'collection_public': createMessage('collection_public', `Public`),
+  'collection_removeFromCollection': createMessage('collection_removeFromCollection', `Remove from Collection`),
+  'collection_saveChanges': createMessage('collection_saveChanges', `Save Changes`),
+  'collection_selectCollection': createMessage('collection_selectCollection', `Select Collection`),
+  'collection_visibility': createMessage('collection_visibility', `Visibility`),
   'collections_designer': createMessage('collections_designer', `Designer`),
   'collections_designerPremium': createMessage('collections_designerPremium', `Designer 100$+`),
   'collections_drip': createMessage('collections_drip', `Drip`),
@@ -308,11 +330,30 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'common_submit': createMessage('common_submit', `Submit`),
   'common_support': createMessage('common_support', `Support`),
   'common_yes': createMessage('common_yes', `Yes`),
+  'condition_all': createMessage('condition_all', `All Conditions`),
+  'condition_brandNew': createMessage('condition_brandNew', `Brand New`),
+  'condition_brandNewWithTags': createMessage('condition_brandNewWithTags', `Brand New with Tags`),
+  'condition_excellent': createMessage('condition_excellent', `Excellent`),
   'condition_fair': createMessage('condition_fair', `Fair`),
   'condition_good': createMessage('condition_good', `Good`),
   'condition_likeNew': createMessage('condition_likeNew', `Like New`),
   'condition_new': createMessage('condition_new', `New`),
   'condition_newWithTags': createMessage('condition_newWithTags', `New with tags`),
+  'condition_newWithoutTags': createMessage('condition_newWithoutTags', `New without Tags`),
+  'condition_poor': createMessage('condition_poor', `Poor`),
+  'condition_used': createMessage('condition_used', `Used`),
+  'condition_worn': createMessage('condition_worn', `Worn`),
+  'conversation_archiveChat': createMessage('conversation_archiveChat', `Archive Chat`),
+  'conversation_block': createMessage('conversation_block', `Block User`),
+  'conversation_deleteConversation': createMessage('conversation_deleteConversation', `Delete Conversation`),
+  'conversation_markAsRead': createMessage('conversation_markAsRead', `Mark as Read`),
+  'conversation_markAsUnread': createMessage('conversation_markAsUnread', `Mark as Unread`),
+  'conversation_muteNotifications': createMessage('conversation_muteNotifications', `Mute Notifications`),
+  'conversation_noMessages': createMessage('conversation_noMessages', `No messages yet`),
+  'conversation_report': createMessage('conversation_report', `Report User`),
+  'conversation_startConversation': createMessage('conversation_startConversation', `Start a conversation`),
+  'conversation_unarchive': createMessage('conversation_unarchive', `Unarchive`),
+  'conversation_unmute': createMessage('conversation_unmute', `Unmute Notifications`),
   'currency_symbol': createMessage('currency_symbol', `$`),
   'dashboard_action': createMessage('dashboard_action', `Action`),
   'dashboard_actions': createMessage('dashboard_actions', `Actions`),
@@ -351,6 +392,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_export': createMessage('dashboard_export', `Export`),
   'dashboard_filter': createMessage('dashboard_filter', `Filter`),
   'dashboard_hoursAgo': createMessage('dashboard_hoursAgo', `{hours}h ago`),
+  'dashboard_inventory': createMessage('dashboard_inventory', `Inventory`),
   'dashboard_justNow': createMessage('dashboard_justNow', `just now`),
   'dashboard_lastMonthIncrease': createMessage('dashboard_lastMonthIncrease', `+12% from last month`),
   'dashboard_listings': createMessage('dashboard_listings', `Listings`),
@@ -359,6 +401,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_minutesAgo': createMessage('dashboard_minutesAgo', `{minutes}m ago`),
   'dashboard_monthSales': createMessage('dashboard_monthSales', `This Month's Sales`),
   'dashboard_monthly': createMessage('dashboard_monthly', `Monthly`),
+  'dashboard_myListings': createMessage('dashboard_myListings', `My Listings`),
   'dashboard_newListing': createMessage('dashboard_newListing', `New Listing`),
   'dashboard_noActiveListings': createMessage('dashboard_noActiveListings', `No active listings`),
   'dashboard_noRecentOrders': createMessage('dashboard_noRecentOrders', `No recent orders`),
@@ -369,6 +412,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_paymentSettings': createMessage('dashboard_paymentSettings', `Payment Settings`),
   'dashboard_payoutSchedule': createMessage('dashboard_payoutSchedule', `Payout Schedule`),
   'dashboard_pendingShipment': createMessage('dashboard_pendingShipment', `Pending Shipment`),
+  'dashboard_performance': createMessage('dashboard_performance', `Performance`),
   'dashboard_performanceOverview': createMessage('dashboard_performanceOverview', `Performance Overview`),
   'dashboard_pleaseLogin': createMessage('dashboard_pleaseLogin', `Please log in to access your dashboard`),
   'dashboard_price': createMessage('dashboard_price', `Price`),
@@ -377,6 +421,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_processingTime1to2Days': createMessage('dashboard_processingTime1to2Days', `1-2 business days`),
   'dashboard_processingTime3to5Days': createMessage('dashboard_processingTime3to5Days', `3-5 business days`),
   'dashboard_product': createMessage('dashboard_product', `Product`),
+  'dashboard_purchases': createMessage('dashboard_purchases', `Purchases`),
   'dashboard_recentOrders': createMessage('dashboard_recentOrders', `Recent Orders`),
   'dashboard_sales': createMessage('dashboard_sales', `Sales`),
   'dashboard_saveSettings': createMessage('dashboard_saveSettings', `Save Settings`),
@@ -394,6 +439,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_shopStatus': createMessage('dashboard_shopStatus', `Here's what's happening with your shop today.`),
   'dashboard_social': createMessage('dashboard_social', `Social`),
   'dashboard_soldItems': createMessage('dashboard_soldItems', `Sold Items`),
+  'dashboard_statistics': createMessage('dashboard_statistics', `Statistics`),
   'dashboard_status': createMessage('dashboard_status', `Status`),
   'dashboard_thisMonth': createMessage('dashboard_thisMonth', `This month`),
   'dashboard_time': createMessage('dashboard_time', `Time`),
@@ -410,14 +456,20 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'dashboard_views': createMessage('dashboard_views', `views`),
   'dashboard_viewsToSales': createMessage('dashboard_viewsToSales', `Views to sales`),
   'dashboard_weekly': createMessage('dashboard_weekly', `Weekly`),
+  'dashboard_welcome': createMessage('dashboard_welcome', `Welcome back, {name}!`),
   'dashboard_welcomeBack': createMessage('dashboard_welcomeBack', `Welcome back, {username}!`),
   'dashboard_yourActiveListings': createMessage('dashboard_yourActiveListings', `Your Active Listings`),
   'empty_exploreItems': createMessage('empty_exploreItems', `Explore items`),
   'empty_noFavorites': createMessage('empty_noFavorites', `No favorites yet`),
+  'empty_noItems': createMessage('empty_noItems', `No items found`),
+  'empty_noListings': createMessage('empty_noListings', `No listings yet`),
   'empty_noMessages': createMessage('empty_noMessages', `No messages yet`),
   'empty_noOrders': createMessage('empty_noOrders', `No orders yet`),
   'empty_noProducts': createMessage('empty_noProducts', `No products yet`),
+  'empty_noResults': createMessage('empty_noResults', `No results found`),
+  'empty_noSales': createMessage('empty_noSales', `No sales yet`),
   'empty_startBrowsing': createMessage('empty_startBrowsing', `Start browsing`),
+  'empty_startSelling': createMessage('empty_startSelling', `Start selling`),
   'engagement_banner_description': createMessage('engagement_banner_description', `Save favorites, start selling, and connect with fashion lovers`),
   'engagement_banner_dismiss': createMessage('engagement_banner_dismiss', `Dismiss`),
   'engagement_banner_later': createMessage('engagement_banner_later', `Later`),
@@ -426,15 +478,31 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'error_atLeastOnePhoto': createMessage('error_atLeastOnePhoto', `At least one photo is required`),
   'error_categoryRequired': createMessage('error_categoryRequired', `Category is required. Please select a category for your item.`),
   'error_failedToCreateProduct': createMessage('error_failedToCreateProduct', `Failed to create product`),
+  'error_fetchingData': createMessage('error_fetchingData', `Error fetching data`),
   'error_generic': createMessage('error_generic', `Something went wrong`),
+  'error_genericError': createMessage('error_genericError', `Something went wrong`),
+  'error_invalidEmail': createMessage('error_invalidEmail', `Invalid email address`),
+  'error_invalidInput': createMessage('error_invalidInput', `Invalid input`),
+  'error_loadingFailed': createMessage('error_loadingFailed', `Loading failed`),
   'error_network': createMessage('error_network', `Network error. Please try again.`),
+  'error_networkError': createMessage('error_networkError', `Network error`),
   'error_notAuthenticated': createMessage('error_notAuthenticated', `Not authenticated`),
   'error_notFound': createMessage('error_notFound', `Page not found`),
+  'error_pageNotFound': createMessage('error_pageNotFound', `Page not found`),
+  'error_pleaseTryAgain': createMessage('error_pleaseTryAgain', `Please try again`),
+  'error_requiredField': createMessage('error_requiredField', `This field is required`),
+  'error_serverError': createMessage('error_serverError', `Server error`),
   'error_tryAgain': createMessage('error_tryAgain', `Try again`),
   'error_unauthorized': createMessage('error_unauthorized', `Unauthorized access`),
+  'error_uploadFailed': createMessage('error_uploadFailed', `Upload failed`),
   'error_validation': createMessage('error_validation', `Please check your input`),
   'explore_brands': createMessage('explore_brands', `Explore brands`),
   'fast_shipping': createMessage('fast_shipping', `Fast Shipping`),
+  'favorites_addToFavorites': createMessage('favorites_addToFavorites', `Add to Favorites`),
+  'favorites_myFavorites': createMessage('favorites_myFavorites', `My Favorites`),
+  'favorites_removeFromFavorites': createMessage('favorites_removeFromFavorites', `Remove from Favorites`),
+  'favorites_removed': createMessage('favorites_removed', `Removed from favorites`),
+  'favorites_saved': createMessage('favorites_saved', `Saved to favorites`),
   'filter_allCategories': createMessage('filter_allCategories', `All Categories`),
   'filter_applied_activeFiltersCount': createMessage('filter_applied_activeFiltersCount', `{count} active filters`),
   'filter_applied_allFiltersCleared': createMessage('filter_applied_allFiltersCleared', `All {count} filters cleared`),
@@ -445,10 +513,13 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'filter_apply': createMessage('filter_apply', `Apply filters`),
   'filter_bestRated': createMessage('filter_bestRated', `Best Rated`),
   'filter_brand': createMessage('filter_brand', `Brand`),
+  'filter_category': createMessage('filter_category', `Category`),
   'filter_clearAll': createMessage('filter_clearAll', `Clear All`),
   'filter_color': createMessage('filter_color', `Color`),
   'filter_condition': createMessage('filter_condition', `Condition`),
   'filter_freeShipping': createMessage('filter_freeShipping', `Free Shipping`),
+  'filter_maxPrice': createMessage('filter_maxPrice', `Max Price`),
+  'filter_minPrice': createMessage('filter_minPrice', `Min Price`),
   'filter_modal_applied': createMessage('filter_modal_applied', `Applied`),
   'filter_modal_applyFilters': createMessage('filter_modal_applyFilters', `Apply Filters`),
   'filter_modal_clearAll': createMessage('filter_modal_clearAll', `Clear All`),
@@ -466,12 +537,14 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'filter_onSale': createMessage('filter_onSale', `On Sale`),
   'filter_pills_ariaLabel': createMessage('filter_pills_ariaLabel', `{label} filter applied`),
   'filter_pills_ariaPressed': createMessage('filter_pills_ariaPressed', `filter applied`),
+  'filter_price': createMessage('filter_price', `Price`),
   'filter_priceHighToLow': createMessage('filter_priceHighToLow', `Price: High to Low`),
   'filter_priceLowToHigh': createMessage('filter_priceLowToHigh', `Price: Low to High`),
   'filter_priceRange': createMessage('filter_priceRange', `Price Range`),
   'filter_reset': createMessage('filter_reset', `Reset filters`),
   'filter_showLess': createMessage('filter_showLess', `Show less`),
   'filter_showMore': createMessage('filter_showMore', `Show more`),
+  'filter_showResults': createMessage('filter_showResults', `Show Results`),
   'filter_size': createMessage('filter_size', `Size`),
   'filter_sortBy': createMessage('filter_sortBy', `Sort by`),
   'filter_text_contraction_test': createMessage('filter_text_contraction_test', `Short`),
@@ -489,15 +562,21 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'filter_ui_removed': createMessage('filter_ui_removed', `removed`),
   'filter_under20': createMessage('filter_under20', `Under $20`),
   'footer_about': createMessage('footer_about', `About`),
+  'footer_aboutUs': createMessage('footer_aboutUs', `About Us`),
   'footer_allRightsReserved': createMessage('footer_allRightsReserved', `All rights reserved.`),
   'footer_blog': createMessage('footer_blog', `Blog`),
   'footer_bulgaria': createMessage('footer_bulgaria', `Bulgaria`),
+  'footer_buyerProtection': createMessage('footer_buyerProtection', `Buyer Protection`),
   'footer_careers': createMessage('footer_careers', `Careers`),
   'footer_company': createMessage('footer_company', `Company`),
   'footer_contact': createMessage('footer_contact', `Contact`),
+  'footer_contactUs': createMessage('footer_contactUs', `Contact Us`),
   'footer_cookies': createMessage('footer_cookies', `Cookie Policy`),
+  'footer_copyright': createMessage('footer_copyright', `© {year} Driplo. All rights reserved.`),
+  'footer_faq': createMessage('footer_faq', `FAQ`),
   'footer_followUs': createMessage('footer_followUs', `Follow Us`),
   'footer_help': createMessage('footer_help', `Help`),
+  'footer_howItWorks': createMessage('footer_howItWorks', `How It Works`),
   'footer_in': createMessage('footer_in', `in`),
   'footer_legal': createMessage('footer_legal', `Legal`),
   'footer_madeWith': createMessage('footer_madeWith', `Made with`),
@@ -505,24 +584,57 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'footer_newsletterPlaceholder': createMessage('footer_newsletterPlaceholder', `Enter your email`),
   'footer_press': createMessage('footer_press', `Press`),
   'footer_privacy': createMessage('footer_privacy', `Privacy`),
+  'footer_privacyPolicy': createMessage('footer_privacyPolicy', `Privacy Policy`),
+  'footer_returnPolicy': createMessage('footer_returnPolicy', `Return Policy`),
   'footer_returns': createMessage('footer_returns', `Return Policy`),
+  'footer_sellerGuide': createMessage('footer_sellerGuide', `Seller Guide`),
+  'footer_shippingInfo': createMessage('footer_shippingInfo', `Shipping Info`),
   'footer_subscribe': createMessage('footer_subscribe', `Subscribe`),
   'footer_support': createMessage('footer_support', `Support`),
   'footer_terms': createMessage('footer_terms', `Terms`),
+  'footer_termsOfService': createMessage('footer_termsOfService', `Terms of Service`),
+  'footer_trustAndSafety': createMessage('footer_trustAndSafety', `Trust & Safety`),
   'footer_trustSafety': createMessage('footer_trustSafety', `Trust & Safety`),
+  'form_cancel': createMessage('form_cancel', `Cancel`),
+  'form_confirm': createMessage('form_confirm', `Confirm`),
+  'form_delete': createMessage('form_delete', `Delete`),
+  'form_edit': createMessage('form_edit', `Edit`),
+  'form_remove': createMessage('form_remove', `Remove`),
+  'form_save': createMessage('form_save', `Save`),
+  'form_saveChanges': createMessage('form_saveChanges', `Save Changes`),
+  'form_submit': createMessage('form_submit', `Submit`),
+  'form_update': createMessage('form_update', `Update`),
   'hello': createMessage('hello', `Hello`),
   'highlight_sellers': createMessage('highlight_sellers', `Highlight Sellers`),
   'home_browseAll': createMessage('home_browseAll', `Browse all items`),
   'home_itemCount': createMessage('home_itemCount', `items`),
   'home_newestListings': createMessage('home_newestListings', `Newest listings`),
+  'home_promotedDescription': createMessage('home_promotedDescription', `Featured items from our top sellers`),
+  'home_promotedListings': createMessage('home_promotedListings', `Promoted Listings`),
   'home_searchSuggestions_designerBags': createMessage('home_searchSuggestions_designerBags', `Designer bags`),
   'home_searchSuggestions_sneakers': createMessage('home_searchSuggestions_sneakers', `Sneakers`),
   'home_searchSuggestions_summerDresses': createMessage('home_searchSuggestions_summerDresses', `Summer dresses`),
   'home_searchSuggestions_vintageJackets': createMessage('home_searchSuggestions_vintageJackets', `Vintage jackets`),
+  'home_topSellers': createMessage('home_topSellers', `Top Sellers`),
   'home_trending_designerBagsUnder100': createMessage('home_trending_designerBagsUnder100', `Designer bags under $100`),
   'home_trending_vintageJackets': createMessage('home_trending_vintageJackets', `Vintage jackets`),
   'home_trending_y2kJeans': createMessage('home_trending_y2kJeans', `Y2K jeans`),
   'home_updatedMomentsAgo': createMessage('home_updatedMomentsAgo', `updated moments ago`),
+  'listing_active': createMessage('listing_active', `Active`),
+  'listing_archived': createMessage('listing_archived', `Archived`),
+  'listing_delete': createMessage('listing_delete', `Delete Listing`),
+  'listing_deleteListing': createMessage('listing_deleteListing', `Delete Listing`),
+  'listing_draft': createMessage('listing_draft', `Draft`),
+  'listing_edit': createMessage('listing_edit', `Edit Listing`),
+  'listing_editListing': createMessage('listing_editListing', `Edit Listing`),
+  'listing_markAsSold': createMessage('listing_markAsSold', `Mark as Sold`),
+  'listing_pause': createMessage('listing_pause', `Pause Listing`),
+  'listing_publish': createMessage('listing_publish', `Publish Listing`),
+  'listing_reactivate': createMessage('listing_reactivate', `Reactivate Listing`),
+  'listing_sold': createMessage('listing_sold', `Sold`),
+  'listing_status': createMessage('listing_status', `Status`),
+  'listing_unpause': createMessage('listing_unpause', `Unpause Listing`),
+  'listing_viewListing': createMessage('listing_viewListing', `View Listing`),
   'listings_active': createMessage('listings_active', `Active`),
   'listings_all': createMessage('listings_all', `All`),
   'listings_createFirst': createMessage('listings_createFirst', `Create first listing`),
@@ -536,6 +648,9 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'listings_sold': createMessage('listings_sold', `Sold`),
   'listings_total': createMessage('listings_total', `Total`),
   'loading': createMessage('loading', `Loading...`),
+  'loading_loading': createMessage('loading_loading', `Loading...`),
+  'loading_pleaseWait': createMessage('loading_pleaseWait', `Please wait...`),
+  'loading_processing': createMessage('loading_processing', `Processing...`),
   'makeOffer': createMessage('makeOffer', `Make an offer`),
   'menu_browse': createMessage('menu_browse', `Browse`),
   'menu_sellItems': createMessage('menu_sellItems', `Sell Items`),
@@ -560,14 +675,19 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'messages_bundleOffer': createMessage('messages_bundleOffer', `Bundle Offer`),
   'messages_buying': createMessage('messages_buying', `Buying`),
   'messages_chooseMessage': createMessage('messages_chooseMessage', `Choose a message from the list to start chatting`),
+  'messages_conversationWith': createMessage('messages_conversationWith', `Conversation with {name}`),
   'messages_counterOffer': createMessage('messages_counterOffer', `Counter`),
   'messages_declineOffer': createMessage('messages_declineOffer', `Decline`),
   'messages_dismiss': createMessage('messages_dismiss', `Dismiss`),
   'messages_inbox': createMessage('messages_inbox', `Inbox`),
   'messages_location': createMessage('messages_location', `Location`),
   'messages_makeOffer': createMessage('messages_makeOffer', `Make Offer`),
+  'messages_messageDeleted': createMessage('messages_messageDeleted', `Message deleted`),
   'messages_messageInput': createMessage('messages_messageInput', `Message...`),
+  'messages_messageSent': createMessage('messages_messageSent', `Message sent`),
+  'messages_new': createMessage('messages_new', `New Message`),
   'messages_newMessage': createMessage('messages_newMessage', `New message`),
+  'messages_noConversations': createMessage('messages_noConversations', `No conversations yet`),
   'messages_noProducts': createMessage('messages_noProducts', `No products - General conversation`),
   'messages_now': createMessage('messages_now', `now`),
   'messages_offers': createMessage('messages_offers', `Offers`),
@@ -577,24 +697,45 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'messages_save': createMessage('messages_save', `Save`),
   'messages_selectConversation': createMessage('messages_selectConversation', `Select a conversation`),
   'messages_selling': createMessage('messages_selling', `Selling`),
+  'messages_sendMessage': createMessage('messages_sendMessage', `Send Message`),
   'messages_sent': createMessage('messages_sent', `Sent`),
   'messages_today': createMessage('messages_today', `Today`),
+  'messages_typeMessage': createMessage('messages_typeMessage', `Type a message...`),
   'messages_unread': createMessage('messages_unread', `Unread`),
   'nav_account': createMessage('nav_account', `Account`),
+  'nav_back': createMessage('nav_back', `Back`),
+  'nav_browse': createMessage('nav_browse', `Browse`),
   'nav_browseCategories': createMessage('nav_browseCategories', `Browse Categories`),
+  'nav_cart': createMessage('nav_cart', `Cart`),
+  'nav_close': createMessage('nav_close', `Close`),
   'nav_favorites': createMessage('nav_favorites', `Favorites`),
+  'nav_help': createMessage('nav_help', `Help`),
   'nav_home': createMessage('nav_home', `Home`),
+  'nav_inbox': createMessage('nav_inbox', `Inbox`),
   'nav_languageTheme': createMessage('nav_languageTheme', `Language & Theme`),
   'nav_login': createMessage('nav_login', `Login`),
   'nav_logout': createMessage('nav_logout', `Logout`),
+  'nav_menu': createMessage('nav_menu', `Menu`),
   'nav_messages': createMessage('nav_messages', `Messages`),
+  'nav_myAccount': createMessage('nav_myAccount', `My Account`),
+  'nav_myListings': createMessage('nav_myListings', `My Listings`),
+  'nav_myOrders': createMessage('nav_myOrders', `My Orders`),
+  'nav_myPurchases': createMessage('nav_myPurchases', `My Purchases`),
+  'nav_mySales': createMessage('nav_mySales', `My Sales`),
   'nav_newArrivals': createMessage('nav_newArrivals', `New Arrivals`),
+  'nav_notifications': createMessage('nav_notifications', `Notifications`),
   'nav_orders': createMessage('nav_orders', `Orders`),
   'nav_profile': createMessage('nav_profile', `Profile`),
+  'nav_purchases': createMessage('nav_purchases', `Purchases`),
   'nav_quickShop': createMessage('nav_quickShop', `Collections`),
+  'nav_sales': createMessage('nav_sales', `Sales`),
   'nav_search': createMessage('nav_search', `Search`),
   'nav_sell': createMessage('nav_sell', `Sell`),
   'nav_settings': createMessage('nav_settings', `Settings`),
+  'nav_shop': createMessage('nav_shop', `Shop`),
+  'nav_signIn': createMessage('nav_signIn', `Sign In`),
+  'nav_signOut': createMessage('nav_signOut', `Sign Out`),
+  'nav_signUp': createMessage('nav_signUp', `Sign Up`),
   'nav_signup': createMessage('nav_signup', `Sign up`),
   'nav_startSelling': createMessage('nav_startSelling', `Start Selling`),
   'nav_supportCenter': createMessage('nav_supportCenter', `Support Centre`),
@@ -602,6 +743,8 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'nav_topSellers': createMessage('nav_topSellers', `Top Sellers`),
   'nav_wishlist': createMessage('nav_wishlist', `Wishlist`),
   'notification_clearAll': createMessage('notification_clearAll', `Clear all`),
+  'notification_error': createMessage('notification_error', `Error`),
+  'notification_info': createMessage('notification_info', `Info`),
   'notification_itemLiked': createMessage('notification_itemLiked', `liked your item`),
   'notification_itemSold': createMessage('notification_itemSold', `Your item has been sold!`),
   'notification_markAllRead': createMessage('notification_markAllRead', `Mark all as read`),
@@ -610,6 +753,8 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'notification_priceDropped': createMessage('notification_priceDropped', `Price dropped on`),
   'notification_reviewReceived': createMessage('notification_reviewReceived', `left you a review`),
   'notification_settings': createMessage('notification_settings', `Notification settings`),
+  'notification_success': createMessage('notification_success', `Success`),
+  'notification_warning': createMessage('notification_warning', `Warning`),
   'notifications_markAllRead': createMessage('notifications_markAllRead', `Mark all read`),
   'notifications_noNotifications': createMessage('notifications_noNotifications', `No notifications`),
   'notifications_notifyWhenSomethingHappens': createMessage('notifications_notifyWhenSomethingHappens', `We'll notify you when something happens`),
@@ -701,6 +846,47 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'onboarding_welcome': createMessage('onboarding_welcome', `Welcome to Driplo`),
   'onboarding_welcomeBrand': createMessage('onboarding_welcomeBrand', `Welcome to Driplo Business! 🏢`),
   'onboarding_welcomePersonal': createMessage('onboarding_welcomePersonal', `Welcome to Driplo! 🎉`),
+  'order_buyer': createMessage('order_buyer', `Buyer`),
+  'order_cancel': createMessage('order_cancel', `Cancel Order`),
+  'order_cancelOrder': createMessage('order_cancelOrder', `Cancel Order`),
+  'order_cancelReason': createMessage('order_cancelReason', `Cancellation Reason`),
+  'order_cancelled': createMessage('order_cancelled', `Cancelled`),
+  'order_completed': createMessage('order_completed', `Completed`),
+  'order_confirmDelivery': createMessage('order_confirmDelivery', `Confirm Delivery`),
+  'order_confirmReceived': createMessage('order_confirmReceived', `Confirm Received`),
+  'order_contactBuyer': createMessage('order_contactBuyer', `Contact Buyer`),
+  'order_contactSeller': createMessage('order_contactSeller', `Contact Seller`),
+  'order_date': createMessage('order_date', `Order Date`),
+  'order_delivered': createMessage('order_delivered', `Delivered`),
+  'order_details': createMessage('order_details', `Order Details`),
+  'order_id': createMessage('order_id', `Order ID`),
+  'order_inTransit': createMessage('order_inTransit', `In Transit`),
+  'order_markAsShipped': createMessage('order_markAsShipped', `Mark as Shipped`),
+  'order_number': createMessage('order_number', `Order Number`),
+  'order_orderDetails': createMessage('order_orderDetails', `Order Details`),
+  'order_orderHistory': createMessage('order_orderHistory', `Order History`),
+  'order_orderNumber': createMessage('order_orderNumber', `Order #{number}`),
+  'order_orderSummary': createMessage('order_orderSummary', `Order Summary`),
+  'order_pending': createMessage('order_pending', `Pending`),
+  'order_price': createMessage('order_price', `Price`),
+  'order_processing': createMessage('order_processing', `Processing`),
+  'order_quantity': createMessage('order_quantity', `Quantity`),
+  'order_refund': createMessage('order_refund', `Refund`),
+  'order_refunded': createMessage('order_refunded', `Refunded`),
+  'order_requestRefund': createMessage('order_requestRefund', `Request Refund`),
+  'order_seller': createMessage('order_seller', `Seller`),
+  'order_shipped': createMessage('order_shipped', `Shipped`),
+  'order_shipping': createMessage('order_shipping', `Shipping`),
+  'order_shippingAddress': createMessage('order_shippingAddress', `Shipping Address`),
+  'order_shippingMethod': createMessage('order_shippingMethod', `Shipping Method`),
+  'order_status': createMessage('order_status', `Order Status`),
+  'order_subtotal': createMessage('order_subtotal', `Subtotal`),
+  'order_tax': createMessage('order_tax', `Tax`),
+  'order_total': createMessage('order_total', `Total`),
+  'order_trackOrder': createMessage('order_trackOrder', `Track Order`),
+  'order_trackShipment': createMessage('order_trackShipment', `Track Shipment`),
+  'order_trackingNumber': createMessage('order_trackingNumber', `Tracking Number`),
+  'order_viewOrder': createMessage('order_viewOrder', `View Order`),
   'orders_allOrders': createMessage('orders_allOrders', `All Orders`),
   'orders_buyer': createMessage('orders_buyer', `Buyer`),
   'orders_cancelOrder': createMessage('orders_cancelOrder', `Cancel Order`),
@@ -740,6 +926,24 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'pagination_page': createMessage('pagination_page', `Page`),
   'pagination_results': createMessage('pagination_results', `results`),
   'pagination_showing': createMessage('pagination_showing', `Showing`),
+  'payment_addPaymentMethod': createMessage('payment_addPaymentMethod', `Add Payment Method`),
+  'payment_billingAddress': createMessage('payment_billingAddress', `Billing Address`),
+  'payment_cardNumber': createMessage('payment_cardNumber', `Card Number`),
+  'payment_cvv': createMessage('payment_cvv', `CVV`),
+  'payment_expiryDate': createMessage('payment_expiryDate', `Expiry Date`),
+  'payment_failed': createMessage('payment_failed', `Payment Failed`),
+  'payment_method': createMessage('payment_method', `Payment Method`),
+  'payment_nameOnCard': createMessage('payment_nameOnCard', `Name on Card`),
+  'payment_payNow': createMessage('payment_payNow', `Pay Now`),
+  'payment_paymentDetails': createMessage('payment_paymentDetails', `Payment Details`),
+  'payment_paymentFailed': createMessage('payment_paymentFailed', `Payment failed`),
+  'payment_paymentMethod': createMessage('payment_paymentMethod', `Payment Method`),
+  'payment_paymentSuccessful': createMessage('payment_paymentSuccessful', `Payment Successful`),
+  'payment_processing': createMessage('payment_processing', `Processing payment...`),
+  'payment_saveCard': createMessage('payment_saveCard', `Save card for future use`),
+  'payment_securePayment': createMessage('payment_securePayment', `Secure Payment`),
+  'payment_selectPaymentMethod': createMessage('payment_selectPaymentMethod', `Select Payment Method`),
+  'payment_success': createMessage('payment_success', `Payment successful`),
   'pdp_a11y_closeModal': createMessage('pdp_a11y_closeModal', `Close modal`),
   'pdp_a11y_favoriteAdded': createMessage('pdp_a11y_favoriteAdded', `Added to favorites`),
   'pdp_a11y_favoriteRemoved': createMessage('pdp_a11y_favoriteRemoved', `Removed from favorites`),
@@ -839,9 +1043,14 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'pdp_youMightAlsoLike': createMessage('pdp_youMightAlsoLike', `You might also like`),
   'pdp_yourItem': createMessage('pdp_yourItem', `Your item`),
   'price': createMessage('price', `Price`),
+  'price_free': createMessage('price_free', `Free`),
+  'price_makeAnOffer': createMessage('price_makeAnOffer', `Make an Offer`),
+  'price_negotiable': createMessage('price_negotiable', `Negotiable`),
+  'price_priceReduced': createMessage('price_priceReduced', `Price Reduced`),
   'product_addToCart': createMessage('product_addToCart', `Add to cart`),
   'product_addToFavorites': createMessage('product_addToFavorites', `Add to favorites`),
   'product_askQuestion': createMessage('product_askQuestion', `Ask a question`),
+  'product_availability': createMessage('product_availability', `Availability`),
   'product_available': createMessage('product_available', `Available`),
   'product_beFirstToLike': createMessage('product_beFirstToLike', `Be the first to like this`),
   'product_brand': createMessage('product_brand', `Brand`),
@@ -849,10 +1058,13 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'product_buyNow': createMessage('product_buyNow', `Buy now`),
   'product_category': createMessage('product_category', `Category`),
   'product_close': createMessage('product_close', `Close`),
+  'product_color': createMessage('product_color', `Color`),
   'product_condition': createMessage('product_condition', `Condition`),
+  'product_contactSeller': createMessage('product_contactSeller', `Contact Seller`),
   'product_copyLink': createMessage('product_copyLink', `Link copied!`),
   'product_daysAgo': createMessage('product_daysAgo', `d ago`),
   'product_description': createMessage('product_description', `Description`),
+  'product_details': createMessage('product_details', `Product Details`),
   'product_disputeResolution': createMessage('product_disputeResolution', `Dispute resolution`),
   'product_driploProtection': createMessage('product_driploProtection', `Driplo Buyer Protection`),
   'product_editListing': createMessage('product_editListing', `Edit Listing`),
@@ -876,6 +1088,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'product_limitedStock': createMessage('product_limitedStock', `Only left in stock`),
   'product_location': createMessage('product_location', `Location`),
   'product_makeOffer': createMessage('product_makeOffer', `Make an offer`),
+  'product_material': createMessage('product_material', `Material`),
   'product_message': createMessage('product_message', `Message`),
   'product_moneyBackGuarantee': createMessage('product_moneyBackGuarantee', `Money back guarantee`),
   'product_monthsAgo': createMessage('product_monthsAgo', `mo ago`),
@@ -888,9 +1101,13 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'product_payment': createMessage('product_payment', `Payment`),
   'product_peopleViewing': createMessage('product_peopleViewing', `people viewing`),
   'product_postedTime': createMessage('product_postedTime', `Posted`),
+  'product_price': createMessage('product_price', `Price`),
+  'product_productDetails': createMessage('product_productDetails', `Product Details`),
   'product_protection': createMessage('product_protection', `Buyer Protection`),
+  'product_quantity': createMessage('product_quantity', `Quantity`),
   'product_readMore': createMessage('product_readMore', `Read more`),
   'product_recentItems': createMessage('product_recentItems', `Recent items`),
+  'product_relatedProducts': createMessage('product_relatedProducts', `Related Products`),
   'product_reportItem': createMessage('product_reportItem', `Report item`),
   'product_response': createMessage('product_response', `Response`),
   'product_returnPolicy': createMessage('product_returnPolicy', `Return policy`),
@@ -915,17 +1132,23 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'product_sizeGuide': createMessage('product_sizeGuide', `Size guide`),
   'product_sizeGuideComingSoon': createMessage('product_sizeGuideComingSoon', `Size guide coming soon!`),
   'product_sizingQuestions': createMessage('product_sizingQuestions', `For sizing questions, message the seller directly.`),
+  'product_sku': createMessage('product_sku', `SKU`),
   'product_sold': createMessage('product_sold', `Sold`),
   'product_soldOut': createMessage('product_soldOut', `Sold Out`),
+  'product_specifications': createMessage('product_specifications', `Specifications`),
   'product_standardShipping': createMessage('product_standardShipping', `Standard`),
   'product_today': createMessage('product_today', `today`),
+  'product_unavailable': createMessage('product_unavailable', `Unavailable`),
   'product_viewAll': createMessage('product_viewAll', `View all`),
   'product_viewAnalytics': createMessage('product_viewAnalytics', `View Analytics`),
+  'product_viewDetails': createMessage('product_viewDetails', `View Details`),
   'product_viewFullShipping': createMessage('product_viewFullShipping', `View full shipping details`),
+  'product_viewProduct': createMessage('product_viewProduct', `View Product`),
   'product_viewProfile': createMessage('product_viewProfile', `View Profile`),
   'product_viewedTimes': createMessage('product_viewedTimes', `Viewed times`),
   'product_weeksAgo': createMessage('product_weeksAgo', `w ago`),
   'product_yesterday': createMessage('product_yesterday', `yesterday`),
+  'product_youMayAlsoLike': createMessage('product_youMayAlsoLike', `You May Also Like`),
   'product_youMightLike': createMessage('product_youMightLike', `You might also like`),
   'product_yourListing': createMessage('product_yourListing', `This is your listing`),
   'profile_about': createMessage('profile_about', `About`),
@@ -940,13 +1163,18 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'profile_dropHere': createMessage('profile_dropHere', `Пуснете тук`),
   'profile_editProfile': createMessage('profile_editProfile', `Edit Profile`),
   'profile_favorites': createMessage('profile_favorites', `Favorites`),
+  'profile_feedback': createMessage('profile_feedback', `Feedback`),
   'profile_follow': createMessage('profile_follow', `Follow`),
+  'profile_followers': createMessage('profile_followers', `Followers`),
   'profile_following': createMessage('profile_following', `Following`),
   'profile_fullName': createMessage('profile_fullName', `Full Name`),
   'profile_instagram': createMessage('profile_instagram', `Instagram`),
+  'profile_items': createMessage('profile_items', `Items`),
   'profile_itemsSold': createMessage('profile_itemsSold', `Items Sold`),
+  'profile_joinDate': createMessage('profile_joinDate', `Joined {date}`),
   'profile_joined': createMessage('profile_joined', `Joined`),
   'profile_likes': createMessage('profile_likes', `Likes`),
+  'profile_listings': createMessage('profile_listings', `Listings`),
   'profile_location': createMessage('profile_location', `Location`),
   'profile_memberSince': createMessage('profile_memberSince', `Member Since`),
   'profile_message': createMessage('profile_message', `Message`),
@@ -958,6 +1186,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'profile_policies': createMessage('profile_policies', `Policies`),
   'profile_posts': createMessage('profile_posts', `Posts`),
   'profile_premium': createMessage('profile_premium', `Premium`),
+  'profile_profilePicture': createMessage('profile_profilePicture', `Profile Picture`),
   'profile_rating': createMessage('profile_rating', `Rating`),
   'profile_responseTime': createMessage('profile_responseTime', `Response time: Usually within 1 hour`),
   'profile_returnPolicy': createMessage('profile_returnPolicy', `14-day return policy`),
@@ -967,6 +1196,8 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'profile_saving': createMessage('profile_saving', `Saving...`),
   'profile_securePayments': createMessage('profile_securePayments', `Secure payments through Driplo`),
   'profile_selectPhoto': createMessage('profile_selectPhoto', `Изберете снимка`),
+  'profile_seller': createMessage('profile_seller', `Seller`),
+  'profile_sellerProfile': createMessage('profile_sellerProfile', `Seller Profile`),
   'profile_sellerStats': createMessage('profile_sellerStats', `Seller Stats`),
   'profile_settings': createMessage('profile_settings', `Settings`),
   'profile_shipsWithin': createMessage('profile_shipsWithin', `Ships within 1-2 business days`),
@@ -980,6 +1211,8 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'profile_uploadingAvatar': createMessage('profile_uploadingAvatar', `Качва се...`),
   'profile_url': createMessage('profile_url', `URL`),
   'profile_username': createMessage('profile_username', `Username`),
+  'profile_verifiedSeller': createMessage('profile_verifiedSeller', `Verified Seller`),
+  'profile_viewProfile': createMessage('profile_viewProfile', `View Profile`),
   'profile_website': createMessage('profile_website', `Website`),
   'profile_yourAvatar': createMessage('profile_yourAvatar', `Your Avatar`),
   'profile_yourFullName': createMessage('profile_yourFullName', `Your full name`),
@@ -990,6 +1223,12 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'promoted_listings': createMessage('promoted_listings', `Promoted Listings`),
   'promoted_premiumSellers': createMessage('promoted_premiumSellers', `Premium sellers`),
   'quick_buy': createMessage('quick_buy', `Quick Buy`),
+  'rating_excellent': createMessage('rating_excellent', `Excellent`),
+  'rating_good': createMessage('rating_good', `Good`),
+  'rating_poor': createMessage('rating_poor', `Poor`),
+  'rating_rateExperience': createMessage('rating_rateExperience', `Rate your experience`),
+  'rating_rating': createMessage('rating_rating', `Rating`),
+  'rating_reviews': createMessage('rating_reviews', `Reviews`),
   'removeFavorite': createMessage('removeFavorite', `Remove from favorites`),
   'remove_from_favorites': createMessage('remove_from_favorites', `Remove from favorites`),
   'sales_activity': createMessage('sales_activity', `Sales Activity`),
@@ -1032,6 +1271,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'search_adjustFilters': createMessage('search_adjustFilters', `Try adjusting your filters or search terms`),
   'search_all': createMessage('search_all', `All`),
   'search_allBrands': createMessage('search_allBrands', `All Brands`),
+  'search_allCategories': createMessage('search_allCategories', `All Categories`),
   'search_allConditions': createMessage('search_allConditions', `All Conditions`),
   'search_applyFilters': createMessage('search_applyFilters', `Apply Filters`),
   'search_back': createMessage('search_back', `Back`),
@@ -1042,11 +1282,14 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'search_cheapest': createMessage('search_cheapest', `Cheapest`),
   'search_clearAll': createMessage('search_clearAll', `Clear All`),
   'search_clearAllFilters': createMessage('search_clearAllFilters', `Clear all`),
+  'search_clearFilters': createMessage('search_clearFilters', `Clear Filters`),
+  'search_clearSearch': createMessage('search_clearSearch', `Clear Search`),
   'search_condition': createMessage('search_condition', `Condition`),
   'search_designer': createMessage('search_designer', `Designer`),
   'search_fair': createMessage('search_fair', `Fair`),
   'search_fastShip': createMessage('search_fastShip', `Fast Ship`),
   'search_filter': createMessage('search_filter', `Filter`),
+  'search_filterBy': createMessage('search_filterBy', `Filter By`),
   'search_filters': createMessage('search_filters', `Filters`),
   'search_findYourSize': createMessage('search_findYourSize', `Find Your Size`),
   'search_for': createMessage('search_for', `for`),
@@ -1063,7 +1306,9 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'search_newestFirst': createMessage('search_newestFirst', `Newest first`),
   'search_noItemsFound': createMessage('search_noItemsFound', `No items found`),
   'search_noResults': createMessage('search_noResults', `No results found`),
+  'search_noResultsFor': createMessage('search_noResultsFor', `No results for "{query}"`),
   'search_placeholder': createMessage('search_placeholder', `Search for items, brands...`),
+  'search_popularSearches': createMessage('search_popularSearches', `Popular Searches`),
   'search_premium': createMessage('search_premium', `Premium`),
   'search_priceHighToLow': createMessage('search_priceHighToLow', `Price: High to Low`),
   'search_priceLowToHigh': createMessage('search_priceLowToHigh', `Price: Low to High`),
@@ -1071,18 +1316,28 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'search_quickAccess': createMessage('search_quickAccess', `Quick Access`),
   'search_quickFilters': createMessage('search_quickFilters', `Quick Filters`),
   'search_quickShop': createMessage('search_quickShop', `Quick Shop`),
+  'search_recentSearches': createMessage('search_recentSearches', `Recent Searches`),
   'search_recentViews': createMessage('search_recentViews', `Recent Views`),
   'search_relevance': createMessage('search_relevance', `Relevance`),
   'search_results': createMessage('search_results', `Results`),
+  'search_resultsFor': createMessage('search_resultsFor', `Results for "{query}"`),
   'search_savedItems': createMessage('search_savedItems', `Saved items`),
+  'search_search': createMessage('search_search', `Search`),
+  'search_searchPlaceholder': createMessage('search_searchPlaceholder', `Search for items...`),
+  'search_searchProducts': createMessage('search_searchProducts', `Search products`),
+  'search_searchResults': createMessage('search_searchResults', `Search Results`),
   'search_shopByCondition': createMessage('search_shopByCondition', `Shop by Condition`),
   'search_shopByPreference': createMessage('search_shopByPreference', `Shop by Preference`),
   'search_shopByPrice': createMessage('search_shopByPrice', `Shop by Price`),
   'search_shopSmarter': createMessage('search_shopSmarter', `Shop Smarter`),
+  'search_showing': createMessage('search_showing', `Showing {count} results`),
   'search_size': createMessage('search_size', `Size`),
   'search_sort': createMessage('search_sort', `Sort`),
+  'search_sortBy': createMessage('search_sortBy', `Sort By`),
+  'search_suggestions': createMessage('search_suggestions', `Suggestions`),
   'search_topSellers': createMessage('search_topSellers', `Top Sellers`),
   'search_trendingNow': createMessage('search_trendingNow', `Trending Now`),
+  'search_tryAdjustingFilters': createMessage('search_tryAdjustingFilters', `Try adjusting your filters`),
   'search_under25': createMessage('search_under25', `Under $25`),
   'search_viewAll': createMessage('search_viewAll', `View All`),
   'search_viewAllResults': createMessage('search_viewAllResults', `View all results for`),
@@ -1091,7 +1346,10 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_add': createMessage('sell_add', `Add`),
   'sell_addBrandSize': createMessage('sell_addBrandSize', `Add brand/size`),
   'sell_addDetailsPlaceholder': createMessage('sell_addDetailsPlaceholder', `Add details about condition, measurements, flaws...`),
+  'sell_addImages': createMessage('sell_addImages', `Add Images`),
+  'sell_addListing': createMessage('sell_addListing', `Add Listing`),
   'sell_addPhoto': createMessage('sell_addPhoto', `Add Photo`),
+  'sell_addPhotos': createMessage('sell_addPhotos', `Add Photos`),
   'sell_addTag': createMessage('sell_addTag', `Add Tag`),
   'sell_analysis': createMessage('sell_analysis', `Analysis:`),
   'sell_applySuggestions': createMessage('sell_applySuggestions', `Apply Suggestions`),
@@ -1154,6 +1412,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_confidence': createMessage('sell_confidence', `Confidence`),
   'sell_confirmPublish': createMessage('sell_confirmPublish', `Confirm & Publish`),
   'sell_cover': createMessage('sell_cover', `Cover`),
+  'sell_createListing': createMessage('sell_createListing', `Create Listing`),
   'sell_customBrandAriaLabel': createMessage('sell_customBrandAriaLabel', `Custom brand name`),
   'sell_description': createMessage('sell_description', `Description`),
   'sell_descriptionOptional': createMessage('sell_descriptionOptional', `Description (optional)`),
@@ -1180,6 +1439,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_listAnother': createMessage('sell_listAnother', `List Another Item`),
   'sell_listItem': createMessage('sell_listItem', `List an Item`),
   'sell_listUnlimitedProducts': createMessage('sell_listUnlimitedProducts', `List unlimited products`),
+  'sell_listYourItem': createMessage('sell_listYourItem', `List Your Item`),
   'sell_listingError': createMessage('sell_listingError', `Failed to publish. Please try again.`),
   'sell_listingPrice': createMessage('sell_listingPrice', `Listing Price`),
   'sell_listingSuccess': createMessage('sell_listingSuccess', `Your item is now live!`),
@@ -1227,6 +1487,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_prioritySupport': createMessage('sell_prioritySupport', `Priority support`),
   'sell_processingUpload': createMessage('sell_processingUpload', `Processing your listing...`),
   'sell_productAlt': createMessage('sell_productAlt', `Product`),
+  'sell_productDetails': createMessage('sell_productDetails', `Product Details`),
   'sell_productInfo': createMessage('sell_productInfo', `Product Info`),
   'sell_publish': createMessage('sell_publish', `Publish`),
   'sell_publishing': createMessage('sell_publishing', `Publishing...`),
@@ -1246,8 +1507,10 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_selectSize': createMessage('sell_selectSize', `Select size`),
   'sell_selectSubcategory': createMessage('sell_selectSubcategory', `Select subcategory`),
   'sell_selected': createMessage('sell_selected', `selected`),
+  'sell_sellAnItem': createMessage('sell_sellAnItem', `Sell an Item`),
   'sell_setCoverPhoto': createMessage('sell_setCoverPhoto', `Set as cover`),
   'sell_setPricing': createMessage('sell_setPricing', `Set Pricing`),
+  'sell_shipping': createMessage('sell_shipping', `Shipping`),
   'sell_shippingCost': createMessage('sell_shippingCost', `Shipping Cost`),
   'sell_shippingCostLabel': createMessage('sell_shippingCostLabel', `Shipping Cost`),
   'sell_shippingLabel': createMessage('sell_shippingLabel', `Shipping`),
@@ -1264,6 +1527,7 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_sizeRequired': createMessage('sell_sizeRequired', `Please select size`),
   'sell_smartCategorySuggestions': createMessage('sell_smartCategorySuggestions', `Smart Category Suggestions`),
   'sell_specificCategoryLabel': createMessage('sell_specificCategoryLabel', `Specific category`),
+  'sell_startSelling': createMessage('sell_startSelling', `Start Selling`),
   'sell_step1': createMessage('sell_step1', `Photos`),
   'sell_step2': createMessage('sell_step2', `Info`),
   'sell_step3': createMessage('sell_step3', `Price`),
@@ -1301,9 +1565,12 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'sell_whoIsThisFor': createMessage('sell_whoIsThisFor', `Who is this for?`),
   'sell_women': createMessage('sell_women', `Women`),
   'sell_yourEarnings': createMessage('sell_yourEarnings', `Your Earnings`),
+  'seller_aboutSeller': createMessage('seller_aboutSeller', `About Seller`),
   'seller_activeAgo': createMessage('seller_activeAgo', `Active ago`),
   'seller_activeNow': createMessage('seller_activeNow', `Active now`),
+  'seller_allListings': createMessage('seller_allListings', `All Listings`),
   'seller_avgShipping': createMessage('seller_avgShipping', `Avg shipping`),
+  'seller_contactSeller': createMessage('seller_contactSeller', `Contact Seller`),
   'seller_day': createMessage('seller_day', `day`),
   'seller_days': createMessage('seller_days', `days`),
   'seller_follow': createMessage('seller_follow', `Follow`),
@@ -1321,36 +1588,83 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'seller_premiumSellerDescription': createMessage('seller_premiumSellerDescription', `Premium seller with exclusive items`),
   'seller_profile': createMessage('seller_profile', `View Profile`),
   'seller_rating': createMessage('seller_rating', `rating`),
+  'seller_ratings': createMessage('seller_ratings', `Ratings`),
   'seller_recentActivity': createMessage('seller_recentActivity', `Recent activity`),
   'seller_respondsIn': createMessage('seller_respondsIn', `Responds to messages in`),
   'seller_respondsWithin': createMessage('seller_respondsWithin', `Usually responds within`),
+  'seller_reviews': createMessage('seller_reviews', `Reviews`),
   'seller_sales': createMessage('seller_sales', `sales`),
+  'seller_seller': createMessage('seller_seller', `Seller`),
+  'seller_sellerInfo': createMessage('seller_sellerInfo', `Seller Info`),
+  'seller_sellerProfile': createMessage('seller_sellerProfile', `Seller Profile`),
   'seller_shippedOnTime': createMessage('seller_shippedOnTime', `of orders shipped on time`),
+  'seller_since': createMessage('seller_since', `Seller since {date}`),
   'seller_soldBy': createMessage('seller_soldBy', `Sold by`),
   'seller_soldThisWeek': createMessage('seller_soldThisWeek', `Sold items this week`),
   'seller_superstarSeller': createMessage('seller_superstarSeller', `Superstar Seller`),
+  'seller_totalSales': createMessage('seller_totalSales', `Total Sales`),
   'seller_trustedSeller': createMessage('seller_trustedSeller', `Trusted Seller`),
   'seller_unknown': createMessage('seller_unknown', `Unknown Seller`),
   'seller_verified': createMessage('seller_verified', `Verified`),
+  'seller_viewAllListings': createMessage('seller_viewAllListings', `View All Listings`),
   'seller_viewFullProfile': createMessage('seller_viewFullProfile', `View full profile`),
+  'seller_viewProfile': createMessage('seller_viewProfile', `View Profile`),
   'settings_account': createMessage('settings_account', `Account`),
+  'settings_appearance': createMessage('settings_appearance', `Appearance`),
+  'settings_billing': createMessage('settings_billing', `Billing`),
   'settings_changePassword': createMessage('settings_changePassword', `Change password`),
   'settings_currency': createMessage('settings_currency', `Currency`),
+  'settings_currentPassword': createMessage('settings_currentPassword', `Current Password`),
   'settings_darkMode': createMessage('settings_darkMode', `Dark mode`),
   'settings_deleteAccount': createMessage('settings_deleteAccount', `Delete account`),
   'settings_downloadData': createMessage('settings_downloadData', `Download your data`),
+  'settings_email': createMessage('settings_email', `Email`),
   'settings_emailNotifications': createMessage('settings_emailNotifications', `Email notifications`),
   'settings_language': createMessage('settings_language', `Language`),
+  'settings_newPassword': createMessage('settings_newPassword', `New Password`),
   'settings_notifications': createMessage('settings_notifications', `Notifications`),
+  'settings_password': createMessage('settings_password', `Password`),
+  'settings_paymentMethods': createMessage('settings_paymentMethods', `Payment Methods`),
   'settings_payments': createMessage('settings_payments', `Payments`),
   'settings_privacy': createMessage('settings_privacy', `Privacy`),
+  'settings_profile': createMessage('settings_profile', `Profile`),
   'settings_pushNotifications': createMessage('settings_pushNotifications', `Push notifications`),
   'settings_security': createMessage('settings_security', `Security`),
   'settings_shipping': createMessage('settings_shipping', `Shipping`),
+  'settings_shippingAddress': createMessage('settings_shippingAddress', `Shipping Address`),
   'settings_theme': createMessage('settings_theme', `Theme`),
   'settings_twoFactor': createMessage('settings_twoFactor', `Two-factor authentication`),
+  'settings_twoFactorAuth': createMessage('settings_twoFactorAuth', `Two-Factor Authentication`),
+  'settings_updateEmail': createMessage('settings_updateEmail', `Update Email`),
+  'settings_updatePassword': createMessage('settings_updatePassword', `Update Password`),
+  'shipping_carrier': createMessage('shipping_carrier', `Carrier`),
+  'shipping_deliveryDate': createMessage('shipping_deliveryDate', `Delivery Date`),
+  'shipping_estimatedDelivery': createMessage('shipping_estimatedDelivery', `Estimated Delivery`),
+  'shipping_freeShipping': createMessage('shipping_freeShipping', `Free Shipping`),
+  'shipping_overnight': createMessage('shipping_overnight', `Overnight`),
+  'shipping_selectShipping': createMessage('shipping_selectShipping', `Select Shipping Method`),
+  'shipping_shippingAddress': createMessage('shipping_shippingAddress', `Shipping Address`),
+  'shipping_shippingCost': createMessage('shipping_shippingCost', `Shipping Cost`),
+  'shipping_shippingDetails': createMessage('shipping_shippingDetails', `Shipping Details`),
+  'shipping_shippingInfo': createMessage('shipping_shippingInfo', `Shipping Information`),
+  'shipping_shippingMethod': createMessage('shipping_shippingMethod', `Shipping Method`),
+  'shipping_standard': createMessage('shipping_standard', `Standard`),
+  'shipping_trackingNumber': createMessage('shipping_trackingNumber', `Tracking Number`),
+  'shipping_twoDay': createMessage('shipping_twoDay', `Two-Day`),
   'size': createMessage('size', `Size`),
   'soldOut': createMessage('soldOut', `Sold out`),
+  'sort_mostRecent': createMessage('sort_mostRecent', `Most Recent`),
+  'sort_popular': createMessage('sort_popular', `Popular`),
+  'sort_priceHighToLow': createMessage('sort_priceHighToLow', `Price: High to Low`),
+  'sort_priceLowToHigh': createMessage('sort_priceLowToHigh', `Price: Low to High`),
+  'sort_relevance': createMessage('sort_relevance', `Relevance`),
+  'status_active': createMessage('status_active', `Active`),
+  'status_cancelled': createMessage('status_cancelled', `Cancelled`),
+  'status_completed': createMessage('status_completed', `Completed`),
+  'status_draft': createMessage('status_draft', `Draft`),
+  'status_inactive': createMessage('status_inactive', `Inactive`),
+  'status_pending': createMessage('status_pending', `Pending`),
+  'status_processing': createMessage('status_processing', `Processing`),
   'subcategory_accessories': createMessage('subcategory_accessories', `Accessories`),
   'subcategory_activewear': createMessage('subcategory_activewear', `Спортно облекло`),
   'subcategory_art': createMessage('subcategory_art', `Art`),
@@ -1423,20 +1737,49 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'subcategory_tshirts': createMessage('subcategory_tshirts', `T-Shirts`),
   'subcategory_underwear': createMessage('subcategory_underwear', `Бельо`),
   'subcategory_watches': createMessage('subcategory_watches', `Watches`),
+  'success_accountCreated': createMessage('success_accountCreated', `Account created successfully`),
+  'success_accountUpdated': createMessage('success_accountUpdated', `Account updated successfully`),
   'success_copied': createMessage('success_copied', `Copied to clipboard`),
   'success_deleted': createMessage('success_deleted', `Deleted successfully`),
+  'success_listingCreated': createMessage('success_listingCreated', `Listing created successfully`),
+  'success_listingDeleted': createMessage('success_listingDeleted', `Listing deleted successfully`),
+  'success_listingUpdated': createMessage('success_listingUpdated', `Listing updated successfully`),
+  'success_messageSent': createMessage('success_messageSent', `Message sent successfully`),
+  'success_orderPlaced': createMessage('success_orderPlaced', `Order placed successfully`),
+  'success_passwordChanged': createMessage('success_passwordChanged', `Password changed successfully`),
+  'success_paymentReceived': createMessage('success_paymentReceived', `Payment received`),
+  'success_profileUpdated': createMessage('success_profileUpdated', `Profile updated successfully`),
   'success_saved': createMessage('success_saved', `Saved successfully`),
   'success_updated': createMessage('success_updated', `Updated successfully`),
   'test': createMessage('test', `English works!`),
+  'time_daysAgo': createMessage('time_daysAgo', `{count} days ago`),
+  'time_hoursAgo': createMessage('time_hoursAgo', `{count} hours ago`),
+  'time_justNow': createMessage('time_justNow', `Just now`),
+  'time_minutesAgo': createMessage('time_minutesAgo', `{count} minutes ago`),
+  'time_monthsAgo': createMessage('time_monthsAgo', `{count} months ago`),
+  'time_weeksAgo': createMessage('time_weeksAgo', `{count} weeks ago`),
+  'time_yearsAgo': createMessage('time_yearsAgo', `{count} years ago`),
   'top_rated_sellers': createMessage('top_rated_sellers', `Verified sellers`),
+  'transaction_amount': createMessage('transaction_amount', `Amount`),
+  'transaction_date': createMessage('transaction_date', `Date`),
+  'transaction_details': createMessage('transaction_details', `Transaction Details`),
+  'transaction_history': createMessage('transaction_history', `Transaction History`),
+  'transaction_id': createMessage('transaction_id', `Transaction ID`),
+  'transaction_method': createMessage('transaction_method', `Method`),
+  'transaction_status': createMessage('transaction_status', `Status`),
+  'transaction_type': createMessage('transaction_type', `Type`),
   'trending_brands': createMessage('trending_brands', `Popular Brands`),
   'trending_featured': createMessage('trending_featured', `Featured Products`),
+  'trending_hotDeals': createMessage('trending_hotDeals', `Hot Deals`),
   'trending_item': createMessage('trending_item', `Trending Item`),
+  'trending_newArrivals': createMessage('trending_newArrivals', `New Arrivals`),
   'trending_newSeller': createMessage('trending_newSeller', `New Seller`),
   'trending_now': createMessage('trending_now', `Trending Now`),
+  'trending_popularBrands': createMessage('trending_popularBrands', `Popular Brands`),
   'trending_promoted': createMessage('trending_promoted', `Promoted`),
   'trending_title': createMessage('trending_title', `Trending Now`),
   'trending_topSellers': createMessage('trending_topSellers', `Top Sellers`),
+  'trending_trendingNow': createMessage('trending_trendingNow', `Trending Now`),
   'ui_scroll': createMessage('ui_scroll', `Scroll`),
   'upgrade_activePlan': createMessage('upgrade_activePlan', `Active`),
   'upgrade_brandFeature1': createMessage('upgrade_brandFeature1', `Unlimited products`),
@@ -1489,6 +1832,12 @@ const messageFunctions: Record<MessageKey, MessageFunction> = {
   'upgrade_supportSubtitle': createMessage('upgrade_supportSubtitle', `Our support team is here to help you choose the perfect plan`),
   'upgrade_supportTitle': createMessage('upgrade_supportTitle', `Still have questions?`),
   'upgrade_title': createMessage('upgrade_title', `Upgrade Your Account`),
+  'user_buyer': createMessage('user_buyer', `Buyer`),
+  'user_member': createMessage('user_member', `Member`),
+  'user_seller': createMessage('user_seller', `Seller`),
+  'user_username': createMessage('user_username', `Username`),
+  'user_verifiedBuyer': createMessage('user_verifiedBuyer', `Verified Buyer`),
+  'user_verifiedSeller': createMessage('user_verifiedSeller', `Verified Seller`),
   'verified_brands': createMessage('verified_brands', `Verified brands`),
   'view_details': createMessage('view_details', `View Details`),
   'welcome': createMessage('welcome', `Welcome to Driplo`),
@@ -1747,9 +2096,11 @@ export const category_sneakers = messageFunctions['category_sneakers'];
 export const category_suitsBlazers = messageFunctions['category_suitsBlazers'];
 export const category_sunglasses = messageFunctions['category_sunglasses'];
 export const category_suspenders = messageFunctions['category_suspenders'];
+export const category_sweaters = messageFunctions['category_sweaters'];
 export const category_sweatersHoodies = messageFunctions['category_sweatersHoodies'];
 export const category_swimwear = messageFunctions['category_swimwear'];
 export const category_ties = messageFunctions['category_ties'];
+export const category_tops = messageFunctions['category_tops'];
 export const category_topsTshirts = messageFunctions['category_topsTshirts'];
 export const category_toteBags = messageFunctions['category_toteBags'];
 export const category_totes = messageFunctions['category_totes'];
@@ -1798,6 +2149,26 @@ export const checkout_tax = messageFunctions['checkout_tax'];
 export const checkout_total = messageFunctions['checkout_total'];
 export const checkout_viewYourOrders = messageFunctions['checkout_viewYourOrders'];
 export const close = messageFunctions['close'];
+export const collection_addItem = messageFunctions['collection_addItem'];
+export const collection_addToCollection = messageFunctions['collection_addToCollection'];
+export const collection_allProducts = messageFunctions['collection_allProducts'];
+export const collection_confirmDelete = messageFunctions['collection_confirmDelete'];
+export const collection_createCollection = messageFunctions['collection_createCollection'];
+export const collection_createNew = messageFunctions['collection_createNew'];
+export const collection_deleteCollection = messageFunctions['collection_deleteCollection'];
+export const collection_description = messageFunctions['collection_description'];
+export const collection_editCollection = messageFunctions['collection_editCollection'];
+export const collection_emptyCollection = messageFunctions['collection_emptyCollection'];
+export const collection_items = messageFunctions['collection_items'];
+export const collection_myCollections = messageFunctions['collection_myCollections'];
+export const collection_name = messageFunctions['collection_name'];
+export const collection_noCollections = messageFunctions['collection_noCollections'];
+export const collection_private = messageFunctions['collection_private'];
+export const collection_public = messageFunctions['collection_public'];
+export const collection_removeFromCollection = messageFunctions['collection_removeFromCollection'];
+export const collection_saveChanges = messageFunctions['collection_saveChanges'];
+export const collection_selectCollection = messageFunctions['collection_selectCollection'];
+export const collection_visibility = messageFunctions['collection_visibility'];
 export const collections_designer = messageFunctions['collections_designer'];
 export const collections_designerPremium = messageFunctions['collections_designerPremium'];
 export const collections_drip = messageFunctions['collections_drip'];
@@ -1821,11 +2192,30 @@ export const common_scroll = messageFunctions['common_scroll'];
 export const common_submit = messageFunctions['common_submit'];
 export const common_support = messageFunctions['common_support'];
 export const common_yes = messageFunctions['common_yes'];
+export const condition_all = messageFunctions['condition_all'];
+export const condition_brandNew = messageFunctions['condition_brandNew'];
+export const condition_brandNewWithTags = messageFunctions['condition_brandNewWithTags'];
+export const condition_excellent = messageFunctions['condition_excellent'];
 export const condition_fair = messageFunctions['condition_fair'];
 export const condition_good = messageFunctions['condition_good'];
 export const condition_likeNew = messageFunctions['condition_likeNew'];
 export const condition_new = messageFunctions['condition_new'];
 export const condition_newWithTags = messageFunctions['condition_newWithTags'];
+export const condition_newWithoutTags = messageFunctions['condition_newWithoutTags'];
+export const condition_poor = messageFunctions['condition_poor'];
+export const condition_used = messageFunctions['condition_used'];
+export const condition_worn = messageFunctions['condition_worn'];
+export const conversation_archiveChat = messageFunctions['conversation_archiveChat'];
+export const conversation_block = messageFunctions['conversation_block'];
+export const conversation_deleteConversation = messageFunctions['conversation_deleteConversation'];
+export const conversation_markAsRead = messageFunctions['conversation_markAsRead'];
+export const conversation_markAsUnread = messageFunctions['conversation_markAsUnread'];
+export const conversation_muteNotifications = messageFunctions['conversation_muteNotifications'];
+export const conversation_noMessages = messageFunctions['conversation_noMessages'];
+export const conversation_report = messageFunctions['conversation_report'];
+export const conversation_startConversation = messageFunctions['conversation_startConversation'];
+export const conversation_unarchive = messageFunctions['conversation_unarchive'];
+export const conversation_unmute = messageFunctions['conversation_unmute'];
 export const currency_symbol = messageFunctions['currency_symbol'];
 export const dashboard_action = messageFunctions['dashboard_action'];
 export const dashboard_actions = messageFunctions['dashboard_actions'];
@@ -1864,6 +2254,7 @@ export const dashboard_edit = messageFunctions['dashboard_edit'];
 export const dashboard_export = messageFunctions['dashboard_export'];
 export const dashboard_filter = messageFunctions['dashboard_filter'];
 export const dashboard_hoursAgo = messageFunctions['dashboard_hoursAgo'];
+export const dashboard_inventory = messageFunctions['dashboard_inventory'];
 export const dashboard_justNow = messageFunctions['dashboard_justNow'];
 export const dashboard_lastMonthIncrease = messageFunctions['dashboard_lastMonthIncrease'];
 export const dashboard_listings = messageFunctions['dashboard_listings'];
@@ -1872,6 +2263,7 @@ export const dashboard_manageListings = messageFunctions['dashboard_manageListin
 export const dashboard_minutesAgo = messageFunctions['dashboard_minutesAgo'];
 export const dashboard_monthSales = messageFunctions['dashboard_monthSales'];
 export const dashboard_monthly = messageFunctions['dashboard_monthly'];
+export const dashboard_myListings = messageFunctions['dashboard_myListings'];
 export const dashboard_newListing = messageFunctions['dashboard_newListing'];
 export const dashboard_noActiveListings = messageFunctions['dashboard_noActiveListings'];
 export const dashboard_noRecentOrders = messageFunctions['dashboard_noRecentOrders'];
@@ -1882,6 +2274,7 @@ export const dashboard_overview = messageFunctions['dashboard_overview'];
 export const dashboard_paymentSettings = messageFunctions['dashboard_paymentSettings'];
 export const dashboard_payoutSchedule = messageFunctions['dashboard_payoutSchedule'];
 export const dashboard_pendingShipment = messageFunctions['dashboard_pendingShipment'];
+export const dashboard_performance = messageFunctions['dashboard_performance'];
 export const dashboard_performanceOverview = messageFunctions['dashboard_performanceOverview'];
 export const dashboard_pleaseLogin = messageFunctions['dashboard_pleaseLogin'];
 export const dashboard_price = messageFunctions['dashboard_price'];
@@ -1890,6 +2283,7 @@ export const dashboard_processingTime1Week = messageFunctions['dashboard_process
 export const dashboard_processingTime1to2Days = messageFunctions['dashboard_processingTime1to2Days'];
 export const dashboard_processingTime3to5Days = messageFunctions['dashboard_processingTime3to5Days'];
 export const dashboard_product = messageFunctions['dashboard_product'];
+export const dashboard_purchases = messageFunctions['dashboard_purchases'];
 export const dashboard_recentOrders = messageFunctions['dashboard_recentOrders'];
 export const dashboard_sales = messageFunctions['dashboard_sales'];
 export const dashboard_saveSettings = messageFunctions['dashboard_saveSettings'];
@@ -1907,6 +2301,7 @@ export const dashboard_shopSettings = messageFunctions['dashboard_shopSettings']
 export const dashboard_shopStatus = messageFunctions['dashboard_shopStatus'];
 export const dashboard_social = messageFunctions['dashboard_social'];
 export const dashboard_soldItems = messageFunctions['dashboard_soldItems'];
+export const dashboard_statistics = messageFunctions['dashboard_statistics'];
 export const dashboard_status = messageFunctions['dashboard_status'];
 export const dashboard_thisMonth = messageFunctions['dashboard_thisMonth'];
 export const dashboard_time = messageFunctions['dashboard_time'];
@@ -1923,14 +2318,20 @@ export const dashboard_viewAll = messageFunctions['dashboard_viewAll'];
 export const dashboard_views = messageFunctions['dashboard_views'];
 export const dashboard_viewsToSales = messageFunctions['dashboard_viewsToSales'];
 export const dashboard_weekly = messageFunctions['dashboard_weekly'];
+export const dashboard_welcome = messageFunctions['dashboard_welcome'];
 export const dashboard_welcomeBack = messageFunctions['dashboard_welcomeBack'];
 export const dashboard_yourActiveListings = messageFunctions['dashboard_yourActiveListings'];
 export const empty_exploreItems = messageFunctions['empty_exploreItems'];
 export const empty_noFavorites = messageFunctions['empty_noFavorites'];
+export const empty_noItems = messageFunctions['empty_noItems'];
+export const empty_noListings = messageFunctions['empty_noListings'];
 export const empty_noMessages = messageFunctions['empty_noMessages'];
 export const empty_noOrders = messageFunctions['empty_noOrders'];
 export const empty_noProducts = messageFunctions['empty_noProducts'];
+export const empty_noResults = messageFunctions['empty_noResults'];
+export const empty_noSales = messageFunctions['empty_noSales'];
 export const empty_startBrowsing = messageFunctions['empty_startBrowsing'];
+export const empty_startSelling = messageFunctions['empty_startSelling'];
 export const engagement_banner_description = messageFunctions['engagement_banner_description'];
 export const engagement_banner_dismiss = messageFunctions['engagement_banner_dismiss'];
 export const engagement_banner_later = messageFunctions['engagement_banner_later'];
@@ -1939,15 +2340,31 @@ export const engagement_banner_title = messageFunctions['engagement_banner_title
 export const error_atLeastOnePhoto = messageFunctions['error_atLeastOnePhoto'];
 export const error_categoryRequired = messageFunctions['error_categoryRequired'];
 export const error_failedToCreateProduct = messageFunctions['error_failedToCreateProduct'];
+export const error_fetchingData = messageFunctions['error_fetchingData'];
 export const error_generic = messageFunctions['error_generic'];
+export const error_genericError = messageFunctions['error_genericError'];
+export const error_invalidEmail = messageFunctions['error_invalidEmail'];
+export const error_invalidInput = messageFunctions['error_invalidInput'];
+export const error_loadingFailed = messageFunctions['error_loadingFailed'];
 export const error_network = messageFunctions['error_network'];
+export const error_networkError = messageFunctions['error_networkError'];
 export const error_notAuthenticated = messageFunctions['error_notAuthenticated'];
 export const error_notFound = messageFunctions['error_notFound'];
+export const error_pageNotFound = messageFunctions['error_pageNotFound'];
+export const error_pleaseTryAgain = messageFunctions['error_pleaseTryAgain'];
+export const error_requiredField = messageFunctions['error_requiredField'];
+export const error_serverError = messageFunctions['error_serverError'];
 export const error_tryAgain = messageFunctions['error_tryAgain'];
 export const error_unauthorized = messageFunctions['error_unauthorized'];
+export const error_uploadFailed = messageFunctions['error_uploadFailed'];
 export const error_validation = messageFunctions['error_validation'];
 export const explore_brands = messageFunctions['explore_brands'];
 export const fast_shipping = messageFunctions['fast_shipping'];
+export const favorites_addToFavorites = messageFunctions['favorites_addToFavorites'];
+export const favorites_myFavorites = messageFunctions['favorites_myFavorites'];
+export const favorites_removeFromFavorites = messageFunctions['favorites_removeFromFavorites'];
+export const favorites_removed = messageFunctions['favorites_removed'];
+export const favorites_saved = messageFunctions['favorites_saved'];
 export const filter_allCategories = messageFunctions['filter_allCategories'];
 export const filter_applied_activeFiltersCount = messageFunctions['filter_applied_activeFiltersCount'];
 export const filter_applied_allFiltersCleared = messageFunctions['filter_applied_allFiltersCleared'];
@@ -1958,10 +2375,13 @@ export const filter_applied_removeFilter = messageFunctions['filter_applied_remo
 export const filter_apply = messageFunctions['filter_apply'];
 export const filter_bestRated = messageFunctions['filter_bestRated'];
 export const filter_brand = messageFunctions['filter_brand'];
+export const filter_category = messageFunctions['filter_category'];
 export const filter_clearAll = messageFunctions['filter_clearAll'];
 export const filter_color = messageFunctions['filter_color'];
 export const filter_condition = messageFunctions['filter_condition'];
 export const filter_freeShipping = messageFunctions['filter_freeShipping'];
+export const filter_maxPrice = messageFunctions['filter_maxPrice'];
+export const filter_minPrice = messageFunctions['filter_minPrice'];
 export const filter_modal_applied = messageFunctions['filter_modal_applied'];
 export const filter_modal_applyFilters = messageFunctions['filter_modal_applyFilters'];
 export const filter_modal_clearAll = messageFunctions['filter_modal_clearAll'];
@@ -1979,12 +2399,14 @@ export const filter_newest = messageFunctions['filter_newest'];
 export const filter_onSale = messageFunctions['filter_onSale'];
 export const filter_pills_ariaLabel = messageFunctions['filter_pills_ariaLabel'];
 export const filter_pills_ariaPressed = messageFunctions['filter_pills_ariaPressed'];
+export const filter_price = messageFunctions['filter_price'];
 export const filter_priceHighToLow = messageFunctions['filter_priceHighToLow'];
 export const filter_priceLowToHigh = messageFunctions['filter_priceLowToHigh'];
 export const filter_priceRange = messageFunctions['filter_priceRange'];
 export const filter_reset = messageFunctions['filter_reset'];
 export const filter_showLess = messageFunctions['filter_showLess'];
 export const filter_showMore = messageFunctions['filter_showMore'];
+export const filter_showResults = messageFunctions['filter_showResults'];
 export const filter_size = messageFunctions['filter_size'];
 export const filter_sortBy = messageFunctions['filter_sortBy'];
 export const filter_text_contraction_test = messageFunctions['filter_text_contraction_test'];
@@ -2002,15 +2424,21 @@ export const filter_ui_keyboardNavHelp = messageFunctions['filter_ui_keyboardNav
 export const filter_ui_removed = messageFunctions['filter_ui_removed'];
 export const filter_under20 = messageFunctions['filter_under20'];
 export const footer_about = messageFunctions['footer_about'];
+export const footer_aboutUs = messageFunctions['footer_aboutUs'];
 export const footer_allRightsReserved = messageFunctions['footer_allRightsReserved'];
 export const footer_blog = messageFunctions['footer_blog'];
 export const footer_bulgaria = messageFunctions['footer_bulgaria'];
+export const footer_buyerProtection = messageFunctions['footer_buyerProtection'];
 export const footer_careers = messageFunctions['footer_careers'];
 export const footer_company = messageFunctions['footer_company'];
 export const footer_contact = messageFunctions['footer_contact'];
+export const footer_contactUs = messageFunctions['footer_contactUs'];
 export const footer_cookies = messageFunctions['footer_cookies'];
+export const footer_copyright = messageFunctions['footer_copyright'];
+export const footer_faq = messageFunctions['footer_faq'];
 export const footer_followUs = messageFunctions['footer_followUs'];
 export const footer_help = messageFunctions['footer_help'];
+export const footer_howItWorks = messageFunctions['footer_howItWorks'];
 export const footer_in = messageFunctions['footer_in'];
 export const footer_legal = messageFunctions['footer_legal'];
 export const footer_madeWith = messageFunctions['footer_madeWith'];
@@ -2018,24 +2446,57 @@ export const footer_newsletter = messageFunctions['footer_newsletter'];
 export const footer_newsletterPlaceholder = messageFunctions['footer_newsletterPlaceholder'];
 export const footer_press = messageFunctions['footer_press'];
 export const footer_privacy = messageFunctions['footer_privacy'];
+export const footer_privacyPolicy = messageFunctions['footer_privacyPolicy'];
+export const footer_returnPolicy = messageFunctions['footer_returnPolicy'];
 export const footer_returns = messageFunctions['footer_returns'];
+export const footer_sellerGuide = messageFunctions['footer_sellerGuide'];
+export const footer_shippingInfo = messageFunctions['footer_shippingInfo'];
 export const footer_subscribe = messageFunctions['footer_subscribe'];
 export const footer_support = messageFunctions['footer_support'];
 export const footer_terms = messageFunctions['footer_terms'];
+export const footer_termsOfService = messageFunctions['footer_termsOfService'];
+export const footer_trustAndSafety = messageFunctions['footer_trustAndSafety'];
 export const footer_trustSafety = messageFunctions['footer_trustSafety'];
+export const form_cancel = messageFunctions['form_cancel'];
+export const form_confirm = messageFunctions['form_confirm'];
+export const form_delete = messageFunctions['form_delete'];
+export const form_edit = messageFunctions['form_edit'];
+export const form_remove = messageFunctions['form_remove'];
+export const form_save = messageFunctions['form_save'];
+export const form_saveChanges = messageFunctions['form_saveChanges'];
+export const form_submit = messageFunctions['form_submit'];
+export const form_update = messageFunctions['form_update'];
 export const hello = messageFunctions['hello'];
 export const highlight_sellers = messageFunctions['highlight_sellers'];
 export const home_browseAll = messageFunctions['home_browseAll'];
 export const home_itemCount = messageFunctions['home_itemCount'];
 export const home_newestListings = messageFunctions['home_newestListings'];
+export const home_promotedDescription = messageFunctions['home_promotedDescription'];
+export const home_promotedListings = messageFunctions['home_promotedListings'];
 export const home_searchSuggestions_designerBags = messageFunctions['home_searchSuggestions_designerBags'];
 export const home_searchSuggestions_sneakers = messageFunctions['home_searchSuggestions_sneakers'];
 export const home_searchSuggestions_summerDresses = messageFunctions['home_searchSuggestions_summerDresses'];
 export const home_searchSuggestions_vintageJackets = messageFunctions['home_searchSuggestions_vintageJackets'];
+export const home_topSellers = messageFunctions['home_topSellers'];
 export const home_trending_designerBagsUnder100 = messageFunctions['home_trending_designerBagsUnder100'];
 export const home_trending_vintageJackets = messageFunctions['home_trending_vintageJackets'];
 export const home_trending_y2kJeans = messageFunctions['home_trending_y2kJeans'];
 export const home_updatedMomentsAgo = messageFunctions['home_updatedMomentsAgo'];
+export const listing_active = messageFunctions['listing_active'];
+export const listing_archived = messageFunctions['listing_archived'];
+export const listing_delete = messageFunctions['listing_delete'];
+export const listing_deleteListing = messageFunctions['listing_deleteListing'];
+export const listing_draft = messageFunctions['listing_draft'];
+export const listing_edit = messageFunctions['listing_edit'];
+export const listing_editListing = messageFunctions['listing_editListing'];
+export const listing_markAsSold = messageFunctions['listing_markAsSold'];
+export const listing_pause = messageFunctions['listing_pause'];
+export const listing_publish = messageFunctions['listing_publish'];
+export const listing_reactivate = messageFunctions['listing_reactivate'];
+export const listing_sold = messageFunctions['listing_sold'];
+export const listing_status = messageFunctions['listing_status'];
+export const listing_unpause = messageFunctions['listing_unpause'];
+export const listing_viewListing = messageFunctions['listing_viewListing'];
 export const listings_active = messageFunctions['listings_active'];
 export const listings_all = messageFunctions['listings_all'];
 export const listings_createFirst = messageFunctions['listings_createFirst'];
@@ -2049,6 +2510,9 @@ export const listings_pageTitle = messageFunctions['listings_pageTitle'];
 export const listings_sold = messageFunctions['listings_sold'];
 export const listings_total = messageFunctions['listings_total'];
 export const loading = messageFunctions['loading'];
+export const loading_loading = messageFunctions['loading_loading'];
+export const loading_pleaseWait = messageFunctions['loading_pleaseWait'];
+export const loading_processing = messageFunctions['loading_processing'];
 export const makeOffer = messageFunctions['makeOffer'];
 export const menu_browse = messageFunctions['menu_browse'];
 export const menu_sellItems = messageFunctions['menu_sellItems'];
@@ -2073,14 +2537,19 @@ export const messages_bundle = messageFunctions['messages_bundle'];
 export const messages_bundleOffer = messageFunctions['messages_bundleOffer'];
 export const messages_buying = messageFunctions['messages_buying'];
 export const messages_chooseMessage = messageFunctions['messages_chooseMessage'];
+export const messages_conversationWith = messageFunctions['messages_conversationWith'];
 export const messages_counterOffer = messageFunctions['messages_counterOffer'];
 export const messages_declineOffer = messageFunctions['messages_declineOffer'];
 export const messages_dismiss = messageFunctions['messages_dismiss'];
 export const messages_inbox = messageFunctions['messages_inbox'];
 export const messages_location = messageFunctions['messages_location'];
 export const messages_makeOffer = messageFunctions['messages_makeOffer'];
+export const messages_messageDeleted = messageFunctions['messages_messageDeleted'];
 export const messages_messageInput = messageFunctions['messages_messageInput'];
+export const messages_messageSent = messageFunctions['messages_messageSent'];
+export const messages_new = messageFunctions['messages_new'];
 export const messages_newMessage = messageFunctions['messages_newMessage'];
+export const messages_noConversations = messageFunctions['messages_noConversations'];
 export const messages_noProducts = messageFunctions['messages_noProducts'];
 export const messages_now = messageFunctions['messages_now'];
 export const messages_offers = messageFunctions['messages_offers'];
@@ -2090,24 +2559,45 @@ export const messages_reply = messageFunctions['messages_reply'];
 export const messages_save = messageFunctions['messages_save'];
 export const messages_selectConversation = messageFunctions['messages_selectConversation'];
 export const messages_selling = messageFunctions['messages_selling'];
+export const messages_sendMessage = messageFunctions['messages_sendMessage'];
 export const messages_sent = messageFunctions['messages_sent'];
 export const messages_today = messageFunctions['messages_today'];
+export const messages_typeMessage = messageFunctions['messages_typeMessage'];
 export const messages_unread = messageFunctions['messages_unread'];
 export const nav_account = messageFunctions['nav_account'];
+export const nav_back = messageFunctions['nav_back'];
+export const nav_browse = messageFunctions['nav_browse'];
 export const nav_browseCategories = messageFunctions['nav_browseCategories'];
+export const nav_cart = messageFunctions['nav_cart'];
+export const nav_close = messageFunctions['nav_close'];
 export const nav_favorites = messageFunctions['nav_favorites'];
+export const nav_help = messageFunctions['nav_help'];
 export const nav_home = messageFunctions['nav_home'];
+export const nav_inbox = messageFunctions['nav_inbox'];
 export const nav_languageTheme = messageFunctions['nav_languageTheme'];
 export const nav_login = messageFunctions['nav_login'];
 export const nav_logout = messageFunctions['nav_logout'];
+export const nav_menu = messageFunctions['nav_menu'];
 export const nav_messages = messageFunctions['nav_messages'];
+export const nav_myAccount = messageFunctions['nav_myAccount'];
+export const nav_myListings = messageFunctions['nav_myListings'];
+export const nav_myOrders = messageFunctions['nav_myOrders'];
+export const nav_myPurchases = messageFunctions['nav_myPurchases'];
+export const nav_mySales = messageFunctions['nav_mySales'];
 export const nav_newArrivals = messageFunctions['nav_newArrivals'];
+export const nav_notifications = messageFunctions['nav_notifications'];
 export const nav_orders = messageFunctions['nav_orders'];
 export const nav_profile = messageFunctions['nav_profile'];
+export const nav_purchases = messageFunctions['nav_purchases'];
 export const nav_quickShop = messageFunctions['nav_quickShop'];
+export const nav_sales = messageFunctions['nav_sales'];
 export const nav_search = messageFunctions['nav_search'];
 export const nav_sell = messageFunctions['nav_sell'];
 export const nav_settings = messageFunctions['nav_settings'];
+export const nav_shop = messageFunctions['nav_shop'];
+export const nav_signIn = messageFunctions['nav_signIn'];
+export const nav_signOut = messageFunctions['nav_signOut'];
+export const nav_signUp = messageFunctions['nav_signUp'];
 export const nav_signup = messageFunctions['nav_signup'];
 export const nav_startSelling = messageFunctions['nav_startSelling'];
 export const nav_supportCenter = messageFunctions['nav_supportCenter'];
@@ -2115,6 +2605,8 @@ export const nav_topBrands = messageFunctions['nav_topBrands'];
 export const nav_topSellers = messageFunctions['nav_topSellers'];
 export const nav_wishlist = messageFunctions['nav_wishlist'];
 export const notification_clearAll = messageFunctions['notification_clearAll'];
+export const notification_error = messageFunctions['notification_error'];
+export const notification_info = messageFunctions['notification_info'];
 export const notification_itemLiked = messageFunctions['notification_itemLiked'];
 export const notification_itemSold = messageFunctions['notification_itemSold'];
 export const notification_markAllRead = messageFunctions['notification_markAllRead'];
@@ -2123,6 +2615,8 @@ export const notification_offerReceived = messageFunctions['notification_offerRe
 export const notification_priceDropped = messageFunctions['notification_priceDropped'];
 export const notification_reviewReceived = messageFunctions['notification_reviewReceived'];
 export const notification_settings = messageFunctions['notification_settings'];
+export const notification_success = messageFunctions['notification_success'];
+export const notification_warning = messageFunctions['notification_warning'];
 export const notifications_markAllRead = messageFunctions['notifications_markAllRead'];
 export const notifications_noNotifications = messageFunctions['notifications_noNotifications'];
 export const notifications_notifyWhenSomethingHappens = messageFunctions['notifications_notifyWhenSomethingHappens'];
@@ -2214,6 +2708,47 @@ export const onboarding_vintage = messageFunctions['onboarding_vintage'];
 export const onboarding_welcome = messageFunctions['onboarding_welcome'];
 export const onboarding_welcomeBrand = messageFunctions['onboarding_welcomeBrand'];
 export const onboarding_welcomePersonal = messageFunctions['onboarding_welcomePersonal'];
+export const order_buyer = messageFunctions['order_buyer'];
+export const order_cancel = messageFunctions['order_cancel'];
+export const order_cancelOrder = messageFunctions['order_cancelOrder'];
+export const order_cancelReason = messageFunctions['order_cancelReason'];
+export const order_cancelled = messageFunctions['order_cancelled'];
+export const order_completed = messageFunctions['order_completed'];
+export const order_confirmDelivery = messageFunctions['order_confirmDelivery'];
+export const order_confirmReceived = messageFunctions['order_confirmReceived'];
+export const order_contactBuyer = messageFunctions['order_contactBuyer'];
+export const order_contactSeller = messageFunctions['order_contactSeller'];
+export const order_date = messageFunctions['order_date'];
+export const order_delivered = messageFunctions['order_delivered'];
+export const order_details = messageFunctions['order_details'];
+export const order_id = messageFunctions['order_id'];
+export const order_inTransit = messageFunctions['order_inTransit'];
+export const order_markAsShipped = messageFunctions['order_markAsShipped'];
+export const order_number = messageFunctions['order_number'];
+export const order_orderDetails = messageFunctions['order_orderDetails'];
+export const order_orderHistory = messageFunctions['order_orderHistory'];
+export const order_orderNumber = messageFunctions['order_orderNumber'];
+export const order_orderSummary = messageFunctions['order_orderSummary'];
+export const order_pending = messageFunctions['order_pending'];
+export const order_price = messageFunctions['order_price'];
+export const order_processing = messageFunctions['order_processing'];
+export const order_quantity = messageFunctions['order_quantity'];
+export const order_refund = messageFunctions['order_refund'];
+export const order_refunded = messageFunctions['order_refunded'];
+export const order_requestRefund = messageFunctions['order_requestRefund'];
+export const order_seller = messageFunctions['order_seller'];
+export const order_shipped = messageFunctions['order_shipped'];
+export const order_shipping = messageFunctions['order_shipping'];
+export const order_shippingAddress = messageFunctions['order_shippingAddress'];
+export const order_shippingMethod = messageFunctions['order_shippingMethod'];
+export const order_status = messageFunctions['order_status'];
+export const order_subtotal = messageFunctions['order_subtotal'];
+export const order_tax = messageFunctions['order_tax'];
+export const order_total = messageFunctions['order_total'];
+export const order_trackOrder = messageFunctions['order_trackOrder'];
+export const order_trackShipment = messageFunctions['order_trackShipment'];
+export const order_trackingNumber = messageFunctions['order_trackingNumber'];
+export const order_viewOrder = messageFunctions['order_viewOrder'];
 export const orders_allOrders = messageFunctions['orders_allOrders'];
 export const orders_buyer = messageFunctions['orders_buyer'];
 export const orders_cancelOrder = messageFunctions['orders_cancelOrder'];
@@ -2253,6 +2788,24 @@ export const pagination_of = messageFunctions['pagination_of'];
 export const pagination_page = messageFunctions['pagination_page'];
 export const pagination_results = messageFunctions['pagination_results'];
 export const pagination_showing = messageFunctions['pagination_showing'];
+export const payment_addPaymentMethod = messageFunctions['payment_addPaymentMethod'];
+export const payment_billingAddress = messageFunctions['payment_billingAddress'];
+export const payment_cardNumber = messageFunctions['payment_cardNumber'];
+export const payment_cvv = messageFunctions['payment_cvv'];
+export const payment_expiryDate = messageFunctions['payment_expiryDate'];
+export const payment_failed = messageFunctions['payment_failed'];
+export const payment_method = messageFunctions['payment_method'];
+export const payment_nameOnCard = messageFunctions['payment_nameOnCard'];
+export const payment_payNow = messageFunctions['payment_payNow'];
+export const payment_paymentDetails = messageFunctions['payment_paymentDetails'];
+export const payment_paymentFailed = messageFunctions['payment_paymentFailed'];
+export const payment_paymentMethod = messageFunctions['payment_paymentMethod'];
+export const payment_paymentSuccessful = messageFunctions['payment_paymentSuccessful'];
+export const payment_processing = messageFunctions['payment_processing'];
+export const payment_saveCard = messageFunctions['payment_saveCard'];
+export const payment_securePayment = messageFunctions['payment_securePayment'];
+export const payment_selectPaymentMethod = messageFunctions['payment_selectPaymentMethod'];
+export const payment_success = messageFunctions['payment_success'];
 export const pdp_a11y_closeModal = messageFunctions['pdp_a11y_closeModal'];
 export const pdp_a11y_favoriteAdded = messageFunctions['pdp_a11y_favoriteAdded'];
 export const pdp_a11y_favoriteRemoved = messageFunctions['pdp_a11y_favoriteRemoved'];
@@ -2352,9 +2905,14 @@ export const pdp_youMayAlsoLike = messageFunctions['pdp_youMayAlsoLike'];
 export const pdp_youMightAlsoLike = messageFunctions['pdp_youMightAlsoLike'];
 export const pdp_yourItem = messageFunctions['pdp_yourItem'];
 export const price = messageFunctions['price'];
+export const price_free = messageFunctions['price_free'];
+export const price_makeAnOffer = messageFunctions['price_makeAnOffer'];
+export const price_negotiable = messageFunctions['price_negotiable'];
+export const price_priceReduced = messageFunctions['price_priceReduced'];
 export const product_addToCart = messageFunctions['product_addToCart'];
 export const product_addToFavorites = messageFunctions['product_addToFavorites'];
 export const product_askQuestion = messageFunctions['product_askQuestion'];
+export const product_availability = messageFunctions['product_availability'];
 export const product_available = messageFunctions['product_available'];
 export const product_beFirstToLike = messageFunctions['product_beFirstToLike'];
 export const product_brand = messageFunctions['product_brand'];
@@ -2362,10 +2920,13 @@ export const product_businessDays = messageFunctions['product_businessDays'];
 export const product_buyNow = messageFunctions['product_buyNow'];
 export const product_category = messageFunctions['product_category'];
 export const product_close = messageFunctions['product_close'];
+export const product_color = messageFunctions['product_color'];
 export const product_condition = messageFunctions['product_condition'];
+export const product_contactSeller = messageFunctions['product_contactSeller'];
 export const product_copyLink = messageFunctions['product_copyLink'];
 export const product_daysAgo = messageFunctions['product_daysAgo'];
 export const product_description = messageFunctions['product_description'];
+export const product_details = messageFunctions['product_details'];
 export const product_disputeResolution = messageFunctions['product_disputeResolution'];
 export const product_driploProtection = messageFunctions['product_driploProtection'];
 export const product_editListing = messageFunctions['product_editListing'];
@@ -2389,6 +2950,7 @@ export const product_likes = messageFunctions['product_likes'];
 export const product_limitedStock = messageFunctions['product_limitedStock'];
 export const product_location = messageFunctions['product_location'];
 export const product_makeOffer = messageFunctions['product_makeOffer'];
+export const product_material = messageFunctions['product_material'];
 export const product_message = messageFunctions['product_message'];
 export const product_moneyBackGuarantee = messageFunctions['product_moneyBackGuarantee'];
 export const product_monthsAgo = messageFunctions['product_monthsAgo'];
@@ -2401,9 +2963,13 @@ export const product_outOfStock = messageFunctions['product_outOfStock'];
 export const product_payment = messageFunctions['product_payment'];
 export const product_peopleViewing = messageFunctions['product_peopleViewing'];
 export const product_postedTime = messageFunctions['product_postedTime'];
+export const product_price = messageFunctions['product_price'];
+export const product_productDetails = messageFunctions['product_productDetails'];
 export const product_protection = messageFunctions['product_protection'];
+export const product_quantity = messageFunctions['product_quantity'];
 export const product_readMore = messageFunctions['product_readMore'];
 export const product_recentItems = messageFunctions['product_recentItems'];
+export const product_relatedProducts = messageFunctions['product_relatedProducts'];
 export const product_reportItem = messageFunctions['product_reportItem'];
 export const product_response = messageFunctions['product_response'];
 export const product_returnPolicy = messageFunctions['product_returnPolicy'];
@@ -2428,17 +2994,23 @@ export const product_size = messageFunctions['product_size'];
 export const product_sizeGuide = messageFunctions['product_sizeGuide'];
 export const product_sizeGuideComingSoon = messageFunctions['product_sizeGuideComingSoon'];
 export const product_sizingQuestions = messageFunctions['product_sizingQuestions'];
+export const product_sku = messageFunctions['product_sku'];
 export const product_sold = messageFunctions['product_sold'];
 export const product_soldOut = messageFunctions['product_soldOut'];
+export const product_specifications = messageFunctions['product_specifications'];
 export const product_standardShipping = messageFunctions['product_standardShipping'];
 export const product_today = messageFunctions['product_today'];
+export const product_unavailable = messageFunctions['product_unavailable'];
 export const product_viewAll = messageFunctions['product_viewAll'];
 export const product_viewAnalytics = messageFunctions['product_viewAnalytics'];
+export const product_viewDetails = messageFunctions['product_viewDetails'];
 export const product_viewFullShipping = messageFunctions['product_viewFullShipping'];
+export const product_viewProduct = messageFunctions['product_viewProduct'];
 export const product_viewProfile = messageFunctions['product_viewProfile'];
 export const product_viewedTimes = messageFunctions['product_viewedTimes'];
 export const product_weeksAgo = messageFunctions['product_weeksAgo'];
 export const product_yesterday = messageFunctions['product_yesterday'];
+export const product_youMayAlsoLike = messageFunctions['product_youMayAlsoLike'];
 export const product_youMightLike = messageFunctions['product_youMightLike'];
 export const product_yourListing = messageFunctions['product_yourListing'];
 export const profile_about = messageFunctions['profile_about'];
@@ -2453,13 +3025,18 @@ export const profile_dashboard = messageFunctions['profile_dashboard'];
 export const profile_dropHere = messageFunctions['profile_dropHere'];
 export const profile_editProfile = messageFunctions['profile_editProfile'];
 export const profile_favorites = messageFunctions['profile_favorites'];
+export const profile_feedback = messageFunctions['profile_feedback'];
 export const profile_follow = messageFunctions['profile_follow'];
+export const profile_followers = messageFunctions['profile_followers'];
 export const profile_following = messageFunctions['profile_following'];
 export const profile_fullName = messageFunctions['profile_fullName'];
 export const profile_instagram = messageFunctions['profile_instagram'];
+export const profile_items = messageFunctions['profile_items'];
 export const profile_itemsSold = messageFunctions['profile_itemsSold'];
+export const profile_joinDate = messageFunctions['profile_joinDate'];
 export const profile_joined = messageFunctions['profile_joined'];
 export const profile_likes = messageFunctions['profile_likes'];
+export const profile_listings = messageFunctions['profile_listings'];
 export const profile_location = messageFunctions['profile_location'];
 export const profile_memberSince = messageFunctions['profile_memberSince'];
 export const profile_message = messageFunctions['profile_message'];
@@ -2471,6 +3048,7 @@ export const profile_orders = messageFunctions['profile_orders'];
 export const profile_policies = messageFunctions['profile_policies'];
 export const profile_posts = messageFunctions['profile_posts'];
 export const profile_premium = messageFunctions['profile_premium'];
+export const profile_profilePicture = messageFunctions['profile_profilePicture'];
 export const profile_rating = messageFunctions['profile_rating'];
 export const profile_responseTime = messageFunctions['profile_responseTime'];
 export const profile_returnPolicy = messageFunctions['profile_returnPolicy'];
@@ -2480,6 +3058,8 @@ export const profile_saveProfile = messageFunctions['profile_saveProfile'];
 export const profile_saving = messageFunctions['profile_saving'];
 export const profile_securePayments = messageFunctions['profile_securePayments'];
 export const profile_selectPhoto = messageFunctions['profile_selectPhoto'];
+export const profile_seller = messageFunctions['profile_seller'];
+export const profile_sellerProfile = messageFunctions['profile_sellerProfile'];
 export const profile_sellerStats = messageFunctions['profile_sellerStats'];
 export const profile_settings = messageFunctions['profile_settings'];
 export const profile_shipsWithin = messageFunctions['profile_shipsWithin'];
@@ -2493,6 +3073,8 @@ export const profile_uploadYourOwn = messageFunctions['profile_uploadYourOwn'];
 export const profile_uploadingAvatar = messageFunctions['profile_uploadingAvatar'];
 export const profile_url = messageFunctions['profile_url'];
 export const profile_username = messageFunctions['profile_username'];
+export const profile_verifiedSeller = messageFunctions['profile_verifiedSeller'];
+export const profile_viewProfile = messageFunctions['profile_viewProfile'];
 export const profile_website = messageFunctions['profile_website'];
 export const profile_yourAvatar = messageFunctions['profile_yourAvatar'];
 export const profile_yourFullName = messageFunctions['profile_yourFullName'];
@@ -2503,6 +3085,12 @@ export const promoted_hotPicks = messageFunctions['promoted_hotPicks'];
 export const promoted_listings = messageFunctions['promoted_listings'];
 export const promoted_premiumSellers = messageFunctions['promoted_premiumSellers'];
 export const quick_buy = messageFunctions['quick_buy'];
+export const rating_excellent = messageFunctions['rating_excellent'];
+export const rating_good = messageFunctions['rating_good'];
+export const rating_poor = messageFunctions['rating_poor'];
+export const rating_rateExperience = messageFunctions['rating_rateExperience'];
+export const rating_rating = messageFunctions['rating_rating'];
+export const rating_reviews = messageFunctions['rating_reviews'];
 export const removeFavorite = messageFunctions['removeFavorite'];
 export const remove_from_favorites = messageFunctions['remove_from_favorites'];
 export const sales_activity = messageFunctions['sales_activity'];
@@ -2545,6 +3133,7 @@ export const sales_viewOrderDetails = messageFunctions['sales_viewOrderDetails']
 export const search_adjustFilters = messageFunctions['search_adjustFilters'];
 export const search_all = messageFunctions['search_all'];
 export const search_allBrands = messageFunctions['search_allBrands'];
+export const search_allCategories = messageFunctions['search_allCategories'];
 export const search_allConditions = messageFunctions['search_allConditions'];
 export const search_applyFilters = messageFunctions['search_applyFilters'];
 export const search_back = messageFunctions['search_back'];
@@ -2555,11 +3144,14 @@ export const search_categories = messageFunctions['search_categories'];
 export const search_cheapest = messageFunctions['search_cheapest'];
 export const search_clearAll = messageFunctions['search_clearAll'];
 export const search_clearAllFilters = messageFunctions['search_clearAllFilters'];
+export const search_clearFilters = messageFunctions['search_clearFilters'];
+export const search_clearSearch = messageFunctions['search_clearSearch'];
 export const search_condition = messageFunctions['search_condition'];
 export const search_designer = messageFunctions['search_designer'];
 export const search_fair = messageFunctions['search_fair'];
 export const search_fastShip = messageFunctions['search_fastShip'];
 export const search_filter = messageFunctions['search_filter'];
+export const search_filterBy = messageFunctions['search_filterBy'];
 export const search_filters = messageFunctions['search_filters'];
 export const search_findYourSize = messageFunctions['search_findYourSize'];
 export const search_for = messageFunctions['search_for'];
@@ -2576,7 +3168,9 @@ export const search_newest = messageFunctions['search_newest'];
 export const search_newestFirst = messageFunctions['search_newestFirst'];
 export const search_noItemsFound = messageFunctions['search_noItemsFound'];
 export const search_noResults = messageFunctions['search_noResults'];
+export const search_noResultsFor = messageFunctions['search_noResultsFor'];
 export const search_placeholder = messageFunctions['search_placeholder'];
+export const search_popularSearches = messageFunctions['search_popularSearches'];
 export const search_premium = messageFunctions['search_premium'];
 export const search_priceHighToLow = messageFunctions['search_priceHighToLow'];
 export const search_priceLowToHigh = messageFunctions['search_priceLowToHigh'];
@@ -2584,18 +3178,28 @@ export const search_priceRange = messageFunctions['search_priceRange'];
 export const search_quickAccess = messageFunctions['search_quickAccess'];
 export const search_quickFilters = messageFunctions['search_quickFilters'];
 export const search_quickShop = messageFunctions['search_quickShop'];
+export const search_recentSearches = messageFunctions['search_recentSearches'];
 export const search_recentViews = messageFunctions['search_recentViews'];
 export const search_relevance = messageFunctions['search_relevance'];
 export const search_results = messageFunctions['search_results'];
+export const search_resultsFor = messageFunctions['search_resultsFor'];
 export const search_savedItems = messageFunctions['search_savedItems'];
+export const search_search = messageFunctions['search_search'];
+export const search_searchPlaceholder = messageFunctions['search_searchPlaceholder'];
+export const search_searchProducts = messageFunctions['search_searchProducts'];
+export const search_searchResults = messageFunctions['search_searchResults'];
 export const search_shopByCondition = messageFunctions['search_shopByCondition'];
 export const search_shopByPreference = messageFunctions['search_shopByPreference'];
 export const search_shopByPrice = messageFunctions['search_shopByPrice'];
 export const search_shopSmarter = messageFunctions['search_shopSmarter'];
+export const search_showing = messageFunctions['search_showing'];
 export const search_size = messageFunctions['search_size'];
 export const search_sort = messageFunctions['search_sort'];
+export const search_sortBy = messageFunctions['search_sortBy'];
+export const search_suggestions = messageFunctions['search_suggestions'];
 export const search_topSellers = messageFunctions['search_topSellers'];
 export const search_trendingNow = messageFunctions['search_trendingNow'];
+export const search_tryAdjustingFilters = messageFunctions['search_tryAdjustingFilters'];
 export const search_under25 = messageFunctions['search_under25'];
 export const search_viewAll = messageFunctions['search_viewAll'];
 export const search_viewAllResults = messageFunctions['search_viewAllResults'];
@@ -2604,7 +3208,10 @@ export const sell_accessoriesList = messageFunctions['sell_accessoriesList'];
 export const sell_add = messageFunctions['sell_add'];
 export const sell_addBrandSize = messageFunctions['sell_addBrandSize'];
 export const sell_addDetailsPlaceholder = messageFunctions['sell_addDetailsPlaceholder'];
+export const sell_addImages = messageFunctions['sell_addImages'];
+export const sell_addListing = messageFunctions['sell_addListing'];
 export const sell_addPhoto = messageFunctions['sell_addPhoto'];
+export const sell_addPhotos = messageFunctions['sell_addPhotos'];
 export const sell_addTag = messageFunctions['sell_addTag'];
 export const sell_analysis = messageFunctions['sell_analysis'];
 export const sell_applySuggestions = messageFunctions['sell_applySuggestions'];
@@ -2667,6 +3274,7 @@ export const sell_condition_worn_desc = messageFunctions['sell_condition_worn_de
 export const sell_confidence = messageFunctions['sell_confidence'];
 export const sell_confirmPublish = messageFunctions['sell_confirmPublish'];
 export const sell_cover = messageFunctions['sell_cover'];
+export const sell_createListing = messageFunctions['sell_createListing'];
 export const sell_customBrandAriaLabel = messageFunctions['sell_customBrandAriaLabel'];
 export const sell_description = messageFunctions['sell_description'];
 export const sell_descriptionOptional = messageFunctions['sell_descriptionOptional'];
@@ -2693,6 +3301,7 @@ export const sell_kids = messageFunctions['sell_kids'];
 export const sell_listAnother = messageFunctions['sell_listAnother'];
 export const sell_listItem = messageFunctions['sell_listItem'];
 export const sell_listUnlimitedProducts = messageFunctions['sell_listUnlimitedProducts'];
+export const sell_listYourItem = messageFunctions['sell_listYourItem'];
 export const sell_listingError = messageFunctions['sell_listingError'];
 export const sell_listingPrice = messageFunctions['sell_listingPrice'];
 export const sell_listingSuccess = messageFunctions['sell_listingSuccess'];
@@ -2740,6 +3349,7 @@ export const sell_priceRequired = messageFunctions['sell_priceRequired'];
 export const sell_prioritySupport = messageFunctions['sell_prioritySupport'];
 export const sell_processingUpload = messageFunctions['sell_processingUpload'];
 export const sell_productAlt = messageFunctions['sell_productAlt'];
+export const sell_productDetails = messageFunctions['sell_productDetails'];
 export const sell_productInfo = messageFunctions['sell_productInfo'];
 export const sell_publish = messageFunctions['sell_publish'];
 export const sell_publishing = messageFunctions['sell_publishing'];
@@ -2759,8 +3369,10 @@ export const sell_selectProductType = messageFunctions['sell_selectProductType']
 export const sell_selectSize = messageFunctions['sell_selectSize'];
 export const sell_selectSubcategory = messageFunctions['sell_selectSubcategory'];
 export const sell_selected = messageFunctions['sell_selected'];
+export const sell_sellAnItem = messageFunctions['sell_sellAnItem'];
 export const sell_setCoverPhoto = messageFunctions['sell_setCoverPhoto'];
 export const sell_setPricing = messageFunctions['sell_setPricing'];
+export const sell_shipping = messageFunctions['sell_shipping'];
 export const sell_shippingCost = messageFunctions['sell_shippingCost'];
 export const sell_shippingCostLabel = messageFunctions['sell_shippingCostLabel'];
 export const sell_shippingLabel = messageFunctions['sell_shippingLabel'];
@@ -2777,6 +3389,7 @@ export const sell_sizePlaceholder = messageFunctions['sell_sizePlaceholder'];
 export const sell_sizeRequired = messageFunctions['sell_sizeRequired'];
 export const sell_smartCategorySuggestions = messageFunctions['sell_smartCategorySuggestions'];
 export const sell_specificCategoryLabel = messageFunctions['sell_specificCategoryLabel'];
+export const sell_startSelling = messageFunctions['sell_startSelling'];
 export const sell_step1 = messageFunctions['sell_step1'];
 export const sell_step2 = messageFunctions['sell_step2'];
 export const sell_step3 = messageFunctions['sell_step3'];
@@ -2814,9 +3427,12 @@ export const sell_whoIsItFor = messageFunctions['sell_whoIsItFor'];
 export const sell_whoIsThisFor = messageFunctions['sell_whoIsThisFor'];
 export const sell_women = messageFunctions['sell_women'];
 export const sell_yourEarnings = messageFunctions['sell_yourEarnings'];
+export const seller_aboutSeller = messageFunctions['seller_aboutSeller'];
 export const seller_activeAgo = messageFunctions['seller_activeAgo'];
 export const seller_activeNow = messageFunctions['seller_activeNow'];
+export const seller_allListings = messageFunctions['seller_allListings'];
 export const seller_avgShipping = messageFunctions['seller_avgShipping'];
+export const seller_contactSeller = messageFunctions['seller_contactSeller'];
 export const seller_day = messageFunctions['seller_day'];
 export const seller_days = messageFunctions['seller_days'];
 export const seller_follow = messageFunctions['seller_follow'];
@@ -2834,36 +3450,83 @@ export const seller_premiumSeller = messageFunctions['seller_premiumSeller'];
 export const seller_premiumSellerDescription = messageFunctions['seller_premiumSellerDescription'];
 export const seller_profile = messageFunctions['seller_profile'];
 export const seller_rating = messageFunctions['seller_rating'];
+export const seller_ratings = messageFunctions['seller_ratings'];
 export const seller_recentActivity = messageFunctions['seller_recentActivity'];
 export const seller_respondsIn = messageFunctions['seller_respondsIn'];
 export const seller_respondsWithin = messageFunctions['seller_respondsWithin'];
+export const seller_reviews = messageFunctions['seller_reviews'];
 export const seller_sales = messageFunctions['seller_sales'];
+export const seller_seller = messageFunctions['seller_seller'];
+export const seller_sellerInfo = messageFunctions['seller_sellerInfo'];
+export const seller_sellerProfile = messageFunctions['seller_sellerProfile'];
 export const seller_shippedOnTime = messageFunctions['seller_shippedOnTime'];
+export const seller_since = messageFunctions['seller_since'];
 export const seller_soldBy = messageFunctions['seller_soldBy'];
 export const seller_soldThisWeek = messageFunctions['seller_soldThisWeek'];
 export const seller_superstarSeller = messageFunctions['seller_superstarSeller'];
+export const seller_totalSales = messageFunctions['seller_totalSales'];
 export const seller_trustedSeller = messageFunctions['seller_trustedSeller'];
 export const seller_unknown = messageFunctions['seller_unknown'];
 export const seller_verified = messageFunctions['seller_verified'];
+export const seller_viewAllListings = messageFunctions['seller_viewAllListings'];
 export const seller_viewFullProfile = messageFunctions['seller_viewFullProfile'];
+export const seller_viewProfile = messageFunctions['seller_viewProfile'];
 export const settings_account = messageFunctions['settings_account'];
+export const settings_appearance = messageFunctions['settings_appearance'];
+export const settings_billing = messageFunctions['settings_billing'];
 export const settings_changePassword = messageFunctions['settings_changePassword'];
 export const settings_currency = messageFunctions['settings_currency'];
+export const settings_currentPassword = messageFunctions['settings_currentPassword'];
 export const settings_darkMode = messageFunctions['settings_darkMode'];
 export const settings_deleteAccount = messageFunctions['settings_deleteAccount'];
 export const settings_downloadData = messageFunctions['settings_downloadData'];
+export const settings_email = messageFunctions['settings_email'];
 export const settings_emailNotifications = messageFunctions['settings_emailNotifications'];
 export const settings_language = messageFunctions['settings_language'];
+export const settings_newPassword = messageFunctions['settings_newPassword'];
 export const settings_notifications = messageFunctions['settings_notifications'];
+export const settings_password = messageFunctions['settings_password'];
+export const settings_paymentMethods = messageFunctions['settings_paymentMethods'];
 export const settings_payments = messageFunctions['settings_payments'];
 export const settings_privacy = messageFunctions['settings_privacy'];
+export const settings_profile = messageFunctions['settings_profile'];
 export const settings_pushNotifications = messageFunctions['settings_pushNotifications'];
 export const settings_security = messageFunctions['settings_security'];
 export const settings_shipping = messageFunctions['settings_shipping'];
+export const settings_shippingAddress = messageFunctions['settings_shippingAddress'];
 export const settings_theme = messageFunctions['settings_theme'];
 export const settings_twoFactor = messageFunctions['settings_twoFactor'];
+export const settings_twoFactorAuth = messageFunctions['settings_twoFactorAuth'];
+export const settings_updateEmail = messageFunctions['settings_updateEmail'];
+export const settings_updatePassword = messageFunctions['settings_updatePassword'];
+export const shipping_carrier = messageFunctions['shipping_carrier'];
+export const shipping_deliveryDate = messageFunctions['shipping_deliveryDate'];
+export const shipping_estimatedDelivery = messageFunctions['shipping_estimatedDelivery'];
+export const shipping_freeShipping = messageFunctions['shipping_freeShipping'];
+export const shipping_overnight = messageFunctions['shipping_overnight'];
+export const shipping_selectShipping = messageFunctions['shipping_selectShipping'];
+export const shipping_shippingAddress = messageFunctions['shipping_shippingAddress'];
+export const shipping_shippingCost = messageFunctions['shipping_shippingCost'];
+export const shipping_shippingDetails = messageFunctions['shipping_shippingDetails'];
+export const shipping_shippingInfo = messageFunctions['shipping_shippingInfo'];
+export const shipping_shippingMethod = messageFunctions['shipping_shippingMethod'];
+export const shipping_standard = messageFunctions['shipping_standard'];
+export const shipping_trackingNumber = messageFunctions['shipping_trackingNumber'];
+export const shipping_twoDay = messageFunctions['shipping_twoDay'];
 export const size = messageFunctions['size'];
 export const soldOut = messageFunctions['soldOut'];
+export const sort_mostRecent = messageFunctions['sort_mostRecent'];
+export const sort_popular = messageFunctions['sort_popular'];
+export const sort_priceHighToLow = messageFunctions['sort_priceHighToLow'];
+export const sort_priceLowToHigh = messageFunctions['sort_priceLowToHigh'];
+export const sort_relevance = messageFunctions['sort_relevance'];
+export const status_active = messageFunctions['status_active'];
+export const status_cancelled = messageFunctions['status_cancelled'];
+export const status_completed = messageFunctions['status_completed'];
+export const status_draft = messageFunctions['status_draft'];
+export const status_inactive = messageFunctions['status_inactive'];
+export const status_pending = messageFunctions['status_pending'];
+export const status_processing = messageFunctions['status_processing'];
 export const subcategory_accessories = messageFunctions['subcategory_accessories'];
 export const subcategory_activewear = messageFunctions['subcategory_activewear'];
 export const subcategory_art = messageFunctions['subcategory_art'];
@@ -2936,20 +3599,49 @@ export const subcategory_travel = messageFunctions['subcategory_travel'];
 export const subcategory_tshirts = messageFunctions['subcategory_tshirts'];
 export const subcategory_underwear = messageFunctions['subcategory_underwear'];
 export const subcategory_watches = messageFunctions['subcategory_watches'];
+export const success_accountCreated = messageFunctions['success_accountCreated'];
+export const success_accountUpdated = messageFunctions['success_accountUpdated'];
 export const success_copied = messageFunctions['success_copied'];
 export const success_deleted = messageFunctions['success_deleted'];
+export const success_listingCreated = messageFunctions['success_listingCreated'];
+export const success_listingDeleted = messageFunctions['success_listingDeleted'];
+export const success_listingUpdated = messageFunctions['success_listingUpdated'];
+export const success_messageSent = messageFunctions['success_messageSent'];
+export const success_orderPlaced = messageFunctions['success_orderPlaced'];
+export const success_passwordChanged = messageFunctions['success_passwordChanged'];
+export const success_paymentReceived = messageFunctions['success_paymentReceived'];
+export const success_profileUpdated = messageFunctions['success_profileUpdated'];
 export const success_saved = messageFunctions['success_saved'];
 export const success_updated = messageFunctions['success_updated'];
 export const test = messageFunctions['test'];
+export const time_daysAgo = messageFunctions['time_daysAgo'];
+export const time_hoursAgo = messageFunctions['time_hoursAgo'];
+export const time_justNow = messageFunctions['time_justNow'];
+export const time_minutesAgo = messageFunctions['time_minutesAgo'];
+export const time_monthsAgo = messageFunctions['time_monthsAgo'];
+export const time_weeksAgo = messageFunctions['time_weeksAgo'];
+export const time_yearsAgo = messageFunctions['time_yearsAgo'];
 export const top_rated_sellers = messageFunctions['top_rated_sellers'];
+export const transaction_amount = messageFunctions['transaction_amount'];
+export const transaction_date = messageFunctions['transaction_date'];
+export const transaction_details = messageFunctions['transaction_details'];
+export const transaction_history = messageFunctions['transaction_history'];
+export const transaction_id = messageFunctions['transaction_id'];
+export const transaction_method = messageFunctions['transaction_method'];
+export const transaction_status = messageFunctions['transaction_status'];
+export const transaction_type = messageFunctions['transaction_type'];
 export const trending_brands = messageFunctions['trending_brands'];
 export const trending_featured = messageFunctions['trending_featured'];
+export const trending_hotDeals = messageFunctions['trending_hotDeals'];
 export const trending_item = messageFunctions['trending_item'];
+export const trending_newArrivals = messageFunctions['trending_newArrivals'];
 export const trending_newSeller = messageFunctions['trending_newSeller'];
 export const trending_now = messageFunctions['trending_now'];
+export const trending_popularBrands = messageFunctions['trending_popularBrands'];
 export const trending_promoted = messageFunctions['trending_promoted'];
 export const trending_title = messageFunctions['trending_title'];
 export const trending_topSellers = messageFunctions['trending_topSellers'];
+export const trending_trendingNow = messageFunctions['trending_trendingNow'];
 export const ui_scroll = messageFunctions['ui_scroll'];
 export const upgrade_activePlan = messageFunctions['upgrade_activePlan'];
 export const upgrade_brandFeature1 = messageFunctions['upgrade_brandFeature1'];
@@ -3002,6 +3694,12 @@ export const upgrade_subtitle = messageFunctions['upgrade_subtitle'];
 export const upgrade_supportSubtitle = messageFunctions['upgrade_supportSubtitle'];
 export const upgrade_supportTitle = messageFunctions['upgrade_supportTitle'];
 export const upgrade_title = messageFunctions['upgrade_title'];
+export const user_buyer = messageFunctions['user_buyer'];
+export const user_member = messageFunctions['user_member'];
+export const user_seller = messageFunctions['user_seller'];
+export const user_username = messageFunctions['user_username'];
+export const user_verifiedBuyer = messageFunctions['user_verifiedBuyer'];
+export const user_verifiedSeller = messageFunctions['user_verifiedSeller'];
 export const verified_brands = messageFunctions['verified_brands'];
 export const view_details = messageFunctions['view_details'];
 export const welcome = messageFunctions['welcome'];
