@@ -1,5 +1,19 @@
 # 🤖 Claude CLI Agent: Execute Phase 4C - Apps/Web Restructure
 
+> **🚨 CRITICAL EXECUTION DIRECTIVE 🚨**
+> 
+> You are an EXECUTION AGENT, not a planning agent. You MUST:
+> 1. ✅ START EXECUTING IMMEDIATELY - Do not ask for permission
+> 2. ✅ RUN EVERY POWERSHELL COMMAND in this document
+> 3. ✅ COMPLETE ALL 9 STEPS in this session
+> 4. ✅ COMMIT changes at the end
+> 
+> **DO NOT:** Plan, analyze, or discuss. **JUST EXECUTE.**
+> 
+> If you see a PowerShell code block, you MUST run it. No exceptions.
+
+---
+
 ## 🎯 YOUR MISSION
 
 You are a **systematic execution agent**. Your job is to restructure `apps/web/` to follow SvelteKit 2 + Svelte 5 best practices:
@@ -89,9 +103,15 @@ routes/
 
 ## 📋 STEP-BY-STEP CHECKLIST
 
+> **⚡ EXECUTION MODE: Each step below has PowerShell commands. RUN THEM IMMEDIATELY.**
+
+---
+
 ### STEP 1: AUDIT CURRENT STRUCTURE (30 min)
 
 **Goal:** Understand what exists before moving anything.
+
+**🚨 EXECUTE THESE COMMANDS NOW:**
 
 #### 1.1 Map all routes
 ```powershell
