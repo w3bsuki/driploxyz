@@ -42,6 +42,31 @@
             "svelte": "./src/lib/primitives/toast/index.ts",
             "default": "./dist/primitives/toast/index.js"
         },
+        "./primitives/*": {
+            "types": "./dist/primitives/*/index.d.ts",
+            "svelte": "./src/lib/primitives/*/index.ts",
+            "default": "./dist/primitives/*/index.js"
+        },
+        "./compositions": {
+            "types": "./dist/compositions/index.d.ts",
+            "svelte": "./src/lib/compositions/index.ts",
+            "default": "./dist/compositions/index.js"
+        },
+        "./compositions/*": {
+            "types": "./dist/compositions/*/index.d.ts",
+            "svelte": "./src/lib/compositions/*/index.ts",
+            "default": "./dist/compositions/*/index.js"
+        },
+        "./layouts": {
+            "types": "./dist/layouts/index.d.ts",
+            "svelte": "./src/lib/layouts/index.ts",
+            "default": "./dist/layouts/index.js"
+        },
+        "./layouts/*": {
+            "types": "./dist/layouts/*.d.ts",
+            "svelte": "./src/lib/layouts/*.svelte",
+            "default": "./dist/layouts/*.js"
+        },
         "./styles/tokens.css": "./src/styles/tokens.css",
         "./styles/semantic.css": "./src/styles/semantic.css",
         "./styles/utilities.css": "./src/styles/utilities.css",
