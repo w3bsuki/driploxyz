@@ -10,7 +10,7 @@ interface ProductDomainAdapterLike {
 }
 
 // Mock ProductDomainAdapter
-vi.mock('$lib/services/products.domain', () => {
+vi.mock('@repo/core/services', () => {
   const mockAdapter = {
     resolveCategorySegments: {
       execute: vi.fn().mockResolvedValue({
@@ -73,7 +73,7 @@ describe('/api/search endpoint', () => {
     vi.resetAllMocks();
     
     // Get the mocked ProductDomainAdapter
-    const { ProductDomainAdapter } = await import('$lib/services/products.domain');
+    const { ProductDomainAdapter } = await import('@repo/core/services');
     const ProductDomainAdapterMock = vi.mocked(ProductDomainAdapter);
     
     // Create a mock adapter instance with only the methods we need

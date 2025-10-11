@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
-import { getProductAdapter } from '@repo/domain/services/adapters';
+import { getProductAdapter } from '@repo/core/services';
 import { isUUID } from '$lib/utils/seo-urls';
 
 export const load = (async ({ params, locals, depends, setHeaders }) => {

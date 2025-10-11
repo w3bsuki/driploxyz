@@ -154,6 +154,56 @@ export const Err = <E extends DomainError>(error: E): Result<never, E> => ({
 });
 
 /**
+ * Repository interfaces (domain ports)
+ */
+export interface ProductRepository {
+  getById(id: string): Promise<Result<Product, NotFoundError>>;
+  getBySlugAndSeller(slug: string, sellerUsername: string): Promise<Result<Product, NotFoundError>>;
+  getBySeller(sellerId: string, options?: { limit?: number; offset?: number; sort?: { by: 'created_at' | 'price' | 'popularity'; direction: 'asc' | 'desc' } }): Promise<Result<Product[], ProductValidationError | NotFoundError>>;
+  search(params: ProductSearchParams): Promise<Result<ProductSearchResult, ProductValidationError>>;
+  getPromoted(limit: number): Promise<Result<Product[], ProductValidationError>>;
+}
+
+export interface CategoryRepository {
+  getById(id: string): Promise<Result<Category, NotFoundError>>;
+  getBySlug(slug: string): Promise<Result<Category, NotFoundError>>;
+  search(query: string, limit: number): Promise<Result<Category[], ProductValidationError>>;
+  getBreadcrumb(categoryId: string): Promise<Result<Category[], ProductValidationError>>;
+}
+
+/**
+ * Search parameters for products
+ */
+export interface ProductSearchParams {
+  query?: string;
+  limit?: number;
+  offset?: number;
+  cursor?: string;
+  country_code?: string;
+  category_id?: string;
+  category_ids?: string[];
+  include_descendants?: boolean;
+  min_price?: number;
+  max_price?: number;
+  conditions?: string[];
+  sizes?: string[];
+  brands?: string[];
+  location?: string;
+  seller_id?: string;
+  sort?: { by: 'created_at' | 'price' | 'popularity' | 'relevance'; direction: 'asc' | 'desc' };
+}
+
+/**
+ * Search result for products
+ */
+export interface ProductSearchResult {
+  products: Product[];
+  total: number;
+  nextCursor?: string;
+  hasMore: boolean;
+}
+
+/**
  * Database type mappings
  */
 export type DbProduct = Database['public']['Tables']['products']['Row'];

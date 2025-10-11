@@ -1,11 +1,11 @@
-import type { Product, Category, Result } from './entities';
+import type { Product, Category, Result } from './types';
 import type {
   ProductRepository,
   CategoryRepository,
   ProductSearchParams,
   ProductSearchResult
-} from './ports';
-import { Ok, Err, NotFoundError, ProductValidationError as ValidationError, PolicyError } from './entities';
+} from './types';
+import { Ok, Err, NotFoundError, ProductValidationError as ValidationError, PolicyError } from './types';
 
 /**
  * Domain Service: Get Product By Slug
@@ -145,7 +145,7 @@ export class SearchProducts {
     // For example, you might want to boost certain products or apply additional filtering
     return {
       ...result,
-      products: result.products.filter(product => {
+      products: result.products.filter((product: Product) => {
         // Only show active, unsold products
         return product.is_active && !product.is_sold;
       })
@@ -287,11 +287,11 @@ export class GetFeaturedProducts {
 
     // Filter by country if specified
     if (country) {
-      products = products.filter(product => product.country_code === country);
+      products = products.filter((product: Product) => product.country_code === country);
     }
 
     // Apply business rules for featured products
-    products = products.filter(product => {
+    products = products.filter((product: Product) => {
       // Must be active and not sold
       if (!product.is_active || product.is_sold) {
         return false;

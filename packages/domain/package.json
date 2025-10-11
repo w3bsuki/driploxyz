@@ -11,50 +11,40 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./services": {
-      "types": "./dist/services/index.d.ts",
-      "import": "./dist/services/index.js",
-      "default": "./dist/services/index.js"
+    "./cart": {
+      "types": "./dist/cart/index.d.ts",
+      "import": "./dist/cart/index.js",
+      "default": "./dist/cart/index.js"
     },
-    "./services/products": {
-      "types": "./dist/services/products/index.d.ts",
-      "import": "./dist/services/products/index.js",
-      "default": "./dist/services/products/index.js"
+    "./products": {
+      "types": "./dist/products/index.d.ts",
+      "import": "./dist/products/index.js",
+      "default": "./dist/products/index.js"
     },
-    "./services/orders": {
-      "types": "./dist/services/orders/index.d.ts",
-      "import": "./dist/services/orders/index.js",
-      "default": "./dist/services/orders/index.js"
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.js",
+      "default": "./dist/auth/index.js"
     },
-    "./services/profiles": {
-      "types": "./dist/services/profiles/index.d.ts",
-      "import": "./dist/services/profiles/index.js",
-      "default": "./dist/services/profiles/index.js"
+    "./orders": {
+      "types": "./dist/orders/index.d.ts",
+      "import": "./dist/orders/index.js",
+      "default": "./dist/orders/index.js"
     },
-    "./services/messaging": {
-      "types": "./dist/services/messaging/index.d.ts",
-      "import": "./dist/services/messaging/index.js",
-      "default": "./dist/services/messaging/index.js"
+    "./users": {
+      "types": "./dist/users/index.d.ts",
+      "import": "./dist/users/index.js",
+      "default": "./dist/users/index.js"
     },
-    "./services/payments": {
-      "types": "./dist/services/payments/index.d.ts",
-      "import": "./dist/services/payments/index.js",
-      "default": "./dist/services/payments/index.js"
+    "./payments": {
+      "types": "./dist/payments/index.d.ts",
+      "import": "./dist/payments/index.js",
+      "default": "./dist/payments/index.js"
     },
-    "./validation": {
-      "types": "./dist/validation/index.d.ts",
-      "import": "./dist/validation/index.js",
-      "default": "./dist/validation/index.js"
-    },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js",
-      "default": "./dist/types/index.js"
-    },
-    "./adapters": {
-      "types": "./dist/services/adapters/index.d.ts",
-      "import": "./dist/services/adapters/index.js",
-      "default": "./dist/services/adapters/index.js"
+    "./shared": {
+      "types": "./dist/shared/index.d.ts",
+      "import": "./dist/shared/index.js",
+      "default": "./dist/shared/index.js"
     }
   },
   "files": [

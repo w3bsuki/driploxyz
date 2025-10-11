@@ -3,14 +3,14 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: [
     'src/index.ts',
-    'src/services/index.ts',
-    'src/services/products/index.ts',
-    'src/services/orders/index.ts',
-    'src/services/profiles/index.ts',
-    'src/services/messaging/index.ts',
-    'src/services/payments/index.ts',
-    'src/validation/index.ts',
-    'src/types/index.ts'
+    // New domain structure entry points
+    'src/products/index.ts',
+    'src/orders/index.ts',
+    'src/users/index.ts',
+    'src/payments/index.ts',
+    'src/cart/index.ts',
+    'src/auth/index.ts',
+    'src/shared/index.ts'
   ],
   format: ['esm'],
   dts: true,

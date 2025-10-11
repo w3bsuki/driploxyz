@@ -1,0 +1,244 @@
+{
+  "description": "Phase 4B Domain Package Restructure - Import Mapping",
+  "created": "2025-01-11",
+  "phase": "4B",
+  "domains": {
+    "products": {
+      "description": "Restructure existing well-organized products domain",
+      "current_structure": {
+        "src/services/products/entities.ts": "Domain entities (Product, Category, ProductImage, etc.)",
+        "src/services/products/ports.ts": "Repository interfaces and ports",
+        "src/services/products/repos.ts": "Repository implementations",
+        "src/services/products/services.ts": "Business logic services",
+        "src/services/products/value-objects.ts": "Value objects (Money, Slug, etc.)",
+        "src/services/products/index.ts": "Public exports for products domain",
+        "src/services/products/__tests__/services.test.ts": "Tests for products services"
+      },
+      "target_structure": {
+        "src/products/types.ts": "Consolidated entities, ports, and value objects",
+        "src/products/services.ts": "Business logic services and repositories",
+        "src/products/validation.ts": "Product validation rules (extract from services)",
+        "src/products/index.ts": "Public exports for products domain",
+        "src/products/__tests__/services.test.ts": "Tests for products services"
+      },
+      "file_moves": {
+        "src/services/products/entities.ts": "src/products/types.ts",
+        "src/services/products/ports.ts": "src/products/types.ts",
+        "src/services/products/value-objects.ts": "src/products/types.ts",
+        "src/services/products/repos.ts": "src/products/services.ts",
+        "src/services/products/services.ts": "src/products/services.ts",
+        "src/services/products/__tests__/services.test.ts": "src/products/__tests__/services.test.ts"
+      },
+      "new_files": [
+        "src/products/validation.ts",
+        "src/products/index.ts"
+      ]
+    },
+    "orders": {
+      "description": "Expand existing simple orders domain",
+      "current_structure": {
+        "src/services/orders/index.ts": "Simple export file - needs expansion"
+      },
+      "target_structure": {
+        "src/orders/services.ts": "Order business logic services",
+        "src/orders/types.ts": "Order types and interfaces",
+        "src/orders/validation.ts": "Order validation rules",
+        "src/orders/index.ts": "Public exports for orders domain"
+      },
+      "file_moves": {
+        "src/services/orders/index.ts": "src/orders/services.ts"
+      },
+      "new_files": [
+        "src/orders/types.ts",
+        "src/orders/validation.ts",
+        "src/orders/index.ts"
+      ]
+    },
+    "users": {
+      "description": "Create users domain from existing profiles",
+      "current_structure": {
+        "src/services/profiles/index.ts": "Profile services - rename to users"
+      },
+      "target_structure": {
+        "src/users/services.ts": "User business logic services",
+        "src/users/types.ts": "User types and interfaces",
+        "src/users/validation.ts": "User validation rules",
+        "src/users/index.ts": "Public exports for users domain"
+      },
+      "file_moves": {
+        "src/services/profiles/index.ts": "src/users/services.ts"
+      },
+      "new_files": [
+        "src/users/types.ts",
+        "src/users/validation.ts",
+        "src/users/index.ts"
+      ]
+    },
+    "payments": {
+      "description": "Expand existing simple payments domain",
+      "current_structure": {
+        "src/services/payments/index.ts": "Simple export file - needs expansion"
+      },
+      "target_structure": {
+        "src/payments/services.ts": "Payment business logic services",
+        "src/payments/types.ts": "Payment types and interfaces",
+        "src/payments/validation.ts": "Payment validation rules",
+        "src/payments/index.ts": "Public exports for payments domain"
+      },
+      "file_moves": {
+        "src/services/payments/index.ts": "src/payments/services.ts"
+      },
+      "new_files": [
+        "src/payments/types.ts",
+        "src/payments/validation.ts",
+        "src/payments/index.ts"
+      ]
+    },
+    "cart": {
+      "description": "Create new cart domain from scratch",
+      "current_structure": {},
+      "target_structure": {
+        "src/cart/services.ts": "Cart business logic services",
+        "src/cart/types.ts": "Cart types and interfaces",
+        "src/cart/validation.ts": "Cart validation rules",
+        "src/cart/index.ts": "Public exports for cart domain"
+      },
+      "file_moves": {},
+      "new_files": [
+        "src/cart/services.ts",
+        "src/cart/types.ts",
+        "src/cart/validation.ts",
+        "src/cart/index.ts"
+      ]
+    },
+    "auth": {
+      "description": "Create new auth domain (business rules only)",
+      "current_structure": {},
+      "target_structure": {
+        "src/auth/services.ts": "Auth business logic services (no framework code)",
+        "src/auth/types.ts": "Auth types and interfaces",
+        "src/auth/validation.ts": "Auth validation rules",
+        "src/auth/index.ts": "Public exports for auth domain"
+      },
+      "file_moves": {},
+      "new_files": [
+        "src/auth/services.ts",
+        "src/auth/types.ts",
+        "src/auth/validation.ts",
+        "src/auth/index.ts"
+      ]
+    },
+    "shared": {
+      "description": "Create shared domain utilities",
+      "current_structure": {
+        "src/types/index.ts": "Move to shared domain"
+      },
+      "target_structure": {
+        "src/shared/types.ts": "Shared domain types",
+        "src/shared/index.ts": "Public exports for shared utilities"
+      },
+      "file_moves": {
+        "src/types/index.ts": "src/shared/types.ts"
+      },
+      "new_files": [
+        "src/shared/index.ts"
+      ]
+    },
+    "validation": {
+      "description": "Move validation to shared domain",
+      "current_structure": {
+        "src/validation/index.ts": "Move to shared domain"
+      },
+      "target_structure": {
+        "src/shared/validation.ts": "Shared validation utilities"
+      },
+      "file_moves": {
+        "src/validation/index.ts": "src/shared/validation.ts"
+      },
+      "new_files": []
+    },
+    "adapters": {
+      "description": "Remove adapters from domain package (move to application layer)",
+      "current_structure": {
+        "src/services/adapters/index.ts": "Adapters aggregator",
+        "src/services/adapters/category.domain.ts": "Category domain logic",
+        "src/services/adapters/products.domain.ts": "Products domain logic"
+      },
+      "target_structure": {},
+      "file_moves": {},
+      "new_files": [],
+      "action": "REMOVE - Move to application layer outside domain package"
+    }
+  },
+  "import_patterns_to_fix": {
+    "current_to_target": {
+      "from '@repo/domain/services/products'": "from '@repo/domain/products'",
+      "from '@repo/domain/services/orders'": "from '@repo/domain/orders'",
+      "from '@repo/domain/services/profiles'": "from '@repo/domain/users'",
+      "from '@repo/domain/services/payments'": "from '@repo/domain/payments'",
+      "from '@repo/domain/services/messaging'": "from '@repo/domain/shared' (if applicable)",
+      "from '@repo/domain/types'": "from '@repo/domain/shared'",
+      "from '@repo/domain/validation'": "from '@repo/domain/shared'",
+      "from '@repo/domain/adapters'": "REMOVE - Update to application layer imports",
+      "from '@repo/domain'": "Update to specific domain imports"
+    },
+    "internal_imports": {
+      "from '../entities'": "from './types'",
+      "from '../ports'": "from './types'",
+      "from '../value-objects'": "from './types'",
+      "from '../repos'": "from './services'",
+      "from '../services'": "from './services'",
+      "from '../../services/orders'": "from '../../orders'",
+      "from '../../services/profiles'": "from '../../users'",
+      "from '../../services/payments'": "from '../../payments'",
+      "from '../../types'": "from '../../shared'",
+      "from '../../validation'": "from '../../shared'"
+    }
+  },
+  "package_json_exports": {
+    "remove": [
+      "./services",
+      "./services/products",
+      "./services/orders",
+      "./services/profiles",
+      "./services/messaging",
+      "./services/payments",
+      "./validation",
+      "./types",
+      "./adapters"
+    ],
+    "add": [
+      "./cart",
+      "./products",
+      "./auth",
+      "./orders",
+      "./users",
+      "./payments",
+      "./shared"
+    ]
+  },
+  "test_files": {
+    "move": [
+      {
+        "from": "src/services/products/__tests__/services.test.ts",
+        "to": "src/products/__tests__/services.test.ts",
+        "action": "Update imports in test file"
+      }
+    ],
+    "update_imports": [
+      "src/services/cleanup/__tests__/generateCleanupPlan.test.ts"
+    ]
+  },
+  "files_to_delete_after_testing": [
+    "src/services/",
+    "src/types/",
+    "src/validation/"
+  ],
+  "summary": {
+    "total_files_to_move": 10,
+    "total_new_files_to_create": 18,
+    "total_domains": 7,
+    "files_to_delete": 3,
+    "estimated_import_fixes": 50
+  }
+}

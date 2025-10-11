@@ -1,6 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { ProductDomainAdapter, CategoryDomainAdapter } from '@repo/domain/services/adapters';
+import { ProductDomainAdapter } from '@repo/core/services';
+// TODO: CategoryDomainAdapter needs to be implemented or removed
 import type { Database } from '@repo/database';
 
 export const load = (async ({ params, url, locals: { country, supabase }, setHeaders }) => {
@@ -13,13 +14,22 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
 
   // Initialize domain adapters
   const productAdapter = new ProductDomainAdapter(supabase);
-  const categoryAdapter = new CategoryDomainAdapter(supabase);
+  // TODO: CategoryDomainAdapter needs to be implemented or removed
+  // const categoryAdapter = new CategoryDomainAdapter(supabase);
 
   try {
     const segments = (params.segments || '').split('/').filter(Boolean);
 
-    // Use CategoryDomainAdapter to resolve categories
-    const resolution = await categoryAdapter.resolveCategories(segments);
+    // TODO: Implement category resolution without CategoryDomainAdapter
+    // Fallback: Simple resolution object
+    const resolution = {
+      categoryIds: [],
+      canonicalPath: null,
+      isVirtual: true,
+      l1: null,
+      l2: null,
+      l3: null
+    };
 
     // Check if current path matches canonical path (for redirects)
     const currentPath = `/category/${segments.join('/')}`;
@@ -33,8 +43,11 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
       }
     }
 
-    // Generate breadcrumbs using domain adapter
-    const breadcrumbsResult = categoryAdapter.generateBreadcrumbs(segments);
+    // TODO: Generate breadcrumbs without CategoryDomainAdapter
+    const breadcrumbsResult = {
+      items: [],
+      jsonLd: {}
+    };
 
     // Parse query parameters for filtering and pagination
     const searchParams = url.searchParams;
@@ -91,8 +104,11 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const sortBy = (searchParams.get('sort') || 'created_at') as 'created_at' | 'price' | 'price-low' | 'price-high' | 'newest';
     const sortDirection = sortBy === 'price-low' ? 'asc' : sortBy === 'price-high' ? 'desc' : 'desc';
 
-    // Get category navigation using domain adapter
-    const navigationPromise = categoryAdapter.getCategoryNavigation(resolution);
+    // TODO: Get category navigation without CategoryDomainAdapter
+    const navigationPromise = Promise.resolve({
+      pills: [],
+      dropdown: []
+    });
 
     const [
       productsResult,
@@ -156,8 +172,12 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // Generate SEO meta using domain adapter
-    const metaData = categoryAdapter.generateSEOMeta(resolution, total);
+    // TODO: Generate SEO meta without CategoryDomainAdapter
+    const metaData = {
+      title: 'Category',
+      description: 'Browse products in this category',
+      keywords: []
+    };
 
     return {
       // Category information
