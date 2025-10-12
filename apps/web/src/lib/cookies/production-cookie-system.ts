@@ -7,20 +7,6 @@ import { browser, dev } from '$app/environment';
 import type { Cookies } from '@sveltejs/kit';
 import * as i18n from '@repo/i18n';
 
-// Extended window interface for analytics
-interface ExtendedWindow extends Window {
-  gtag?: (command: string, action: string, params?: Record<string, unknown>) => void;
-  fbq?: {
-    (...args: unknown[]): void;
-    callMethod?: (...args: unknown[]) => void;
-    queue?: unknown[];
-    push?: unknown;
-  };
-  dataLayer?: unknown[];
-  'ga-disable-GA_MEASUREMENT_ID'?: boolean;
-}
-
-
 // Cookie Names - Single source of truth
 export const COOKIES = {
   // Supabase Auth (Essential)
@@ -355,15 +341,15 @@ export class ProductionCookieManager {
     if (!browser) return;
     
     // Google Analytics
-    (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'] = true;
+    (window as Window)['ga-disable-GA_MEASUREMENT_ID'] = true;
 
     // Google Tag Manager
-    (window as ExtendedWindow).gtag = function() {
+    (window as Window).gtag = function() {
       // Blocked GTAG function
     };
 
     // Facebook Pixel
-    (window as ExtendedWindow).fbq = function() {
+    (window as Window).fbq = function() {
       // Blocked Facebook Pixel function
     };
     
@@ -377,11 +363,11 @@ export class ProductionCookieManager {
     if (!browser) return;
     
     // Enable GA
-    delete (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'];
+    delete (window as Window)['ga-disable-GA_MEASUREMENT_ID'];
 
     // Update consent mode
-    if (typeof (window as ExtendedWindow).gtag === 'function') {
-      (window as ExtendedWindow).gtag!('consent', 'update', {
+    if (typeof (window as Window).gtag === 'function') {
+      (window as Window).gtag!('consent', 'update', {
         'analytics_storage': 'granted'
       });
     }
@@ -395,10 +381,10 @@ export class ProductionCookieManager {
   private blockAnalytics(): void {
     if (!browser) return;
     
-    (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'] = true;
+    (window as Window)['ga-disable-GA_MEASUREMENT_ID'] = true;
 
-    if (typeof (window as ExtendedWindow).gtag === 'function') {
-      (window as ExtendedWindow).gtag!('consent', 'update', {
+    if (typeof (window as Window).gtag === 'function') {
+      (window as Window).gtag!('consent', 'update', {
         'analytics_storage': 'denied'
       });
     }
@@ -410,8 +396,8 @@ export class ProductionCookieManager {
   private enableMarketing(): void {
     if (!browser) return;
     
-    if (typeof (window as ExtendedWindow).gtag === 'function') {
-      (window as ExtendedWindow).gtag!('consent', 'update', {
+    if (typeof (window as Window).gtag === 'function') {
+      (window as Window).gtag!('consent', 'update', {
         'ad_storage': 'granted',
         'ad_user_data': 'granted',
         'ad_personalization': 'granted'
@@ -427,8 +413,8 @@ export class ProductionCookieManager {
   private blockMarketing(): void {
     if (!browser) return;
     
-    if (typeof (window as ExtendedWindow).gtag === 'function') {
-      (window as ExtendedWindow).gtag!('consent', 'update', {
+    if (typeof (window as Window).gtag === 'function') {
+      (window as Window).gtag!('consent', 'update', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied'
@@ -533,7 +519,7 @@ export class ProductionCookieManager {
     
     // Initialize gtag
     script.onload = () => {
-      const extWindow = window as ExtendedWindow;
+      const extWindow = window as Window;
       if (typeof extWindow.gtag === 'undefined') {
         extWindow.dataLayer = extWindow.dataLayer || [];
         extWindow.gtag = function(...args: unknown[]) {
@@ -559,7 +545,7 @@ export class ProductionCookieManager {
     document.head.appendChild(script);
     
     script.onload = () => {
-      const extWindow = window as ExtendedWindow;
+      const extWindow = window as Window;
       if (typeof extWindow.fbq === 'undefined') {
         extWindow.fbq = function(...args: unknown[]) {
           if (extWindow.fbq?.callMethod) {

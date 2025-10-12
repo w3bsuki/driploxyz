@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { tooltip_brand_account } from '@repo/i18n';
+
   interface Props {
     size?: 'xs' | 's' | 'sm' | 'md' | 'lg';
     class?: string;
@@ -10,7 +12,7 @@
   let {
     size = 'sm',
     class: className = '',
-    tooltipText = 'Brand Account - Verified business or designer brand',
+  tooltipText = tooltip_brand_account(),
     position = 'static',
     variant = 'black'
   }: Props = $props();

@@ -61,6 +61,14 @@ export default [
 						{
 							group: ['$lib/components/*'],
 							message: 'Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components.'
+						},
+						{
+							group: ['../../packages/*/src/**'],
+							message: 'Do not bypass package exports. Import from @repo/* package name instead (e.g., @repo/core, @repo/domain). This ensures proper Turborepo caching.'
+						},
+						{
+							group: ['**/packages/*/src/**'],
+							message: 'Do not bypass package exports. Import from @repo/* package name instead (e.g., @repo/core, @repo/domain). This ensures proper Turborepo caching.'
 						}
 					]
 				}
@@ -71,6 +79,27 @@ export default [
 					argsIgnorePattern: '^_',
 					varsIgnorePattern: '^_',
 					caughtErrorsIgnorePattern: '^_'
+				}
+			]
+		}
+	},
+	{
+		files: ['src/lib/**/*.{ts,js,svelte}'],
+		excludedFiles: ['src/lib/server/**'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['$lib/server', '$lib/server/*', '$lib/server/**'],
+							message: 'Client code cannot import from $lib/server. Move server-only logic to +page.server.ts, +layout.server.ts, or +server.ts files.'
+						},
+						{
+							group: ['$env/dynamic/private', '$env/static/private'],
+							message: 'Client code cannot access private environment variables. Use PUBLIC_* variables or move logic to server files.'
+						}
+					]
 				}
 			]
 		}

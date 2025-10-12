@@ -24,6 +24,13 @@
       condition_worn: string;
       condition_fair: string;
       categoryTranslation: (categoryName: string) => string;
+      banner_curatedPicks?: string;
+      banner_defaultCopy?: string;
+      banner_tabSellers?: string;
+      banner_tabBrands?: string;
+      banner_viewAll?: string;
+      banner_ariaPrevious?: string;
+      banner_ariaNext?: string;
     };
     showToggle?: boolean;
     activeTab?: 'sellers' | 'brands';
@@ -76,13 +83,22 @@
 		<div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
 			<PromotedListingsBanner
 				heading={translations.promoted_listings}
-				copy="Featured listings from top sellers. Premium visibility for standout products."
+				copy={translations.promoted_description}
 				itemCount={activePromotedProducts.length}
 				showNavigation={false}
 				{showToggle}
 				{activeTab}
 				{onToggle}
-				cta={onViewAll ? { label: "View All", action: onViewAll } : undefined}
+				cta={onViewAll ? { label: translations.banner_viewAll ?? "View All", action: onViewAll } : undefined}
+				translations={{
+					curatedPicks: translations.banner_curatedPicks,
+					defaultCopy: translations.banner_defaultCopy,
+					tabSellers: translations.banner_tabSellers,
+					tabBrands: translations.banner_tabBrands,
+					viewAll: translations.banner_viewAll,
+					ariaPrevious: translations.banner_ariaPrevious,
+					ariaNext: translations.banner_ariaNext
+				}}
 			/>
 		</div>
 

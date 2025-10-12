@@ -1,20 +1,42 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "VERCEL",
+    "VERCEL_ENV"
+  ],
+  "globalDependencies": [
+    "tsconfig.json",
+    "package.json"
+  ],
   "tasks": {
     "build": {
-      "dependsOn": ["@repo/i18n#build", "@repo/database#build", "@repo/ui#build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".svelte-kit/**", ".vercel/**", "dist/**", "build/**", "lib/**"],
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "!**/*.test.{ts,js}",
+        "!**/*.spec.{ts,js}",
+        "!**/tests/**",
+        "!**/test-results/**"
+      ],
+      "outputs": [
+        ".svelte-kit/**",
+        ".vercel/**",
+        "dist/**",
+        "build/**",
+        "lib/**"
+      ],
       "env": [
         "PUBLIC_STRIPE_PUBLISHABLE_KEY",
-        "STRIPE_SECRET_KEY", 
+        "STRIPE_SECRET_KEY",
         "STRIPE_WEBHOOK_SECRET",
         "PUBLIC_SUPABASE_URL",
         "PUBLIC_SUPABASE_ANON_KEY",
         "SUPABASE_SERVICE_ROLE_KEY",
         "RESEND_API_KEY",
-        "NODE_ENV",
         "PUBLIC_SENTRY_DSN",
         "SENTRY_DSN",
         "SENTRY_ORG",
@@ -25,10 +47,22 @@
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "eslint.config.*",
+        ".eslintrc.*"
+      ]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "tsconfig.json",
+        "!**/*.test.{ts,js}",
+        "!**/*.spec.{ts,js}"
+      ],
+      "outputs": []
     },
     "dev": {
       "cache": false,

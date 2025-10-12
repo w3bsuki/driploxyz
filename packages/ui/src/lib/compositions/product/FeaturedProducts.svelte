@@ -1,7 +1,7 @@
 <script lang="ts">
-  import ProductCard from '../../compositions/cards/ProductCard.svelte';
+  import ProductCard from '../cards/ProductCard.svelte';
   import Button from '../../primitives/button/Button.svelte';
-  import NewestListingsBanner from '../../compositions/banners/NewestListingsBanner.svelte';
+  import NewestListingsBanner from '../banners/NewestListingsBanner.svelte';
   import ProductCardSkeleton from '../../primitives/skeleton/ProductCardSkeleton.svelte';
   import type { Product } from '../../types/product';
 
@@ -25,6 +25,7 @@
     condition_worn?: string;
     condition_fair: string;
     categoryTranslation?: (category: string) => string;
+    banner_viewAll?: string;
   }
 
   interface Props {
@@ -38,7 +39,7 @@
     formatPrice?: (price: number) => string;
     translations: Translations;
     sectionTitle?: string;
-    favoritesState?: any;
+    favoritesState?: unknown;
     showCategoryTabs?: boolean;
     activeCategory?: 'fresh' | 'recent';
     onCategoryChange?: (category: 'fresh' | 'recent') => void;
@@ -50,7 +51,7 @@
   let { 
     products = [], 
     errors, 
-    loading = false, 
+    _loading = false, 
     onProductClick, 
     onFavorite, 
     onBrowseAll,
@@ -87,7 +88,7 @@
       heading={sectionTitle}
       copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
       itemCount={hasProducts ? products.length : undefined}
-      cta={showViewAllButton && hasProducts && onViewAll ? { label: 'View All', action: onViewAll } : undefined}
+      cta={showViewAllButton && hasProducts && onViewAll ? { label: translations.banner_viewAll ?? 'View All', action: onViewAll } : undefined}
       showCategoryTabs={showCategoryTabs && hasProducts}
       {activeCategory}
       onCategoryChange={onCategoryChange}
@@ -96,7 +97,7 @@
   
   
   <!-- Loading State -->
-  {#if loading}
+  {#if _loading}
     <div
       class="px-2 sm:px-4 lg:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
       role="status"
@@ -104,7 +105,7 @@
       aria-live="polite"
       aria-label="Loading products"
     >
-      {#each Array(10) as _, i}
+      {#each Array(10) as _, _i}
         <ProductCardSkeleton />
       {/each}
       <span class="sr-only">Loading products, please wait...</span>
@@ -117,11 +118,11 @@
       role="list"
       aria-label="Product grid with {products.length} items"
     >
-      {#each products as product, index}
+      {#each products as product, _index}
         <article
           role="listitem"
           aria-setsize={products.length}
-          aria-posinset={index + 1}
+          aria-posinset={_index + 1}
         >
           <ProductCard 
             {product}
@@ -129,8 +130,8 @@
             onFavorite={() => onFavorite(product.id)}
             favorited={favoritesState?.favorites[product.id] || false}
             {favoritesState}
-            priority={index < 6}
-            {index}
+            priority={_index < 6}
+            index={_index}
             totalCount={products.length}
             translations={{
               size: translations.product_size,

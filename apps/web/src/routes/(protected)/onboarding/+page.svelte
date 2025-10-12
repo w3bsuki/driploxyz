@@ -108,8 +108,8 @@
   // Dynamic import functions for modals
   async function loadSuccessModal() {
     if (!successModalLoaded && !OnboardingSuccessModal) {
-      const module = await import('@repo/ui/lib/compositions/modals/OnboardingSuccessModal.svelte');
-      OnboardingSuccessModal = module.default;
+      const module = await import('@repo/ui');
+      OnboardingSuccessModal = module.OnboardingSuccessModal;
       successModalLoaded = true;
     }
   }

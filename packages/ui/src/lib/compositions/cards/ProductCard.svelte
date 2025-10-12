@@ -290,10 +290,6 @@
 </button>
 
 <style>
-  .product-card {
-    position: relative;
-  }
-  
   .product-card.highlighted {
     border-color: var(--status-warning-solid);
     border-width: 2px;

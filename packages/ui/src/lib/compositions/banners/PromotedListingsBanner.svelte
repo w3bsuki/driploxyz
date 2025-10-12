@@ -18,6 +18,15 @@
     onScrollLeft?: () => void;
     onScrollRight?: () => void;
     class?: string;
+    translations?: {
+      curatedPicks?: string;
+      defaultCopy?: string;
+      tabSellers?: string;
+      tabBrands?: string;
+      viewAll?: string;
+      ariaPrevious?: string;
+      ariaNext?: string;
+    };
   }
 
   const classes = {
@@ -51,16 +60,17 @@
     onToggle,
     onScrollLeft,
     onScrollRight,
-    class: className = ''
+    class: className = '',
+    translations
   }: Props = $props();
 
-  const tabs = [
-    { id: 'sellers', label: 'Sellers' },
-    { id: 'brands', label: 'Brands' }
-  ] as const;
+  const tabs = $derived([
+    { id: 'sellers' as const, label: translations?.tabSellers ?? 'Sellers' },
+    { id: 'brands' as const, label: translations?.tabBrands ?? 'Brands' }
+  ]);
 
-  const resolvedCopy = $derived(copy ?? 'Trending now from trusted sellers and standout brands.');
-  const ctaLabel = $derived(cta?.label ?? 'View all');
+  const resolvedCopy = $derived(copy ?? translations?.defaultCopy ?? 'Trending now from trusted sellers and standout brands.');
+  const ctaLabel = $derived(cta?.label ?? translations?.viewAll ?? 'View all');
 
   function handleTabChange(tab: ToggleTab) {
     if (tab !== activeTab) {
@@ -82,7 +92,7 @@
   <div class={classes.layout}>
     <div class={classes.copyStack}>
       {#if itemCount}
-        <p class={classes.meta}>{itemCount} curated picks</p>
+        <p class={classes.meta}>{itemCount} {translations?.curatedPicks ?? 'curated picks'}</p>
       {/if}
 
       <h2 class={classes.heading}>{heading}</h2>
@@ -113,7 +123,7 @@
             type="button"
             class={classes.navButton}
             onclick={() => onScrollLeft?.()}
-            aria-label="View previous promoted set"
+            aria-label={translations?.ariaPrevious ?? 'View previous promoted set'}
           >
             <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5">
               <path
@@ -127,7 +137,7 @@
             type="button"
             class={classes.navButton}
             onclick={() => onScrollRight?.()}
-            aria-label="View next promoted set"
+            aria-label={translations?.ariaNext ?? 'View next promoted set'}
           >
             <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5">
               <path

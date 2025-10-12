@@ -18,6 +18,14 @@
       "types": "./dist/services/index.d.ts",
       "default": "./dist/services/index.js"
     },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "default": "./dist/email/index.js"
+    },
+    "./email/resend": {
+      "types": "./dist/email/resend.d.ts",
+      "default": "./dist/email/resend.js"
+    },
     "./validation": {
       "types": "./dist/validation/index.d.ts",
       "default": "./dist/validation/index.js"
@@ -25,6 +33,14 @@
     "./types": {
       "types": "./dist/types/index.d.ts",
       "default": "./dist/types/index.js"
+    },
+    "./stripe": {
+      "types": "./dist/stripe/index.d.ts",
+      "default": "./dist/stripe/index.js"
+    },
+    "./stripe/server": {
+      "types": "./dist/stripe/server.d.ts",
+      "default": "./dist/stripe/server.js"
     }
   },
   "files": [

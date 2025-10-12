@@ -25,6 +25,26 @@
       "types": "./lib/src/index.d.ts",
       "import": "./lib/src/index.js",
       "default": "./lib/src/index.js"
+    },
+    "./runtime": {
+      "types": "./lib/src/runtime.d.ts",
+      "import": "./lib/src/runtime.js",
+      "default": "./lib/src/runtime.js"
+    },
+    "./paraglide/runtime": {
+      "types": "./lib/src/paraglide/runtime.d.ts",
+      "import": "./lib/src/paraglide/runtime.js",
+      "default": "./lib/src/paraglide/runtime.js"
+    },
+    "./paraglide/messages": {
+      "types": "./lib/src/paraglide/messages/_index.d.ts",
+      "import": "./lib/src/paraglide/messages/_index.js",
+      "default": "./lib/src/paraglide/messages/_index.js"
+    },
+    "./server": {
+      "types": "./lib/src/server.d.ts",
+      "import": "./lib/src/server.js",
+      "default": "./lib/src/server.js"
     }
   },
   "files": [

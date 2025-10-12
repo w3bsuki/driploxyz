@@ -8,7 +8,7 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-@source '../../../packages/ui/src/**/*.{html,js,svelte,ts}';
+@source 'npm:@repo/ui/**/*.{svelte,ts,js}';
 @source './lib/**/*.{svelte,ts}';
 @source './routes/**/*.{svelte,ts}';
 

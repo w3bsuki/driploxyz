@@ -302,7 +302,8 @@
 					condition_good: i18n.condition_good(),
 					condition_worn: i18n.sell_condition_worn(),
 					condition_fair: i18n.sell_condition_fair(),
-					categoryTranslation: translateCategory
+					categoryTranslation: translateCategory,
+					banner_viewAll: i18n.banner_viewAll?.()
 				}}
 			/>
 
@@ -331,7 +332,7 @@
 				{formatPrice}
 				translations={{
 					promoted_listings: i18n.home_promotedListings?.() || 'Promoted Listings',
-					promoted_description: i18n.home_promotedDescription?.() || 'Featured items from our top sellers',
+					promoted_description: i18n.banner_promotedDescription?.() || 'Featured items from our top sellers',
 					common_currency: i18n.common_currency(),
 					product_addToFavorites: i18n.product_addToFavorites(),
 					seller_unknown: i18n.seller_unknown(),
@@ -342,7 +343,14 @@
 					condition_good: i18n.condition_good(),
 					condition_worn: i18n.sell_condition_worn(),
 					condition_fair: i18n.sell_condition_fair(),
-					categoryTranslation: translateCategory
+					categoryTranslation: translateCategory,
+					banner_curatedPicks: i18n.banner_curatedPicks?.(),
+					banner_defaultCopy: i18n.banner_defaultCopy?.(),
+					banner_tabSellers: i18n.banner_tabSellers?.(),
+					banner_tabBrands: i18n.banner_tabBrands?.(),
+					banner_viewAll: i18n.banner_viewAll?.(),
+					banner_ariaPrevious: i18n.banner_ariaPrevious?.(),
+					banner_ariaNext: i18n.banner_ariaNext?.()
 				}}
 				class="pt-4 sm:pt-6"
 			/>

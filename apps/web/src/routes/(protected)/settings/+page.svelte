@@ -2,7 +2,7 @@
   // import { goto } from '$app/navigation';
   import { Button, toasts } from '@repo/ui';
   import type { PageData } from './$types';
-  // import * as i18n from '@repo/i18n';
+  import { badge_premium, badge_coming_soon, settings_vacation_mode_coming_soon } from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -33,7 +33,7 @@
           description: 'View and manage your subscription plan',
           href: '/dashboard/upgrade',
           icon: 'star',
-          badge: data.profile?.subscription_tier === 'premium' ? 'Premium' : null
+          badge: data.profile?.subscription_tier === 'premium' ? badge_premium() : null
         }
       ]
     },
@@ -108,7 +108,7 @@
           description: 'Get text alerts for important updates',
           href: '/settings/notifications/sms',
           icon: 'message',
-          badge: 'Coming Soon'
+          badge: badge_coming_soon()
         }
       ]
     },
@@ -180,7 +180,7 @@
 
   function handleToggle(item: SettingsItem) {
     if (item.title === 'Vacation Mode') {
-      toasts.info('Vacation mode feature coming soon!');
+  toasts.info(settings_vacation_mode_coming_soon());
     }
   }
 </script>

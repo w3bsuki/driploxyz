@@ -80,3 +80,4 @@ apps/*/nul
 .mcp/
 .mcp-logs/
 logs/
+.artifacts/

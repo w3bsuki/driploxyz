@@ -10,7 +10,8 @@ export default defineConfig({
     'src/payments/index.ts',
     'src/cart/index.ts',
     'src/auth/index.ts',
-    'src/shared/index.ts'
+    'src/shared/index.ts',
+    'src/conversations/index.ts'
   ],
   format: ['esm'],
   dts: true,

@@ -11,13 +11,18 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
-    "check-types": "turbo check-types"
+    "check-types": "turbo check-types",
+    "keeplist:discover": "node scripts/migration/keep-list-migration/discover-used-files.mjs",
+    "keeplist:plan": "node scripts/migration/keep-list-migration/plan-moves.mjs",
+    "keeplist:apply": "node scripts/migration/keep-list-migration/apply-moves.mjs",
+    "keeplist:verify": "pnpm -w check-types && pnpm -w lint && pnpm -w test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "prettier": "^3.6.0",
     "svelte-check": "^4.0.10",
     "turbo": "2.5.4",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "globby": "^14.0.2"
   }
 }

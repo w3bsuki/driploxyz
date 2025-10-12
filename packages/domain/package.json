@@ -45,6 +45,11 @@
       "types": "./dist/shared/index.d.ts",
       "import": "./dist/shared/index.js",
       "default": "./dist/shared/index.js"
+    },
+    "./conversations": {
+      "types": "./dist/conversations/index.d.ts",
+      "import": "./dist/conversations/index.js",
+      "default": "./dist/conversations/index.js"
     }
   },
   "files": [

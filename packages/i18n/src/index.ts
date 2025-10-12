@@ -18,9 +18,9 @@ import {
   languageNames,
   locales as customLocales,
   setLocale as customSetLocale
-} from './runtime';
+} from './runtime.js';
 
-export type { Locale, MessageFunction, MessageInputs, MessageOptions } from './runtime';
+export type { Locale, MessageFunction, MessageInputs, MessageOptions } from './runtime.js';
 
 // Export legacy custom functions (may be used in existing code)
 export {

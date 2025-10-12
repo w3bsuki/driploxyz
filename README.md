@@ -195,6 +195,8 @@ pnpm --filter @repo/i18n build
 - **[FRAMEWORKS.md](./FRAMEWORKS.md)** - Framework guides
 - **[SUPABASE.md](./SUPABASE.md)** - Database & auth
 - **[TESTING.md](./TESTING.md)** - Testing strategy
+- **[MASTER_PLAN.md](./docs/MASTER_PLAN.md)** - Authoritative restructure roadmap
+- **[RESTRUCTURE_PLAN.md](./docs/RESTRUCTURE_PLAN.md)** - Tactical execution plan
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
 - **[ROADMAP.md](./ROADMAP.md)** - Current priorities
 

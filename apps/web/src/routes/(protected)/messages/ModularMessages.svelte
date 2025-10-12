@@ -5,12 +5,10 @@
   import * as i18n from '@repo/i18n';
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { ConversationService, type Conversation, type Message } from '@repo/domain/conversations';
-  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
-  import ConversationSidebar from '$lib/components/modular/ConversationSidebar.svelte';
-  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
-  import ChatWindow from '$lib/components/modular/ChatWindow.svelte';
-  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
-  import ConnectionStatus from '$lib/components/modular/ConnectionStatus.svelte';
+  // Route-colocated messaging components
+  import ConversationSidebar from './ConversationSidebar.svelte';
+  import ChatWindow from './ChatWindow.svelte';
+  import ConnectionStatus from './ConnectionStatus.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import { messagingLogger } from '$lib/utils/log';

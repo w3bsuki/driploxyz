@@ -1,7 +1,7 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import Dialog from '../../primitives/dialog/Dialog.svelte';
 	import Button from '../../primitives/button/Button.svelte';
-	import ImageUploader from '../../compositions/media/ImageUploader.svelte';
+	import ImageUploader from '../media/ImageUploader.svelte';
 	
 	interface Props {
 		isOpen: boolean;
@@ -19,17 +19,17 @@
 			product?: string;
 			productImage?: string;
 		};
-		userType: 'buyer' | 'seller';
+		_userType: 'buyer' | 'seller';
 		loading?: boolean;
 	}
 
-	let { isOpen, onClose, onSubmit, orderDetails, userType, loading: externalLoading = false }: Props = $props();
+	let { isOpen, onClose, onSubmit, orderDetails, _userType, loading: externalLoading = false }: Props = $props();
 	
 	let rating = $state(0);
 	let title = $state('');
 	let comment = $state('');
 	let imageUrls = $state<string[]>([]);
-	let loading = $state(false);
+	let _loading = $state(false);
 	let error = $state('');
 	let uploadError = $state('');
 	
@@ -66,7 +66,7 @@
 			return;
 		}
 		
-		loading = true;
+		_loading = true;
 		error = '';
 		
 		try {
@@ -78,10 +78,11 @@
 			});
 			resetForm();
 			onClose();
-		} catch (err) {
+		} catch {
+
 			error = err instanceof Error ? err.message : 'Failed to submit review';
 		} finally {
-			loading = false;
+			_loading = false;
 		}
 	}
 	
@@ -279,7 +280,7 @@
 				variant="primary"
 				onclick={handleSubmit}
 				disabled={!canSubmit}
-				loading={isSubmitting}
+				_loading={isSubmitting}
 				class="min-h-[--touch-standard] flex-2"
 			>
 				{isSubmitting ? 'Submitting...' : 'Submit Review'}

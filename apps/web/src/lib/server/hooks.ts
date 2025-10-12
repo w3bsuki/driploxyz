@@ -1,16 +1,41 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError, HandleFetch } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { paraglideMiddleware } from '@repo/i18n/server';
 
 import { setupEnvironment } from './env';
 import { setupAuth, authGuard } from '$lib/auth/hooks';
-import { setupI18n, transformPageChunk } from './i18n';
 import { setupCountry } from './country';
 // import { handleCountryRedirect } from './country-redirect'; // Currently disabled for performance
 import { handleUnknownLocales } from './locale-redirect';
 // Removed: import { setupAuthGuard } from './auth-guard'; // Using consolidated auth system
 import { createErrorHandler } from './error-handler';
 import { CSRFProtection } from './csrf';
+
+/**
+ * Paraglide i18n handler - MUST run first for proper locale detection
+ * Handles automatic locale detection from URL, cookies, and headers
+ */
+const i18nHandler: Handle = ({ event, resolve }) =>
+  paraglideMiddleware(
+    event.request,
+    ({ request, locale }: { request: Request; locale: string }) => {
+      // Set the localized request
+      event.request = request;
+      
+      // Paraglide sets the locale automatically, store it in locals
+      // Type assertion safe: Paraglide only returns valid locales from our config
+      event.locals.locale = locale as 'en' | 'bg';
+      
+      // Resolve with lang attribute replacement
+      return resolve(event, {
+        transformPageChunk: ({ html }) => html.replace('%lang%', locale),
+        filterSerializedResponseHeaders(name) {
+          return name === 'content-range' || name === 'x-supabase-api-version';
+        }
+      });
+    }
+  );
 
 /**
  * Authentication handler - sets up Supabase client and session handling
@@ -27,19 +52,11 @@ const authHandler: Handle = async ({ event, resolve }) => {
 };
 
 /**
- * Language and internationalization handler
+ * Country detection handler - runs after locale is set
  */
-const languageHandler: Handle = async ({ event, resolve }) => {
-  await setupI18n(event);
+const countryHandler: Handle = async ({ event, resolve }) => {
   await setupCountry(event);
-
-  // Keep page transforms for i18n, avoid custom CSP management here
-  return await resolve(event, {
-    transformPageChunk: transformPageChunk(event),
-    filterSerializedResponseHeaders(name) {
-      return name === 'content-range' || name === 'x-supabase-api-version';
-    }
-  });
+  return resolve(event);
 };
 
 /**
@@ -155,16 +172,23 @@ const debugBypassHandler: Handle = async ({ event, resolve }) => {
 };
 
 /**
- * Main handle sequence with optional Sentry integration
- * CRITICAL: supabaseHandler MUST run first to set up auth before other handlers
- * localeRedirectHandler runs early to handle unknown locale prefixes
+ * Main handle sequence with Paraglide middleware
+ * CRITICAL ORDER:
+ * 1. debugBypassHandler - Short-circuit for debug endpoints
+ * 2. i18nHandler - Paraglide middleware for locale detection (MUST be early)
+ * 3. localeRedirectHandler - Handle unknown locale prefixes
+ * 4. authHandler - Supabase auth setup (needs locale context)
+ * 5. csrfGuard - CSRF protection
+ * 6. countryHandler - Country detection
+ * 7. authGuardHandler - Route protection
  */
 export const handle: Handle = sequence(
   debugBypassHandler,
+  i18nHandler,          // NEW: Paraglide middleware replaces languageHandler
   localeRedirectHandler,
   authHandler,
   csrfGuard,
-  languageHandler,
+  countryHandler,       // NEW: Separated country handler
   // countryRedirectHandler, // intentionally disabled for perf
   authGuardHandler
 );

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { tooltip_pro_account } from '@repo/i18n';
+
   interface Props {
     size?: 'xs' | 's' | 'sm' | 'md' | 'lg';
     class?: string;
@@ -9,7 +11,7 @@
   let {
     size = 'sm',
     class: className = '',
-    tooltipText = 'Pro Account - Verified seller with premium features',
+  tooltipText = tooltip_pro_account(),
     position = 'static'
   }: Props = $props();
 

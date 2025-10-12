@@ -12,7 +12,17 @@
     "**/coverage",
     "**/playwright-report",
     "**/cypress",
-    "**/storybook-static"
+    "**/storybook-static",
+    "**/packages/i18n/src/paraglide/messages/**",
+    "**/packages/i18n/messages/**",
+    "**/packages/i18n/lib/**",
+    "**/.git",
+    "**/.next",
+    "**/.cache",
+    "**/out",
+    "**/tmp",
+    "**/temp",
+    "**/*.log"
   ]
 }
 

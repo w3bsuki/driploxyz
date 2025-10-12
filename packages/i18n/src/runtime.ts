@@ -1,5 +1,5 @@
-import en from '../messages/en.json';
-import bg from '../messages/bg.json';
+import en from '../messages/en.json' with { type: 'json' };
+import bg from '../messages/bg.json' with { type: 'json' };
 
 export type Locale = 'en' | 'bg';
 export type MessageInputs = Record<string, string | number | boolean>;

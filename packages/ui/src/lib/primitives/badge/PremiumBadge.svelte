@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { badge_premium } from '@repo/i18n';
+
   interface Props {
     size?: 'xs' | 'sm' | 'md' | 'lg';
+    label?: string;
   }
 
-  let { size = 'md' }: Props = $props();
+  let {
+    size = 'md',
+    label = badge_premium()
+  }: Props = $props();
 
   const sizeClasses = {
     xs: 'px-1.5 py-0.5 text-xs',
@@ -17,5 +23,5 @@
   class="inline-flex items-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium {sizeClasses[size]}"
 >
   <span class="mr-0.5">💎</span>
-  Premium
+  {label}
 </span>

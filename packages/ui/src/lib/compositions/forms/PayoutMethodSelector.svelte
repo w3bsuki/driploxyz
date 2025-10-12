@@ -28,8 +28,8 @@
     payoutDetails = $bindable(''),
     payoutName = $bindable(''),
     onMethodChange,
-    onDetailsChange,
-    onNameChange,
+    onDetailsChange: _onDetailsChange,
+    onNameChange: _onNameChange,
     class: className = ''
   }: Props = $props();
 
@@ -103,6 +103,7 @@
             <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 md:backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
               {#if method.svgIcon}
                 <div class="w-8 h-8 sm:w-9 sm:h-9 text-white">
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html method.svgIcon}
                 </div>
               {:else}
@@ -156,6 +157,7 @@
               <span class="w-8 h-8 {currentMethod.color} text-white rounded-lg flex items-center justify-center text-sm">
                 {#if currentMethod.svgIcon}
                   <div class="w-5 h-5">
+                    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                     {@html currentMethod.svgIcon}
                   </div>
                 {:else}
@@ -223,6 +225,7 @@
           <div class="w-8 h-8 {currentMethod.color} text-white rounded-lg flex items-center justify-center text-sm">
             {#if currentMethod.svgIcon}
               <div class="w-5 h-5">
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 {@html currentMethod.svgIcon}
               </div>
             {:else}

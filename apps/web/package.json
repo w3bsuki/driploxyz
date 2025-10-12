@@ -40,7 +40,6 @@
 		"zod": "^3"
 	},
 	"devDependencies": {
-		"@inlang/paraglide-js": "2.2.0",
 		"@sentry/vite-plugin": "^4.1.1",
 		"@repo/eslint-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
