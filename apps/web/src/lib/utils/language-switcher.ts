@@ -1,6 +1,5 @@
 import { goto, invalidate } from '$app/navigation';
 import * as i18n from '@repo/i18n';
-import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
 
 export async function switchLanguage(lang: string) {
   
@@ -11,15 +10,15 @@ export async function switchLanguage(lang: string) {
   }
   
   try {
-    const cookieManager = ProductionCookieManager.getInstance();
+    // Check if functional cookies are allowed (browser-side check)
+    const hasConsent = document.cookie.includes('cookie_consent=') && 
+                      document.cookie.includes('functional');
 
     // Always persist preference if consent exists
-    if (cookieManager.hasConsent('functional')) {
-      cookieManager.setCookie('PARAGLIDE_LOCALE', lang, {
-        maxAge: 365 * 24 * 60 * 60,
-        sameSite: 'lax',
-        secure: location.protocol === 'https:'
-      });
+    if (hasConsent) {
+      const maxAge = 365 * 24 * 60 * 60; // 1 year
+      const secure = location.protocol === 'https:';
+      document.cookie = `PARAGLIDE_LOCALE=${lang}; max-age=${maxAge}; path=/; samesite=lax${secure ? '; secure' : ''}`;
     }
 
     // Store selection on client; used to complete switch post-consent too

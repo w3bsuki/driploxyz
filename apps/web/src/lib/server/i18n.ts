@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
 import { detectLocale, locales, type LanguageTag, availableLanguageTags } from '@repo/i18n';
-import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
+import { checkServerConsent, COOKIES } from '$lib/server/cookies/production-cookie-system';
 
 // Debug flag for controlled logging
 // Debug flag available for future i18n debugging - currently disabled to reduce console spam

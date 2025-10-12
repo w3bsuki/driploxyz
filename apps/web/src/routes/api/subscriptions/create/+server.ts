@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '@repo/core';
 import { stripe } from '@repo/core/stripe/server';
-import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';

@@ -1,7 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
-import { COOKIES } from '$lib/cookies/production-cookie-system';
+import { COOKIES } from '$lib/server/cookies/production-cookie-system';
 
 /**
  * Secure logout handler - POST-only with origin validation

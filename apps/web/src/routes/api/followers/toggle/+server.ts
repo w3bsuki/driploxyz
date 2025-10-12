@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
   // Rate limiting for follow/unfollow actions

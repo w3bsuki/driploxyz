@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 // Imports for future archiving implementation
 // import { createClient } from '@supabase/supabase-js';
 // import type { Database } from '@repo/database';

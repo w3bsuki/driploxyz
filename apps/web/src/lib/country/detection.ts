@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { COOKIES } from '$lib/cookies/production-cookie-system';
+import { COOKIES } from '$lib/server/cookies/production-cookie-system';
 
 export type CountryCode = 'BG' | 'GB' | 'US' | 'DE' | 'FR' | 'ES' | 'IT' | 'NL' | 'PL' | 'RO';
 

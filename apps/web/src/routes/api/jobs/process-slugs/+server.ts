@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { processSlugQueue, getQueueStatus, backfillSlugs, cleanupQueue } from '$lib/jobs/slug-processor';
+import { processSlugQueue, getQueueStatus, backfillSlugs, cleanupQueue } from '$lib/server/jobs/slug-processor';
 
 /**
  * Background Job API for Slug Processing

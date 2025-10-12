@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { SignupSchema } from '$lib/validation/auth';
-import { checkRateLimit } from '$lib/security/rate-limiter';
+import { checkRateLimit } from '$lib/server/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 // Future enhancement imports for locale/country detection
 // import { detectLanguage } from '@repo/i18n';

@@ -1,7 +1,7 @@
 import { command, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { RATE_LIMIT_CONFIGS, checkRateLimit } from '$lib/security/rate-limiter';
+import { RATE_LIMIT_CONFIGS, checkRateLimit } from '$lib/server/security/rate-limiter';
 
 type ToggleFavoriteResult = {
   favorited: boolean;

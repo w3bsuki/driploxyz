@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 
 // GET - Check if user is following another user and get follower count
 export const GET: RequestHandler = async ({ url, locals, request, getClientAddress }) => {

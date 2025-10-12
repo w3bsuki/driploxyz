@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { checkRateLimit } from '$lib/security/rate-limiter';
+import { checkRateLimit } from '$lib/server/security/rate-limiter';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 

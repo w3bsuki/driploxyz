@@ -1,6 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { LoginSchema } from '$lib/validation/auth';
-import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
+import { checkRateLimit, rateLimiter } from '$lib/server/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async (event) => {

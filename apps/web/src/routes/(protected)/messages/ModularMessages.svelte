@@ -6,9 +6,9 @@
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { ConversationService, type Conversation, type Message } from '@repo/domain/conversations';
   // Route-colocated messaging components
-  import ConversationSidebar from './ConversationSidebar.svelte';
-  import ChatWindow from './ChatWindow.svelte';
-  import ConnectionStatus from './ConnectionStatus.svelte';
+  import ConversationSidebar from './components/ConversationSidebar.svelte';
+  import ChatWindow from './components/ChatWindow.svelte';
+  import ConnectionStatus from './components/ConnectionStatus.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import { messagingLogger } from '$lib/utils/log';

@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { applySecurityConfig, addSecurityHeaders } from '$lib/middleware/security.js';
-import { handleError } from '$lib/middleware/error-handler.js';
+import { applySecurityConfig, addSecurityHeaders } from '$lib/server/middleware/security.js';
+import { handleError } from '$lib/server/middleware/error-handler.js';
 
 export const GET: RequestHandler = async ({ request, locals }) => {
 	try {

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
-import { enforceRateLimit } from '$lib/security/rate-limiter';
+import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 
 export const POST: RequestHandler = async (event) => {
   // Rate limiting for profile account type updates
