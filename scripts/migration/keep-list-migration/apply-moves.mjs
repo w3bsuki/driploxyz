@@ -13,7 +13,7 @@ async function main() {
 
   let moved = 0;
   for (const [from, to] of Object.entries(manifest)) {
-    if (from === to) continue;
+    if (path.normalize(from) === path.normalize(to)) continue;
     if (!dry) {
       await ensureDir(path.dirname(to));
       try {
@@ -29,7 +29,8 @@ async function main() {
         }
       }
       // write shim at old path to reduce breakage
-      const shim = `// shim: moved file\nexport * from '${to.replace(/\\/g, '/')}';\nexport { default } from '${to.replace(/\\/g, '/')}';\n`;
+      const spec = to.replace(/\\/g, '/');
+      const shim = `// shim: moved file\nexport * from '${spec}';\nexport { default } from '${spec}';\n`;
       await fs.writeFile(from, shim);
     }
     moved++;

@@ -2,18 +2,40 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+/**
+ * MCP-backed target mapping:
+ * - SvelteKit project-structure: colocate single-use route components, keep shared in $lib
+ * - SvelteKit server-only-modules: enforce $lib/server for server-only code
+ * - Turborepo structure: apps/* and packages/* with clear boundaries
+ */
 function targetFor(oldPath) {
-  // Heuristic target mapping based on desired structure
   const p = oldPath.replace(/\\/g, '/');
-  if (p.includes('/apps/web/src/routes/')) return p; // already colocated
-  if (p.includes('/apps/web/src/lib/components/')) return p; // keep for now
-  if (p.includes('/apps/web/src/lib/server/')) return p; // already correct
-  if (p.includes('/apps/admin/')) return p; // admin unchanged for now
-  if (p.includes('/packages/ui/src')) return p; // package stays put
-  if (p.includes('/packages/core/src')) return p; // stays but will split later
-  if (p.includes('/packages/domain/src')) return p; // stays
-  // default: no move
-  return p;
+  let out = p;
+
+  // SvelteKit apps: enforce $lib layout per MCP guidance
+  if (p.includes('/apps/web/src/lib/')) {
+    // Server-only code must live under $lib/server
+    if (p.match(/\/(middleware|env|admin|session-server|secure|private)/i) && !p.includes('/lib/server/')) {
+      out = p.replace('/lib/', '/lib/server/');
+    }
+    // Colocate route-specific components adjacent to their routes (MCP: "routing" guidance)
+    // (For now, keep existing lib components; we'll audit usage next pass)
+  }
+
+  // Packages: enforce export structure per Turborepo guidance
+  if (p.includes('/packages/core/src/')) {
+    // Move framework-specific code out (MCP: best-practice for framework-agnostic packages)
+    // (Will be handled in separate phase; for now keep)
+  }
+  if (p.includes('/packages/ui/src/')) {
+    // Enforce src/lib/ structure for packaging (MCP: "packaging" guidance)
+    if (!p.includes('/src/lib/') && p.match(/\/src\/(?!lib\/).+\.svelte$/)) {
+      out = p.replace('/src/', '/src/lib/');
+    }
+  }
+
+  // Normalize path separators for comparison safety
+  return path.normalize(out);
 }
 
 async function main() {
@@ -22,8 +44,10 @@ async function main() {
 
   const moves = {};
   for (const file of keep) {
-    const to = targetFor(file);
-    if (to !== file) moves[file] = to;
+    const normFrom = path.normalize(file);
+    const to = targetFor(normFrom);
+    const normTo = path.normalize(to);
+    if (normTo !== normFrom) moves[normFrom] = normTo;
   }
 
   const moveOut = path.resolve(process.cwd(), '.artifacts/move-manifest.json');
