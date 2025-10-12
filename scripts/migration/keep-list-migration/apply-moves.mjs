@@ -17,8 +17,14 @@ async function main() {
     if (!dry) {
       await ensureDir(path.dirname(to));
       try {
+        // Check if source exists before attempting move
+        await fs.access(from);
         await fs.rename(from, to);
       } catch (e) {
+        if (e.code === 'ENOENT') {
+          console.warn(`Skipping ${from}: file not found`);
+          continue;
+        }
         if (e.code === 'EXDEV') {
           // cross-device fallback
           const data = await fs.readFile(from);
