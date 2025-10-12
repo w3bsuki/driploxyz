@@ -1,0 +1,153 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO TOKENS · Semantics
+  Purpose-driven surfaces, typography, borders, interactive states
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     LUXURY FASHION BRAND IDENTITY
+     World-class premium color system for fashion marketplace
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Primary Brand Colors - Luxury Fashion Palette */
+  --brand-primary: var(--fashion-charcoal-500);        /* Sophisticated charcoal */
+  --brand-primary-strong: var(--denim-indigo-500);    /* Premium denim blue */
+  --brand-primary-soft: var(--denim-indigo-100);      /* Light denim accent */
+  --brand-secondary: var(--burgundy-luxury-500);      /* Luxury burgundy */
+  --brand-accent: var(--champagne-gold-500);          /* Elegant champagne gold */
+
+  /* Luxury Surface System */
+  --surface-base: var(--fashion-charcoal-0);              /* Pure luxury white */
+  --surface-subtle: var(--fashion-charcoal-50);           /* Subtle warmth */
+  --surface-muted: var(--fashion-charcoal-100);           /* Gentle contrast */
+  --surface-emphasis: var(--fashion-charcoal-200);        /* Elevated surfaces */
+  --surface-inverse: var(--fashion-charcoal-500);         /* Luxury dark */
+  --surface-brand: var(--brand-primary);                  /* Brand surface */
+  --surface-brand-subtle: var(--brand-primary-soft);       /* Soft brand */
+  --surface-brand-strong: var(--brand-primary-strong);    /* Strong brand */
+
+  /* Premium Surface Variants */
+  --surface-luxury: var(--champagne-gold-50);             /* Premium gold tint */
+  --surface-premium: var(--burgundy-luxury-50);           /* Rich burgundy tint */
+  --surface-elegant: var(--denim-indigo-50);              /* Sophisticated blue tint */
+
+  /* Luxury Text Hierarchy */
+  --text-primary: var(--fashion-charcoal-900);           /* Deep luxury text */
+  --text-secondary: var(--fashion-charcoal-700);          /* Elegant secondary */
+  --text-tertiary: var(--fashion-charcoal-600);           /* Subtle tertiary */
+  --text-muted: var(--fashion-charcoal-500);              /* Refined muted */
+  --text-disabled: var(--fashion-charcoal-400);           /* Sophisticated disabled */
+  --text-inverse: var(--fashion-charcoal-0);              /* Pure luxury white */
+  --text-link: var(--brand-primary-strong);               /* Premium links */
+  --text-link-hover: var(--denim-indigo-600);             /* Sophisticated link hover */
+
+  /* Premium Text Variants */
+  --text-luxury: var(--burgundy-luxury-600);             /* Luxury accent text */
+  --text-elegant: var(--champagne-gold-700);             /* Elegant accent text */
+  --text-premium: var(--forest-emerald-600);             /* Premium accent text */
+
+  /* Luxury Border System */
+  --border-subtle: var(--fashion-charcoal-200);           /* Subtle elegance */
+  --border-default: var(--fashion-charcoal-300);          /* Standard borders */
+  --border-emphasis: var(--fashion-charcoal-400);         /* Emphasized borders */
+  --border-inverse: var(--fashion-charcoal-700);          /* Inverse borders */
+
+  /* Premium Border Variants */
+  --border-luxury: var(--champagne-gold-300);            /* Gold accent borders */
+  --border-premium: var(--burgundy-luxury-300);          /* Burgundy accent borders */
+  --border-elegant: var(--denim-indigo-300);             /* Blue accent borders */
+
+  /* Interactive States - Luxury System */
+  --state-hover: oklch(0.98 0.008 280 / 0.4);            /* Sophisticated hover */
+  --state-active: oklch(0.96 0.008 280 / 0.6);           /* Elegant active */
+  --state-focus: var(--brand-primary-strong);             /* Premium focus */
+  --state-disabled: var(--fashion-charcoal-300);          /* Refined disabled */
+
+  /* Premium Interactive States */
+  --state-hover-luxury: oklch(0.98 0.02 85 / 0.3);       /* Gold hover */
+  --state-hover-premium: oklch(0.98 0.015 25 / 0.3);     /* Burgundy hover */
+  --state-hover-elegant: oklch(0.98 0.015 245 / 0.3);    /* Denim hover */
+
+  /* Luxury Status Tokens */
+  --status-success-bg: var(--forest-emerald-50);           /* Emerald success */
+  --status-success-border: var(--forest-emerald-200);      /* Emerald border */
+  --status-success-text: var(--forest-emerald-700);       /* Emerald text */
+  --status-success-solid: var(--forest-emerald-500);      /* Emerald solid */
+
+  --status-error-bg: var(--burgundy-luxury-50);           /* Burgundy error */
+  --status-error-border: var(--burgundy-luxury-200);      /* Burgundy border */
+  --status-error-text: var(--burgundy-luxury-700);        /* Burgundy text */
+  --status-error-solid: var(--burgundy-luxury-500);       /* Burgundy solid */
+
+  --status-warning-bg: var(--champagne-gold-50);           /* Gold warning */
+  --status-warning-border: var(--champagne-gold-200);      /* Gold border */
+  --status-warning-text: var(--champagne-gold-700);       /* Gold text */
+  --status-warning-solid: var(--champagne-gold-500);      /* Gold solid */
+
+  --status-info-bg: var(--denim-indigo-50);               /* Denim info */
+  --status-info-border: var(--denim-indigo-200);          /* Denim border */
+  --status-info-text: var(--denim-indigo-700);            /* Denim text */
+  --status-info-solid: var(--denim-indigo-500);           /* Denim solid */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     FASHION DOMAIN-SPECIFIC COLORS
+     Premium colors for clothing categories and conditions
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Product Condition Colors - Fashion Forward */
+  --condition-new: var(--forest-emerald-500);             /* Premium new condition */
+  --condition-like-new: var(--denim-indigo-500);          /* Excellent like-new */
+  --condition-good: var(--champagne-gold-500);            /* Good condition gold */
+  --condition-fair: var(--burgundy-luxury-400);           /* Fair condition burgundy */
+
+  /* Fashion Category Colors - Luxury Palette */
+  --category-men: var(--denim-indigo-600);                /* Men's denim blue */
+  --category-women: var(--burgundy-luxury-500);           /* Women's burgundy */
+  --category-kids: var(--champagne-gold-500);             /* Kids' champagne gold */
+  --category-luxury: var(--fashion-charcoal-600);          /* Luxury category */
+  --category-vintage: var(--fashion-charcoal-500);         /* Vintage category */
+  --category-designer: var(--champagne-gold-600);          /* Designer category */
+
+  /* Premium Interactive Colors */
+  --favorite-solid: oklch(0.55 0.18 15);                  /* Classic favorite red */
+  --favorite-hover: oklch(0.45 0.20 15);                  /* Hover favorite */
+  --favorite-luxury: var(--burgundy-luxury-500);          /* Luxury favorite */
+
+  /* Premium Shopping Experience Colors */
+  --shopping-cart: var(--denim-indigo-500);               /* Shopping cart blue */
+  --checkout-primary: var(--forest-emerald-500);           /* Checkout success green */
+  --sale-accent: var(--burgundy-luxury-500);              /* Sale accent burgundy */
+  --new-arrival: var(--champagne-gold-500);               /* New arrival gold */
+  --limited-edition: var(--fashion-charcoal-700);          /* Limited edition dark */
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --surface-base: var(--gray-900);
+  --surface-subtle: var(--gray-800);
+  --surface-muted: var(--gray-700);
+  --surface-emphasis: var(--gray-600);
+  --surface-inverse: var(--gray-0);
+  --surface-brand: var(--brand-primary-strong);
+  --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--gray-900) 78%);
+  --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, black 15%);
+
+  --text-primary: var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary: var(--gray-300);
+  --text-muted: var(--gray-400);
+  --text-disabled: var(--gray-500);
+  --text-inverse: var(--gray-900);
+
+  --border-subtle: var(--gray-700);
+  --border-default: var(--gray-600);
+  --border-emphasis: var(--gray-500);
+  --border-inverse: var(--gray-200);
+
+  --state-focus: var(--brand-primary-soft);
+
+  --text-link: var(--blue-300);
+  --text-link-hover: var(--blue-200);
+}

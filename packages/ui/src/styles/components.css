@@ -1,0 +1,207 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN SYSTEM — Component Styles
+  Component styles using proper v4 patterns without @apply
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COMPONENT STYLES — Melt UI & Global Components
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ▓▓▓ BUTTON SYSTEM ▓▓▓ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--height-button);
+  padding: 0 var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-fast) var(--ease-in-out);
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--color-sky-600);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-sky-700);
+}
+
+.btn-primary:focus {
+  outline: 2px solid var(--color-sky-500);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background-color: var(--color-cyan-600);
+  color: var(--color-white);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-cyan-700);
+}
+
+.btn-secondary:focus {
+  outline: 2px solid var(--color-cyan-500);
+  outline-offset: 2px;
+}
+
+.btn-outline {
+  border: 1px solid var(--color-gray-300);
+  background-color: var(--color-white);
+  color: var(--color-gray-700);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-gray-50);
+}
+
+.btn-outline:focus {
+  outline: 2px solid var(--color-sky-500);
+  outline-offset: 2px;
+}
+
+/* Size modifiers */
+.btn-sm {
+  font-size: var(--font-size-sm);
+  padding: 0 var(--spacing-2);
+  min-height: 32px;
+}
+
+.btn-md {
+  font-size: var(--font-size-base);
+  padding: 0 var(--spacing-3);
+  min-height: 44px;
+}
+
+.btn-lg {
+  font-size: var(--font-size-lg);
+  padding: 0 var(--spacing-4);
+  min-height: 56px;
+}
+
+/* ▓▓▓ INPUT SYSTEM ▓▓▓ */
+.input {
+  display: block;
+  width: 100%;
+  min-height: var(--height-input);
+  padding: var(--spacing-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--border-radius);
+  background-color: var(--surface-base);
+  font-size: var(--font-size-base);
+  transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--interactive-primary);
+  box-shadow: 0 0 0 2px var(--interactive-primary);
+}
+
+/* ▓▓▓ MELT UI INTEGRATION ▓▓▓ */
+.melt-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--height-input);
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  user-select: none;
+}
+
+.melt-select-trigger:focus {
+  outline: none;
+  border-color: var(--interactive-primary);
+  box-shadow: 0 0 0 2px var(--interactive-primary);
+}
+
+.melt-select-content {
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-default);
+  background-color: var(--color-white);
+  padding: var(--spacing-1);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-index-50);
+}
+
+.melt-select-item {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-2) var(--spacing-2);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.melt-select-item:focus {
+  background-color: var(--color-gray-100);
+}
+
+.melt-select-item[data-disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ▓▓▓ TOAST SYSTEM ▓▓▓ */
+[data-melt-toast-viewport] {
+  z-index: var(--z-index-50);
+}
+
+body:has([data-melt-toast-viewport]) {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@media (max-width: 640px) {
+  [data-melt-toast-viewport] {
+    bottom: calc(env(safe-area-inset-bottom, 0) + var(--bottom-nav-height, 0px));
+  }
+}
+
+/* ▓▓▓ UTILITY PATTERNS ▓▓▓ */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ▓▓▓ MOBILE OPTIMIZATIONS ▓▓▓ */
+@media (max-width: 640px) {
+  .btn {
+    min-height: 44px;
+  }
+
+  .input {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

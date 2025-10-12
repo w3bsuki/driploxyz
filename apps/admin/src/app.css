@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/base.css';
+@import '@repo/ui/styles/components.css';
+@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/semantic.css';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@source 'npm:@repo/ui/**/*.{svelte,ts,js}';
+@source './lib/**/*.{svelte,ts}';
+@source './routes/**/*.{svelte,ts}';
+
+/* Admin console theme - minimal CODEX tokens for Tailwind CSS v4 */
+@theme {
+  --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+  }
+}

@@ -1,0 +1,32 @@
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { canSell, getCannotSellReason } from '$lib/auth';
+
+export const load = (async ({ locals }) => {
+  const { session, user } = await locals.safeGetSession();
+
+  if (!session || !user) {
+    redirect(303, '/login?redirect=/become-seller');
+  }
+
+  // Get user profile
+  const { data: profile } = await locals.supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  // If user can already sell, redirect to sell page
+  if (canSell(profile)) {
+    redirect(303, '/sell');
+  }
+
+  // Get the specific reason why they can't sell
+  const reason = getCannotSellReason(profile);
+  
+  return {
+    profile,
+    reason,
+    needsOnboarding: !profile?.onboarding_completed
+  };
+}) satisfies PageServerLoad;

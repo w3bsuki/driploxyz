@@ -1,0 +1,34 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO TOKENS · Legacy aliases
+  Temporary bridge for older components. Prefer semantic tokens.
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  --primary: var(--brand-primary-strong);
+  --primary-600: var(--blue-700);
+  --primary-700: var(--blue-800);
+  --primary-fg: var(--text-inverse);
+
+  --success: var(--status-success-solid);
+  --success-bg: var(--status-success-bg);
+  --success-fg: var(--status-success-text);
+
+  --warning: var(--status-warning-solid);
+  --warning-bg: var(--status-warning-bg);
+  --warning-fg: var(--status-warning-text);
+
+  --error: var(--status-error-solid);
+  --error-bg: var(--status-error-bg);
+  --error-fg: var(--status-error-text);
+
+  --info: var(--status-info-solid);
+  --info-bg: var(--status-info-bg);
+  --info-fg: var(--status-info-text);
+
+  --favorite: var(--favorite-solid);
+  --favorite-fg: var(--favorite-solid);
+
+  --fg-muted: var(--text-muted);
+}

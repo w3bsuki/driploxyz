@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="%lang%">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="robots" content="index, follow" />
+		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		
+		<!-- Performance optimizations -->
+		<link rel="preconnect" href="https://supabase.co" crossorigin>
+
+		<!-- Inter Variable Font - Self-Hosted with Cyrillic support -->
+		<link rel="stylesheet" href="%sveltekit.assets%/fonts/inter.css">
+
+		<!-- Early theme init: apply saved theme before CSS paints -->
+		<script nonce="%sveltekit.nonce%">
+			(function(){
+				try {
+					var t = localStorage.getItem('theme');
+					if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+					else document.documentElement.removeAttribute('data-theme');
+				} catch(e){}
+			})();
+		</script>
+
+		<!-- No-FOUC script: prevent flash of unstyled content with robust fallback -->
+		<script nonce="%sveltekit.nonce%">
+			(function(){
+				// Hide body until CSS is loaded to prevent FOUC
+				document.documentElement.style.visibility = 'hidden';
+
+				// Fallback timeout - show content even if CSS fails to load
+				var fallbackTimeout = setTimeout(function() {
+					console.warn('[FOUC] CSS loading timeout - showing content to prevent unresponsive page');
+					document.documentElement.style.visibility = 'visible';
+				}, 1000); // 1 second fallback
+
+				// Show body after CSS is loaded
+				function showContent() {
+					clearTimeout(fallbackTimeout);
+					document.documentElement.style.visibility = 'visible';
+				}
+
+				// Multiple fallbacks to ensure content is shown
+				if (document.readyState === 'complete') {
+					showContent();
+				} else {
+					document.addEventListener('DOMContentLoaded', showContent);
+				}
+
+				// Additional safety net - show content on window load
+				window.addEventListener('load', showContent);
+			})();
+		</script>
+		
+		<!-- Resource hints for better Core Web Vitals -->
+		<meta name="theme-color" content="#3b82f6">
+		<meta name="msapplication-TileColor" content="#3b82f6">
+		
+		<!-- Apple Touch Icons -->
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
+		
+		<!-- Error handling and monitoring -->
+		<script nonce="%sveltekit.nonce%">
+			// Global error handler for uncaught JavaScript errors
+			window.addEventListener('error', function(event) {
+				console.error('Global error:', event.error);
+				// In production, send to error tracking service
+				if (window.location.hostname !== 'localhost') {
+					// Could integrate with Sentry, LogRocket, etc.
+				}
+			});
+
+			// Global handler for unhandled promise rejections
+			window.addEventListener('unhandledrejection', function(event) {
+				console.error('Unhandled promise rejection:', event.reason);
+			});
+
+			// Report Core Web Vitals to analytics (dev only)
+			if ('PerformanceObserver' in window && window.location.hostname === 'localhost') {
+				try {
+					// LCP reporting
+					new PerformanceObserver((list) => {
+						const entries = list.getEntries();
+						const lastEntry = entries[entries.length - 1];
+						console.log('[LCP]', lastEntry.renderTime || lastEntry.loadTime);
+					}).observe({ type: 'largest-contentful-paint', buffered: true });
+					
+					// FID reporting
+					new PerformanceObserver((list) => {
+						const entries = list.getEntries();
+						const firstInput = entries[0];
+						console.log('[FID]', firstInput.processingStart - firstInput.startTime);
+					}).observe({ type: 'first-input', buffered: true });
+				} catch (e) {
+					// Silently fail if not supported
+				}
+			}
+			
+			// Debug info for Supabase connection
+			if (window.location.hostname === 'localhost') {
+				window.SENTRY_DSN = '';
+				window.NODE_ENV = 'development';
+				window.APP_VERSION = '1.0.0';
+				
+				// Log environment variables
+				console.log('[INIT] Environment variables loaded');
+				console.log('[INIT] Supabase URL:', '%PUBLIC_SUPABASE_URL%' ? 'Set' : 'Not set');
+				console.log('[INIT] Supabase Anon Key:', '%PUBLIC_SUPABASE_ANON_KEY%' ? 'Set' : 'Not set');
+			}
+		</script>
+		
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="viewport">
+		<div style="display: contents">%sveltekit.body%</div>
+		<!-- Global overlay root: centralizes all modals/sheets/dropdowns -->
+		<div id="overlay-root"></div>
+	</body>
+</html>

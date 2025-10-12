@@ -1,0 +1,15 @@
+/*
+  Aggregated Driplo design system stylesheet.
+  Import once from @repo/ui/styles.css inside app entry CSS.
+*/
+
+@import './tokens/foundations.css';
+@import './tokens/semantic.css';
+@import './tokens/components.css';
+@import './tokens/alias.css';
+@import './animations.css';
+@import './base.css';
+@import './components.css';
+@import './semantic.css';
+@import './utilities.css';
+@import './toast-global.css';

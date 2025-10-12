@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  * {
+    border-color: var(--border-default);
+  }
+  body {
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+  }
+}

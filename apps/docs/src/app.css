@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/base.css';
+@import '@repo/ui/styles/components.css';
+@import '@repo/ui/styles/utilities.css';
+@import '@repo/ui/styles/semantic.css';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@source '../../../packages/ui/src/**/*.{html,js,svelte,ts}';
+@source './lib/**/*.{svelte,ts}';
+@source './routes/**/*.{svelte,ts}';
+
+/* Docs site theme - minimal CODEX tokens for Tailwind CSS v4 */
+@theme {
+  --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    border-color: var(--border-default);
+    outline-color: color-mix(in oklch, var(--state-focus) 50%, transparent);
+  }
+
+  html {
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
+  }
+}
+
+@layer components {
+  .prose {
+    max-width: none;
+    color: var(--text-primary);
+  }
+
+  .prose h1 {
+    color: var(--text-primary);
+    font-weight: var(--font-bold);
+  }
+
+  .prose h2 {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+  }
+
+  .prose h3 {
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+  }
+
+  .prose p {
+    color: var(--text-secondary);
+  }
+
+  .prose code {
+    background-color: var(--surface-muted);
+    color: var(--text-primary);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+  }
+
+  .prose pre {
+    background-color: var(--surface-inverse);
+    color: var(--text-inverse);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid var(--border-emphasis);
+    padding-left: var(--space-4);
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+}

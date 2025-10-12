@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./",
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": false,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["src/**/*", "eslint.config.ts", "scripts/**/*", "tests/**/*", "generate-ts-exports.ts", "vitest.config.ts", "*.js", "*.mjs"],
+  "exclude": ["node_modules", "dist", "lib", "src/generated/**/*"]
+}

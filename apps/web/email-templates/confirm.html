@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Driplo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #fafafa;
+            color: #2d2d2d;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 48px 32px 32px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .tagline {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+        .content {
+            padding: 48px 32px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .text {
+            font-size: 16px;
+            color: #4a4a4a;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            font-weight: 500;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .button:hover {
+            background-color: #333;
+            transform: translateY(-1px);
+        }
+        .features {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+        .features h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            color: #4a4a4a;
+            font-size: 15px;
+            position: relative;
+            padding-left: 24px;
+        }
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #888;
+            margin: 8px 0;
+        }
+        .footer-links {
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .footer-links a:hover {
+            color: #1a1a1a;
+        }
+        .security-note {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 14px;
+            color: #0369a1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">driplo</div>
+            <div class="tagline">sustainable fashion marketplace</div>
+        </div>
+        
+        <div class="content">
+            <div class="title">Welcome to driplo! 👋</div>
+            <div class="subtitle">Let's get you started on your sustainable fashion journey</div>
+            
+            <div class="text">
+                Thanks for joining our community of conscious fashion lovers. 
+                Please confirm your email to unlock the full driplo experience.
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ .ConfirmationURL }}" class="button">Confirm Email Address</a>
+            </div>
+            
+            <div class="text" style="font-size: 14px; color: #666; margin-top: 24px;">
+                Can't click the button? Copy and paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color: #1a1a1a; word-break: break-all;">{{ .ConfirmationURL }}</a>
+            </div>
+            
+            <div class="features">
+                <h3>What's waiting for you:</h3>
+                <ul>
+                    <li>Browse curated pre-loved fashion</li>
+                    <li>Sell pieces from your wardrobe</li>
+                    <li>Connect with like-minded sellers</li>
+                    <li>Track your sustainability impact</li>
+                </ul>
+            </div>
+            
+            <div class="security-note">
+                🔒 This link expires in 24 hours. Didn't sign up? Simply ignore this email.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-links">
+                <a href="mailto:hi@driplo.xyz">Support</a>
+                <a href="{{ .SiteURL }}/about">About</a>
+                <a href="{{ .SiteURL }}/privacy">Privacy</a>
+            </div>
+            <div class="footer-text">© 2025 driplo — sustainable fashion, made simple</div>
+            <div class="footer-text">{{ .Email }}</div>
+        </div>
+    </div>
+</body>
+</html>

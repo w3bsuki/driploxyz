@@ -1,0 +1,33 @@
+{
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"moduleResolution": "bundler"
+	},
+	"exclude": [
+		"node_modules",
+		"build",
+		"dist",
+		".svelte-kit",
+		"src/hooks.server.ts",
+		"src/lib/server/supabase.server.ts",
+		"src/routes/analytics/+page.server.ts",
+		"src/routes/orders/+page.server.ts",
+		"src/routes/payouts/+page.server.ts",
+		"src/routes/security/+page.server.ts",
+		"src/routes/subscriptions/+page.server.ts",
+		"src/routes/users/+page.server.ts"
+	]
+	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
+	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
+	//
+	// To make changes to top-level options such as include and exclude, we recommend extending
+	// the generated config; see https://svelte.dev/docs/kit/configuration#typescript
+}
