@@ -6,6 +6,11 @@
 
 <div class="app-layout">
   {@render children()}
+  <!-- Mobile bottom nav -->
+  {#if false}
+    <!-- reserved: app-wide bottom nav if needed -->
+  {/if}
+
 </div>
 
 <style>

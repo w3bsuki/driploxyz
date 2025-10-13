@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Product } from '../../types/product';
-  import FavoriteButton from '../../compositions/buttons/FavoriteButton.svelte';
   
   interface Props {
     product: Product;
@@ -14,6 +13,7 @@
     index?: number;
     totalCount?: number;
     categoryTranslation?: (category: string) => string;
+    favoriteButton?: any;
   }
 
   let { 
@@ -22,6 +22,7 @@
     onBuy,
     onToggleFavorite,
     isFavorite = false,
+    favoriteButton,
     isLoadingFavorite = false,
     currency = '$', 
     formatPrice = (price: number) => `${currency}${price.toFixed(2)}`,
@@ -99,13 +100,7 @@
             {/if}
           </div>
           <div>
-            <FavoriteButton
-              {product}
-              favorited={isFavorite}
-              onFavorite={() => onToggleFavorite?.(product.id)}
-              absolute={false}
-              showCount={true}
-            />
+            {@render favoriteButton?.()}
           </div>
         </div>
       </div>

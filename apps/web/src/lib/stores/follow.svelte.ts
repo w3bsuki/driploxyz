@@ -124,17 +124,17 @@ export function createFollowStore() {
     /**
      * Get follow status from store (reactive)
      */
-    isFollowing: (userId: string) => $derived(state.following[userId] || false),
+    isFollowing: (userId: string) => state.following[userId] || false,
 
     /**
      * Get follower count from store (reactive)
      */
-    getFollowerCount: (userId: string) => $derived(state.followerCounts[userId] || 0),
+    getFollowerCount: (userId: string) => state.followerCounts[userId] || 0,
 
     /**
      * Get following count from store (reactive)
      */
-    getFollowingCount: (userId: string) => $derived(state.followingCounts[userId] || 0),
+    getFollowingCount: (userId: string) => state.followingCounts[userId] || 0,
 
     /**
      * Update counts from real-time data
@@ -172,12 +172,12 @@ export function createFollowStore() {
   };
 
   return {
-    // State exports
-    isLoading,
-    error,
-    following,
-    followerCounts,
-    followingCounts,
+    // State getters (must be functions to maintain reactivity)
+    get isLoading() { return isLoading; },
+    get error() { return error; },
+    get following() { return following; },
+    get followerCounts() { return followerCounts; },
+    get followingCounts() { return followingCounts; },
     // Actions
     ...actions
   };

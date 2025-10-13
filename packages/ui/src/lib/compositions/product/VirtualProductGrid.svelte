@@ -1,373 +1,389 @@
+<!--
+  Virtual Scrolling Product Grid for High Performance
+  Implements efficient rendering of large product lists using Svelte 5 runes
+-->
+
 <script lang="ts">
-  import { isBrowser } from '../../utils/runtime.js';
-  import ProductCard from '../../compositions/cards/ProductCard.svelte';
-  import ProductCardSkeleton from '../../primitives/skeleton/ProductCardSkeleton.svelte';
-  import type { Product } from '../../types/product';
-  // Simple throttle implementation
-  function throttle<T extends unknown[]>(fn: (...args: T) => void, limit: number) {
-    let inThrottle: boolean;
-    return function(...args: T) {
-      if (!inThrottle) {
-        fn(...args);
-        inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
-      }
-    };
+  import { onMount, onDestroy } from 'svelte';
+  import { browser } from '$app/environment';
+
+  interface Product {
+    id: string;
+    title: string;
+    price: number;
+    images: string[];
+    seller_username?: string;
+    slug?: string;
+    condition?: string;
+    [key: string]: unknown;
   }
 
+  // interface VirtualScrollOptions {
+  //   itemHeight: number;
+  //   containerHeight: number;
+  //   overscan: number; // Number of items to render outside visible area
+  //   bufferSize: number; // Number of items to keep in memory
+  // }
 
+  // Props
   interface Props {
-    items: Product[];
+    products: Product[];
     itemHeight?: number;
     containerHeight?: number;
-    gap?: number;
-    itemsPerRow?: number;
-    onProductClick?: (product: Product) => void;
-    onFavorite?: (product: Product) => void;
-    class?: string;
+    overscan?: number;
+    bufferSize?: number;
+    gridColumns?: number;
+    onItemClick?: (product: Product) => void;
+    onLoadMore?: () => void;
+    hasMore?: boolean;
     loading?: boolean;
-    translations?: Record<string, any>;
-    onEndReached?: () => void;
-    endThreshold?: number;
-    scrollParent?: 'self' | 'window';
-    topOffset?: number;
-    bottomOffset?: number;
   }
 
   let {
-    items,
-    itemHeight = 300,
+    products = [],
+    itemHeight = 320, // Height of each product card
     containerHeight = 600,
-    gap = 16,
-    itemsPerRow = 2, // Default for mobile
-    onProductClick,
-    onFavorite,
-    class: className = '',
-    loading = false,
-    translations = {},
-    onEndReached,
-    endThreshold = 200,
-    scrollParent = 'self',
-    topOffset = 0,
-    bottomOffset = 0
+    overscan = 5,
+    gridColumns = 3,
+    onItemClick,
+    onLoadMore,
+    hasMore = false,
+    loading = false
   }: Props = $props();
 
-  let containerElement: HTMLDivElement;
-  let sentinelElement = $state<HTMLDivElement>();
+  // Reactive state using Svelte 5 runes
+  let containerElement = $state<HTMLElement>();
   let scrollTop = $state(0);
-  let containerWidth = $state(0);
-  let mounted = $state(false);
-  let viewportHeightState = $state(containerHeight);
-  
-  // Pre-DOM measurement state
-  let previousScrollHeight = $state(0);
-  let previousViewportHeight = $state(0);
-  let previousContainerWidth = $state(0);
-  
-  // Simple performance monitoring (optional)
-  type PerformanceTimers = {
-    startTiming: (label: string) => void;
-    endTiming: (label: string) => void;
-  };
 
-  const perf: PerformanceTimers | null = null;
-
-  // Calculate responsive items per row
-  const responsiveItemsPerRow = $derived(() => {
-    if (!mounted) return itemsPerRow;
-    
-    const width = containerWidth || (isBrowser ? window.innerWidth : 768);
-    if (width >= 1280) return 5; // xl
-    if (width >= 1024) return 4; // lg
-    if (width >= 768) return 3;  // md
-    if (width >= 640) return 2;  // sm
-    return 2; // mobile
-  });
+  // Calculate virtual scrolling parameters
+  const itemsPerRow = $derived(gridColumns);
+  const totalRows = $derived(Math.ceil(products.length / itemsPerRow));
+  const totalHeight = $derived(totalRows * itemHeight);
 
   // Calculate visible range
-  const visibleRange = $derived(() => {
-    const itemsInRow = responsiveItemsPerRow();
-    const totalRows = Math.ceil(items.length / itemsInRow);
-    const rowHeight = itemHeight + gap;
-    const vpHeight = scrollParent === 'self' ? containerHeight : viewportHeightState;
+  const startRow = $derived(Math.max(0, Math.floor(scrollTop / itemHeight) - overscan));
+  const endRow = $derived(Math.min(totalRows, startRow + Math.ceil(containerHeight / itemHeight) + overscan * 2));
 
-    const startRow = Math.floor(scrollTop / rowHeight);
-    const endRow = Math.min(
-      totalRows - 1,
-      startRow + Math.ceil(vpHeight / rowHeight) + 1 // Buffer
-    );
-
-    const startIndex = startRow * itemsInRow;
-    const endIndex = Math.min(items.length - 1, (endRow + 1) * itemsInRow - 1);
-
-    return {
-      startIndex: Math.max(0, startIndex),
-      endIndex: Math.max(0, endIndex),
-      startRow,
-      endRow,
-      totalRows,
-      rowHeight
-    };
+  // Get visible products
+  const visibleProducts = $derived(() => {
+    const startIndex = startRow * itemsPerRow;
+    const endIndex = Math.min(products.length, endRow * itemsPerRow);
+    return products.slice(startIndex, endIndex);
   });
 
-  // Get visible items
-  const visibleItems = $derived(() => {
-    const { startIndex, endIndex } = visibleRange();
-    return items.slice(startIndex, endIndex + 1).map((item, index) => ({
-      ...item,
-      virtualIndex: startIndex + index
-    })) as (Product & { virtualIndex: number })[];
-  });
+  // Calculate offsets for positioning
+  const offsetY = $derived(startRow * itemHeight);
 
-  // Calculate total height
-  const totalHeight = $derived(() => {
-    const { totalRows, rowHeight } = visibleRange();
-    return totalRows * rowHeight;
-  });
+  // Intersection Observer for lazy loading
+  let intersectionObserver: IntersectionObserver | null = null;
 
-  // Calculate offset for visible items
-  const offsetY = $derived(() => {
-    const { startRow, rowHeight } = visibleRange();
-    return startRow * rowHeight;
-  });
+  // Scroll handler with throttling
+  let scrollTimeout: number;
+  const handleScroll = (event: Event) => {
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
 
-  // Throttled scroll handler for better performance
-  const handleScroll = throttle((event: Event) => {
-    if (scrollParent === 'self') {
-      const target = event.target as HTMLDivElement;
+    scrollTimeout = setTimeout(() => {
+      const target = event.target as HTMLElement;
       scrollTop = target.scrollTop;
-    } else {
-      updateScrollTopFromWindow();
-    }
-  }, 16); // ~60fps
 
-  function handleResize() {
-    if (containerElement) {
-      containerWidth = containerElement.clientWidth;
-    }
-  }
-
-  function updateScrollTopFromWindow() {
-    if (!containerElement) return;
-    const rect = containerElement.getBoundingClientRect();
-    const viewportStart = topOffset; // px from viewport top where content is visible
-    const y = (viewportStart - rect.top);
-    // scrollTop within container space
-    scrollTop = Math.max(0, y);
-  }
-
-  // $effect.pre() for DOM measurements before updates
-  $effect.pre(() => {
-    // Capture dimensions before any DOM changes from reactive updates
-    if (containerElement) {
-      previousScrollHeight = containerElement.scrollHeight;
-      previousContainerWidth = containerElement.clientWidth;
-    }
-    
-    // Capture viewport height before window resize effects
-    if (isBrowser && scrollParent === 'window') {
-      previousViewportHeight = window.innerHeight;
-    }
-  });
-
-  // Use $effect for lifecycle management
-  $effect(() => {
-    if (!isBrowser || !containerElement) return;
-    mounted = true;
-    
-    // Check if we need to preserve scroll position after layout changes
-    if (previousScrollHeight > 0 && containerElement.scrollHeight !== previousScrollHeight) {
-      // Maintain relative scroll position when content height changes
-      const scrollRatio = scrollTop / previousScrollHeight;
-      const newScrollTop = scrollRatio * containerElement.scrollHeight;
-      if (Math.abs(newScrollTop - scrollTop) > 10) { // Only adjust if significant change
-        requestAnimationFrame(() => {
-          if (containerElement) {
-            containerElement.scrollTop = newScrollTop;
-            scrollTop = newScrollTop;
-          }
-        });
-      }
-    }
-    
-    handleResize();
-    const resizeObserver = new ResizeObserver(throttle(handleResize, 100));
-    resizeObserver.observe(containerElement);
-
-    const onWindowResize = throttle(() => {
-      if (scrollParent === 'window') {
-        // Compute viewport height minus offsets
-        viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
-        updateScrollTopFromWindow();
-      }
-    }, 16);
-
-
-    if (scrollParent === 'window') {
-      viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
-      updateScrollTopFromWindow();
-      window.addEventListener('resize', onWindowResize);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-      if (scrollParent === 'window') {
-        window.removeEventListener('resize', onWindowResize as any);
-      }
-    };
-  });
-
-  // IntersectionObserver for end-reached detection
-  $effect(() => {
-    if (!isBrowser || !sentinelElement || !onEndReached || loading) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry?.isIntersecting) {
-          onEndReached();
+      // Trigger load more when near bottom
+      if (hasMore && !loading && onLoadMore) {
+        const scrollPercent = (scrollTop + containerHeight) / totalHeight;
+        if (scrollPercent > 0.8) {
+          onLoadMore();
         }
-      },
-      {
-        root: scrollParent === 'self' ? containerElement : null,
-        rootMargin: `0px 0px ${endThreshold}px 0px`,
-        threshold: 0
       }
+    }, 16); // ~60fps
+  };
+
+  // Setup intersection observer for visibility tracking
+  const setupIntersectionObserver = () => {
+    if (!browser || !('IntersectionObserver' in window)) return;
+
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Track visibility for future optimization
+          void entry.isIntersecting;
+        });
+      },
+      { threshold: 0.1 }
     );
 
-    observer.observe(sentinelElement);
+    if (containerElement) {
+      intersectionObserver.observe(containerElement);
+    }
+  };
 
-    return () => {
-      observer.disconnect();
-    };
+  // Handle product card click
+  const handleProductClick = (product: Product) => {
+    if (onItemClick) {
+      onItemClick(product);
+    }
+  };
+
+  // Generate product URL
+  const getProductUrl = (product: Product) => {
+    if (product.seller_username && product.slug) {
+      return `/product/${product.seller_username}/${product.slug}`;
+    }
+    return `/product/${product.id}`;
+  };
+
+  // Format price
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('bg-BG', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price);
+  };
+
+  // Component lifecycle
+  onMount(() => {
+    setupIntersectionObserver();
   });
 
-  // Grid positioning for items
-  function getItemPosition(index: number) {
-    const itemsInRow = responsiveItemsPerRow();
-    const row = Math.floor(index / itemsInRow);
-    const col = index % itemsInRow;
-    const itemWidth = (containerWidth - (itemsInRow - 1) * gap) / itemsInRow;
-    
-    return {
-      x: col * (itemWidth + gap),
-      y: row * (itemHeight + gap),
-      width: itemWidth
-    };
-  }
+  onDestroy(() => {
+    if (intersectionObserver) {
+      intersectionObserver.disconnect();
+    }
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
+  });
 </script>
 
-{#snippet loadingState()}
-  <div class="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
-    {#each Array(20) as _}
-      <ProductCardSkeleton />
-    {/each}
-  </div>
-{/snippet}
+<div
+  bind:this={containerElement}
+  class="virtual-scroll-container"
+  style="height: {containerHeight}px; overflow-y: auto;"
+  onscroll={handleScroll}
+  role="grid"
+  aria-label="Product grid"
+>
+  <!-- Virtual scroll spacer -->
+  <div style="height: {totalHeight}px; position: relative;">
+    <!-- Visible items container -->
+    <div
+      class="virtual-items"
+      style="position: absolute; top: {offsetY}px; width: 100%;"
+    >
+      <div
+        class="product-grid"
+        style="display: grid; grid-template-columns: repeat({gridColumns}, 1fr); gap: 1rem;"
+      >
+        {#each visibleProducts as product (product.id)}
+          <div
+            class="product-card"
+            style="height: {itemHeight - 16}px;"
+            onclick={() => handleProductClick(product)}
+            role="gridcell"
+            tabindex="0"
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleProductClick(product);
+              }
+            }}
+          >
+            <a
+              href={getProductUrl(product)}
+              class="product-link"
+              aria-label="View {product.title}"
+            >
+              <!-- Product Image -->
+              <div class="product-image">
+                {#if product.images?.[0]}
+                  <img
+                    src={product.images[0]}
+                    alt={product.title}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-48 object-cover rounded-lg"
+                  />
+                {:else}
+                  <div class="placeholder-image">
+                    <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                {/if}
+              </div>
 
-{#snippet visibleItemsGrid()}
-  <div 
-    class="absolute w-full"
-    style="transform: translateY({offsetY}px);"
-  >
-    {#each visibleItems() as item (item.id)}
-      {@render virtualizedProductItem(item)}
-    {/each}
-  </div>
-{/snippet}
+              <!-- Product Info -->
+              <div class="product-info">
+                <h3 class="product-title">{product.title}</h3>
+                <p class="product-price">{formatPrice(product.price)}</p>
 
-{#snippet virtualizedProductItem(item: Product & { virtualIndex: number })}
-  {@const position = getItemPosition(item.virtualIndex % responsiveItemsPerRow())}
-  <div
-    class="absolute"
-    style="
-      left: {position.x}px;
-      top: {(Math.floor(item.virtualIndex / responsiveItemsPerRow()) - visibleRange().startRow) * (itemHeight + gap)}px;
-      width: {position.width}px;
-      height: {itemHeight}px;
-    "
-  >
-    <ProductCard
-      product={item}
-      onclick={() => onProductClick?.(item)}
-      onFavorite={() => onFavorite?.(item)}
-      {translations}
-      class="h-full"
-    />
-  </div>
-{/snippet}
+                {#if product.condition}
+                  <span class="product-condition">{product.condition}</span>
+                {/if}
 
-{#snippet emptyState()}
-  <div class="absolute inset-0 flex items-center justify-center">
-    <div class="text-center">
-      <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-      <p class="text-gray-500">Try adjusting your search or filters</p>
+                {#if product.seller_username}
+                  <p class="product-seller">by {product.seller_username}</p>
+                {/if}
+              </div>
+            </a>
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
-{/snippet}
 
-<div 
-  bind:this={containerElement}
-  class="virtual-grid-container {className}"
-  style={scrollParent === 'self' ? `height: ${containerHeight}px; overflow-y:auto;` : `min-height: ${viewportHeightState}px; overflow: visible;`}
-  onscroll={scrollParent === 'self' ? handleScroll : undefined}
->
-  <!-- Total height spacer -->
-  <div style="height: {totalHeight}px; position: relative;">
-    
-    <!-- Grid Content States -->
-    {#if loading}
-      {@render loadingState()}
-    {:else if visibleItems().length > 0}
-      {@render visibleItemsGrid()}
-    {:else}
-      {@render emptyState()}
-    {/if}
-    
-    <!-- Sentinel element for end-reached detection -->
-    {#if items.length > 0 && onEndReached}
-      <div
-        bind:this={sentinelElement}
-        class="absolute bottom-0 left-0 w-full h-px"
-        style="transform: translateY(-{endThreshold}px);"
-        aria-hidden="true"
-      ></div>
-    {/if}
-  </div>
+  <!-- Loading indicator -->
+  {#if loading}
+    <div class="loading-indicator">
+      <div class="loading-spinner"></div>
+      <p>Loading more products...</p>
+    </div>
+  {/if}
+
+  <!-- End of results indicator -->
+  {#if !hasMore && products.length > 0}
+    <div class="end-indicator">
+      <p>You've reached the end of the results</p>
+    </div>
+  {/if}
 </div>
 
 <style>
-  .virtual-grid-container { position: relative; contain: strict; overflow-anchor: none; }
-
-  /* Smooth scrolling */
-  .virtual-grid-container { scroll-behavior: auto; scrollbar-width: thin; scrollbar-color: #cbd5e0 #f7fafc; }
-
-  .virtual-grid-container::-webkit-scrollbar {
-    width: 6px;
+  .virtual-scroll-container {
+    position: relative;
+    will-change: scroll-position;
   }
 
-  .virtual-grid-container::-webkit-scrollbar-track {
-    background: #f7fafc;
+  .virtual-items {
+    will-change: transform;
   }
 
-  .virtual-grid-container::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 3px;
+  .product-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
   }
 
-  .virtual-grid-container::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
+  .product-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
-  /* Performance optimizations - container-level containment only */
+  .product-card:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
 
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    .virtual-grid-container {
-      scroll-behavior: auto;
+  .product-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .product-image {
+    position: relative;
+    height: 12rem;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .product-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #059669;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .product-condition {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+  }
+
+  .product-seller {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6b7280;
+  }
+
+  .loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.5rem;
+  }
+
+  .end-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-grid {
+      grid-template-columns: 1fr !important;
     }
   }
 </style>

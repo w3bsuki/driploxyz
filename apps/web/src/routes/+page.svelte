@@ -3,15 +3,15 @@
 	import type { Product } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { page, navigating } from '$app/state';
 	import { browser } from '$app/environment';
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup.svelte';
 	import type { PageData } from './$types';
-	import type { ProductWithImages } from '@repo/ui/search';
 	import type { Seller } from '@repo/ui/types';
 	import { startTiming, logInfo, logError } from '$lib/utils/error-logger';
+	import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
 	let { data }: { data: PageData } = $props();
 
@@ -45,6 +45,18 @@
 	let categories = $derived(data.categories || []);
 	let topSellers = $derived(data.topSellers || []);
 	let topBrands = $derived(data.topBrands || []);
+
+	// Create Supabase client for client-side quick searches
+	const supabase = browser ? createBrowserSupabaseClient() : null;
+
+	type QuickSearchResult = {
+		id: string;
+		title: string;
+		price: number;
+		images: Array<{ image_url: string }>;
+		slug?: string | null;
+		[key: string]: unknown;
+	};
 
 	// Main categories for navigation
 	const mainCategories = $derived(
@@ -126,11 +138,80 @@
 		goto(url.pathname + url.search);
 	}
 
-	function handleMainPageQuickSearch(query: string) {
-		if (!query.trim() || !data.supabase) return { data: [], error: null };
+	async function handleMainPageQuickSearch(query: string): Promise<{ data: QuickSearchResult[]; error: string | null }> {
+		if (!query?.trim() || !supabase) {
+			return { data: [], error: null };
+		}
 
-		// Return empty results for now
-		return { data: [], error: null };
+		try {
+			const { data: searchResults, error } = await (supabase.rpc as any)(
+				'search_products_fast',
+				{
+					query_text: query.trim(),
+					result_limit: 6
+				}
+			);
+
+			if (error) {
+				logError('Main page quick search failed', new Error(error.message), { query });
+				return { data: [], error: error.message };
+			}
+
+			const normalizedResults = Array.isArray(searchResults) ? searchResults : [];
+			const transformed = normalizedResults.map((result: any) => ({
+				...result,
+				images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
+			}));
+
+			return { data: transformed, error: null };
+		} catch (err) {
+			logError('Main page quick search failed', err as Error, { query });
+			return { data: [], error: 'Search failed' };
+		}
+	}
+
+	function handleMainPageNavigateToBrand(brandName: string) {
+		if (!brandName?.trim()) return;
+		goto(`/search?brand=${encodeURIComponent(brandName.trim())}`);
+	}
+
+	function handleMainPageNavigateToSeller(identifier: string) {
+		if (!identifier?.trim()) return;
+		const normalized = identifier.trim().toLowerCase();
+		const match = topSellers.find(seller => {
+			const candidateNames = [
+				(seller as any).name,
+				(seller as any).display_name,
+				(seller as any).full_name,
+				seller.username
+			].filter(Boolean) as string[];
+			return candidateNames.some(name => name.toLowerCase() === normalized);
+		});
+
+		const profileUsername = match?.username || identifier.trim();
+		goto(`/profile/${profileUsername}`);
+	}
+
+	function handleMainPageNavigateToQuickShop(filter: string) {
+		if (!filter) {
+			goto('/search');
+			return;
+		}
+
+		const params = new URLSearchParams();
+		for (const segment of filter.split('&')) {
+			const [key, value] = segment.split('=');
+			if (key && value) {
+				params.set(key, value);
+			}
+		}
+
+		const queryString = params.toString();
+		goto(queryString ? `/search?${queryString}` : '/search');
+	}
+
+	function handleMainPageNavigateToDrip() {
+		goto('/drip');
 	}
 
 	function handleMainPageConditionFilter(condition: string) {
@@ -146,11 +227,16 @@
 		}
 	}
 
-	function handleMainPagePrefetchCategory(categorySlug: string) {
+	async function handleMainPagePrefetchCategory(categorySlug: string) {
+		if (!browser) return;
+
+		const path = `/category/${categorySlug}`;
+
 		try {
-			goto(`/category/${categorySlug}`);
-		} catch {
-			// Continue without preload if failed
+			await preloadCode(path);
+			preloadData(path).catch(() => {});
+		} catch (error) {
+			logError('Failed to prefetch category page', error as Error, { categorySlug });
 		}
 	}
 
@@ -243,7 +329,6 @@
 <!-- Main Page Search Bar -->
 <div class="sticky top-[60px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
 	<MainPageSearchBar
-		supabase={data.supabase}
 		bind:searchQuery
 		topBrands={topBrands}
 		topSellers={topSellers}
@@ -261,6 +346,11 @@
 		onNavigateToAll={handleMainPageNavigateToAll}
 		onPillKeyNav={() => {}}
 		onPrefetchCategory={handleMainPagePrefetchCategory}
+		currentPath={page.url.pathname}
+		onNavigateToBrand={handleMainPageNavigateToBrand}
+		onNavigateToSeller={handleMainPageNavigateToSeller}
+		onNavigateToQuickShop={handleMainPageNavigateToQuickShop}
+		onNavigateToDrip={handleMainPageNavigateToDrip}
 	/>
 </div>
 

@@ -76,6 +76,7 @@ export interface ProductInfoProps {
   productId: string;
   seller?: ProductInfoSeller;
   showSellerRow?: boolean;
+  favoriteButton?: any; // Svelte snippet for custom favorite button
 }
 
 // === Attribute Display Types ===

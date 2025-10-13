@@ -29,6 +29,10 @@
         "npx",
         "-y",
         "@sveltejs/mcp"
+      ],
+      "alwaysAllow": [
+        "list-sections",
+        "get-documentation"
       ]
     }
   }

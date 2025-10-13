@@ -246,8 +246,11 @@ export { default as ProductHighlight } from './compositions/product/ProductHighl
 export { default as TrendingSection } from './compositions/navigation/TrendingSection.svelte';
 export { default as ThemeToggle } from './primitives/toggle/ThemeToggle.svelte';
 
+// Button primitives
+export { default as FavoriteButton } from './primitives/buttons/FavoriteButton.svelte';
+export { default as FollowButton } from './primitives/buttons/FollowButton.svelte';
+
 // Product display components
-export { default as FavoriteButton } from './compositions/buttons/FavoriteButton.svelte';
 export { default as ProductImage } from './compositions/product/ProductImage.svelte';
 export { default as ProductMeta } from './compositions/product/ProductMeta.svelte';
 export { default as ProductPrice } from './compositions/product/ProductPrice.svelte';
@@ -289,3 +292,16 @@ export { default as ErrorStates } from './compositions/error/ErrorStates.svelte'
 
 // Melt UI Primitives
 export * from './primitives';
+
+// === NEWLY MIGRATED COMPONENTS (2025-10-13) ===
+
+// Image & Loader Primitives
+export { default as OptimizedImage } from './primitives/image/OptimizedImage.svelte';
+export { default as PageLoader } from './primitives/loader/PageLoader.svelte';
+
+// Modal Compositions
+export { default as PayoutRequestModal } from './compositions/modals/PayoutRequestModal.svelte';
+export { default as RegionSwitchModal } from './compositions/modals/RegionSwitchModal.svelte';
+
+// Search Compositions
+export { default as HeroSearch } from './compositions/search/HeroSearch.svelte';

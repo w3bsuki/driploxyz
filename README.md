@@ -62,7 +62,7 @@ driplo-turbo/
 └── turbo.json            # Turborepo configuration
 ```
 
-**Learn more:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+**Learn more:** [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ---
 
@@ -90,7 +90,7 @@ pnpm format               # Format with Prettier
 pnpm clean                # Clean build artifacts
 ```
 
-**Learn more:** [DEVELOPMENT.md](./DEVELOPMENT.md)
+**Learn more:** [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
 
 ---
 
@@ -190,46 +190,52 @@ pnpm --filter @repo/i18n build
 
 ## 📚 Documentation
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture & design
-- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Development workflow
-- **[FRAMEWORKS.md](./FRAMEWORKS.md)** - Framework guides
-- **[SUPABASE.md](./SUPABASE.md)** - Database & auth
-- **[TESTING.md](./TESTING.md)** - Testing strategy
-- **[MASTER_PLAN.md](./docs/MASTER_PLAN.md)** - Authoritative restructure roadmap
-- **[RESTRUCTURE_PLAN.md](./docs/RESTRUCTURE_PLAN.md)** - Tactical execution plan
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
-- **[ROADMAP.md](./ROADMAP.md)** - Current priorities
+### Essential Docs (Start Here)
+- **[PRODUCTION_PLAN.md](./docs/PRODUCTION_PLAN.md)** 🚀 - Complete feature checklist and 7-week launch plan
+- **[ROADMAP.md](./docs/ROADMAP.md)** 🗺️ - Product vision and phased delivery timeline
+- **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** 📘 - System design, monorepo structure, tech stack
+- **[DEVELOPMENT.md](./docs/DEVELOPMENT.md)** 🛠️ - Setup, commands, troubleshooting
+- **[CONTRIBUTING.md](./docs/CONTRIBUTING.md)** 🤝 - Git workflow, code standards, quality gates
+
+### Quick Links
+- **Feature Status:** See [PRODUCTION_PLAN.md](./docs/PRODUCTION_PLAN.md#feature-checklist)
+- **Current Sprint:** Week 1 - Foundation & Audit
+- **Next Milestone:** i18n Location Detection (Week 2)
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+We welcome contributions! See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed guidelines.
 
-### Process
+### Quick Start
 1. Fork repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Make changes & write tests
-4. Pass quality checks (`pnpm lint check-types test build`)
-5. Commit (`git commit -m 'Add amazing feature'`)
-6. Push & open Pull Request
+2. Create feature branch (`feature/<scope>-<description>`)
+3. Make changes following [Svelte 5 best practices](./docs/CONTRIBUTING.md#development-standards)
+4. Pass all quality gates: `pnpm lint && pnpm check && pnpm test && pnpm build`
+5. Open Pull Request with verification commands
 
 ---
 
 ## 📈 Project Status
 
-**Current Phase:** Foundation & Architecture ([ROADMAP.md](./ROADMAP.md))
+**Current Phase:** Production Readiness Sprint ([docs/PRODUCTION_PLAN.md](./docs/PRODUCTION_PLAN.md))  
+**Target Launch:** Q1 2025 (7 weeks)  
+**Active Sprint:** Week 1 - Foundation & Audit
 
-**Metrics:**
-- ✅ Type Safety: 100% (0 TypeScript errors)
-- ✅ Code Quality: 100% (0 lint errors)
-- 🔄 Test Coverage: 25% → Target: 60%
-- ✅ Build Health: 100% (all packages building)
+### Key Metrics
+- ✅ **Architecture:** Svelte 5 + SvelteKit 2 with Turborepo
+- ✅ **Database:** 38 tables with RLS policies in Supabase
+- ✅ **Component Library:** Snippet-based composition in `@repo/ui`
+- 🔄 **Features:** Auth ✅ | Search 🔄 | Chat 🔄 | Reviews 🎯 | Orders 🎯
+- 🎯 **Production:** Location detection, realtime, search, reviews, orders to complete
 
-**Next Milestones:**
-- [ ] Architecture rationalization
-- [ ] Test coverage baseline
-- [ ] Production deployment
+### Essential Documentation
+- 📘 **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Monorepo structure, tech stack, conventions
+- 🛠️ **[DEVELOPMENT.md](./docs/DEVELOPMENT.md)** - Environment setup, commands, troubleshooting  
+- 🗺️ **[ROADMAP.md](./docs/ROADMAP.md)** - 8-week sprint plan with exit criteria  
+- 🚀 **[PRODUCTION_PLAN.md](./docs/PRODUCTION_PLAN.md)** - Feature checklist, verification strategy  
+- 🤝 **[CONTRIBUTING.md](./docs/CONTRIBUTING.md)** - Code standards, Git workflow, MCP usage
 
 ---
 

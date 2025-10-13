@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
   import Badge from '../../primitives/badge/Badge.svelte';
-  import FavoriteButton from '../../compositions/buttons/FavoriteButton.svelte';
   import ConditionBadge from '../../primitives/badge/ConditionBadge.svelte';
   import DescriptionList from '../../compositions/description/DescriptionList.svelte';
   import DescriptionTerm from '../../compositions/description/DescriptionTerm.svelte';
@@ -29,7 +28,8 @@
     category,
     productId,
     seller,
-    showSellerRow = false
+    showSellerRow = false,
+    favoriteButton
   }: ProductInfoProps = $props();
 
   // State management
@@ -125,12 +125,7 @@
 
     {#if !seller}
       <div class="summary-actions">
-        <FavoriteButton 
-          product={{ favorite_count: favoriteCount, id: productId }}
-          favorited={isFavorited}
-          onFavorite={onFavorite}
-          absolute={false}
-        />
+        {@render favoriteButton?.()}
       </div>
     {/if}
   </section>
@@ -176,12 +171,7 @@
           {/if}
         </div>
       </div>
-      <FavoriteButton 
-        product={{ favorite_count: favoriteCount, id: productId }}
-        favorited={isFavorited}
-        onFavorite={onFavorite}
-        absolute={false}
-      />
+      {@render favoriteButton?.()}
     </div>
   {/if}
 

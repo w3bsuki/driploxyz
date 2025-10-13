@@ -1,0 +1,53 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN TOKENS · Entry Point (Tailwind CSS v4)
+  Single source of truth for all design tokens
+  Optimized for Tailwind CSS v4 best practices
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  Token Hierarchy:
+  1. Foundations — Primitives (spacing, colors, typography)
+  2. Semantic — Purpose-driven (surfaces, text, borders, states)
+  3. Components — Component-specific (buttons, cards, navigation)
+  4. Dark Theme — Dark mode overrides
+  5. Legacy — Backward compatibility aliases
+  
+  Best Practices:
+  - Use semantic tokens in components, not foundation colors directly
+  - Prefer --color-{name}-{shade} for Tailwind v4 compatibility
+  - OKLCH for perceptually uniform, accessible colors
+  - Fluid typography with clamp() for responsive scaling
+  - 4px spacing rhythm for consistent vertical/horizontal rhythm
+  - Touch targets >= 44px for WCAG AAA compliance
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FOUNDATION TOKENS
+   Core design primitives
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@import './foundations.css';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SEMANTIC TOKENS
+   Purpose-driven abstractions
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@import './semantic.css';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COMPONENT TOKENS
+   Component-level compositions
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@import './components.css';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DARK THEME
+   Dark mode overrides
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@import './dark-theme.css';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LEGACY ALIASES
+   Backward compatibility (deprecated, will be removed)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@import './legacy.css';

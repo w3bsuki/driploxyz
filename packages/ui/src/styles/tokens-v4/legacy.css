@@ -1,0 +1,42 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO TOKENS · Legacy Aliases (DEPRECATED)
+  Temporary bridge for older components
+  
+  ⚠️  DO NOT USE IN NEW CODE
+  These tokens will be removed in a future version
+  Use semantic tokens instead
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* Primary/Brand (deprecated - use --brand-* instead) */
+  --primary: var(--brand-primary-strong);
+  --primary-600: var(--color-indigo-700);
+  --primary-700: var(--color-indigo-800);
+  --primary-fg: var(--text-inverse);
+
+  /* Status (deprecated - use --status-* instead) */
+  --success: var(--status-success-solid);
+  --success-bg: var(--status-success-bg);
+  --success-fg: var(--status-success-text);
+
+  --warning: var(--status-warning-solid);
+  --warning-bg: var(--status-warning-bg);
+  --warning-fg: var(--status-warning-text);
+
+  --error: var(--status-error-solid);
+  --error-bg: var(--status-error-bg);
+  --error-fg: var(--status-error-text);
+
+  --info: var(--status-info-solid);
+  --info-bg: var(--status-info-bg);
+  --info-fg: var(--status-info-text);
+
+  /* Interactive (deprecated - use semantic tokens) */
+  --favorite: var(--favorite-solid);
+  --favorite-fg: var(--favorite-solid);
+
+  /* Text (deprecated - use --text-* instead) */
+  --fg-muted: var(--text-muted);
+}

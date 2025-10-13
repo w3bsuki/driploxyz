@@ -85,9 +85,9 @@
 <nav
   aria-label="Bottom navigation"
   data-bottom-nav
-  class="fixed bottom-0 left-0 right-0 z-50 sm:hidden
-         bg-[color:var(--surface-base)]/95 backdrop-blur-xl
-         border-t border-[color:var(--border-subtle)]
+  class="fixed bottom-0 left-0 right-0 z-[80] sm:hidden pointer-events-auto
+         bg-[color:var(--surface-base)]/90 backdrop-blur-xl
+         border-t border-[color:var(--border-subtle)]/60 shadow-[0_-6px_24px_-12px_rgba(0,0,0,0.25)]
          pb-[env(safe-area-inset-bottom)]"
 >
   <div class="grid grid-cols-5">
@@ -96,25 +96,30 @@
       
       <a
         href={item.href}
-        class="flex items-center justify-center
-               min-h-[var(--touch-primary)] py-[var(--space-3)]
+        class="relative flex flex-col items-center justify-center gap-1
+               min-h-[var(--touch-primary)] py-[var(--space-2)]
                no-underline hover:no-underline touch-manipulation"
         data-sveltekit-preload-data="hover"
         aria-current={active ? 'page' : undefined}
         aria-label={item.label}
         title={item.label}
       >
+        {#if active}
+          <span class="absolute top-0 inset-x-8 h-0.5 rounded-b bg-[color:var(--brand-primary)]"></span>
+        {/if}
         <!-- Icon -->
         <div class="relative">
-          <svg
-            class="w-7 h-7 transition-colors duration-200 {active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-tertiary)] hover:text-[color:var(--text-secondary)]'}"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-          >
-            <path d={item.icon} />
-          </svg>
+          <div class="{item.id === 'sell' ? 'rounded-full p-2 bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] shadow-[0_6px_20px_-6px_var(--brand-primary)]' : ''}">
+            <svg
+              class="w-7 h-7 transition-colors duration-200 {active && item.id !== 'sell' ? 'text-[color:var(--brand-primary)]' : item.id !== 'sell' ? 'text-[color:var(--text-tertiary)] hover:text-[color:var(--text-secondary)]' : ''}"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+            >
+              <path d={item.icon} />
+            </svg>
+          </div>
 
           <!-- Badge for messages only -->
           {#if item.showBadge && item.id === 'messages' && unreadMessageCount > 0}
@@ -123,10 +128,16 @@
                      bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)]
                      text-[10px] font-bold rounded-full flex items-center justify-center"
             >
-              {unreadMessageCount > 99 ? '99' : unreadMessageCount}
+              {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
             </div>
           {/if}
         </div>
+        <!-- Label (hidden for sell) -->
+        {#if item.id !== 'sell'}
+          <span class="text-[11px] leading-none {active ? 'text-[color:var(--brand-primary)] font-medium' : 'text-[color:var(--text-tertiary)]'}">
+            {item.label}
+          </span>
+        {/if}
       </a>
     {/each}
   </div>

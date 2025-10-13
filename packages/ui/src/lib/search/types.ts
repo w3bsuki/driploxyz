@@ -108,6 +108,8 @@ export interface SearchPageSearchBarProps extends SearchAnalyticsHandlers {
   currentResultCount?: number;
   totalResultCount?: number;
   i18n: I18nNamespaceLike;
+  onQuickSearch?: (query: string) => Promise<{ data: unknown[]; error: string | null }>;
+  enableQuickResults?: boolean;
 }
 
 export interface CategorySearchBarProps extends SearchAnalyticsHandlers {

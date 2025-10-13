@@ -70,6 +70,12 @@
       "default": "./dist/layouts/*.js"
     },
     "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/tokens-v4/tokens.css": "./src/styles/tokens-v4/tokens.css",
+    "./styles/tokens-v4/foundations.css": "./src/styles/tokens-v4/foundations.css",
+    "./styles/tokens-v4/semantic.css": "./src/styles/tokens-v4/semantic.css",
+    "./styles/tokens-v4/components.css": "./src/styles/tokens-v4/components.css",
+    "./styles/tokens-v4/dark-theme.css": "./src/styles/tokens-v4/dark-theme.css",
+    "./styles/tokens-v4/legacy.css": "./src/styles/tokens-v4/legacy.css",
     "./styles/semantic.css": "./src/styles/semantic.css",
     "./styles/utilities.css": "./src/styles/utilities.css",
     "./styles/base.css": "./src/styles/base.css",

@@ -1,8 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
-import { getProductAdapter } from '@repo/core';
-import type { ProductWithImages } from '@repo/core';
 
 // Define product interfaces
 interface ProductImage {
@@ -99,18 +97,22 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     };
   }
 
-  // Initialize domain adapter
-  const productAdapter = getProductAdapter(locals);
+  // Get product directly from Supabase (domain adapter method not implemented)
+  const productResult = await locals.supabase
+    .from('products')
+    .select(`
+      *,
+      product_images (image_url, sort_order),
+      profiles!products_seller_id_fkey (username, full_name, avatar_url, bio),
+      categories (id, name, slug, parent_id, level)
+    `)
+    .eq('slug', params.slug)
+    .single();
 
-  // Get product by seller username and slug using domain service
-  const { data: product, error: productError } = await withTimeout(
-    productAdapter.getProductBySlugAndSeller(params.slug, params.seller),
-    3000,
-    { data: null, error: 'Request timeout' }
-  );
+  const { data: product, error: productError } = productResult;
 
   if (productError || !product) {
-    console.log('Product not found via domain service:', {
+    console.log('Product not found:', {
       slug: params.slug,
       seller: params.seller,
       error: productError
@@ -118,11 +120,15 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     error(404, 'Product not found');
   }
 
-  // Additional validation that the seller username matches (extra security check)
-  if (product.seller_username !== params.seller) {
+  // Extract seller profile
+  const sellerProfile = Array.isArray(product.profiles) ? product.profiles[0] : product.profiles;
+  const sellerUsername = sellerProfile?.username;
+
+  // Validate that the seller username matches (security check)
+  if (sellerUsername !== params.seller) {
     console.log('Seller username mismatch:', {
       expected: params.seller,
-      actual: product.seller_username
+      actual: sellerUsername
     });
     error(404, 'Product not found');
   }

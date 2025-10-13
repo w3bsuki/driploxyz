@@ -1,0 +1,306 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN TOKENS · Foundations (Tailwind CSS v4)
+  Core design primitives following Tailwind v4 best practices
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SPACING SCALE — 4px Rhythm
+     Tailwind v4 convention: --spacing base + --space-{n}
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --spacing: 0.25rem; /* 4px base unit */
+  
+  --space-0: 0;
+  --space-1: calc(var(--spacing) * 1);   /* 4px */
+  --space-2: calc(var(--spacing) * 2);   /* 8px */
+  --space-3: calc(var(--spacing) * 3);   /* 12px */
+  --space-4: calc(var(--spacing) * 4);   /* 16px */
+  --space-5: calc(var(--spacing) * 5);   /* 20px */
+  --space-6: calc(var(--spacing) * 6);   /* 24px */
+  --space-7: calc(var(--spacing) * 7);   /* 28px */
+  --space-8: calc(var(--spacing) * 8);   /* 32px */
+  --space-9: calc(var(--spacing) * 9);   /* 36px */
+  --space-10: calc(var(--spacing) * 10); /* 40px */
+  --space-11: calc(var(--spacing) * 11); /* 44px */
+  --space-12: calc(var(--spacing) * 12); /* 48px */
+  --space-14: calc(var(--spacing) * 14); /* 56px */
+  --space-16: calc(var(--spacing) * 16); /* 64px */
+  --space-20: calc(var(--spacing) * 20); /* 80px */
+  --space-24: calc(var(--spacing) * 24); /* 96px */
+  --space-28: calc(var(--spacing) * 28); /* 112px */
+  --space-32: calc(var(--spacing) * 32); /* 128px */
+  --space-36: calc(var(--spacing) * 36); /* 144px */
+  --space-40: calc(var(--spacing) * 40); /* 160px */
+  --space-44: calc(var(--spacing) * 44); /* 176px */
+  --space-48: calc(var(--spacing) * 48); /* 192px */
+  --space-52: calc(var(--spacing) * 52); /* 208px */
+  --space-56: calc(var(--spacing) * 56); /* 224px */
+  --space-60: calc(var(--spacing) * 60); /* 240px */
+  --space-64: calc(var(--spacing) * 64); /* 256px */
+  --space-72: calc(var(--spacing) * 72); /* 288px */
+  --space-80: calc(var(--spacing) * 80); /* 320px */
+  --space-96: calc(var(--spacing) * 96); /* 384px */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     TOUCH TARGETS — WCAG AAA Accessibility
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --touch-primary: 44px;   /* Primary touch target (WCAG AAA) */
+  --touch-standard: 36px;  /* Standard touch target */
+  --touch-compact: 32px;   /* Compact touch target */
+  --touch-minimum: 24px;   /* Minimum touch target */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SAFE AREA INSETS — iOS Support
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-right: env(safe-area-inset-right);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     LUXURY FASHION COLOR PALETTE — OKLCH Color Space
+     Tailwind v4 convention: --color-{name}-{shade}
+     Perceptually uniform, accessible, modern
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Charcoal — Sophisticated neutral base */
+  --color-charcoal-0: oklch(1 0 0);                    /* Pure white */
+  --color-charcoal-50: oklch(0.98 0.005 280);          /* Subtle warmth */
+  --color-charcoal-100: oklch(0.95 0.008 280);         /* Light grey */
+  --color-charcoal-200: oklch(0.90 0.01 280);          /* Soft grey */
+  --color-charcoal-300: oklch(0.82 0.012 280);         /* Medium light */
+  --color-charcoal-400: oklch(0.70 0.014 280);         /* Medium */
+  --color-charcoal-500: oklch(0.55 0.015 280);         /* Base charcoal */
+  --color-charcoal-600: oklch(0.40 0.016 280);         /* Dark charcoal */
+  --color-charcoal-700: oklch(0.30 0.014 280);         /* Deeper */
+  --color-charcoal-800: oklch(0.20 0.012 280);         /* Very dark */
+  --color-charcoal-900: oklch(0.15 0.012 280);         /* Luxury black */
+  --color-charcoal-950: oklch(0.10 0.010 280);         /* Deepest black */
+
+  /* Indigo — Premium denim blue */
+  --color-indigo-50: oklch(0.98 0.01 245);             /* Ice blue */
+  --color-indigo-100: oklch(0.95 0.02 245);            /* Light denim */
+  --color-indigo-200: oklch(0.90 0.04 245);            /* Soft denim */
+  --color-indigo-300: oklch(0.82 0.06 245);            /* Medium light */
+  --color-indigo-400: oklch(0.70 0.10 245);            /* Classic denim */
+  --color-indigo-500: oklch(0.55 0.14 245);            /* Premium denim */
+  --color-indigo-600: oklch(0.45 0.16 245);            /* Deep denim */
+  --color-indigo-700: oklch(0.35 0.14 245);            /* Dark denim */
+  --color-indigo-800: oklch(0.25 0.12 245);            /* Navy */
+  --color-indigo-900: oklch(0.18 0.10 245);            /* Deep navy */
+  --color-indigo-950: oklch(0.12 0.08 245);            /* Midnight */
+
+  /* Burgundy — Luxury wine red */
+  --color-burgundy-50: oklch(0.98 0.015 25);           /* Blush */
+  --color-burgundy-100: oklch(0.95 0.025 25);          /* Light burgundy */
+  --color-burgundy-200: oklch(0.90 0.04 25);           /* Soft burgundy */
+  --color-burgundy-300: oklch(0.82 0.06 25);           /* Medium light */
+  --color-burgundy-400: oklch(0.70 0.10 25);           /* Classic burgundy */
+  --color-burgundy-500: oklch(0.55 0.14 25);           /* Premium burgundy */
+  --color-burgundy-600: oklch(0.45 0.16 25);           /* Deep burgundy */
+  --color-burgundy-700: oklch(0.35 0.14 25);           /* Dark burgundy */
+  --color-burgundy-800: oklch(0.25 0.12 25);           /* Wine */
+  --color-burgundy-900: oklch(0.18 0.10 25);           /* Deep wine */
+  --color-burgundy-950: oklch(0.12 0.08 25);           /* Bordeaux */
+
+  /* Gold — Champagne elegance */
+  --color-gold-50: oklch(0.98 0.02 85);                /* Cream */
+  --color-gold-100: oklch(0.95 0.03 85);               /* Light champagne */
+  --color-gold-200: oklch(0.90 0.05 85);               /* Soft champagne */
+  --color-gold-300: oklch(0.82 0.08 85);               /* Medium light */
+  --color-gold-400: oklch(0.72 0.12 85);               /* Classic gold */
+  --color-gold-500: oklch(0.62 0.16 85);               /* Premium gold */
+  --color-gold-600: oklch(0.52 0.18 85);               /* Deep gold */
+  --color-gold-700: oklch(0.42 0.16 85);               /* Dark gold */
+  --color-gold-800: oklch(0.32 0.12 85);               /* Bronze */
+  --color-gold-900: oklch(0.24 0.10 85);               /* Deep bronze */
+  --color-gold-950: oklch(0.16 0.08 85);               /* Antique */
+
+  /* Emerald — Forest luxury green */
+  --color-emerald-50: oklch(0.98 0.02 155);            /* Mint */
+  --color-emerald-100: oklch(0.95 0.04 155);           /* Light emerald */
+  --color-emerald-200: oklch(0.90 0.06 155);           /* Soft emerald */
+  --color-emerald-300: oklch(0.82 0.10 155);           /* Medium light */
+  --color-emerald-400: oklch(0.72 0.14 155);           /* Classic emerald */
+  --color-emerald-500: oklch(0.60 0.18 155);           /* Premium emerald */
+  --color-emerald-600: oklch(0.48 0.16 155);           /* Deep emerald */
+  --color-emerald-700: oklch(0.38 0.14 155);           /* Forest */
+  --color-emerald-800: oklch(0.28 0.12 155);           /* Deep forest */
+  --color-emerald-900: oklch(0.20 0.10 155);           /* Evergreen */
+  --color-emerald-950: oklch(0.14 0.08 155);           /* Deep evergreen */
+
+  /* Core colors */
+  --color-black: #000;
+  --color-white: #fff;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     FLUID TYPOGRAPHY — Responsive Scale with Clamp
+     Tailwind v4 convention: --text-{size} + --text-{size}--line-height
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --text-xs: clamp(0.6875rem, 0.65rem + 0.25vw, 0.75rem);    /* 11-12px */
+  --text-xs--line-height: 1.5;
+  
+  --text-sm: clamp(0.8125rem, 0.75rem + 0.4vw, 0.875rem);    /* 13-14px */
+  --text-sm--line-height: 1.43;
+  
+  --text-base: clamp(0.9375rem, 0.85rem + 0.6vw, 1rem);      /* 15-16px */
+  --text-base--line-height: 1.5;
+  
+  --text-lg: clamp(1.0625rem, 0.95rem + 0.75vw, 1.125rem);   /* 17-18px */
+  --text-lg--line-height: 1.56;
+  
+  --text-xl: clamp(1.1875rem, 1.05rem + 0.9vw, 1.25rem);     /* 19-20px */
+  --text-xl--line-height: 1.4;
+  
+  --text-2xl: clamp(1.375rem, 1.2rem + 1.2vw, 1.5rem);       /* 22-24px */
+  --text-2xl--line-height: 1.33;
+  
+  --text-3xl: clamp(1.75rem, 1.5rem + 1.67vw, 1.875rem);     /* 28-30px */
+  --text-3xl--line-height: 1.2;
+  
+  --text-4xl: clamp(2.125rem, 1.8rem + 2.17vw, 2.25rem);     /* 34-36px */
+  --text-4xl--line-height: 1.11;
+  
+  --text-5xl: clamp(2.625rem, 2.2rem + 2.83vw, 3rem);        /* 42-48px */
+  --text-5xl--line-height: 1;
+  
+  --text-6xl: clamp(3.25rem, 2.7rem + 3.67vw, 3.75rem);      /* 52-60px */
+  --text-6xl--line-height: 1;
+  
+  --text-7xl: clamp(4rem, 3.3rem + 4.67vw, 4.5rem);          /* 64-72px */
+  --text-7xl--line-height: 1;
+
+  --text-8xl: clamp(4.75rem, 3.9rem + 5.67vw, 6rem);         /* 76-96px */
+  --text-8xl--line-height: 1;
+
+  --text-9xl: clamp(6rem, 4.9rem + 7.33vw, 8rem);            /* 96-128px */
+  --text-9xl--line-height: 1;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     FONT SYSTEM — Variable Fonts for Performance
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --font-sans: 'Inter Variable', 'SF Pro Text', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Playfair Display Variable', Georgia, 'Times New Roman', serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+
+  /* Font Weights — Premium Scale */
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
+  /* Line Heights — Vertical Rhythm */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  --leading-display: 1.1;   /* For large headings */
+
+  /* Letter Spacing — Luxury Typography */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+  --tracking-luxury: 0.15em;  /* Luxury all-caps spacing */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BORDER RADIUS — Modern Soft Corners
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --radius-none: 0;
+  --radius-xs: 0.125rem;  /* 2px */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.375rem;  /* 6px */
+  --radius-lg: 0.5rem;    /* 8px */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-2xl: 1rem;     /* 16px */
+  --radius-3xl: 1.5rem;   /* 24px */
+  --radius-4xl: 2rem;     /* 32px */
+  --radius-full: 9999px;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SHADOWS — Elevation System
+     Tailwind v4 convention: --shadow-{size}
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Inset Shadows */
+  --inset-shadow-2xs: inset 0 1px rgb(0 0 0 / 0.05);
+  --inset-shadow-xs: inset 0 1px 1px rgb(0 0 0 / 0.05);
+  --inset-shadow-sm: inset 0 2px 4px rgb(0 0 0 / 0.05);
+
+  /* Drop Shadows for Images/Icons */
+  --drop-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  --drop-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
+  --drop-shadow-md: 0 3px 3px rgb(0 0 0 / 0.12);
+  --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
+  --drop-shadow-xl: 0 9px 7px rgb(0 0 0 / 0.1);
+  --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ANIMATION DURATIONS & EASING
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --duration-instant: 75ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  --duration-slowest: 1000ms;
+
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Z-INDEX LAYERS — Stacking Context
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-overlay: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-toast: 1600;
+  --z-tooltip: 1700;
+  --z-max: 2147483647;
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BREAKPOINTS — Mobile-First Responsive
+     Tailwind v4 convention: --breakpoint-{size}
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --breakpoint-sm: 40rem;   /* 640px */
+  --breakpoint-md: 48rem;   /* 768px */
+  --breakpoint-lg: 64rem;   /* 1024px */
+  --breakpoint-xl: 80rem;   /* 1280px */
+  --breakpoint-2xl: 96rem;  /* 1536px */
+}

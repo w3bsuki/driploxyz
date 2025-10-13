@@ -1,7 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { withTimeout } from '@repo/core/utils';
-import { getProductAdapter } from '@repo/core/services';
 import { isUUID } from '$lib/utils/seo-urls';
 
 export const load = (async ({ params, locals, depends, setHeaders }) => {
@@ -25,73 +23,70 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 		'x-cache-strategy': 'product-page-legacy'
 	});
 
-	// Initialize domain adapter
-	const productAdapter = getProductAdapter(locals);
+	// Get product directly from Supabase (domain adapter not fully implemented)
+	const productResult = await locals.supabase
+		.from('products')
+		.select(`
+			*,
+			product_images (image_url, sort_order),
+			profiles!products_seller_id_fkey (username, full_name, avatar_url),
+			categories (id, name, slug, parent_id, level)
+		`)
+		.eq('id', id)
+		.single();
+
+	const { data: product, error: productError } = productResult;
+
+	if (productError || !product) {
+		throw error(404, 'Product not found');
+	}
+
+	// Extract seller username
+	const sellerProfile = Array.isArray(product.profiles) ? product.profiles[0] : product.profiles;
+	const sellerUsername = sellerProfile?.username;
+
+	// Check if product has slug and seller_username for better URL
+	if (product.slug && sellerUsername) {
+		// Redirect to the SEO-friendly URL
+		const seoUrl = `/product/${sellerUsername}/${product.slug}`;
+		throw redirect(301, seoUrl);
+	}
 
 	try {
-		// Get product by ID using domain service
-		const productResult = await withTimeout(
-			productAdapter.getProduct(id),
-			5000,
-			{ data: null, error: 'Product not found' }
-		);
-
-		if (!productResult.data || productResult.error) {
-			throw error(404, 'Product not found');
-		}
-
-		const product = productResult.data;
-
-		if (!product) {
-			throw error(404, 'Product not found');
-		}
-
-		// Check if product has slug and seller_username for better URL
-		if (product.slug && product.seller_username) {
-			// Redirect to the SEO-friendly URL
-			const seoUrl = `/product/${product.seller_username}/${product.slug}`;
-			throw redirect(301, seoUrl);
-		}
-
-		// Load additional data in parallel for better performance
-		const [
-			sellerProductsResult,
-		] = await Promise.all([
-			// Seller's other products (optional, can fail gracefully)
-			withTimeout(
-				productAdapter.getSellerProducts(product.seller_id, { limit: 6 }),
-				3000,
-				{ data: [], error: null }
-			),
-		]);
+		// Load additional data: seller's other products
+		const sellerProductsResult = await locals.supabase
+			.from('products')
+			.select('id, title, price, slug, product_images(image_url)')
+			.eq('seller_id', product.seller_id)
+			.eq('is_active', true)
+			.eq('is_sold', false)
+			.neq('id', product.id)
+			.limit(6);
+		
+		const sellerProducts = sellerProductsResult.data || [];
 
 		const similarProducts: unknown[] = [];
-		const sellerProfile = null as {
-			username?: string;
-			full_name?: string;
-			avatar_url?: string;
-			rating?: number;
-			sales_count?: number;
-			bio?: string;
-		} | null;
 		const userFavorite = false;
+
+		// Extract category info
+		const category = Array.isArray(product.categories) ? product.categories[0] : product.categories;
 
 		// Transform data for frontend
 		const transformedProduct = {
 			...product,
-			images: product.images?.map((img: { image_url: string }) => img.image_url) || [],
-			main_category_name: product.category_name,
-			category_name: product.category_name,
+			images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
+			main_category_name: category?.name || 'Uncategorized',
+			category_name: category?.name || 'Uncategorized',
 			subcategory_name: null,
 			seller_name: sellerProfile?.username || sellerProfile?.full_name || 'Unknown Seller',
 			seller_username: sellerProfile?.username,
 			seller_avatar: sellerProfile?.avatar_url,
-			seller_rating: sellerProfile?.rating,
-			seller_sales_count: sellerProfile?.sales_count,
-			seller_bio: sellerProfile?.bio,
+			seller_rating: null,
+			seller_sales_count: null,
+			seller_bio: null,
 			seller: sellerProfile,
 			isFavorited: userFavorite,
-			category_slug: null, // Not available in legacy route
+			category_slug: category?.slug || null,
 			parent_category: null,
 			top_level_category: null
 		};
@@ -99,7 +94,7 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 		return {
 			product: transformedProduct,
 			similarProducts,
-			sellerProducts: sellerProductsResult?.data || [],
+			sellerProducts: sellerProducts || [],
 			user,
 			session,
 			// Legacy route indicator

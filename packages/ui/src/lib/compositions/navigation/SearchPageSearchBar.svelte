@@ -35,7 +35,9 @@ let {
   onCategorySelect,
   onFilterChange,
   onFilterRemove,
-  onClearAllFilters
+  onClearAllFilters,
+  onQuickSearch,
+  enableQuickResults = true
 }: SearchPageSearchBarProps = $props();
 
 // Analytics functionality removed for build optimization
@@ -427,7 +429,9 @@ function getSubcategoryIcon(name: string): string {
         placeholder={typeof i18n?.search_placeholder === 'function' ? i18n.search_placeholder() : 'Search...'}
         onSearch={onSearch}
         searchId="search-page-input"
-        showDropdown={false}
+        showDropdown={enableQuickResults}
+        searchFunction={onQuickSearch}
+        maxResults={6}
         {mode}
       >
         {#snippet leftSection()}

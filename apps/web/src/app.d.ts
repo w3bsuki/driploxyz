@@ -30,8 +30,28 @@ declare global {
 	}
 }
 
+// SvelteKit environment variable type declarations
+// These are generated at build time but declared here for TypeScript
+
 declare module '$env/static/public' {
 	export const PUBLIC_SITE_URL: string;
+	export const PUBLIC_SUPABASE_URL: string;
+	export const PUBLIC_SUPABASE_ANON_KEY: string;
+	export const PUBLIC_STRIPE_PUBLISHABLE_KEY: string;
+}
+
+declare module '$env/static/private' {
+	export const SUPABASE_SERVICE_ROLE_KEY: string;
+	export const STRIPE_SECRET_KEY: string;
+	export const STRIPE_WEBHOOK_SECRET: string;
+}
+
+declare module '$env/dynamic/public' {
+	export const env: Record<string, string | undefined>;
+}
+
+declare module '$env/dynamic/private' {
+	export const env: Record<string, string | undefined>;
 }
 
 // Module declarations are in @repo/i18n/src/types.d.ts

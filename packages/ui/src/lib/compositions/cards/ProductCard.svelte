@@ -3,7 +3,6 @@
   import ProductImage from '../../compositions/product/ProductImage.svelte';
   import ConditionBadge from '../../primitives/badge/ConditionBadge.svelte';
   import ProductPrice from '../../compositions/product/ProductPrice.svelte';
-  import FavoriteButton from '../../compositions/buttons/FavoriteButton.svelte';
   import UserBadge from '../../primitives/badge/UserBadge.svelte';
   import ProBadge from '../../primitives/badge/ProBadge.svelte';
   import BrandBadge from '../../primitives/badge/BrandBadge.svelte';
@@ -37,6 +36,7 @@
       formatPrice?: (price: number) => string;
       categoryTranslation?: (category: string) => string;
     };
+    favoriteButton?: any;
   }
 
   let { 
@@ -47,6 +47,7 @@
     highlighted = false,
     class: className = '',
     priority = false,
+    favoriteButton,
     index = 0,
     totalCount = 1,
     favoritesState,
@@ -227,17 +228,7 @@
     {/if}
 
     <!-- Wishlist (favorite) button overlay for tighter layout -->
-    <FavoriteButton
-      {product}
-      {favorited}
-      {favoritesState}
-      onFavorite={() => onFavorite?.(product.id)}
-      addToFavoritesText={translations.addToFavorites}
-      removeFromFavoritesText={translations.removeFromFavorites}
-      absolute={true}
-      showCount={false}
-      size="sm"
-    />
+    {@render favoriteButton?.()}
 
   </div>
   

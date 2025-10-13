@@ -398,30 +398,31 @@ export function getPerformanceMonitor(): PerformanceMonitor {
 
 /**
  * Web Vitals monitoring
+ * Note: web-vitals v5+ uses onLCP, onFID, onCLS, onFCP, onTTFB (not getLCP, etc.)
  */
 export function trackWebVitals(): void {
   if (typeof window === 'undefined') return;
 
-  // Dynamic import for web-vitals
-  import('web-vitals').then(({ getLCP, getFID, getCLS, getFCP, getTTFB }) => {
+  // Dynamic import for web-vitals v5+
+  import('web-vitals').then(({ onLCP, onINP, onCLS, onFCP, onTTFB }) => {
     // Track Largest Contentful Paint (LCP)
-    getLCP((metric) => {
+    onLCP((metric) => {
       captureMetric('lcp', metric.value, 'ms', {
         rating: metric.rating,
         id: metric.id
       });
     });
 
-    // Track First Input Delay (FID)
-    getFID((metric) => {
-      captureMetric('fid', metric.value, 'ms', {
+    // Track Interaction to Next Paint (INP) - replaces FID in v5
+    onINP((metric) => {
+      captureMetric('inp', metric.value, 'ms', {
         rating: metric.rating,
         id: metric.id
       });
     });
 
     // Track Cumulative Layout Shift (CLS)
-    getCLS((metric) => {
+    onCLS((metric) => {
       captureMetric('cls', metric.value, 'score', {
         rating: metric.rating,
         id: metric.id
@@ -429,7 +430,7 @@ export function trackWebVitals(): void {
     });
 
     // Track First Contentful Paint (FCP)
-    getFCP((metric) => {
+    onFCP((metric) => {
       captureMetric('fcp', metric.value, 'ms', {
         rating: metric.rating,
         id: metric.id
@@ -437,7 +438,7 @@ export function trackWebVitals(): void {
     });
 
     // Track Time to First Byte (TTFB)
-    getTTFB((metric) => {
+    onTTFB((metric) => {
       captureMetric('ttfb', metric.value, 'ms', {
         rating: metric.rating,
         id: metric.id

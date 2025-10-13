@@ -142,14 +142,17 @@ const filteredQuickShopItems = $derived.by(() => {
   );
 });
 
-// Hide trending dropdown when user starts typing - use derived instead of effect
-const shouldHideTrendingDropdown = $derived(searchQuery.trim().length > 0);
+// Track last query to hide dropdown only when the user changes the search text while the panel is open
+let lastSearchQuery = $state(searchQuery.trim());
 
-// Update showTrendingDropdown based on derived value
 $effect(() => {
-  if (shouldHideTrendingDropdown) {
+  const normalizedQuery = searchQuery.trim();
+
+  if (showTrendingDropdown && normalizedQuery !== lastSearchQuery) {
     showTrendingDropdown = false;
   }
+
+  lastSearchQuery = normalizedQuery;
 });
 
 // Handle click outside for trending dropdown - effect for DOM listeners only

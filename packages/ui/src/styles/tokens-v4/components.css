@@ -1,0 +1,199 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN TOKENS · Components (Tailwind CSS v4)
+  Component-level tokens composed from semantic values
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LUXURY FASHION BUTTON SYSTEM
+   Premium button variants for high-end clothing marketplace
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Core Button Dimensions - Touch Optimized */
+  --btn-height-sm: var(--touch-compact);     /* 32px - Compact buttons */
+  --btn-height-md: var(--touch-standard);    /* 36px - Standard buttons */
+  --btn-height-lg: var(--touch-primary);     /* 44px - Primary buttons */
+  --btn-height-xl: 48px;                     /* 48px - Extra large */
+  --btn-padding-sm: var(--space-3);          /* 12px horizontal */
+  --btn-padding-md: var(--space-4);          /* 16px horizontal */
+  --btn-padding-lg: var(--space-6);          /* 24px horizontal */
+  --btn-padding-xl: var(--space-8);          /* 32px horizontal */
+  --btn-radius: var(--radius-sm);            /* 4px radius */
+  --btn-radius-lg: var(--radius-lg);         /* 8px large radius */
+  --btn-radius-full: var(--radius-full);     /* Full radius */
+  --btn-font-sm: var(--text-xs);             /* 12px font */
+  --btn-font-md: var(--text-sm);             /* 14px font */
+  --btn-font-lg: var(--text-base);           /* 16px font */
+  --btn-font-weight: var(--font-medium);     /* 500 weight */
+
+  /* Luxury Button Color Variants */
+  --btn-primary-bg: var(--brand-primary-strong);
+  --btn-primary-hover: var(--color-indigo-600);
+  --btn-primary-text: var(--text-inverse);
+  --btn-primary-border: var(--color-indigo-500);
+
+  --btn-secondary-bg: var(--surface-base);
+  --btn-secondary-hover: var(--state-hover);
+  --btn-secondary-text: var(--text-primary);
+  --btn-secondary-border: var(--border-default);
+
+  --btn-luxury-bg: var(--color-gold-500);
+  --btn-luxury-hover: var(--color-gold-600);
+  --btn-luxury-text: var(--color-charcoal-900);
+  --btn-luxury-border: var(--color-gold-500);
+
+  --btn-premium-bg: var(--color-burgundy-500);
+  --btn-premium-hover: var(--color-burgundy-600);
+  --btn-premium-text: var(--text-inverse);
+  --btn-premium-border: var(--color-burgundy-500);
+
+  --btn-ghost-bg: transparent;
+  --btn-ghost-hover: var(--state-hover-luxury);
+  --btn-ghost-text: var(--text-primary);
+  --btn-ghost-border: transparent;
+
+  /* Button State Enhancements */
+  --btn-focus-ring: 0 0 0 2px oklch(0.15 0.015 270 / 0.2);
+  --btn-focus-ring-luxury: 0 0 0 2px oklch(0.02 85 / 0.3);
+  --btn-focus-ring-premium: 0 0 0 2px oklch(0.015 25 / 0.3);
+  --btn-shadow: var(--shadow-sm);
+  --btn-shadow-lg: var(--shadow-md);
+  --btn-shadow-xl: var(--shadow-lg);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   INPUT SYSTEM — Form Elements
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --input-height: var(--touch-primary);
+  --input-padding: var(--space-3);
+  --input-radius: var(--radius-sm);
+  --input-border: var(--border-default);
+  --input-font: var(--text-base);
+  --input-bg: var(--surface-base);
+  --input-focus-border: var(--state-focus);
+  --input-focus-ring: oklch(0.15 0.015 270 / 0.2);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LUXURY FASHION CARD SYSTEM
+   Premium card components for high-end product presentation
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Core Card Dimensions */
+  --card-padding-sm: var(--space-3);          /* 12px padding */
+  --card-padding-md: var(--space-4);          /* 16px padding */
+  --card-padding-lg: var(--space-6);          /* 24px padding */
+  --card-padding-xl: var(--space-8);          /* 32px padding */
+  --card-radius: var(--radius-sm);            /* 4px radius */
+  --card-radius-lg: var(--radius-lg);         /* 8px radius */
+  --card-radius-xl: var(--radius-xl);         /* 12px radius */
+  --card-shadow: var(--shadow-sm);            /* Subtle shadow */
+  --card-shadow-lg: var(--shadow-md);         /* Medium shadow */
+  --card-shadow-xl: var(--shadow-lg);         /* Large shadow */
+  --card-shadow-premium: var(--shadow-xl);    /* Premium shadow */
+  --card-border: var(--border-subtle);        /* Subtle border */
+  --card-bg: var(--surface-base);             /* Base background */
+
+  /* Luxury Card Variants */
+  --card-luxury-bg: var(--surface-luxury);    /* Gold-tinted background */
+  --card-luxury-border: var(--border-luxury); /* Gold border */
+  --card-luxury-shadow: var(--card-shadow-lg); /* Enhanced shadow */
+
+  --card-premium-bg: var(--surface-premium);  /* Burgundy-tinted background */
+  --card-premium-border: var(--border-premium); /* Burgundy border */
+  --card-premium-shadow: var(--card-shadow-lg); /* Enhanced shadow */
+
+  --card-elegant-bg: var(--surface-elegant);  /* Denim-tinted background */
+  --card-elegant-border: var(--border-elegant); /* Denim border */
+  --card-elegant-shadow: var(--card-shadow-lg); /* Enhanced shadow */
+
+  /* Product Card Specific */
+  --product-card-aspect: 4 / 5;              /* Fashion product aspect ratio */
+  --product-card-radius: var(--radius-lg);   /* 8px radius */
+  --product-card-shadow: var(--shadow-sm);   /* Subtle elevation */
+  --product-card-shadow-hover: var(--shadow-xl); /* Hover elevation */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAVIGATION SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --nav-height: var(--space-16);              /* 64px navigation height */
+  --nav-height-mobile: var(--space-14);       /* 56px mobile navigation */
+  --nav-bg: var(--surface-base);
+  --nav-border: var(--border-subtle);
+  --nav-shadow: var(--shadow-sm);
+
+  /* Bottom Navigation (Mobile) */
+  --bottom-nav-height: var(--space-16);       /* 64px */
+  --bottom-nav-bg: var(--surface-base);
+  --bottom-nav-border: var(--border-subtle);
+  --bottom-nav-shadow: 0 -1px 3px 0 rgb(0 0 0 / 0.1);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BADGE & PILL SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --badge-padding-sm: var(--space-1) var(--space-2);  /* 4px 8px */
+  --badge-padding-md: var(--space-2) var(--space-3);  /* 8px 12px */
+  --badge-radius: var(--radius-full);
+  --badge-font: var(--text-xs);
+  --badge-font-weight: var(--font-semibold);
+
+  /* Pill Navigation */
+  --pill-height: var(--touch-standard);       /* 36px */
+  --pill-padding: var(--space-3) var(--space-4); /* 12px 16px */
+  --pill-radius: var(--radius-full);
+  --pill-font: var(--text-sm);
+  --pill-font-weight: var(--font-medium);
+  --pill-bg: var(--surface-base);
+  --pill-bg-hover: var(--state-hover);
+  --pill-bg-active: var(--brand-primary-strong);
+  --pill-text: var(--text-secondary);
+  --pill-text-active: var(--text-inverse);
+  --pill-border: var(--border-default);
+  --pill-border-active: var(--brand-primary-strong);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODAL & DIALOG SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --modal-bg: var(--surface-base);
+  --modal-radius: var(--radius-xl);
+  --modal-shadow: var(--shadow-2xl);
+  --modal-padding: var(--space-6);
+  --modal-padding-mobile: var(--space-4);
+  --modal-overlay-bg: oklch(0 0 0 / 0.5);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOAST & NOTIFICATION SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --toast-bg: var(--surface-inverse);
+  --toast-text: var(--text-inverse);
+  --toast-radius: var(--radius-lg);
+  --toast-shadow: var(--shadow-xl);
+  --toast-padding: var(--space-4) var(--space-5);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AVATAR SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --avatar-xs: var(--space-6);   /* 24px */
+  --avatar-sm: var(--space-8);   /* 32px */
+  --avatar-md: var(--space-10);  /* 40px */
+  --avatar-lg: var(--space-12);  /* 48px */
+  --avatar-xl: var(--space-16);  /* 64px */
+  --avatar-2xl: var(--space-20); /* 80px */
+  --avatar-radius: var(--radius-full);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DIVIDER SYSTEM
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --divider-color: var(--border-subtle);
+  --divider-thickness: 1px;
+  --divider-spacing-sm: var(--space-4);
+  --divider-spacing-md: var(--space-6);
+  --divider-spacing-lg: var(--space-8);
+}

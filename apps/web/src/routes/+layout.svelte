@@ -9,7 +9,7 @@
   // import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import { UnifiedCookieConsent } from '@repo/ui';
   // eslint-disable-next-line no-restricted-imports -- App-specific composite component
-  import Header from '$lib/components/Header.svelte';
+  import Header from '$lib/components/layout/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
   import { invalidate, preloadCode, goto } from '$app/navigation';
@@ -19,13 +19,11 @@
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
-  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal } from '@repo/ui';
   import { ToastContainer } from '@repo/ui';
   import { ErrorBoundary } from '@repo/ui';
   // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
-  // eslint-disable-next-line no-restricted-imports -- App-specific region modal
-  import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/state';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
@@ -266,51 +264,33 @@
   // ];
 
   // Quick search for dropdown results in the shared sticky bar
-  async function handleStickyQuickSearch(query: string) {
+  async function handleStickyQuickSearch(query: string): Promise<{ data: any[]; error: string | null }> {
     if (!query?.trim() || !supabase) {
-      return { data: [], error: null } as { data: ProductWithImages[]; error: string | null };
+      return { data: [], error: null };
     }
+
     try {
-      // Use the SearchProducts domain service instead of ProductService
-      const { SearchProducts } = await import('@repo/domain/products');
+      const { data: searchResults, error: searchError } = await supabase
+        .rpc('search_products_fast', {
+          query_text: query.trim(),
+          result_limit: 6
+        });
 
-      // Create a simple repository adapter for Supabase
-      const productRepo = {
-        async search(params: any) {
-          const { data, error } = await supabase
-            .from('products')
-            .select(`
-              *,
-              images:product_images(*)
-            `)
-            .or(`title.ilike.%${params.query}%,description.ilike.%${params.query}%`)
-            .eq('is_active', true)
-            .eq('is_sold', false)
-            .limit(params.limit || 6)
-            .order('created_at', { ascending: false });
-
-          if (error) throw error;
-
-          return {
-            success: true,
-            data: {
-              products: data || [],
-              total: data?.length || 0
-            }
-          };
-        }
-      };
-
-      const searchService = new SearchProducts(productRepo);
-      const result = await searchService.execute({ query, limit: 6 });
-
-      if (result.success) {
-        return { data: result.data.products, error: null };
-      } else {
-        return { data: [], error: result.error?.message || 'Search failed' };
+      if (searchError) {
+        console.error('Search error:', searchError);
+        return { data: [], error: searchError.message };
       }
-    } catch (error) {
-      return { data: [], error: 'Search failed' } as { data: ProductWithImages[]; error: string | null };
+
+      // Transform data to match SearchDropdown expected format
+      const transformed = (searchResults || []).map((result: any) => ({
+        ...result,
+        images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
+      }));
+
+      return { data: transformed, error: null };
+    } catch (err) {
+      console.error('Search failed:', err);
+      return { data: [], error: 'Search failed' };
     }
   }
 

@@ -1,0 +1,145 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN TOKENS · Semantics (Tailwind CSS v4)
+  Purpose-driven tokens for surfaces, text, borders, states
+  Maps foundation tokens to semantic meaning
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+@theme {
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     LUXURY FASHION BRAND IDENTITY
+     World-class premium color system for fashion marketplace
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Primary Brand Colors */
+  --brand-primary: var(--color-charcoal-500);        /* Sophisticated charcoal */
+  --brand-primary-strong: var(--color-indigo-500);   /* Premium denim blue */
+  --brand-primary-soft: var(--color-indigo-100);     /* Light denim accent */
+  --brand-secondary: var(--color-burgundy-500);      /* Luxury burgundy */
+  --brand-accent: var(--color-gold-500);             /* Elegant champagne gold */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SURFACE SYSTEM — Background Layers
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  /* Base Surfaces */
+  --surface-base: var(--color-charcoal-0);              /* Pure luxury white */
+  --surface-subtle: var(--color-charcoal-50);           /* Subtle warmth */
+  --surface-muted: var(--color-charcoal-100);           /* Gentle contrast */
+  --surface-emphasis: var(--color-charcoal-200);        /* Elevated surfaces */
+  --surface-inverse: var(--color-charcoal-500);         /* Luxury dark */
+  --surface-brand: var(--brand-primary);                /* Brand surface */
+  --surface-brand-subtle: var(--brand-primary-soft);    /* Soft brand */
+  --surface-brand-strong: var(--brand-primary-strong);  /* Strong brand */
+
+  /* Premium Surface Variants */
+  --surface-luxury: var(--color-gold-50);             /* Premium gold tint */
+  --surface-premium: var(--color-burgundy-50);        /* Rich burgundy tint */
+  --surface-elegant: var(--color-indigo-50);          /* Sophisticated blue tint */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     TEXT HIERARCHY — Typography Colors
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --text-primary: var(--color-charcoal-900);           /* Deep luxury text */
+  --text-secondary: var(--color-charcoal-700);         /* Elegant secondary */
+  --text-tertiary: var(--color-charcoal-600);          /* Subtle tertiary */
+  --text-muted: var(--color-charcoal-500);             /* Refined muted */
+  --text-disabled: var(--color-charcoal-400);          /* Sophisticated disabled */
+  --text-inverse: var(--color-charcoal-0);             /* Pure luxury white */
+  --text-link: var(--brand-primary-strong);            /* Premium links */
+  --text-link-hover: var(--color-indigo-600);          /* Sophisticated link hover */
+
+  /* Premium Text Variants */
+  --text-luxury: var(--color-burgundy-600);           /* Luxury accent text */
+  --text-elegant: var(--color-gold-700);              /* Elegant accent text */
+  --text-premium: var(--color-emerald-600);           /* Premium accent text */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     BORDER SYSTEM — Separation & Definition
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --border-subtle: var(--color-charcoal-200);           /* Subtle elegance */
+  --border-default: var(--color-charcoal-300);          /* Standard borders */
+  --border-emphasis: var(--color-charcoal-400);         /* Emphasized borders */
+  --border-inverse: var(--color-charcoal-700);          /* Inverse borders */
+
+  /* Premium Border Variants */
+  --border-luxury: var(--color-gold-300);            /* Gold accent borders */
+  --border-premium: var(--color-burgundy-300);       /* Burgundy accent borders */
+  --border-elegant: var(--color-indigo-300);         /* Blue accent borders */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     INTERACTIVE STATES — User Feedback
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  --state-hover: oklch(0.98 0.008 280 / 0.4);            /* Sophisticated hover */
+  --state-active: oklch(0.96 0.008 280 / 0.6);           /* Elegant active */
+  --state-focus: var(--brand-primary-strong);            /* Premium focus */
+  --state-disabled: var(--color-charcoal-300);           /* Refined disabled */
+
+  /* Premium Interactive States */
+  --state-hover-luxury: oklch(0.98 0.02 85 / 0.3);       /* Gold hover */
+  --state-hover-premium: oklch(0.98 0.015 25 / 0.3);     /* Burgundy hover */
+  --state-hover-elegant: oklch(0.98 0.015 245 / 0.3);    /* Denim hover */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     STATUS TOKENS — User Feedback & Alerts
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  
+  /* Success State */
+  --status-success-bg: var(--color-emerald-50);           /* Emerald success */
+  --status-success-border: var(--color-emerald-200);      /* Emerald border */
+  --status-success-text: var(--color-emerald-700);        /* Emerald text */
+  --status-success-solid: var(--color-emerald-500);       /* Emerald solid */
+
+  /* Error State */
+  --status-error-bg: var(--color-burgundy-50);           /* Burgundy error */
+  --status-error-border: var(--color-burgundy-200);      /* Burgundy border */
+  --status-error-text: var(--color-burgundy-700);        /* Burgundy text */
+  --status-error-solid: var(--color-burgundy-500);       /* Burgundy solid */
+
+  /* Warning State */
+  --status-warning-bg: var(--color-gold-50);             /* Gold warning */
+  --status-warning-border: var(--color-gold-200);        /* Gold border */
+  --status-warning-text: var(--color-gold-700);          /* Gold text */
+  --status-warning-solid: var(--color-gold-500);         /* Gold solid */
+
+  /* Info State */
+  --status-info-bg: var(--color-indigo-50);              /* Denim info */
+  --status-info-border: var(--color-indigo-200);         /* Denim border */
+  --status-info-text: var(--color-indigo-700);           /* Denim text */
+  --status-info-solid: var(--color-indigo-500);          /* Denim solid */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     FASHION DOMAIN-SPECIFIC COLORS
+     Premium colors for clothing categories and conditions
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Product Condition Colors */
+  --condition-new: var(--color-emerald-500);             /* Premium new condition */
+  --condition-like-new: var(--color-indigo-500);         /* Excellent like-new */
+  --condition-good: var(--color-gold-500);               /* Good condition gold */
+  --condition-fair: var(--color-burgundy-400);           /* Fair condition burgundy */
+
+  /* Fashion Category Colors */
+  --category-men: var(--color-indigo-600);               /* Men's denim blue */
+  --category-women: var(--color-burgundy-500);           /* Women's burgundy */
+  --category-kids: var(--color-gold-500);                /* Kids' champagne gold */
+  --category-luxury: var(--color-charcoal-600);          /* Luxury category */
+  --category-vintage: var(--color-charcoal-500);         /* Vintage category */
+  --category-designer: var(--color-gold-600);            /* Designer category */
+
+  /* Premium Interactive Colors */
+  --favorite-solid: oklch(0.55 0.18 15);                 /* Classic favorite red */
+  --favorite-hover: oklch(0.45 0.20 15);                 /* Hover favorite */
+  --favorite-luxury: var(--color-burgundy-500);          /* Luxury favorite */
+
+  /* Premium Shopping Experience Colors */
+  --shopping-cart: var(--color-indigo-500);              /* Shopping cart blue */
+  --checkout-primary: var(--color-emerald-500);          /* Checkout success green */
+  --sale-accent: var(--color-burgundy-500);              /* Sale accent burgundy */
+  --new-arrival: var(--color-gold-500);                  /* New arrival gold */
+  --limited-edition: var(--color-charcoal-700);          /* Limited edition dark */
+}

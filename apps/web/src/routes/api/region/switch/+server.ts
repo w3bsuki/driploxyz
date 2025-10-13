@@ -29,5 +29,12 @@ export const POST: RequestHandler = async (event) => {
     }
   }
   
-  return json({ success: true, region });
+  return json({ success: true, region }, {
+    headers: {
+      // Vary header tells CDN to cache different versions per country
+      'Vary': 'X-Vercel-IP-Country',
+      // Don't cache region switches (user-specific action)
+      'Cache-Control': 'private, no-cache'
+    }
+  });
 };

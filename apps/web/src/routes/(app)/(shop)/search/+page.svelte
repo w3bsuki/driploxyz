@@ -31,6 +31,7 @@
   import { browser } from '$app/environment';
   import { debounce } from '$lib/utils/debounce';
   import { getProductUrl } from '$lib/utils/seo-urls';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   
   // Infinite scroll sentinel - properly managed with reactive cleanup
   let loadMoreTrigger = $state<HTMLDivElement | null>(null);
@@ -61,6 +62,9 @@
   }
   
   let { data }: Props = $props();
+  
+  // Create client-side Supabase client for RPC calls
+  const supabase = createBrowserSupabaseClient();
   
   // Initialize filter store with persistence
   const filterStore = createProductFilter();
@@ -409,6 +413,36 @@
     handleSearchDebounced(value);
   }
   
+  // Quick search for dropdown results
+  async function handleSearchPageQuickSearch(query: string): Promise<{ data: any[]; error: string | null }> {
+    if (!query?.trim() || !supabase) {
+      return { data: [], error: null };
+    }
+
+    try {
+      const { data: searchResults, error: searchError } = await supabase
+        .rpc('search_products_fast', {
+          query_text: query.trim(),
+          result_limit: 6
+        });
+
+      if (searchError) {
+        console.error('Quick search error:', searchError);
+        return { data: [], error: searchError.message };
+      }
+
+      // Transform data to match SearchDropdown expected format
+      const transformed = (searchResults || []).map((result: any) => ({
+        ...result,
+        images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
+      }));
+
+      return { data: transformed, error: null };
+    } catch (err) {
+      console.error('Quick search failed:', err);
+      return { data: [], error: 'Search failed' };
+    }
+  }
 
   function handleCategorySelect(category: string | null) {
     ariaLiveMessage = category ? `Selected category: ${category}` : 'Cleared category filter';
@@ -647,6 +681,8 @@
     totalResultCount={filterStore.allProducts.length}
     {i18n}
     onSearch={handleSearchInput}
+    onQuickSearch={handleSearchPageQuickSearch}
+    enableQuickResults={true}
     onCategorySelect={handleSearchPageCategorySelect}
     onFilterChange={handleSearchPageFilterChange}
     onFilterRemove={handleRemoveAppliedFilter}

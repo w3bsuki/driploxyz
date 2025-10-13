@@ -341,7 +341,7 @@
 <!-- Trigger Button (if provided) -->
 {#if trigger}
   <button 
-    use:triggerEl
+    {...triggerEl}
     class="relative flex items-center gap-1.5 h-9 px-3 rounded-[var(--radius-lg)] text-sm font-medium 
            transition-colors duration-[var(--duration-base)]
            min-h-[var(--touch-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2
