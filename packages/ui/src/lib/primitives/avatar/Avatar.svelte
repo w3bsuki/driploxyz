@@ -24,7 +24,8 @@
     variant = 'circle',
     fallback = '',
     onclick,
-    class: className = ''
+    class: className = '',
+    ...rest
   }: Props = $props();
 
   let imageError = $state(false);
@@ -90,7 +91,7 @@
   type="button"
   onclick={onclick}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
-  {...$$restProps}
+  {...rest}
 >
   {#if src && !imageError}
     <img
@@ -110,7 +111,7 @@
 {:else}
 <div
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"
-  {...$$restProps}
+  {...rest}
 >
   {#if src && !imageError}
     <img

@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import type { Database } from '@repo/database';
 import type { RequestHandler } from './$types';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 
@@ -44,7 +45,7 @@ export const POST: RequestHandler = async (event) => {
     }
 
     // If brand account, ensure brand entry exists
-    if (accountType === 'brand') {
+  if (accountType === 'brand') {
       // Get profile data for brand creation
       const { data: profile } = await supabase
         .from('profiles')
@@ -53,18 +54,18 @@ export const POST: RequestHandler = async (event) => {
         .single();
 
       if (profile) {
-        // Create or update brand entry
+        // Create or update brand entry with strict types
+        const brandPayload: Database['public']['Tables']['brands']['Insert'] = {
+          profile_id: user.id,
+          brand_name: profile.full_name ?? profile.username ?? 'Brand',
+          brand_description: `${profile.username ?? ''} - Professional fashion brand`,
+          verified_brand: true,
+          subscription_active: true
+        };
+
         const { error: brandError } = await supabase
           .from('brands')
-          .upsert({
-            profile_id: user.id,
-            brand_name: profile.full_name || profile.username,
-            brand_description: `${profile.username} - Professional fashion brand`,
-            verified_brand: true,
-            subscription_active: true
-          }, {
-            onConflict: 'profile_id'
-          });
+          .upsert(brandPayload, { onConflict: 'profile_id' });
 
         if (brandError) {
           // Brand creation errors are non-critical - profile update continues

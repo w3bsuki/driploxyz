@@ -41,7 +41,8 @@
     onclick,
     class: className = '',
     children,
-    use = null
+    use = null,
+    ...rest
   }: Props = $props();
 
   const element = $derived(href ? 'a' : 'button');
@@ -91,7 +92,7 @@
   tabindex={tabIndex}
   role={element === 'a' ? undefined : 'button'}
   use:applyActions
-  {...$$restProps}
+  {...rest}
 >
   {#if loading}
     <span

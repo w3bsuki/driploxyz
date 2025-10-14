@@ -39,7 +39,8 @@
     oninput,
     onchange,
     onfocus,
-    onblur
+    onblur,
+    ...rest
   }: Props = $props();
 
   const generatedId = $derived.by(() => {
@@ -110,7 +111,7 @@
       {onchange}
       {onfocus}
       {onblur}
-      {...$$restProps}
+      {...rest}
     />
 
     {#if description}
