@@ -174,7 +174,7 @@
         class="product-grid"
         style="display: grid; grid-template-columns: repeat({gridColumns}, 1fr); gap: 1rem;"
       >
-        {#each visibleProducts as product (product.id)}
+  {#each visibleProducts() as product (product.id)}
           <div
             class="product-card"
             style="height: {itemHeight - 16}px;"

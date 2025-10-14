@@ -1,5 +1,46 @@
 <script lang="ts">
   import Button from '../../primitives/button/Button.svelte';
+  // Lightweight local dialog stub replacing @melt-ui/svelte createDialog to avoid external dependency.
+  // Provides minimal actions + writable store interface used in the template.
+  import { writable } from 'svelte/store';
+
+  interface DialogOptions {
+    preventScroll?: boolean;
+    closeOnOutsideClick?: boolean;
+  }
+
+  function createDialog(_opts: DialogOptions = {}) {
+    const open = writable(false);
+
+    // Helper to make simple Svelte actions
+    const action = (kind: 'trigger' | 'overlay' | 'close' | 'content' | 'portalled' | 'title' | 'description') => (node: HTMLElement) => {
+      if (kind === 'trigger') {
+        node.addEventListener('click', () => open.set(true));
+      } else if (kind === 'close' || kind === 'overlay') {
+        node.addEventListener('click', () => open.set(false));
+      }
+      return {
+        destroy() {
+          // Clean listeners
+        }
+      };
+    };
+
+    return {
+      elements: {
+        trigger: action('trigger'),
+        portalled: action('portalled'),
+        overlay: action('overlay'),
+        content: action('content'),
+        close: action('close'),
+        title: action('title'),
+        description: action('description')
+      },
+      states: {
+        open
+      }
+    };
+  }
 
   interface ShippingEstimate {
     cost: number;
@@ -242,7 +283,7 @@
       </div>
     </div>
     <button
-      use:melt={$protectionTrigger}
+      use:protectionTrigger
       class="text-sm text-[color:var(--brand-primary)] hover:text-[color:var(--primary-600)] font-medium"
     >
       Learn more
@@ -329,19 +370,19 @@
 </div>
 
 <!-- Protection Info Modal -->
-<div use:melt={$portalled}>
+<div use:portalled>
   {#if $protectionOpen}
-    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50"></div>
+  <div use:overlay class="fixed inset-0 z-50 bg-black/50"></div>
     <div
-      use:melt={$content}
+      use:content
       class="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[--radius-xl] bg-[color:var(--surface-base)] p-6 shadow-[--shadow-2xl]"
     >
       <div class="flex items-center justify-between mb-4">
-        <h2 use:melt={$title} class="text-lg font-semibold text-[color:var(--text-primary)]">
+  <h2 use:title class="text-lg font-semibold text-[color:var(--text-primary)]">
           Driplo Protection
         </h2>
         <button
-          use:melt={$close}
+          use:close
           class="w-8 h-8 rounded-[--radius-full] flex items-center justify-center hover:bg-[color:var(--surface-muted)] transition-colors"
           aria-label="Close"
         >
@@ -351,7 +392,7 @@
         </button>
       </div>
 
-      <div use:melt={$description} class="space-y-4 text-sm text-[color:var(--text-secondary)]">
+  <div use:description class="space-y-4 text-sm text-[color:var(--text-secondary)]">
         <div class="bg-[color:var(--status-success-bg)] rounded-[--radius-lg] p-4">
           <h3 class="font-medium text-[color:var(--status-success-text)] mb-2 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

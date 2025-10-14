@@ -128,7 +128,7 @@ export const load = (async ({ params, locals, setHeaders }) => {
 
   const reviewStats = {
     averageRating: profile.rating || 0,
-    totalReviews: profile.review_count || 0,
+    totalReviews: totalReviewCount || 0,
     distribution
   };
 
@@ -152,11 +152,13 @@ export const load = (async ({ params, locals, setHeaders }) => {
   // Check if current user is following this profile
   let isFollowing = false;
   if (user) {
-    const { isFollowing: followStatus } = await profileService.isFollowing(
-      user.id,
-      profile.id
-    );
-    isFollowing = followStatus;
+    const { data: followRel } = await locals.supabase
+      .from('followers')
+      .select('id')
+      .eq('follower_id', user.id)
+      .eq('following_id', profile.id)
+      .maybeSingle();
+    isFollowing = !!followRel;
   }
 
   return {
@@ -164,7 +166,7 @@ export const load = (async ({ params, locals, setHeaders }) => {
       ...profile,
       products_count: products?.length || 0,
       active_listings: products?.length || 0,
-      sold_listings: profile.sales_count || 0,
+      sold_listings: profile.total_sales || 0,
       followers_count: followersCount || 0,
       following_count: followingCount || 0
     },

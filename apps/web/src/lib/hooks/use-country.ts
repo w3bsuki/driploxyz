@@ -1,5 +1,5 @@
 import { page } from '$app/state';
-import { COUNTRY_CONFIGS, type CountryCode } from '$lib/country/detection';
+import { COUNTRY_CONFIGS, type CountryCode } from '$lib/country/constants';
 
 /**
  * Client-side hook to access current country configuration

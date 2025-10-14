@@ -8,6 +8,7 @@
 
 import { redirect } from '@sveltejs/kit';
 import { createServerClient, createBrowserClient } from '@supabase/ssr';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestEvent, Cookies } from '@sveltejs/kit';
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
@@ -42,38 +43,20 @@ interface SupabaseConfig {
 }
 
 let cachedSupabaseConfig: SupabaseConfig | null = null;
-let cachedSupabaseConfigError: SupabaseConfigError | null = null;
 
 function resolveSupabaseConfig(): SupabaseConfig {
-  if (cachedSupabaseConfig) {
-    return cachedSupabaseConfig;
+  if (cachedSupabaseConfig) return cachedSupabaseConfig;
+
+  const supabaseUrl = PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Fail fast without insecure fallbacks
+    throw new SupabaseConfigError();
   }
 
-  if (cachedSupabaseConfigError) {
-    throw cachedSupabaseConfigError;
-  }
-
-  // Use hardcoded values to bypass environment variable loading issues
-  const supabaseUrl = 'https://koowfhsaqmarfdkwsfiz.supabase.co';
-  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtvb3dmaHNhcW1hcmZka3dzZml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTczNDAsImV4cCI6MjA3MTA5MzM0MH0.-lbQpF21xixgkdFtjx8Slqbe0go9h5ojN8GCGYDBDHo';
-
-  console.log('[Auth] Using Supabase URL:', supabaseUrl);
-
-  if (supabaseUrl && supabaseAnonKey) {
-    cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
-    return cachedSupabaseConfig;
-  }
-
-  const error = new SupabaseConfigError();
-  cachedSupabaseConfigError = error;
-
-  if (import.meta.env.DEV) {
-    console.warn(
-      '[Auth] Supabase environment variables missing – check .env file in apps/web.'
-    );
-  }
-
-  throw error;
+  cachedSupabaseConfig = { url: supabaseUrl, anonKey: supabaseAnonKey } satisfies SupabaseConfig;
+  return cachedSupabaseConfig;
 }
 
 /**
@@ -92,13 +75,11 @@ export function createServerSupabase(cookies: Cookies, fetch?: typeof globalThis
       setAll: (cookiesToSet) => {
         cookiesToSet.forEach(({ name, value, options }) => {
           cookies.set(name, value, {
+            ...(options ?? {}),
             path: '/',
-            // Use httpOnly for SSR auth cookies; Supabase client reads/writes these
             httpOnly: true,
             sameSite: 'lax',
-            secure: !import.meta.env.DEV,
-            maxAge: 60 * 60 * 24 * 365, // 1 year
-            ...options
+            secure: !import.meta.env.DEV
           });
         });
       }

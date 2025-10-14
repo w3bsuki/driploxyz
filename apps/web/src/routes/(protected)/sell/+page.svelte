@@ -30,6 +30,7 @@
   let validationMessage = $state<string | null>(null);
   let showValidationPopup = $state(false);
   let stepContainer = $state<HTMLElement>();
+  let productId = $state<string | null>(null);
   
   // Show validation message with auto-hide
   function showValidation(message: string) {
@@ -77,18 +78,18 @@
   
   // Categories
   const genderCategories = $derived(
-    data.categories?.filter(cat => !cat.parent_id) || []
+    data.categories?.filter((cat: any) => !cat.parent_id) || []
   );
 
   const typeCategories = $derived(
     formData.gender_category_id 
-      ? data.categories?.filter(cat => cat.parent_id === formData.gender_category_id) || []
+      ? data.categories?.filter((cat: any) => cat.parent_id === formData.gender_category_id) || []
       : []
   );
 
   const specificCategories = $derived(
     formData.type_category_id
-      ? data.categories?.filter(cat => cat.parent_id === formData.type_category_id) || []
+      ? data.categories?.filter((cat: any) => cat.parent_id === formData.type_category_id) || []
       : []
   );
   
@@ -107,7 +108,7 @@
         const suggestions = await getPriceSuggestions({
           categoryId: formData.category_id,
           brand: formData.brand,
-          condition: formData.condition,
+          condition: formData.condition as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
           size: formData.size
         });
         priceSuggestion = suggestions;
@@ -118,12 +119,14 @@
   }
   
   $effect(() => {
-    updatePriceSuggestions();
+    if (typeof window !== 'undefined') {
+      updatePriceSuggestions();
+    }
   });
 
   // Auto-save draft functionality
   $effect(() => {
-    if (formData.title || uploadedImages.length > 0) {
+    if (typeof window !== 'undefined' && (formData.title || uploadedImages.length > 0)) {
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
         saveDraft();
@@ -172,18 +175,20 @@
 
   // Initialize draft handling and cleanup
   $effect(() => {
-    // Clear any old draft with wrong values
-    const saved = localStorage.getItem('sell-form-draft');
-    if (saved) {
-      try {
-        const draft = JSON.parse(saved);
-        if (draft.condition === 'new' || draft.condition === 'like-new') {
-          localStorage.removeItem('sell-form-draft'); // Clear bad draft
-        } else {
-          loadDraft(); // Only load if valid
+    if (typeof window !== 'undefined') {
+      // Clear any old draft with wrong values
+      const saved = localStorage.getItem('sell-form-draft');
+      if (saved) {
+        try {
+          const draft = JSON.parse(saved);
+          if (draft.condition === 'new' || draft.condition === 'like-new') {
+            localStorage.removeItem('sell-form-draft'); // Clear bad draft
+          } else {
+            loadDraft(); // Only load if valid
+          }
+        } catch {
+          localStorage.removeItem('sell-form-draft');
         }
-      } catch {
-        localStorage.removeItem('sell-form-draft');
       }
     }
 
@@ -205,7 +210,7 @@
       const uploaded = await uploadImages(supabase, files, 'product-images', userId, undefined, accessToken);
       
       // Analyze first image for category suggestions
-      if (uploaded.length > 0 && files.length > 0) {
+      if (uploaded.length > 0 && files.length > 0 && files[0] && uploaded[0]) {
         try {
           const suggestions = await analyzeImageForCategories(files[0], uploaded[0].url);
           if (suggestions.length > 0) {
@@ -284,10 +289,12 @@
     // Focus management for accessibility
     if (stepContainer) {
       setTimeout(() => {
-        focusWithAnnouncement(
-          stepContainer,
-          `Step ${currentStep} of 4: ${getStepTitle(currentStep)}`
-        );
+        if (stepContainer) {
+          focusWithAnnouncement(
+            stepContainer,
+            `Step ${currentStep} of 4: ${getStepTitle(currentStep)}`
+          );
+        }
       }, 100);
     }
   }
@@ -383,57 +390,97 @@
           method="POST"
           action="?/create"
           bind:this={formElement}
-          use:enhance={({ formData: formDataObj }) => {
+          use:enhance={({ formData: formDataObj, cancel }) => {
             submitting = true;
             publishError = null;
 
             // Capture current formData state to avoid Svelte warning
             const currentFormData = { ...formData };
 
+            // Validate required fields before submission
+            if (!currentFormData.title || currentFormData.title.length < 3) {
+              cancel();
+              submitting = false;
+              publishError = 'Title must be at least 3 characters';
+              toasts.error(publishError);
+              return;
+            }
+
+            if (!currentFormData.gender_category_id || !currentFormData.type_category_id) {
+              cancel();
+              submitting = false;
+              publishError = 'Please select a category';
+              toasts.error(publishError);
+              return;
+            }
+
+            if (!currentFormData.price || currentFormData.price <= 0) {
+              cancel();
+              submitting = false;
+              publishError = 'Please enter a valid price';
+              toasts.error(publishError);
+              return;
+            }
+
+            // Determine final category_id to use
+            // Use specific category if available, otherwise fall back to type_category_id
+            const finalCategoryId = currentFormData.category_id || currentFormData.type_category_id;
+            
             // Validate condition before form submission
             // Ensure condition is ALWAYS sent with valid value
             const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
             const conditionValue = currentFormData.condition && validConditions.includes(currentFormData.condition) ? currentFormData.condition : 'good';
+            
+            // Build form data explicitly
+            formDataObj.set('title', currentFormData.title.trim());
+            formDataObj.set('description', (currentFormData.description || '').trim());
+            formDataObj.set('gender_category_id', currentFormData.gender_category_id);
+            formDataObj.set('type_category_id', currentFormData.type_category_id);
+            formDataObj.set('category_id', finalCategoryId);
             formDataObj.set('condition', conditionValue);
-
-            // Add all OTHER form data (skip condition since we already handled it)
-            Object.entries(currentFormData).forEach(([key, value]) => {
-              if (key === 'condition') return; // Skip condition - already handled above
-              if (key === 'tags') {
-                formDataObj.append(key, JSON.stringify(value));
-              } else if (typeof value === 'boolean' || typeof value === 'number') {
-                formDataObj.append(key, value.toString());
-              } else {
-                formDataObj.append(key, value as string);
-              }
-            });
-
-            formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
-            formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
+            formDataObj.set('price', currentFormData.price.toString());
+            formDataObj.set('shipping_cost', (currentFormData.shipping_cost || 0).toString());
+            formDataObj.set('brand', (currentFormData.brand || '').trim());
+            formDataObj.set('size', currentFormData.size || '');
+            formDataObj.set('color', (currentFormData.color || '').trim());
+            formDataObj.set('material', (currentFormData.material || '').trim());
+            formDataObj.set('tags', JSON.stringify(currentFormData.tags || []));
+            formDataObj.set('use_premium_boost', currentFormData.use_premium_boost ? 'true' : 'false');
+            formDataObj.set('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
+            formDataObj.set('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
 
             return async ({ result, update }) => {
               submitting = false;
 
               if (result.type === 'failure') {
                 // Handle errors
-                const errorMessage = result.data?.errors?._form || 'Failed to create listing';
-                publishError = errorMessage;
-                toasts.error(errorMessage);
-              } else if (result.type === 'success' && result.data?.success) {
-                // SUCCESS! Product created
-                showSuccess = true;
-                toasts.success('Listing published successfully!');
+                const errors = (result.data as any)?.errors || {};
+                const errorMessage = errors._form || errors.category_id || Object.values(errors)[0] || 'Failed to create listing';
+                publishError = errorMessage as string;
+                toasts.error(errorMessage as string);
+                
+                // Scroll to top to show error
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else if (result.type === 'success') {
+                const successData = result.data as any;
+                if (successData?.success) {
+                  // SUCCESS! Product created
+                  showSuccess = true;
+                  productId = successData.productId as string;
+                  toasts.success('Listing published successfully!');
 
-                const productId = result.data.productId;
+                  // Clear draft
+                  localStorage.removeItem('sell-form-draft');
 
-                // Redirect to product page after 1.5 seconds
-                setTimeout(() => {
-                  if (productId) {
-                    goto(`/product/${productId}`);
-                  } else {
-                    goto('/');
-                  }
-                }, 1500);
+                  // Redirect to product page after 1.5 seconds
+                  setTimeout(() => {
+                    if (productId) {
+                      goto(`/product/${productId}`);
+                    } else {
+                      goto('/');
+                    }
+                  }, 1500);
+                }
               }
 
               await update();
@@ -489,19 +536,19 @@
                   if (categorySuggestions) {
                     // Map suggestion to actual category IDs
                     if (categorySuggestions.gender) {
-                      const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
+                      const genderCat = genderCategories.find((c: any) => c.name === categorySuggestions?.gender);
                       if (genderCat) {
                         formData.gender_category_id = genderCat.id;
                       }
                     }
                     if (categorySuggestions.type && formData.gender_category_id) {
-                      const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
+                      const typeCat = typeCategories.find((c: any) => c.name === categorySuggestions?.type);
                       if (typeCat) {
                         formData.type_category_id = typeCat.id;
                       }
                     }
                     if (categorySuggestions.specific && formData.type_category_id) {
-                      const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
+                      const specificCat = specificCategories.find((c: any) => c.name === categorySuggestions?.specific);
                       if (specificCat) {
                         formData.category_id = specificCat.id;
                       }
@@ -527,7 +574,7 @@
             >
               <StepPricing
                 bind:formData
-                profile={data.profile}
+                profile={data.profile as any}
                 {priceSuggestion}
                 errors={{}}
                 touched={{}}
@@ -554,7 +601,7 @@
               <!-- Compact Mobile Preview Card -->
               <div class="bg-[color:var(--surface-subtle)] rounded-lg border border-[color:var(--border-subtle)] overflow-hidden max-w-xs mx-auto shadow-sm">
                 <!-- Image Gallery Preview -->
-                {#if uploadedImages.length > 0}
+                {#if uploadedImages.length > 0 && uploadedImages[0]}
                   <div class="relative">
                     <img
                       src={uploadedImages[0].url}
@@ -576,11 +623,11 @@
                 <div class="p-3 space-y-2">
                   <!-- Category Breadcrumb -->
                   <div class="text-xs text-gray-500 uppercase tracking-wide line-clamp-1">
-                    {#if genderCategories.find(c => c.id === formData.gender_category_id)}
-                      {genderCategories.find(c => c.id === formData.gender_category_id)?.name}
+                    {#if genderCategories.find((c: any) => c.id === formData.gender_category_id)}
+                      {genderCategories.find((c: any) => c.id === formData.gender_category_id)?.name}
                     {/if}
-                    {#if typeCategories.find(c => c.id === formData.type_category_id)}
-                      › {typeCategories.find(c => c.id === formData.type_category_id)?.name}
+                    {#if typeCategories.find((c: any) => c.id === formData.type_category_id)}
+                      › {typeCategories.find((c: any) => c.id === formData.type_category_id)?.name}
                     {/if}
                   </div>
 
@@ -845,6 +892,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
   }
   

@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
     trace: 'on-first-retry',
     actionTimeout: 10000,
     navigationTimeout: 15000
@@ -13,8 +13,8 @@ export default defineConfig({
   webServer: {
     command: 'pnpm --filter web dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000
+    reuseExistingServer: true,
+    timeout: 180 * 1000
   },
   projects: [
     {

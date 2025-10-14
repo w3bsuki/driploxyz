@@ -1,9 +1,15 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
-import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch, type CountryCode } from '$lib/country/detection';
+import {
+  COUNTRY_CONFIGS,
+  shouldSuggestCountrySwitch,
+  type CountryCode,
+  getLocaleForCountry
+} from '$lib/country/constants';
 import { getCanonicalAndHreflang } from '$lib/seo';
 import { getUserProfile, needsOnboardingRedirect } from '$lib/auth/index';
+import { COOKIES } from '$lib/cookies/constants';
 
 /**
  * Check if user has existing cookie consent
@@ -49,7 +55,11 @@ async function streamProfileData(supabase: App.Locals['supabase'], userId: strin
  */
 async function streamRegionData(event: Parameters<LayoutServerLoad>[0], currentCountry: string) {
   try {
-    const { detectCountryFromIP } = await import('$lib/country/detection');
+    const preDetected = (event.locals as { detectedCountry?: CountryCode }).detectedCountry;
+    if (preDetected) {
+      return preDetected;
+    }
+    const { detectCountryFromIP } = await import('$lib/server/country/detection.server');
     return detectCountryFromIP(event);
   } catch (err) {
     if (dev) {
@@ -68,21 +78,16 @@ export const load = (async (event) => {
   depends('app:preferences');   // User preferences changes
 
   // CRITICAL DATA - Load immediately and block page render
-  // Fallback in case auth setup failed
-  const { session, user } = locals.safeGetSession ? await locals.safeGetSession() : { session: null, user: null };
-
-  // Create Supabase client server-side for this request
-  let supabase: import('@supabase/supabase-js').SupabaseClient<Database> | null = null;
-  try {
-    const { createServerSupabase } = await import('$lib/auth/index');
-    supabase = createServerSupabase(event.cookies, event.fetch);
-  } catch (error) {
-    console.warn('[Layout] Failed to create Supabase client:', error);
-  }
+  // Use the Supabase client from hooks - already configured with proper SSR cookie handling
+  const { session, user } = await locals.safeGetSession();
+  const supabase = locals.supabase;
   const language = locals.locale || 'bg';
-  const country = locals.country || 'BG';
+  const country = (locals.country || 'BG') as CountryCode;
   const countryConfig = COUNTRY_CONFIGS[country];
   const currency = countryConfig.currency;
+  const defaultDetectedCountry = ((locals as { detectedCountry?: CountryCode }).detectedCountry || country) as CountryCode;
+  const defaultSuggestedLocale = (locals as { suggestedLocale?: string }).suggestedLocale || getLocaleForCountry(defaultDetectedCountry as CountryCode);
+  const localeBannerDismissed = cookies.get(COOKIES.LOCALE_PROMPT_DISMISSED) === 'true';
 
   // Generate SEO data (synchronous)
   const seoData = getCanonicalAndHreflang(event);
@@ -109,6 +114,10 @@ export const load = (async (event) => {
         regionPromise
       ]);
 
+  const resolvedDetectedCountry = (detectedCountry as CountryCode | null) || defaultDetectedCountry;
+  const suggestedLocale = getLocaleForCountry(resolvedDetectedCountry as CountryCode) || defaultSuggestedLocale;
+      const shouldShowLocaleBanner = !localeBannerDismissed && suggestedLocale !== language;
+
       // Check if user needs onboarding redirect using consolidated auth logic
       if (needsOnboardingRedirect(user, profile, url.pathname)) {
         redirect(303, '/onboarding');
@@ -125,15 +134,18 @@ export const load = (async (event) => {
         seo: seoData,
         cookies: cookies.getAll(),
         shouldShowCookieConsent,
+  detectedCountry: (profile?.country_code as CountryCode | undefined) || country,
+        suggestedLocale,
+        shouldShowLocaleBanner,
 
         // Loaded data for protected paths
         profile,
         detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
-        region: profile?.region || (country === 'GB' ? 'UK' : 'BG'),
+  region: profile?.region || ((profile?.country_code as CountryCode | undefined) === 'GB' ? 'UK' : (resolvedDetectedCountry as CountryCode === 'GB' ? 'UK' : 'BG')),
         shouldPromptRegionSwitch:
           !cookies.get('region_prompt_dismissed') &&
           !profile?.region &&
-          shouldSuggestCountrySwitch(country as CountryCode, detectedCountry as CountryCode)
+          shouldSuggestCountrySwitch(country as CountryCode, resolvedDetectedCountry as CountryCode)
       };
     } else {
       // For non-protected paths (auth, api, etc), await region data to prevent Promise issues
@@ -141,6 +153,10 @@ export const load = (async (event) => {
         profilePromise,
         regionPromise
       ]);
+
+  const resolvedDetectedCountry = (detectedCountry as CountryCode | null) || defaultDetectedCountry;
+  const suggestedLocale = getLocaleForCountry(resolvedDetectedCountry as CountryCode) || defaultSuggestedLocale;
+      const shouldShowLocaleBanner = !localeBannerDismissed && suggestedLocale !== language;
 
       return {
         // Critical data (loaded immediately)
@@ -152,21 +168,27 @@ export const load = (async (event) => {
         seo: seoData,
         cookies: cookies.getAll(),
         shouldShowCookieConsent,
+        detectedCountry: resolvedDetectedCountry,
+        suggestedLocale,
+        shouldShowLocaleBanner,
 
         // Resolved data (awaited to prevent type issues)
         profile,
         detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
-        region: profile?.region || (country === 'GB' ? 'UK' : 'BG'),
+  region: profile?.region || ((profile?.country_code as CountryCode | undefined) === 'GB' ? 'UK' : (resolvedDetectedCountry as CountryCode === 'GB' ? 'UK' : 'BG')),
         shouldPromptRegionSwitch:
           !cookies.get('region_prompt_dismissed') &&
           !profile?.region &&
-          shouldSuggestCountrySwitch(country as CountryCode, detectedCountry as CountryCode)
+          shouldSuggestCountrySwitch(country as CountryCode, resolvedDetectedCountry as CountryCode)
       };
     }
   }
 
   // No user - return minimal data with resolved region detection
   const detectedCountry = await regionPromise;
+  const resolvedDetectedCountry = (detectedCountry as CountryCode | null) || defaultDetectedCountry;
+  const suggestedLocale = getLocaleForCountry(resolvedDetectedCountry as CountryCode) || defaultSuggestedLocale;
+  const shouldShowLocaleBanner = !localeBannerDismissed && suggestedLocale !== language;
 
   return {
     // Critical data
@@ -178,10 +200,13 @@ export const load = (async (event) => {
     seo: seoData,
     cookies: cookies.getAll(),
     shouldShowCookieConsent,
+    detectedCountry: resolvedDetectedCountry,
+    suggestedLocale,
+    shouldShowLocaleBanner,
 
     // Resolved data (awaited to prevent type issues)
     profile: null,
-    detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
+    detectedRegion: resolvedDetectedCountry === 'GB' ? 'UK' : 'BG',
     region: country === 'GB' ? 'UK' : 'BG',
     shouldPromptRegionSwitch: false
   };

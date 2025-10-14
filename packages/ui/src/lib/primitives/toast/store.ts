@@ -8,11 +8,18 @@
  * is managed by Svelte 5 runes in the ToastContainer component.
  */
 
-import type { Toast, ToastType, ToastStore, ToastStoreOptions } from './types';
 import { writable, type Writable } from 'svelte/store';
+import type {
+  Toast,
+  ToastType,
+  ToastStore,
+  ToastStoreOptions,
+  ToastProviderHandle,
+  ToastInput
+} from './types';
 
 // Global toast provider instance
-let toastProvider: any = null;
+let toastProvider: ToastProviderHandle | null = null;
 
 // Deduplication cache to prevent duplicate toasts
 const activeToasts = new Map<string, string>();
@@ -21,8 +28,8 @@ const TOAST_DEDUP_WINDOW = 100; // ms - prevent rapid duplicates
 // Reactive toasts store using Svelte stores (compatible with Svelte 5)
 const toastsStore: Writable<Toast[]> = writable([]);
 
-export function setToastProvider(provider: any): void {
-  toastProvider = provider;
+export function setToastProvider(provider: ToastProviderHandle | null | undefined): void {
+  toastProvider = provider ?? null;
 }
 
 // Export the reactive toasts array for components to subscribe to
@@ -50,13 +57,14 @@ function addToast(toast: Toast): string {
   }
 
   const scheduleCleanup = () => {
-    setTimeout(() => {
+    globalThis.setTimeout(() => {
       activeToasts.delete(toastHash);
     }, TOAST_DEDUP_WINDOW);
   };
 
-  if (toastProvider && typeof toastProvider.addToastData === 'function') {
-    const providerId = toastProvider.addToastData(toast);
+  if (toastProvider) {
+    const providerPayload: ToastInput = { ...toast };
+    const providerId = toastProvider.addToastData(providerPayload);
     activeToasts.set(toastHash, providerId);
     scheduleCleanup();
     return providerId;
@@ -76,7 +84,7 @@ function addToast(toast: Toast): string {
 
 // Remove toast from provider or store
 function removeToast(id: string): void {
-  if (toastProvider && typeof toastProvider.removeToastData === 'function') {
+  if (toastProvider) {
     toastProvider.removeToastData(id);
     return;
   }
@@ -136,7 +144,7 @@ function createToastStore(): ToastStore {
     },
 
     dismissAll(): void {
-      if (toastProvider && typeof toastProvider.clearAllToasts === 'function') {
+      if (toastProvider) {
         toastProvider.clearAllToasts();
         return;
       }

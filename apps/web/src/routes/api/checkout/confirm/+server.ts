@@ -32,27 +32,24 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       return error(500, { message: 'Payment service not configured' });
     }
 
-    // Create services with Stripe instance
-    const services = createServices(supabase, stripe);
+  // Create services with Stripe instance
+  const services = createServices(supabase, stripe);
 
     if (!services.stripe) {
       return error(500, { message: 'Payment service not available' });
     }
 
-    // Confirm payment intent and process order
-    const { order, transaction, success, error: confirmError } = await services.stripe.confirmPaymentIntent({
-      paymentIntentId,
-      buyerId: user.id
-    });
+    // Confirm payment intent using StripeService API
+    const { paymentIntent, error: confirmError } = await services.stripe.confirmPayment(paymentIntentId);
 
-    if (!success || confirmError) {
+    if (confirmError) {
       return error(500, { message: confirmError?.message || 'Payment confirmation failed' });
     }
 
     return json({
       success: true,
-      order,
-      transaction,
+      paymentIntentId: paymentIntent?.id ?? paymentIntentId,
+      status: paymentIntent?.status ?? 'unknown',
       message: 'Payment confirmed successfully!'
     });
 

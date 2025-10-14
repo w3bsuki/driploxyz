@@ -38,7 +38,7 @@ export const load = (async ({ url, locals, depends }) => {
   }
 
   // Get current user session
-  const { session } = await safeGetSession();
+  const { session: _session, user } = await safeGetSession();
 
   try {
     // Fetch featured products (active products, ordered by creation date)
@@ -85,7 +85,7 @@ export const load = (async ({ url, locals, depends }) => {
     const featuredProducts = (products || []).map((product) => ({
       ...product,
       images: (product.product_images || [])
-        .sort((a, b) => a.sort_order - b.sort_order)
+  .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
         .map((img) => img.image_url)
     }));
 
@@ -95,7 +95,7 @@ export const load = (async ({ url, locals, depends }) => {
       topSellers: topSellers || [],
       topBrands: [],
       country: country || 'BG',
-      user: session?.user || null,
+  user: user || null,
       profile: null,
       errors: {
         products: productsError?.message || null,
@@ -115,7 +115,7 @@ export const load = (async ({ url, locals, depends }) => {
       topSellers: [],
       topBrands: [],
       country: country || 'BG',
-      user: session?.user || null,
+  user: user || null,
       profile: null,
       errors: {
         products: 'Failed to load products',

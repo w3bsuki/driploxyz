@@ -34,7 +34,8 @@
   let results: ProductWithImages[] = $state.raw([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
-  let searchTimeout: NodeJS.Timeout;
+  // Cross-platform timeout handle
+  let searchTimeout: ReturnType<typeof setTimeout> | undefined;
   let dropdownVisible = $derived(visible);
   let selectedIndex = $state(-1);
   let activeTab = $state<'categories' | 'collections' | 'sellers'>('categories');
@@ -172,11 +173,19 @@
 
       try {
         const response = await onSearch(query);
-        if (response.error) {
-          error = response.error;
-          results = [];
+        if (Array.isArray(response)) {
+          results = response.slice(0, maxResults);
+        } else if (response && typeof response === 'object' && 'data' in response) {
+          const r = response as { data: ProductWithImages[]; error: string | null };
+          if (r.error) {
+            error = r.error;
+            results = [];
+          } else {
+            results = (r.data || []).slice(0, maxResults);
+          }
         } else {
-          results = response.data.slice(0, maxResults);
+          // Fallback: unknown shape
+          results = [];
         }
       } catch (e) {
         error = 'Search failed';
@@ -361,12 +370,20 @@
               aria-selected={selectedIndex === index}
               id={`${listboxId}-option-${index}`}
             >
-              {#if product.images?.[0]?.image_url}
-                <img
-                  src={product.images[0].image_url}
-                  alt={product.title}
-                  class="w-10 h-10 object-cover rounded-lg flex-shrink-0"
-                />
+              {#if product.images?.[0]}
+                {#if typeof product.images[0] === 'string'}
+                  <img
+                    src={product.images[0] as string}
+                    alt={product.title}
+                    class="w-10 h-10 object-cover rounded-lg flex-shrink-0"
+                  />
+                {:else if (typeof product.images[0] === 'object' && 'image_url' in product.images[0])}
+                  <img
+                    src={(product.images[0] as any).image_url}
+                    alt={product.title}
+                    class="w-10 h-10 object-cover rounded-lg flex-shrink-0"
+                  />
+                {/if}
               {:else}
                 <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

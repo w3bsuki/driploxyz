@@ -24,7 +24,7 @@ export function rateLimit(options: RateLimitOptions) {
   const {
     maxRequests,
     windowMs,
-    keyGenerator = (event) => event.getClientAddress(),
+    keyGenerator = (event) => event.locals.clientIp ?? event.getClientAddress(),
     message = 'Too many requests'
   } = options;
 

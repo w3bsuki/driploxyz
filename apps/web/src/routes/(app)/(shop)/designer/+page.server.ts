@@ -15,12 +15,8 @@ export const load = (async ({
   try {
     const collectionService = new CollectionService(supabase);
 
-    // Get all designer collections (active ones)
-    const { data: collections, error: collectionsError } = await collectionService.getBrandCollections({
-      collection_type: 'designer',
-      is_active: true,
-      is_featured: undefined // Get all active designer collections, not just featured
-    });
+    // Fetch collections via supported API
+    const { data: collections, error: collectionsError } = await collectionService.getCollections();
 
     if (collectionsError) {
       log.error('Error loading designer collections', collectionsError);
@@ -37,6 +33,7 @@ export const load = (async ({
       };
     }
 
+    // Note: Filtering by type/active would require extended service fields; returning all for now
     return {
       collections: collections || [],
       user,

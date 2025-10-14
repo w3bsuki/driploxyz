@@ -1,6 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { COOKIES } from '$lib/server/cookies/production-cookie-system';
+import { getOrSetClientIp } from '$lib/server/client-ip';
+import type { LanguageTag } from '@repo/i18n';
+import { COOKIES } from '$lib/cookies/constants';
 
 export type CountryCode = 'BG' | 'GB' | 'US' | 'DE' | 'FR' | 'ES' | 'IT' | 'NL' | 'PL' | 'RO';
 
@@ -88,6 +90,85 @@ export const COUNTRY_CONFIGS: Record<CountryCode, CountryConfig> = {
   }
 };
 
+const COUNTRY_FALLBACKS: Record<string, CountryCode> = {
+  // UK variations
+  UK: 'GB',
+  IM: 'GB',
+  JE: 'GB',
+  GG: 'GB',
+
+  // Eastern Europe to Bulgaria
+  MK: 'BG',
+  RS: 'BG',
+  GR: 'BG',
+  TR: 'BG',
+
+  // Baltic states to Bulgaria
+  LV: 'BG',
+  LT: 'BG',
+  EE: 'BG',
+  BY: 'BG',
+  KZ: 'BG',
+  RU: 'BG',
+  UA: 'BG',
+
+  // Western Europe to UK
+  IE: 'GB',
+  BE: 'GB',
+  LU: 'GB',
+  CH: 'GB',
+  AT: 'DE',
+
+  // Scandinavian to UK
+  NO: 'GB',
+  SE: 'GB',
+  DK: 'GB',
+  FI: 'GB',
+  IS: 'GB'
+};
+
+function normalizeCountryCode(code: string | null | undefined): CountryCode | null {
+  if (!code) return null;
+  const upper = code.toUpperCase();
+  if (upper in COUNTRY_CONFIGS) {
+    return upper as CountryCode;
+  }
+  if (upper in COUNTRY_FALLBACKS) {
+    const fallback = COUNTRY_FALLBACKS[upper];
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return null;
+}
+
+export function getLocaleForCountry(country: CountryCode | null | undefined): LanguageTag {
+  if (!country) return 'bg';
+  const config = COUNTRY_CONFIGS[country];
+  if (!config) return 'bg';
+  return (config.locale as LanguageTag) ?? 'bg';
+}
+
+export function detectCountryFromHeaders(request: Request): CountryCode | null {
+  const headerCandidates = [
+    request.headers.get('cf-ipcountry'),
+    request.headers.get('cf-ip-country'),
+    request.headers.get('x-country'),
+    request.headers.get('x-geo-country'),
+    request.headers.get('x-vercel-ip-country'),
+    request.headers.get('x-country-code')
+  ];
+
+  for (const candidate of headerCandidates) {
+    const normalized = normalizeCountryCode(candidate);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return null;
+}
+
 // Get country from subdomain
 export function getCountryFromDomain(hostname: string): CountryCode | null {
   // Check for subdomains first - be precise with matching
@@ -116,18 +197,10 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
     if (!ip) ip = event.request.headers.get('x-real-ip') || null;
     if (!ip) ip = event.request.headers.get('cf-connecting-ip') || null;
 
-    // Only try getClientAddress if we don't have an IP from headers
+    // Only try to resolve from event once if we don't have an IP from headers
     if (!ip) {
-      try {
-        ip = event.getClientAddress();
-      } catch (_clientAddressError) {
-        // In development or some edge cases, getClientAddress might fail
-        if (dev) {
-          console.debug('Could not get client address (expected in local dev)');
-        }
-        // Return default for development, null for production to use other fallbacks
-        return dev ? 'BG' : null;
-      }
+      ip = getOrSetClientIp(event) || null;
+      if (!ip) return dev ? 'BG' : null;
     }
 
     if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
@@ -143,52 +216,12 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
 
     if (!response.ok) return null;
 
-    const country = (await response.text()).trim().toUpperCase();
-    
-    // Check if it's a supported country
-    if (country in COUNTRY_CONFIGS) {
-      return country as CountryCode;
+    const country = normalizeCountryCode((await response.text()).trim());
+    if (country) {
+      return country;
     }
 
-    // Map unsupported countries to nearest supported ones
-    const countryMappings: Record<string, CountryCode> = {
-      // UK variations
-      'UK': 'GB',
-      'IM': 'GB', // Isle of Man
-      'JE': 'GB', // Jersey
-      'GG': 'GB', // Guernsey
-      
-      // Eastern Europe to Bulgaria
-      'MK': 'BG', // North Macedonia
-      'RS': 'BG', // Serbia
-      'GR': 'BG', // Greece
-      'TR': 'BG', // Turkey
-      
-      // Baltic states to Bulgaria  
-      'LV': 'BG', // Latvia
-      'LT': 'BG', // Lithuania
-      'EE': 'BG', // Estonia
-      'BY': 'BG', // Belarus
-      'KZ': 'BG', // Kazakhstan
-      'RU': 'BG', // Russia
-      'UA': 'BG', // Ukraine
-      
-      // Western Europe to UK
-      'IE': 'GB', // Ireland
-      'BE': 'GB', // Belgium
-      'LU': 'GB', // Luxembourg
-      'CH': 'GB', // Switzerland
-      'AT': 'DE', // Austria to Germany
-      
-      // Scandinavian to UK
-      'NO': 'GB', // Norway
-      'SE': 'GB', // Sweden
-      'DK': 'GB', // Denmark
-      'FI': 'GB', // Finland
-      'IS': 'GB', // Iceland
-    };
-
-    return countryMappings[country] || 'BG'; // Default to Bulgaria
+    return 'BG'; // Default to Bulgaria when location is unsupported
   } catch {
     return null;
   }
@@ -231,11 +264,10 @@ export async function getUserCountry(event: RequestEvent): Promise<CountryCode> 
   }
   
   // 2. Check Vercel host-based headers (from subdomain mapping)
-  const headerCountry = event.request.headers.get('x-country');
-  if (headerCountry && headerCountry in COUNTRY_CONFIGS) {
-    const country = headerCountry as CountryCode;
-    setCountryCookie(event, country);
-    return country;
+  const headerCountry = detectCountryFromHeaders(event.request);
+  if (headerCountry) {
+    setCountryCookie(event, headerCountry);
+    return headerCountry;
   }
   
   // 3. Check subdomain/domain (fallback if headers not set)
@@ -252,13 +284,6 @@ export async function getUserCountry(event: RequestEvent): Promise<CountryCode> 
   }
 
   // 5. Check Vercel geo headers
-  const vercelCountry = event.request.headers.get('x-vercel-ip-country');
-  if (vercelCountry && vercelCountry in COUNTRY_CONFIGS) {
-    const country = vercelCountry as CountryCode;
-    setCountryCookie(event, country);
-    return country;
-  }
-
   // 6. Detect from IP
   const ipCountry = await detectCountryFromIP(event);
   if (ipCountry) {

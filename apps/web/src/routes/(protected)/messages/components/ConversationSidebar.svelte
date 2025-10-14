@@ -9,7 +9,7 @@
     activeConversationId?: string;
     activeTab?: 'all' | 'buying' | 'selling' | 'offers' | 'unread';
     onConversationSelect: (conversationId: string) => void;
-    onTabChange?: (tab: string) => void;
+  onTabChange?: (tab: 'all' | 'buying' | 'selling' | 'offers' | 'unread') => void;
     showOnMobile: boolean;
   }
 
@@ -78,7 +78,7 @@
   ]);
   
   // Handle tab changes
-  function handleTabChange(tabId: string) {
+  function handleTabChange(tabId: 'all' | 'buying' | 'selling' | 'offers' | 'unread') {
     activeTab = tabId;
     onTabChange?.(tabId);
   }

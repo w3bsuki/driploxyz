@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import type { CountryCode } from '$lib/country/detection';
+import type { CountryCode } from '$lib/country/constants';
 
 /**
  * Helper functions for country-filtered Supabase queries

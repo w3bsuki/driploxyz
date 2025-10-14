@@ -7,7 +7,7 @@ import { z } from 'zod';
 import type { RequestEvent } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { CSRFProtection } from './csrf';
-import { rateLimiter } from '../security/rate-limiter';
+import { rateLimiter } from '../server/security/rate-limiter';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
@@ -167,10 +167,9 @@ export function withRateLimit(identifier: string, maxRequests: number = 100, win
             }
             return '127.0.0.1';
           }
-        })();
-        const key = `${identifier}:${clientIP}`;
-        
-        const allowed = rateLimiter.check(key, { maxAttempts: maxRequests, windowMs });
+    })();
+    const key = `${identifier}:${clientIP}`;
+    const allowed = rateLimiter.check(key, { maxAttempts: maxRequests, windowMs });
         
         if (!allowed) {
           return json({

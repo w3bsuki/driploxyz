@@ -1,9 +1,13 @@
 {
   "name": "driplo-turbo",
   "private": true,
-  "packageManager": "pnpm@8.15.6",
+  "packageManager": "pnpm@9.15.6",
   "engines": {
     "node": ">=22.12.0 <23"
+  },
+  "resolutions": {
+    "react": "^19.1.0",
+    "react-native": "0.82.0"
   },
   "scripts": {
     "build": "turbo build",
@@ -12,17 +16,25 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
     "check-types": "turbo check-types",
+    "mobile:dev": "pnpm --filter mobile dev",
+    "mobile:build": "pnpm --filter mobile build",
+    "mobile:start": "pnpm --filter mobile start",
+    "mobile:android": "pnpm --filter mobile android",
+    "mobile:ios": "pnpm --filter mobile ios",
     "keeplist:discover": "node scripts/migration/keep-list-migration/discover-used-files.mjs",
     "keeplist:plan": "node scripts/migration/keep-list-migration/plan-moves.mjs",
     "keeplist:apply": "node scripts/migration/keep-list-migration/apply-moves.mjs",
-    "keeplist:verify": "pnpm -w check-types && pnpm -w lint && pnpm -w test"
+    "keeplist:verify": "pnpm -w check-types && pnpm -w lint && pnpm -w test",
+    "db:types": "pnpm exec supabase gen types typescript --local > packages/database/src/generated.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.56.0",
+    "playwright": "^1.56.0",
     "prettier": "^3.6.0",
     "svelte-check": "^4.0.10",
     "turbo": "2.5.4",
     "typescript": "^5.8.2",
-    "globby": "^14.0.2"
+    "globby": "^14.0.2",
+    "supabase": "^1.207.4"
   }
 }

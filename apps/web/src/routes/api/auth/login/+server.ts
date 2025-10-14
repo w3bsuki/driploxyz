@@ -7,9 +7,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { LoginSchema } from '$lib/validation/auth';
-import { createServerSupabase } from '$lib/auth/index';
 
-export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     const body = await request.json();
 
@@ -24,8 +23,8 @@ export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
 
     const { email, password } = validation.data;
 
-    // Create Supabase client
-    const supabase = createServerSupabase(cookies, fetch);
+    // Use Supabase client from locals
+    const supabase = locals.supabase;
 
     // Attempt sign in
     const { data, error } = await supabase.auth.signInWithPassword({

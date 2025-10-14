@@ -26,14 +26,16 @@
     success: 'bg-green-100 text-green-800 border border-green-200 hover:bg-green-200',
     warning: 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200',
     info: 'bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200',
-    outline: 'border border-[color:var(--border)] text-[color:var(--foreground)] hover:bg-[color:var(--accent)] hover:text-[color:var(--accent-fg)]'
-  } as const;
+    outline: 'border border-[color:var(--border)] text-[color:var(--foreground)] hover:bg-[color:var(--accent)] hover:text-[color:var(--accent-fg)]',
+    subtle: 'bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)]/80'
+  } as const satisfies Record<BadgeVariant, string>;
 
   const sizeClasses = {
+    xs: 'px-1.5 py-0.5 text-[10px] leading-none',
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-2.5 py-1 text-sm',
     lg: 'px-3 py-1.5 text-base'
-  } as const;
+  } as const satisfies Record<BadgeSize, string>;
 
   const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`);
 </script>

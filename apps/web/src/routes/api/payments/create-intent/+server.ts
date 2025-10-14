@@ -3,16 +3,15 @@ import { createStripeService } from '@repo/core';
 import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 import type { RequestHandler } from './$types';
-import type { PaymentIntentCreateParams, Currency } from '$lib/stripe/types';
 import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	// Critical rate limiting for payment operations
 	const rateLimitResponse = await enforceRateLimit(
 		request,
-		getClientAddress,
+		() => locals.clientIp ?? getClientAddress(),
 		'payment',
-		`payment:${getClientAddress()}`
+		`payment:${locals.clientIp ?? getClientAddress()}`
 	);
 	if (rateLimitResponse) return rateLimitResponse;
 
@@ -35,25 +34,28 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			return json({ error: 'Stripe not configured' }, { status: 500 });
 		}
 
-		const stripeService = createStripeService(locals.supabase, stripe);
-		
-		const params: PaymentIntentCreateParams = {
+		if (!user.email) {
+			return json({ error: 'User email required for payment' }, { status: 400 });
+		}
+
+		const stripeService = createStripeService(stripe);
+
+		const result = await stripeService.createPaymentIntent({
 			amount,
-			currency: currency as Currency,
+			currency,
 			productId,
 			sellerId,
 			buyerId: user.id,
+			userEmail: user.email,
 			metadata
-		};
-
-		const result = await stripeService.createPaymentIntent(params);
+		});
 
 		if (result.error) {
 			paymentLogger.error('Error creating payment intent', result.error, {
-				productId: params.productId,
-				buyerId: params.buyerId,
-				sellerId: params.sellerId,
-				amount: params.amount
+				productId,
+				buyerId: user.id,
+				sellerId,
+				amount
 			});
 			return json({ error: result.error.message }, { status: 500 });
 		}

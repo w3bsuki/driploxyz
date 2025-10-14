@@ -20,12 +20,13 @@
   const discountInfo = $derived(data?.discountInfo || { eligible: false, discountPercent: 0 });
 
   // Initialize Stripe
-  $effect(async () => {
-    const publishableKey = publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
-    if (publishableKey) {
-      stripe = await loadStripe(publishableKey);
-    }
+  $effect(() => {
+    (async () => {
+      const publishableKey = publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY;
+      if (publishableKey) {
+        stripe = await loadStripe(publishableKey);
+      }
+    })();
   });
 
 
@@ -131,21 +132,25 @@
   
   const faqItems = [
     {
+      id: 'change-plans',
       title: i18n.upgrade_faqChangePlans(),
       content: i18n.upgrade_faqChangePlansAnswer(),
       icon: '🔄'
     },
     {
+      id: 'remaining-boosts',
       title: i18n.upgrade_faqRemainingBoosts(),
       content: i18n.upgrade_faqRemainingBoostsAnswer(),
       icon: '⭐'
     },
     {
+      id: 'business-reqs',
       title: i18n.upgrade_faqBusinessRequirements(),
       content: i18n.upgrade_faqBusinessRequirementsAnswer(),
       icon: '💼'
     },
     {
+      id: 'early-bird',
       title: i18n.upgrade_faqEarlyBirdRecurring(),
       content: i18n.upgrade_faqEarlyBirdRecurringAnswer(),
       icon: '🎯'

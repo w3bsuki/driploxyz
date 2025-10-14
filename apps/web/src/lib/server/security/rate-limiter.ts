@@ -242,10 +242,9 @@ export function withRateLimit(
   return function (handler: (event: RequestEvent) => Promise<Response>) {
     return async function rateLimitedHandler(event: RequestEvent) {
       try {
-        const { request, getClientAddress, locals } = event;
-        
-        // Generate rate limit key
-        const clientIp = getClientAddress();
+        const { request, locals } = event;
+        // Generate rate limit key using memoized IP if available
+        const clientIp = locals.clientIp ?? '';
         const defaultKey = `${endpoint}:${clientIp}`;
         const rateLimitKey = options?.keyGenerator 
           ? options.keyGenerator(request, clientIp, locals)
@@ -287,7 +286,8 @@ export async function enforceRateLimit(
   endpoint: keyof typeof RATE_LIMIT_CONFIGS,
   customKey?: string
 ): Promise<Response | null> {
-  const clientIp = getClientAddress();
+  // Prefer memoized local IP when available; fallback to provided getter
+  const clientIp = (globalThis as any)?.event?.locals?.clientIp || getClientAddress();
   const rateLimitKey = customKey || `${endpoint}:${clientIp}`;
   const { allowed, retryAfter } = checkRateLimit(rateLimitKey, endpoint);
   

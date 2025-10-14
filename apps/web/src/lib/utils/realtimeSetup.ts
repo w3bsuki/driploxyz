@@ -6,8 +6,6 @@
  */
 
 // import { initRealtimeService, realtimeStore } from '../services/realtime.svelte';
-import { favoritesActions } from '../stores/favorites.svelte';
-import { followStoreInstance as followActions } from '../stores/follow.svelte';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 

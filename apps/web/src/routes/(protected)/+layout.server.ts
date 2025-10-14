@@ -12,25 +12,17 @@ import type { LayoutServerLoad } from './$types';
  * - Let individual routes handle onboarding requirements
  * - Don't redirect to onboarding here (causes loops)
  */
-export const load = (async ({ locals: { session, user, supabase } }) => {
+export const load = (async ({ locals }) => {
+  // Use safe session validation (validates JWT server-side)
+  const { session, user } = await locals.safeGetSession();
+  
   // Redirect to login if not authenticated
   if (!session || !user) {
-    try {
-      redirect(303, '/login');
-    } catch (error) {
-      // Re-throw actual redirects (they're Response objects)
-      if (error instanceof Response && error.status >= 300 && error.status < 400) {
-        throw error;
-      }
-      // Log and handle unexpected errors
-      console.error('Protected layout redirect error:', error);
-      // This is a critical auth failure - we can't continue without authentication
-      throw new Error('Authentication system error');
-    }
+    redirect(303, '/login');
   }
 
   // Get fresh user profile data
-  const profile = await getUserProfile(supabase, user.id);
+  const profile = await getUserProfile(locals.supabase, user.id);
 
   // IMPORTANT: Don't redirect to onboarding here!
   // Individual routes will handle onboarding requirements.

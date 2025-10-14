@@ -13,7 +13,7 @@
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
   import { invalidate, preloadCode, goto } from '$app/navigation';
-  import { browser, dev } from '$app/environment';
+  import { browser } from '$app/environment';
     // Consolidated auth system
   import AuthProvider from '$lib/auth/AuthProvider.svelte';
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
@@ -24,16 +24,17 @@
   import { ErrorBoundary } from '@repo/ui';
   // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
+  import LocaleSwitcherBanner from '$lib/components/LocaleSwitcherBanner.svelte';
+  import { COUNTRY_CONFIGS } from '$lib/country/constants';
   import { page } from '$app/state';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
-  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import * as i18n from '@repo/i18n';
-  import type { LayoutData } from './$types';
+  import type { LanguageTag } from '@repo/i18n';
   import type { Snippet } from 'svelte';
-  import type { ProductWithImages } from '@repo/core/services';
+  
   let headerContainer: HTMLDivElement | null = $state(null);
 
-  let { data, children }: { data: LayoutData; children?: Snippet } = $props();
+  let { data, children }: { data: any; children?: Snippet } = $props();
   
   // Region switch modal state
   let showRegionModal = $state(false);
@@ -88,9 +89,21 @@
     }
   });
 
-  // Get session and user from load function, supabase from client utility
-  const { session, user } = $derived(data);
-  const supabase = createBrowserSupabaseClient();
+  // Get session, user and supabase from load function
+  const { session, user, supabase } = $derived(data);
+
+  // Auth state change listener - invalidate when session expires_at changes
+  $effect(() => {
+    if (browser && supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
+        if (_session?.expires_at !== session?.expires_at) {
+          invalidate('supabase:auth');
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    }
+  });
   const isAuthPage = $derived(page.route.id?.includes('(auth)'));
   const isSellPage = $derived(page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived(page.route.id?.includes('/onboarding'));
@@ -123,6 +136,57 @@
 
   // Compact, shared sticky search settings for browse pages
   let stickySearchQuery = $state('');
+
+  let showLocaleBanner = $state(Boolean(data.shouldShowLocaleBanner));
+  const suggestedLocale = $derived(() => (data?.suggestedLocale ?? data?.language ?? 'bg') as LanguageTag);
+  const detectedCountryName = $derived.by(() => {
+    const code = data?.detectedCountry;
+    if (code && COUNTRY_CONFIGS[code]) {
+      return COUNTRY_CONFIGS[code].name;
+    }
+    return null;
+  });
+
+  async function handleLocaleStay() {
+    showLocaleBanner = false;
+    if (!browser) return;
+    try {
+      await fetch('/api/locale/banner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'dismiss' })
+      });
+    } catch {
+      // Non-critical: failure to persist dismissal should not block UX
+    }
+  }
+
+  async function handleLocaleSwitch() {
+    const targetLocale = typeof suggestedLocale === 'string' && suggestedLocale.length > 0
+      ? suggestedLocale
+      : (typeof data?.language === 'string' && data.language.length > 0 ? data.language : 'bg');
+    if (!browser || !targetLocale) {
+      return;
+    }
+
+    showLocaleBanner = false;
+
+    try {
+      await fetch('/api/locale/banner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'switch', locale: targetLocale })
+      });
+    } catch {
+      // Continue with client-side switch even if cookie API fails
+    }
+
+    await switchLanguage(targetLocale);
+  }
+
+  $effect(() => {
+    showLocaleBanner = Boolean(data.shouldShowLocaleBanner);
+  });
 
   // Use real categories from database, with fallback to basic structure
   const mainCategoriesWithCounts = $derived.by(() => {
@@ -161,10 +225,10 @@
     return iconMap[slug] || 'ðŸ“';
   }
   const conditionFilters = [
-    { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
-    { key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
-    { key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
-    { key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
+    { key: 'brand_new_with_tags', value: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
+    { key: 'new_without_tags', value: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
+    { key: 'like_new', value: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
+    { key: 'good', value: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
   ];
 
   // Dropdown data for search components
@@ -551,23 +615,31 @@
 <ErrorBoundary name="AppLayout">
   {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
     <div class="sticky top-0 z-50" bind:this={headerContainer}>
-      <Header user={data?.user} profile={data?.profile} showSearch={shouldShowHeaderSearch} />
+  <Header supabase={supabase} user={data?.user ?? undefined} profile={data?.profile ?? undefined} showSearch={shouldShowHeaderSearch} />
     </div>
   {/if}
 
+  <LocaleSwitcherBanner
+    show={showLocaleBanner}
+    detectedCountry={detectedCountryName}
+    suggestedLocale={suggestedLocale}
+    currentLocale={(data?.language ?? 'bg') as LanguageTag}
+    onSwitch={handleLocaleSwitch}
+    onStay={handleLocaleStay}
+  />
+
   {#if shouldShowStickySearch}
     <CategorySearchBar
-      supabase={supabase}
       bind:searchValue={stickySearchQuery}
       megaMenuData={[]}
       mainCategories={mainCategoriesWithCounts}
       conditionFilters={conditionFilters}
       appliedFilters={{}}
-      i18n={i18n}
+      i18n={i18n as any}
       onSearch={handleStickySearch}
       onQuickSearch={handleStickyQuickSearch}
       onCategorySelect={handleStickyCategorySelect}
-      onFilterChange={handleStickyFilterChange}
+      onFilterChange={(key, value) => { void handleStickyFilterChange(key, value as any); }}
       onFilterRemove={handleStickyFilterRemove}
       onClearAllFilters={handleStickyClearAll}
       enableQuickResults={true}
@@ -636,17 +708,17 @@
   <MessageNotificationToast
     show={true}
     sender={{
-      id: getActiveNotification().senderId,
-      username: getActiveNotification().senderName,
-      avatar_url: getActiveNotification().senderAvatar
+      id: getActiveNotification()!.senderId,
+      username: getActiveNotification()!.senderName,
+      avatar_url: getActiveNotification()!.senderAvatar
     }}
-    message={getActiveNotification().message}
-    product={getActiveNotification().isProductMessage ? {
-      id: getActiveNotification().productId || '',
-      title: getActiveNotification().productTitle || '',
-      image: getActiveNotification().productImage || ''
+    message={getActiveNotification()!.message}
+    product={getActiveNotification()!.isProductMessage ? {
+      id: getActiveNotification()!.productId || '',
+      title: getActiveNotification()!.productTitle || '',
+      image: getActiveNotification()!.productImage || ''
     } : undefined}
-    onReply={() => handleNotificationClick(getActiveNotification())}
+    onReply={() => handleNotificationClick(getActiveNotification()!)}
     onDismiss={() => messageNotifications.setActiveNotification(null)}
   />
 {/if}
@@ -658,7 +730,7 @@
     followerName={activeFollowNotification.value.followerName}
     followerUsername={activeFollowNotification.value.followerUsername}
     followerAvatar={activeFollowNotification.value.followerAvatar}
-    onViewProfile={() => handleFollowNotificationClick(activeFollowNotification.value)}
+    onViewProfile={() => handleFollowNotificationClick(activeFollowNotification.value!)}
     onDismiss={() => {}}
   />
 {/if}
@@ -670,7 +742,7 @@
     title={activeOrderNotification.value.title}
     message={activeOrderNotification.value.message}
     type={activeOrderNotification.value.type}
-    onView={() => handleOrderNotificationClick(activeOrderNotification.value)}
+    onView={() => handleOrderNotificationClick(activeOrderNotification.value!)}
     onDismiss={() => {}}
   />
 {/if}

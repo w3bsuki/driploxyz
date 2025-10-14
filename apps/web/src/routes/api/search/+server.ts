@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     const categorySegments = [category, subcategory, specific].filter(Boolean);
     const [categoryResult] = await Promise.all([
       categorySegments.length > 0
-        ? productAdapter.resolveCategorySegments.execute(categorySegments)
+        ? productAdapter.resolveCategorySegments(categorySegments)
         : Promise.resolve({ success: true, data: [] })
     ]);
 

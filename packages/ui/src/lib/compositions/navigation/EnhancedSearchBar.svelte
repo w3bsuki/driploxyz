@@ -2,25 +2,14 @@
   import type { Database } from '@repo/database';
   import type { Snippet } from 'svelte';
   import SearchDropdown from './SearchDropdown.svelte';
-
-  // Define ProductWithImages type locally  
-  type Product = Database['public']['Tables']['products']['Row'];
-  type ProductImage = Database['public']['Tables']['product_images']['Row'];
-  
-  export interface ProductWithImages extends Product {
-    images: ProductImage[];
-    category_name?: string;
-    seller_name?: string;
-    seller_username?: string;
-    seller_rating?: number;
-  }
+  import type { ProductWithImages, SearchFunction } from './search/types';
 
   interface Props {
     searchValue?: string;
     placeholder?: string;
     onSearch?: (query: string) => void;
-    onProductSelect?: (product: ProductWithImages) => void;
-    searchFunction?: (query: string) => Promise<{ data: ProductWithImages[]; error: string | null }>;
+  onProductSelect?: (product: ProductWithImages) => void;
+  searchFunction?: SearchFunction;
     leftSection?: Snippet;
     rightSection?: Snippet;
     class?: string;

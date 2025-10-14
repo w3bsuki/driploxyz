@@ -40,72 +40,79 @@
   const supabase = createBrowserSupabaseClient();
 
   // Initialize simplified conversation service
-  $effect(async () => {
+  $effect(() => {
     if (!data.user) {
       isInitializing = false;
       return;
     }
 
-    try {
-      conversationService = new ConversationService(supabase, data.user.id);
+    (async () => {
+      try {
+        conversationService = new ConversationService(supabase, data.user.id);
 
-      // Set up event listeners for the simplified service
-      conversationService.on('connection_status', (status: { status: string; message: string; canRetry: boolean }) => {
-        connectionStatus = status.status;
-        connectionMessage = status.message;
-        canRetryConnection = status.canRetry;
-      });
+        // Set up event listeners for the simplified service
+        conversationService.on('connection_status', (status: { status: 'connected' | 'connecting' | 'error' | 'disconnected'; message: string; canRetry: boolean }) => {
+          connectionStatus = status.status;
+          connectionMessage = status.message;
+          canRetryConnection = status.canRetry;
+        });
 
-      // Handle new message notifications - just refresh the conversation
-      conversationService.on('new_message', async (data: { conversationId: string }) => {
-        messagingLogger.info('New message notification received', data);
+        // Handle new message notifications - just refresh the conversation
+        conversationService.on('new_message', async (data: { conversationId: string }) => {
+          messagingLogger.info('New message notification received', data);
 
-        // If it's for the active conversation, reload messages
-        if (activeConversation && data.conversationId === activeConversation.id) {
-          await loadConversationMessages(activeConversation.id);
+          // If it's for the active conversation, reload messages
+          if (activeConversation && data.conversationId === activeConversation.id) {
+            await loadConversationMessages(activeConversation.id);
+          }
+
+          // Always reload conversations to update unread counts and last messages
+          await loadConversations();
+        });
+
+        // Handle polling refresh
+        conversationService.on('poll_refresh', async () => {
+          if (activeConversation) {
+            await loadConversationMessages(activeConversation.id);
+          }
+          await loadConversations();
+        });
+
+        // Load initial data from server
+        await loadConversations();
+
+        // Fallback: if no conversations loaded but we have server data, use it
+        if (conversations.length === 0 && data.conversations && data.conversations.length > 0) {
+          messagingLogger.info('Using server data as fallback for conversations');
+          conversations = data.conversations;
         }
 
-        // Always reload conversations to update unread counts and last messages
-        await loadConversations();
-      });
-
-      // Handle polling refresh
-      conversationService.on('poll_refresh', async () => {
-        if (activeConversation) {
-          await loadConversationMessages(activeConversation.id);
+        // If we have a specific conversation from URL, load its messages
+        if (data.messages && data.messages.length > 0) {
+          activeConversationMessages = data.messages;
         }
-        await loadConversations();
-      });
 
-      // Load initial data from server
-      await loadConversations();
+        // Setup real-time subscriptions
+        conversationService.setupRealtimeSubscriptions();
 
-      // Fallback: if no conversations loaded but we have server data, use it
-      if (conversations.length === 0 && data.conversations && data.conversations.length > 0) {
-        messagingLogger.info('Using server data as fallback for conversations');
-        conversations = data.conversations;
+        isInitializing = false;
+
+        // Register cleanup on window unload (since $effect can't return async)
+        window.addEventListener('beforeunload', cleanup);
+      } catch (error) {
+        messagingLogger.error('Error initializing conversations', error, {
+          userId: data.user?.id
+        });
+        isInitializing = false;
       }
+    })();
 
-      // If we have a specific conversation from URL, load its messages
-      if (data.messages && data.messages.length > 0) {
-        activeConversationMessages = data.messages;
-      }
-
-      // Setup real-time subscriptions
-      conversationService.setupRealtimeSubscriptions();
-
-      isInitializing = false;
-
-      // Return cleanup function
-      return () => {
-        conversationService?.cleanup();
-      };
-    } catch (error) {
-      messagingLogger.error('Error initializing conversations', error, {
-        userId: data.user?.id
-      });
-      isInitializing = false;
+    function cleanup() {
+      conversationService?.cleanup();
+      window.removeEventListener('beforeunload', cleanup);
     }
+
+    return cleanup;
   });
 
   // Load conversations from server
@@ -140,7 +147,7 @@
   }
 
   // Handle URL conversation parameter with simplified loading
-  $effect(async () => {
+  $effect(() => {
     const conversationParam = page.url.searchParams.get('conversation');
     
     if (conversationParam && !isInitializing) {
@@ -148,7 +155,7 @@
       const conversation = conversations.find(c => c.id === conversationParam);
       if (conversation) {
         activeConversation = conversation;
-        await loadConversationMessages(conversationParam);
+        void loadConversationMessages(conversationParam);
         _showSidebarOnMobile = false;
       } else {
         // Create new conversation from server data (for starting new conversations)
@@ -160,14 +167,14 @@
           userName: data.conversationUser?.username || data.conversationUser?.full_name || 'User',
           userAvatar: data.conversationUser?.avatar_url,
           productId: productId === 'general' ? null : productId,
-          productTitle: data.conversationProduct?.title || null,
-          productImage: data.conversationProduct?.images?.[0]?.image_url || null,
-          productPrice: data.conversationProduct?.price || 0,
+          productTitle: (data.conversationProduct as any)?.title || null,
+          productImage: (data.conversationProduct as any)?.product_images?.[0]?.image_url || (data.conversationProduct as any)?.first_image || null,
+          productPrice: Number((data.conversationProduct as any)?.price) || 0,
           messages: [],
           lastMessage: 'Start a conversation...',
           lastMessageTime: new Date().toISOString(),
           unread: false,
-          lastActiveAt: data.conversationUser?.last_active_at,
+          lastActiveAt: data.conversationUser?.last_active_at ?? undefined,
           isProductConversation: productId !== 'general',
           isOrderConversation: false
         };
@@ -178,7 +185,7 @@
         if (data.messages && data.messages.length > 0) {
           activeConversationMessages = data.messages;
         } else {
-          await loadConversationMessages(conversationParam);
+          void loadConversationMessages(conversationParam);
         }
         
         // Add to conversations list if not already there
@@ -208,8 +215,8 @@
     goto('/messages');
   }
 
-  function handleTabChange(tab: string) {
-    activeTab = tab as typeof activeTab;
+  function handleTabChange(tab: 'all' | 'buying' | 'selling' | 'offers' | 'unread') {
+    activeTab = tab;
   }
 
   async function handleSendMessage(content: string) {

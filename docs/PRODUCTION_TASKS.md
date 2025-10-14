@@ -154,7 +154,7 @@ Goal: Production-grade design system and UX polish comparable to (and better tha
 
 Goal: Production-ready localization with detection and route prefixes.
 
-- T1.1 Country detection + locale suggestion banner
+- ✅ T1.1 Country detection + locale suggestion banner (Completed Oct 13, 2025)
   - Tools: Svelte MCP (routing, hooks), Context7 (Paraglide/inlang)
   - Steps
     - In hooks.server, derive `locals.detectedCountry` and `locals.suggestedLocale` (CF-IPCountry; ipapi fallback)
@@ -163,18 +163,18 @@ Goal: Production-ready localization with detection and route prefixes.
     - Banner appears with correct suggested locale and respects cookie choice
     - No flash/jank; SSR friendly
   - Deliverables
-    - apps/web: hooks.server.ts and layout banner component
+    - apps/web: hooks.server.ts and layout banner component (`LocaleSwitcherBanner.svelte`, API route `api/locale/banner`)
 
-- T1.2 Localized routes assurance (/bg, /en)
+- ✅ T1.2 Localized routes assurance (/bg, /en) (Completed Oct 13, 2025)
   - Tools: Svelte MCP (routing; advanced routing); Context7 (Paraglide)
   - Steps
     - Validate prefixes on auth, categories, products; fix any missing route variants
   - Acceptance
     - All top routes accessible under each locale; navigation preserves locale
   - Deliverables
-    - Playwright E2E for localized navigation
+    - Playwright E2E for localized navigation (`tests/localization.spec.ts`)
 
-- T1.3 Message completeness & formatting
+- ✅ T1.3 Message completeness & formatting (Completed Oct 13, 2025)
   - Tools: Context7 (Paraglide docs), Svelte MCP (snippets/props), repo script add-missing-i18n-keys.mjs if applicable
   - Steps
     - Audit for hardcoded strings, add keys to packages/i18n/messages/en/bg
@@ -182,7 +182,7 @@ Goal: Production-ready localization with detection and route prefixes.
   - Acceptance
     - 0 hardcoded user-facing strings in apps/web
   - Deliverables
-    - Updated @repo/i18n messages; unit tests for a few key messages
+    - Updated @repo/i18n messages; regenerated exports via `pnpm --filter @repo/i18n build`
 
 ---
 

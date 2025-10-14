@@ -246,7 +246,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
         {#if showTrendingDropdown}
           <div class="absolute top-full left-0 right-0 mt-1 z-50">
-            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-sm)] shadow-lg p-[var(--space-4)] min-h-[300px] max-h-[80vh] overflow-y-auto">
+            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-sm)] shadow-lg p-[var(--space-4)] min-h-[280px] max-h-[65vh] sm:max-h-[75vh] overflow-y-auto">
               <div class="flex items-center gap-1 mb-3 bg-[color:var(--surface-subtle)] p-1 rounded-[var(--radius-sm)]">
                 <button
                   onclick={() => activeDropdownTab = 'trending'}

@@ -3,7 +3,7 @@
 // Import types for Locals interface
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import type { CountryCode } from '$lib/country/detection';
+import type { CountryCode } from '$lib/country/constants';
 import type { LanguageTag } from '@repo/i18n';
 
 // Define Locals type for use in services

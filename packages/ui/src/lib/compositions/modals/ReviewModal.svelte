@@ -45,7 +45,7 @@
 	
 	// Handle dialog open/close changes
 	function handleOpenChange(open: boolean) {
-		if (!open && !loading && !externalLoading) {
+		if (!open && !_loading && !externalLoading) {
 			resetForm();
 			onClose();
 		}
@@ -78,8 +78,7 @@
 			});
 			resetForm();
 			onClose();
-		} catch {
-
+		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to submit review';
 		} finally {
 			_loading = false;
@@ -87,7 +86,7 @@
 	}
 	
 	function handleClose() {
-		if (!loading && !externalLoading) {
+		if (!_loading && !externalLoading) {
 			resetForm();
 			onClose();
 		}
@@ -103,7 +102,7 @@
 	}
 	
 	// Computed state for submit button
-	const isSubmitting = $derived(loading || externalLoading);
+	const isSubmitting = $derived(_loading || externalLoading);
 	const canSubmit = $derived(rating >= 1 && rating <= 5 && !isSubmitting);
 </script>
 
@@ -280,7 +279,6 @@
 				variant="primary"
 				onclick={handleSubmit}
 				disabled={!canSubmit}
-				_loading={isSubmitting}
 				class="min-h-[--touch-standard] flex-2"
 			>
 				{isSubmitting ? 'Submitting...' : 'Submit Review'}

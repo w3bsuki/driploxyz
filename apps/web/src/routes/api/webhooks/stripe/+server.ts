@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { Stripe } from 'stripe';
-import { stripe } from '@repo/core/stripe/server';
+import { stripe as coreStripe } from '@repo/core/stripe/server';
+import Stripe from 'stripe';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
@@ -34,10 +34,11 @@ export const POST: RequestHandler = async ({ request }) => {
 				requestId
 			});
 			event = JSON.parse(body);
-		} else if (!stripe) {
-			throw new Error('Stripe not initialized');
 		} else {
-			event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
+			// Prefer initialized core instance; fallback to creating a local one from env
+			const localStripe: Stripe | null = coreStripe ?? (env.STRIPE_SECRET_KEY ? new Stripe(env.STRIPE_SECRET_KEY, { apiVersion: '2025-07-30.basil' }) : null);
+			if (!localStripe) throw new Error('Stripe not initialized');
+			event = localStripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
 		}
 
 		paymentLogger.info('Processing webhook event', {
@@ -87,7 +88,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent, request
 		requestId
 	});
 	
-	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
+	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata as Record<string, string>;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
@@ -130,15 +131,13 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent, request
 			const orderService = new OrderService(supabase);
 			
 			// Create transaction record with commission calculation
-			const { transaction, error: transactionError } = await transactionService.createTransaction({
+			// Record a generic payment transaction according to core types
+			const { transaction, error: transactionError } = await transactionService.createPaymentTransaction(
 				orderId,
-				sellerId,
 				buyerId,
-				productId,
-				productPrice: order.total_amount - (order.shipping_cost || 0),
-				shippingCost: order.shipping_cost || 0,
-				stripePaymentIntentId: paymentIntent.id
-			});
+				order.total_amount,
+				paymentIntent.id
+			);
 
 			if (transactionError) {
 				paymentLogger.error('Error creating transaction', transactionError, {
@@ -192,8 +191,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent, request
 					data: {
 						product_id: productId,
 						buyer_id: buyerId,
-						amount: transaction?.seller_earnings,
-						commission: transaction?.commission_amount
+						amount: order.total_amount
 					}
 				},
 				// Buyer notification
@@ -276,8 +274,6 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent, request
 
 			paymentLogger.info('Payment processing completed successfully', {
 				transactionId: transaction?.id,
-				commissionAmount: transaction?.commission_amount,
-				sellerEarnings: transaction?.seller_earnings,
 				orderId,
 				productId,
 				productTitle: product?.title,

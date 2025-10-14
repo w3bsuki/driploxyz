@@ -11,6 +11,7 @@ import { handleUnknownLocales } from './locale-redirect';
 // Removed: import { setupAuthGuard } from './auth-guard'; // Using consolidated auth system
 import { createErrorHandler } from './error-handler';
 import { CSRFProtection } from './csrf';
+import { getOrSetClientIp } from './client-ip';
 
 /**
  * Paraglide i18n handler - MUST run first for proper locale detection
@@ -77,6 +78,14 @@ const localeRedirectHandler: Handle = async ({ event, resolve }) => {
   await handleUnknownLocales(event);
   return resolve(event);
 };
+
+/**
+ * Resolve client IP once per request and memoize on locals
+ */
+const clientIpResolver: Handle = async ({ event, resolve }) => {
+  getOrSetClientIp(event);
+  return resolve(event);
+};
 /**
  * Global CSRF guard for mutating requests
  */
@@ -128,17 +137,8 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
         cookie: cookieHeader,
         // Forward auth headers for API calls
         authorization: event.request.headers.get('authorization') || '',
-        'x-forwarded-for': (() => {
-          try {
-            return event.getClientAddress();
-          } catch (error) {
-            // Handle prerendering context where getClientAddress() is not available
-            if (error instanceof Error && error.message.includes('prerendering')) {
-              return '127.0.0.1';
-            }
-            return '127.0.0.1';
-          }
-        })(),
+        // Reuse memoized client IP so we only resolve this once per request
+        'x-forwarded-for': getOrSetClientIp(event),
         'x-forwarded-proto': url.protocol.slice(0, -1),
         'x-forwarded-host': url.host
       }
@@ -186,6 +186,7 @@ export const handle: Handle = sequence(
   debugBypassHandler,
   i18nHandler,          // NEW: Paraglide middleware replaces languageHandler
   localeRedirectHandler,
+  clientIpResolver,
   authHandler,
   csrfGuard,
   countryHandler,       // NEW: Separated country handler

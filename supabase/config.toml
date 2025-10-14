@@ -40,15 +40,3 @@ content_path = "./apps/web/email-templates/confirm.html"
 [auth.email.template.recovery]
 subject = "Reset your driplo password"
 content_path = "./apps/web/email-templates/recovery.html"
-
-[edge_functions]
-enabled = true
-port = 54326
-
-[types]
-enabled = true
-
-# Project settings (for linked projects)
-[project]
-# This will be populated when you run `supabase init` or `supabase login`
-# and link to your remote project

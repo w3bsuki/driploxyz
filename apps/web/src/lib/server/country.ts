@@ -1,5 +1,15 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { getUserCountry, type CountryCode, getCountryFromDomain } from '$lib/country/detection';
+import type { LanguageTag } from '@repo/i18n';
+import {
+  getUserCountry,
+  detectCountryFromHeaders,
+  detectCountryFromIP
+} from '$lib/server/country/detection.server';
+import {
+  type CountryCode,
+  getCountryFromDomain,
+  getLocaleForCountry
+} from '$lib/country/constants';
 
 /**
  * Setup country detection for the request event
@@ -11,6 +21,17 @@ export async function setupCountry(event: RequestEvent): Promise<void> {
   
   // Store country in locals for easy access
   (event.locals as { country?: CountryCode }).country = country;
+
+  let detectedCountry = detectCountryFromHeaders(event.request);
+  if (!detectedCountry && country === 'BG') {
+    detectedCountry = await detectCountryFromIP(event) ?? null;
+  }
+
+  const normalizedDetectedCountry = detectedCountry ?? country;
+  const suggestedLocale = getLocaleForCountry(normalizedDetectedCountry);
+
+  (event.locals as { detectedCountry?: CountryCode }).detectedCountry = normalizedDetectedCountry;
+  (event.locals as { suggestedLocale?: LanguageTag }).suggestedLocale = suggestedLocale;
   
   // If user is authenticated and accessed via subdomain, sync their profile
   await syncUserCountryFromSubdomain(event, country);

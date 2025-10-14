@@ -146,16 +146,36 @@ export const orderNotificationActions = {
     orderNotificationsStore.clearAll();
   },
 
-  // Initialize real-time subscription
+  // Track current user + boot state to prevent duplicate fetch/subscriptions in dev/HMR
+  // and route navigations that re-run setup code.
+  // These are module-scoped so repeated calls can short-circuit safely.
+  _currentUserId: null as string | null,
+  _booting: false,
+
+  // Initialize real-time subscription (idempotent per user)
   subscribeToNotifications: (supabase: SupabaseClient, userId: string) => {
     if (!browser || !userId) return () => {};
 
-    // Setup subscription asynchronously
+    // If we already booted for this user and have a channel, do nothing.
+    if (orderNotificationActions._currentUserId === userId && orderNotificationsStore.getRealtimeChannel()) {
+      return () => {};
+    }
+
+    // If a boot is in progress, ignore subsequent calls.
+    if (orderNotificationActions._booting) {
+      return () => {};
+    }
+
+    orderNotificationActions._booting = true;
+    orderNotificationActions._currentUserId = userId;
+
+    // Setup subscription asynchronously, but ensure single flight
     (async () => {
-      // Clean up existing subscription
+      // Clean up existing subscription only if switching users
       const existingChannel = orderNotificationsStore.getRealtimeChannel();
-      if (existingChannel) {
+      if (existingChannel && orderNotificationActions._currentUserId !== userId) {
         await supabase.removeChannel(existingChannel);
+        orderNotificationsStore.setRealtimeChannel(null);
       }
 
       // Load initial notifications
@@ -192,6 +212,8 @@ export const orderNotificationActions = {
         .subscribe();
 
       orderNotificationsStore.setRealtimeChannel(realtimeChannel);
+
+      orderNotificationActions._booting = false;
     })();
 
     // Return cleanup function

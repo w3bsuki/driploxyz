@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isBrowser } from '../../utils/runtime.ts';
+  import { isBrowser } from '../../utils/runtime.js';
 
   interface Props {
     isNavigating?: boolean;
@@ -9,12 +9,12 @@
 
   let isActive = $state(false);
   let progress = $state(0);
-  let timer: unknown = null;
+  let timer: ReturnType<typeof setInterval> | null = null;
 
   function start() {
     isActive = true;
     progress = 0;
-    clearInterval(timer);
+  if (timer) clearInterval(timer);
     // Ease towards 80% while navigating
     timer = setInterval(() => {
       progress = Math.min(progress + Math.max(1, (80 - progress) * 0.1), 80);
@@ -24,7 +24,7 @@
   function finish() {
     // Complete, then hide after a short delay
     progress = 100;
-    clearInterval(timer);
+  if (timer) clearInterval(timer);
     
     // Only set timeout if we're currently active to avoid multiple timeouts
     if (isActive) {

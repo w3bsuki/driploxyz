@@ -99,6 +99,15 @@ This document tracks what's been implemented, not plans. Chronological order, ke
 
 ---
 
+## Localization Enhancements - October 13, 2025
+
+- ✅ Locale banner with cookie persistence (`LocaleSwitcherBanner.svelte`, `api/locale/banner/+server.ts`)
+- ✅ `locals.detectedCountry` / `locals.suggestedLocale` surfaced in `setupCountry` and `+layout.server.ts`
+- ✅ Added Playwright coverage for `/en/*` and `/bg/*` prefixes (`tests/localization.spec.ts`)
+- ✅ Regenerated Paraglide messages after adding locale banner strings (`packages/i18n/messages/en.json`, `bg.json`)
+
+---
+
 ## What's Next
 
 Check PRODUCTION_PLAN.md for roadmap.

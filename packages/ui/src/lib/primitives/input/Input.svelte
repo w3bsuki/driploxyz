@@ -1,7 +1,9 @@
 <script lang="ts">
-  interface Props {
+  import type { HTMLInputAttributes } from 'svelte/elements';
+  // Extend native input attributes so consumers can pass standard props like min, max, maxlength, aria-*, etc.
+  interface Props extends Omit<HTMLInputAttributes, 'class' | 'children' | 'value' | 'type' | 'oninput' | 'onchange' | 'onfocus' | 'onblur'> {
     type?: HTMLInputElement['type'];
-    value?: string;
+    value?: string | number | boolean;
     placeholder?: string;
     label?: string;
     description?: string;
@@ -17,11 +19,12 @@
     onchange?: (event: Event) => void;
     onfocus?: (event: FocusEvent) => void;
     onblur?: (event: FocusEvent) => void;
+    [attr: string]: unknown;
   }
 
   let {
     type = 'text',
-    value = $bindable(''),
+  value = $bindable<string | number | boolean>(''),
     placeholder,
     label,
     description,
@@ -107,6 +110,7 @@
       {onchange}
       {onfocus}
       {onblur}
+      {...$$restProps}
     />
 
     {#if description}

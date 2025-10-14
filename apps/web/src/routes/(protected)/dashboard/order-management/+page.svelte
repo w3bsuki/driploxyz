@@ -6,6 +6,7 @@
   import { onMount } from 'svelte';
   import { subscribeToOrderUpdates, orderSubscriptionStore, clearOrderUpdates } from '$lib/stores/orderSubscription.svelte.ts';
   import { getProductUrl } from '$lib/utils/seo-urls';
+  import { mapOrder, type OrderUI } from '$lib/types/domain';
   
   interface Props {
     data: PageData;
@@ -24,35 +25,37 @@
   let loading = $state(false);
   
   // Filter orders based on tab and user role
-  const filteredOrders = $derived(() => {
+  const filteredOrders: OrderUI[] = $derived.by(() => {
     const userId = data.user?.id;
     
+    const orders = (data.orders || []).map(o => mapOrder(o as any));
+
     switch (activeTab) {
       case 'to_ship':
         // Items seller needs to ship
-        return data.orders?.filter(o => 
-          o.seller_id === userId && 
+        return orders.filter(o => 
+          o.sellerId === userId && 
           ['paid', 'processing', 'pending_shipment'].includes(o.status)
         ) || [];
         
       case 'shipped':
         // Items seller has shipped
-        return data.orders?.filter(o => 
-          o.seller_id === userId && 
+        return orders.filter(o => 
+          o.sellerId === userId && 
           ['shipped', 'in_transit'].includes(o.status)
         ) || [];
         
       case 'incoming':
         // Orders buyer is waiting for
-        return data.orders?.filter(o => 
-          o.buyer_id === userId && 
+        return orders.filter(o => 
+          o.buyerId === userId && 
           ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
         ) || [];
         
       case 'completed':
         // Completed orders for both
-        return data.orders?.filter(o => 
-          (o.seller_id === userId || o.buyer_id === userId) && 
+        return orders.filter(o => 
+          (o.sellerId === userId || o.buyerId === userId) && 
           ['delivered', 'completed'].includes(o.status)
         ) || [];
         
@@ -62,21 +65,39 @@
   });
   
   // Count items needing action
-  const actionCounts = $derived(() => {
+  interface ActionCounts { toShip: number; incoming: number }
+  const actionCounts: ActionCounts = $derived.by(() => {
     const userId = data.user?.id;
     const orders = data.orders || [];
-    
-    return {
-      toShip: orders.filter(o => 
-        o.seller_id === userId && 
-        ['paid', 'processing', 'pending_shipment'].includes(o.status)
-      ).length,
-      incoming: orders.filter(o => 
-        o.buyer_id === userId && 
-        ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
-      ).length
-    };
+    const toShip = orders.filter(o => 
+      o.seller_id === userId && 
+      ['paid', 'processing', 'pending_shipment'].includes(o.status)
+    ).length;
+    const incoming = orders.filter(o => 
+      o.buyer_id === userId && 
+      ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
+    ).length;
+    return { toShip, incoming };
   });
+
+  // Typed helper for accessing a normalized shipping address object
+  interface ShippingAddress { name: string; address_line_1: string; address_line_2?: string; city: string; postal_code: string; country: string; phone?: string }
+  function asShippingAddress(value: unknown): ShippingAddress | null {
+    if (!value || typeof value !== 'object') return null;
+    const v = value as Record<string, unknown>;
+    if (typeof v.name !== 'string' || typeof v.city !== 'string' || typeof v.postal_code !== 'string' || typeof v.country !== 'string') return null;
+    const address_line_1 = typeof v.address_line_1 === 'string' ? v.address_line_1 : (typeof v.street === 'string' ? v.street : '');
+    if (!address_line_1) return null;
+    return {
+      name: v.name,
+      address_line_1,
+      address_line_2: typeof v.address_line_2 === 'string' ? v.address_line_2 : undefined,
+      city: v.city,
+      postal_code: v.postal_code,
+      country: v.country,
+      phone: typeof v.phone === 'string' ? v.phone : undefined
+    };
+  }
   
   async function updateOrderStatus(orderId: string, newStatus: string, tracking?: string) {
     loading = true;
@@ -272,12 +293,12 @@
     <!-- Stats Cards - Improved with better visual hierarchy -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
       <!-- Items to Ship - Primary action card -->
-      <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200 {actionCounts().toShip > 0 ? 'shadow-lg ring-2 ring-orange-300' : 'shadow-sm'}">
+  <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200 {actionCounts.toShip > 0 ? 'shadow-lg ring-2 ring-orange-300' : 'shadow-sm'}">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-xs font-medium text-orange-700 uppercase tracking-wide">{i18n.orders_itemsToShip()}</p>
-            <p class="text-3xl font-bold text-orange-900 mt-1">{actionCounts().toShip}</p>
-            {#if actionCounts().toShip > 0}
+            <p class="text-3xl font-bold text-orange-900 mt-1">{actionCounts.toShip}</p>
+            {#if actionCounts.toShip > 0}
               <p class="text-xs text-orange-700 mt-1 font-medium animate-pulse">⚡ Action required</p>
             {:else}
               <p class="text-xs text-orange-600 mt-1">All caught up</p>
@@ -296,7 +317,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-xs font-medium text-gray-600 uppercase tracking-wide">In Transit</p>
-            <p class="text-3xl font-bold text-gray-900 mt-1">{actionCounts().incoming}</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1">{actionCounts.incoming}</p>
             <p class="text-xs text-gray-500 mt-1">On the way</p>
           </div>
           <div class="bg-[color:var(--status-info-bg)] rounded-full p-3">
@@ -386,9 +407,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
               <span class="block">{i18n.orders_ship()}</span>
-              {#if actionCounts().toShip > 0}
+              {#if actionCounts.toShip > 0}
                 <span class="absolute -top-1 -right-1 {activeTab === 'to_ship' ? 'bg-white text-gray-900' : 'bg-orange-500 text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
-                  {actionCounts().toShip}
+                  {actionCounts.toShip}
                 </span>
               {/if}
             </span>
@@ -421,9 +442,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               <span class="block">{i18n.orders_myOrders()}</span>
-              {#if actionCounts().incoming > 0}
+              {#if actionCounts.incoming > 0}
                 <span class="absolute -top-1 -right-1 {activeTab === 'incoming' ? 'bg-white text-gray-900' : 'bg-[color:var(--primary)] text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
-                  {actionCounts().incoming}
+                  {actionCounts.incoming}
                 </span>
               {/if}
             </span>
@@ -447,7 +468,7 @@
       </div>
       
       <div class="p-3 sm:p-6">
-        {#if filteredOrders().length === 0}
+  {#if filteredOrders.length === 0}
           <div class="text-center py-12">
             <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -475,13 +496,13 @@
           </div>
         {:else}
           <div class="space-y-4">
-            {#each filteredOrders() as order}
-              {@const isSeller = order.seller_id === data.user?.id}
+            {#each filteredOrders as order (order.id)}
+              {@const isSeller = order.sellerId === data.user?.id}
               
               <div class="border border-gray-200 rounded-xl hover:shadow-md transition-shadow p-5 bg-white">
                 <div class="flex items-start gap-4">
                   <!-- Product/Bundle Image -->
-                  {#if order.is_bundle && order.items_count > 1}
+                  {#if false}
                     <!-- Bundle display -->
                     <div class="relative w-24 h-24">
                       <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-[color:var(--status-info-bg)] rounded-xl flex items-center justify-center shadow-sm">
@@ -491,9 +512,9 @@
                         {order.items_count}
                       </span>
                     </div>
-                  {:else if order.product?.first_image || order.product?.images?.[0]}
+                  {:else if order.product?.firstImage || order.product?.images?.[0]}
                     <img
-                      src={order.product.first_image || order.product.images[0]}
+                      src={order.product.firstImage || order.product.images[0]}
                       alt={order.product.title}
                       class="w-24 h-24 object-cover rounded-xl shadow-sm"
                     />
@@ -510,11 +531,7 @@
                     <div class="flex justify-between items-start">
                       <div>
                         <h3 class="font-semibold text-lg text-gray-900">
-                          {#if order.is_bundle && order.items_count > 1}
-                            Bundle Order ({order.items_count} items)
-                          {:else}
-                            {order.product?.title || 'Unknown Product'}
-                          {/if}
+                          {order.product?.title || 'Unknown Product'}
                         </h3>
                         <div class="flex items-center gap-3 mt-1">
                           <span class="inline-flex items-center gap-1 text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
@@ -530,7 +547,7 @@
                             </a>
                           </span>
                         </div>
-                        {#if order.tracking_number}
+                        {#if (order as any).tracking_number}
                           <div class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-[color:var(--status-info-bg)] text-[color:var(--status-info-fg)] rounded-md text-xs font-medium">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -541,15 +558,15 @@
                       </div>
                       
                       <div class="text-right">
-                        <p class="text-2xl font-bold text-gray-900">${order.total_amount}</p>
-                        {#if order.is_bundle && order.items_count > 1}
-                          <p class="text-xs text-green-600 font-medium">Saved ${((order.items_count - 1) * 5).toFixed(2)} on shipping</p>
+                        <p class="text-2xl font-bold text-gray-900">${order.totalAmount}</p>
+                        {#if order.is_bundle && (order.items_count ?? 0) > 1}
+                          <p class="text-xs text-green-600 font-medium">Saved ${(((order.items_count ?? 0) - 1) * 5).toFixed(2)} on shipping</p>
                         {/if}
                         <div class="mt-1">
-                          <OrderStatus status={order.status} />
+                          <OrderStatus status={order.status ?? 'pending'} />
                         </div>
                         {#if activeTab === 'to_ship'}
-                          {@const timeLeft = getTimeLeft(order.created_at)}
+                          {@const timeLeft = getTimeLeft(order.createdAt ?? '')}
                           <div class="mt-2 inline-flex items-center gap-1 text-xs font-medium {timeLeft === 'Overdue' ? 'text-red-600 bg-red-50' : 'text-orange-600 bg-orange-50'} px-2 py-1 rounded-md">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -571,7 +588,7 @@
                           {i18n.orders_markAsShipped()}
                         </Button>
                         <Button
-                          href="/messages?conversation={order.buyer_id}__{order.product_id}"
+                          href={order.product ? `/messages?conversation=${order.buyerId}__${order.product.id}` : '#'}
                           size="sm"
                           variant="outline"
                         >
@@ -586,13 +603,13 @@
                           Confirm Receipt
                         </Button>
                         <Button
-                          href="/messages?conversation={order.seller_id}__{order.product_id}"
+                          href={order.product ? `/messages?conversation=${order.sellerId}__${order.product.id}` : '#'}
                           size="sm"
                           variant="outline"
                         >
                           {i18n.orders_messageSeller()}
                         </Button>
-                      {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered' && !order.buyer_rated}
+                      {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered'}
                         <Button
                           onclick={() => openReviewModal(order)}
                           size="sm"
@@ -603,7 +620,7 @@
                       {/if}
                       
                       <Button
-                        href={getProductUrl({ id: order.product?.id || '', slug: order.product?.slug || '' })}
+                        href={order.product ? getProductUrl({ id: order.product.id, slug: order.product.slug || '' }) : '#'}
                         size="sm"
                         variant="outline"
                       >
@@ -612,7 +629,9 @@
                     </div>
                     
                     <!-- Shipping Address (for sellers) -->
-                    {#if activeTab === 'to_ship' && isSeller && order.shipping_address}
+                    {#if activeTab === 'to_ship' && isSeller}
+                      {@const addr = asShippingAddress(order.shipping_address)}
+                      {#if addr}
                       <div class="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
                         <div class="flex items-center gap-2 mb-2">
                           <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -622,12 +641,13 @@
                           <p class="text-sm font-semibold text-gray-700">{i18n.orders_shipTo()}:</p>
                         </div>
                         <p class="text-sm text-gray-600 leading-relaxed">
-                          <span class="font-medium">{order.shipping_address.name}</span><br/>
-                          {order.shipping_address.street}<br/>
-                          {order.shipping_address.city}, {order.shipping_address.postal_code}<br/>
-                          {order.shipping_address.country}
+                          <span class="font-medium">{addr.name}</span><br/>
+                          {addr.address_line_1}{#if addr.address_line_2}<br/>{addr.address_line_2}{/if}<br/>
+                          {addr.city}, {addr.postal_code}<br/>
+                          {addr.country}
                         </p>
                       </div>
+                      {/if}
                     {/if}
                   </div>
                 </div>
@@ -702,6 +722,6 @@
       product: reviewOrder.product?.title || 'Product',
       productImage: reviewOrder.product?.first_image || reviewOrder.product?.images?.[0]
     }}
-    userType="buyer"
+    _userType="buyer"
   />
 {/if}

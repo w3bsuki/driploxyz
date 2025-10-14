@@ -21,7 +21,12 @@
 	}
 
 	let toasts = $state<Toast[]>([]);
-	let toastProvider: unknown;
+	// The underlying modern toast provider instance exposes add/remove helpers
+	interface InternalToastProvider {
+		addToastData?: (data: { id: string; type: string; description: string; duration: number }) => string | void;
+		removeToastData?: (id: string) => void;
+	}
+	let toastProvider: InternalToastProvider | null = null;
 
 	// Global toast function that other components can call (legacy support)
 	function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
@@ -86,7 +91,7 @@
 
 <!-- Use modern ToastProvider internally -->
 <ToastProvider 
-	bind:this={toastProvider}
+	bind:this={toastProvider as any}
 	position="bottom-right"
 	limit={5}
 	duration={5000}

@@ -45,11 +45,12 @@
     selectedProducts.reduce((sum, p) => sum + p.price, 0)
   );
   
-  let savings = $derived(
+  // Derived savings values (treat as values not functions)
+  const savings = $derived(
     (parseFloat(offerAmount) || 0) > 0 ? originalTotal - (parseFloat(offerAmount) || 0) : 0
   );
   
-  let savingsPercent = $derived(
+  const savingsPercent = $derived(
     originalTotal === 0 ? 0 : Math.round((savings / originalTotal) * 100)
   );
   
@@ -237,8 +238,8 @@
                 <div class="flex justify-between items-center">
                   <span class="text-sm text-green-800">You save</span>
                   <div class="text-right">
-                    <span class="font-bold text-green-800">${savings().toFixed(2)}</span>
-                    <span class="text-xs text-green-600 ml-1">({savingsPercent()}% off)</span>
+                    <span class="font-bold text-green-800">${savings.toFixed(2)}</span>
+                    <span class="text-xs text-green-600 ml-1">({savingsPercent}% off)</span>
                   </div>
                 </div>
               </div>

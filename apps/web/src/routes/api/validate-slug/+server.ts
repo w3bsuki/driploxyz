@@ -22,10 +22,11 @@ export const POST: RequestHandler = async (event) => {
     error(429, 'Too many validation requests');
   }
 
-  const { supabase, session } = locals;
-  
+  const { supabase, safeGetSession } = locals;
+  const { user } = await safeGetSession();
+
   // Authentication check - only authenticated users can validate slugs
-  if (!session?.user) {
+  if (!user) {
     error(401, 'Authentication required');
   }
 
@@ -89,9 +90,9 @@ export const POST: RequestHandler = async (event) => {
 
 // Optional: Add GET endpoint for simple slug checks
 export const GET: RequestHandler = async ({ url, locals }) => {
-  const { session } = locals;
+  const { user } = await locals.safeGetSession();
   
-  if (!session?.user) {
+  if (!user) {
     error(401, 'Authentication required');
   }
 

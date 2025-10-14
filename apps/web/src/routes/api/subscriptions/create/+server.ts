@@ -1,20 +1,17 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '@repo/core';
 import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
-import { env } from '$env/dynamic/private';
-
-const DEBUG = env.DEBUG === 'true';
+const DEBUG = process.env.DEBUG === 'true';
 
 export const POST: RequestHandler = async (event) => {
   // Critical rate limiting for subscription creation
   const rateLimitResponse = await enforceRateLimit(
-    event.request, 
-    event.getClientAddress, 
+    event.request,
+    () => event.locals.clientIp ?? event.getClientAddress(),
     'payment',
-    `subscription-create:${event.getClientAddress()}`
+    `subscription-create:${event.locals.clientIp ?? event.getClientAddress()}`
   );
   if (rateLimitResponse) return rateLimitResponse;
   
@@ -29,7 +26,7 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Stripe not configured' }, { status: 500 });
     }
 
-    const supabase = createServerSupabaseClient(event);
+    const supabase = event.locals.supabase;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -112,7 +109,9 @@ export const POST: RequestHandler = async (event) => {
       if (DEBUG) {
         console.error('Subscription creation error:', result.error);
       }
-      return json({ error: result.error.message }, { status: 400 });
+  const errUnknown: unknown = result.error;
+  const message = typeof errUnknown === 'object' && errUnknown && 'message' in errUnknown ? String((errUnknown as { message: string }).message) : String(errUnknown);
+      return json({ error: message }, { status: 400 });
     }
 
     return json({

@@ -11,10 +11,7 @@ const config = {
 
   kit: {
     adapter: adapter(),
-    prerender: {
-      entries: [], // Disable prerendering - this app requires server context
-      handleUnseenRoutes: 'ignore' // Don't error about unseen routes
-    }
+    // Use SvelteKit defaults; tune only when a concrete requirement appears
   }
 };
 

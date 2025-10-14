@@ -120,22 +120,15 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
         if (resolution.categoryIds.length > 0 && !resolution.isVirtual) {
           // Use domain service for real categories
           const categoryId = resolution.categoryIds[0]; // Use primary category
-          const result = await productAdapter.getProductsByCategory.execute(categoryId || '', {
-            includeDescendants: true,
+          const result = await productAdapter.getProductsByCategory(categoryId || '', {
             limit,
             offset: (page - 1) * limit,
-            sort: { by: (sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at') as 'created_at' | 'price' | 'popularity', direction: sortDirection as 'asc' | 'desc' },
-            country: currentCountry
+            sort: { by: (sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? 'price' : 'created_at') as 'created_at' | 'price' | 'popularity', direction: sortDirection as 'asc' | 'desc' }
           });
-
-          if (result.success) {
-            return {
-              data: result.data.products,
-              total: result.data.total
-            };
-          } else {
-            return { data: [], total: 0 };
-          }
+          return {
+            data: Array.isArray(result.data) ? result.data : [],
+            total: typeof result.total === 'number' ? result.total : 0
+          };
         } else {
           // Fallback to search for virtual or invalid categories
           const searchOptions = {

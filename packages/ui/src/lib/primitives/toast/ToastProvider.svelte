@@ -6,7 +6,7 @@
   // Removed Melt UI dependency - using simple portal implementation
   import { fly } from 'svelte/transition';
   import Toast from './Toast.svelte';
-  import type { ToastProviderProps, Toast as ToastData } from './types';
+  import type { ToastProviderProps, Toast as ToastData, ToastInput } from './types';
   
   interface Props extends ToastProviderProps {
     children?: import('svelte').Snippet;
@@ -24,7 +24,7 @@
   // Simple portal action since we removed Melt UI
   function portal(node: HTMLElement) {
     // Move node to body for proper z-index stacking
-    if (document && document.body && node.parentNode !== document.body) {
+    if (typeof document !== 'undefined' && document.body && node.parentNode !== document.body) {
       document.body.appendChild(node);
     }
     return {
@@ -40,7 +40,7 @@
   let activeToasts = $state<ToastData[]>([]);
   
   // Position classes for the container
-  const containerClasses = $derived(() => {
+  const containerClasses = $derived.by(() => {
     const baseClasses = 'fixed z-50 flex flex-col pointer-events-none';
     
     const positionClasses = {
@@ -56,7 +56,7 @@
   });
   
   // Container padding based on position
-  const containerPadding = $derived(() => {
+  const containerPadding = $derived.by(() => {
     // Mobile-first: smaller padding on mobile, larger on desktop
     const mobilePadding = 'p-4';
     const desktopPadding = 'sm:p-6';
@@ -64,7 +64,7 @@
   });
   
   // Animation direction based on position
-  const getTransitionParams = $derived(() => {
+  const getTransitionParams = $derived.by(() => {
     const isTop = position.includes('top');
     const isLeft = position.includes('left');
     const isRight = position.includes('right');
@@ -78,12 +78,13 @@
   });
   
   // Public API for adding toasts
-  export function addToastData(toast: Omit<ToastData, 'id'>) {
-    const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  export function addToastData(toast: ToastInput) {
+    const resolvedId = toast.id ?? `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const newToast: ToastData = {
-      id,
-      duration,
-      dismissible: true,
+      id: resolvedId,
+      duration: toast.duration ?? duration,
+      dismissible: toast.dismissible ?? true,
+      persistent: toast.persistent ?? false,
       ...toast
     };
     
@@ -97,7 +98,7 @@
     }
     
     activeToasts = [...activeToasts, newToast];
-    return id;
+    return resolvedId;
   }
   
   export function removeToastData(id: string) {

@@ -5,7 +5,8 @@
 
 import { build, files, version } from '$service-worker';
 
-const sw = self as unknown as ServiceWorkerGlobalScope;
+// This gives `self` the correct types in a Service Worker context
+const sw = (self as unknown) as ServiceWorkerGlobalScope;
 const CACHE_NAME = `driplo-v${version}`;
 const DYNAMIC_CACHE = `driplo-dynamic-v${version}`;
 const OFFLINE_CACHE = `driplo-offline-v${version}`;
@@ -28,7 +29,7 @@ const DYNAMIC_ROUTES = [
 const OFFLINE_PAGE = '/offline';
 
 // Install event - cache assets
-sw.addEventListener('install', (event) => {
+sw.addEventListener('install', (event: ExtendableEvent) => {
 	event.waitUntil(
 		Promise.all([
 			caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
@@ -43,7 +44,7 @@ sw.addEventListener('install', (event) => {
 });
 
 // Activate event - clean old caches
-sw.addEventListener('activate', (event) => {
+sw.addEventListener('activate', (event: ExtendableEvent) => {
 	event.waitUntil(
 		caches.keys().then(async (keys) => {
 			// Delete old caches
@@ -59,8 +60,8 @@ sw.addEventListener('activate', (event) => {
 });
 
 // Fetch event - serve from cache, fallback to network
-sw.addEventListener('fetch', (event) => {
-	const { request } = event;
+sw.addEventListener('fetch', (event: FetchEvent) => {
+	const { request } = event as FetchEvent;
 	const url = new URL(request.url);
 
 	// Skip non-GET requests
@@ -68,6 +69,17 @@ sw.addEventListener('fetch', (event) => {
 
 	// Skip external requests
 	if (url.origin !== location.origin) return;
+
+	// In development, Vite serves via /@fs and HMR endpoints. Don't intercept those or SW can spam errors.
+	// Also skip if this is clearly a Vite client/HMR asset
+	if (
+		url.pathname.startsWith('/@fs/') ||
+		url.pathname.startsWith('/@vite') ||
+		url.pathname.includes('vite/client') ||
+		url.pathname.includes('node_modules')
+	) {
+		return;
+	}
 
 	// Skip API requests (except for favorites background sync)
 	if (url.pathname.startsWith('/api/') && !url.pathname.includes('favorites')) return;
@@ -78,8 +90,8 @@ sw.addEventListener('fetch', (event) => {
 async function handleRequest(request: Request): Promise<Response> {
 	const url = new URL(request.url);
 
-	// Check cache first for static assets
-	if (ASSETS.includes(url.pathname)) {
+		// Check cache first for static assets (guard for paths without leading slash)
+		if (ASSETS.includes(url.pathname) || ASSETS.includes(url.pathname.replace(/^\//, ''))) {
 		const cached = await caches.match(request);
 		if (cached) return cached;
 	}
@@ -112,9 +124,11 @@ async function handleRequest(request: Request): Promise<Response> {
 }
 
 // Background sync for favorites (when available)
-sw.addEventListener('sync', (event) => {
-	if (event.tag === 'sync-favorites') {
-		event.waitUntil(syncFavorites());
+sw.addEventListener('sync', (event: Event) => {
+	// Background Sync is optional; only handle our tag if present
+	const anyEvent = event as unknown as { tag?: string; waitUntil?: (p: Promise<unknown>) => void };
+	if (anyEvent.tag === 'sync-favorites' && typeof anyEvent.waitUntil === 'function') {
+		anyEvent.waitUntil(syncFavorites());
 	}
 });
 

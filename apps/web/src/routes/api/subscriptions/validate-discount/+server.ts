@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 
 export const POST: RequestHandler = async (event) => {
   try {
@@ -14,7 +13,7 @@ export const POST: RequestHandler = async (event) => {
       }, { status: 400 });
     }
 
-    const supabase = createServerSupabaseClient(event);
+    const supabase = event.locals.supabase;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

@@ -6,24 +6,20 @@
  */
 
 import { browser } from '$app/environment';
+import { env as publicEnv } from '$env/dynamic/public';
 
 // Helper function to safely get OAuth environment variables
 async function getOAuthEnvVars() {
-  try {
-    const env = await import('$env/static/public');
-    return {
-      PUBLIC_GOOGLE_CLIENT_ID: env.PUBLIC_GOOGLE_CLIENT_ID,
-      PUBLIC_FACEBOOK_CLIENT_ID: env.PUBLIC_FACEBOOK_CLIENT_ID,
-      PUBLIC_GITHUB_CLIENT_ID: env.PUBLIC_GITHUB_CLIENT_ID
-    };
-  } catch {
-    // Environment variables not available, return undefined values
-    return {
-      PUBLIC_GOOGLE_CLIENT_ID: undefined,
-      PUBLIC_FACEBOOK_CLIENT_ID: undefined,
-      PUBLIC_GITHUB_CLIENT_ID: undefined
-    };
-  }
+  // Use dynamic public env to allow optional keys without needing static typing declarations
+  return {
+    PUBLIC_GOOGLE_CLIENT_ID: publicEnv.PUBLIC_GOOGLE_CLIENT_ID,
+    PUBLIC_FACEBOOK_CLIENT_ID: publicEnv.PUBLIC_FACEBOOK_CLIENT_ID,
+    PUBLIC_GITHUB_CLIENT_ID: publicEnv.PUBLIC_GITHUB_CLIENT_ID
+  } as {
+    PUBLIC_GOOGLE_CLIENT_ID?: string;
+    PUBLIC_FACEBOOK_CLIENT_ID?: string;
+    PUBLIC_GITHUB_CLIENT_ID?: string;
+  };
 }
 
 export interface OAuthProvider {

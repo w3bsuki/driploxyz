@@ -271,7 +271,11 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div
-    onclick={() => open = false}
+    role="button"
+    tabindex="0"
+    aria-label="Close filters"
+    onclick={() => (open = false)}
+    onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (open = false)}
     class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
     style="z-index: 9999;"
   ></div>
@@ -303,7 +307,7 @@
       </div>
       
       <button
-        onclick={() => open = false}
+        onclick={() => (open = false)}
         class="p-2 rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)]
                transition-colors duration-[var(--duration-base)]
                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"

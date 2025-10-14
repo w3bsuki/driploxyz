@@ -1,16 +1,18 @@
 <script lang="ts">
   import type { AvatarSize, AvatarVariant } from '../../types';
+  import type { HTMLButtonAttributes, HTMLDivAttributes } from 'svelte/elements';
 
-  interface Props {
-    src?: string;
+  interface Props extends Omit<HTMLButtonAttributes, 'class' | 'children' | 'onclick'>, Omit<HTMLDivAttributes, 'class' | 'children' | 'onclick'> {
+    src?: string | null | undefined;
     alt?: string;
-    name?: string;
+    name?: string | null | undefined;
     size?: AvatarSize;
     premium?: boolean;
     variant?: AvatarVariant;
     fallback?: string;
     onclick?: () => void;
     class?: string;
+    [attr: string]: unknown;
   }
 
   let { 
@@ -80,6 +82,7 @@
   );
   
   // Clean up - removed unused premium classes
+  // Note: rest props forwarded onto rendered element
 </script>
 
 {#if onclick}
@@ -87,6 +90,7 @@
   type="button"
   onclick={onclick}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
+  {...$$restProps}
 >
   {#if src && !imageError}
     <img
@@ -106,6 +110,7 @@
 {:else}
 <div
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"
+  {...$$restProps}
 >
   {#if src && !imageError}
     <img

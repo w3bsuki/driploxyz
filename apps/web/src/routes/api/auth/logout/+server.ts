@@ -6,12 +6,11 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabase } from '$lib/auth/index';
 
-export const POST: RequestHandler = async ({ cookies, fetch }) => {
+export const POST: RequestHandler = async ({ locals }) => {
   try {
-    // Create Supabase client
-    const supabase = createServerSupabase(cookies, fetch);
+    // Use Supabase client from locals
+    const supabase = locals.supabase;
 
     // Sign out - this will clear the cookies
     const { error } = await supabase.auth.signOut();

@@ -169,7 +169,7 @@
     </div>
     
     <div class="space-y-2" role="group" aria-labelledby="size-label">
-      {#each sizeGroups() as [group, sizes]}
+  {#each sizeGroups as [group, sizes]}
         <div>
           <span class="text-xs uppercase tracking-wider text-gray-500 font-semibold">{group === 'XS-XL' ? i18n.sell_sizeGroupXSXL() : group === 'Numbers' ? i18n.sell_sizeGroupNumbers() : group === 'UK/EU' ? i18n.sell_sizeGroupUKEU() : i18n.sell_sizeGroupOther()}</span>
           <div class="grid grid-cols-3 gap-1.5 mt-1 sm:grid-cols-4 sm:gap-1">

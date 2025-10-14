@@ -3,11 +3,11 @@
   import * as i18n from '@repo/i18n';
 
   interface Props {
-    formData: Record<string, string | boolean | number | null | undefined>;
+    formData: any;
     uploadedImages: Array<{ url: string; path: string }>;
     isUploadingImages: boolean;
-    onImageUpload: (imageUrls: string[], imagePaths: string[]) => void;
-    onImageDelete: (index: number) => Promise<void>;
+    onImageUpload: (files: File[]) => Promise<Array<{ url: string; path: string }>>;
+    onImageDelete: (path: string) => Promise<boolean>;
     onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
   }
 
@@ -57,10 +57,9 @@
           placeholder={i18n.sell_titlePlaceholder()}
           required
           name="title"
-          maxlength={100}
         />
         <div class="text-xs text-[color:var(--text-quaternary)] mt-1 text-right">
-          {formData.title.length}/100
+          {String(formData.title || '').length}/100
         </div>
       </div>
     
@@ -77,7 +76,7 @@
           class="w-full px-4 py-3 border border-[color:var(--border-subtle)] rounded-xl focus:ring-2 focus:ring-[color:var(--focus-ring)] focus:border-[color:var(--border-focus)] resize-none text-base text-[16px] transition-colors bg-[color:var(--surface-base)] text-[color:var(--text-primary)]"
         ></textarea>
         <div class="text-xs text-[color:var(--text-quaternary)] mt-1 text-right">
-          {formData.description.length}/500
+          {String(formData.description || '').length}/500
         </div>
       </div>
     </div>

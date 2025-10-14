@@ -186,6 +186,7 @@ export { default as ImageUploaderSupabase } from './compositions/media/ImageUplo
 export { default as AvatarUploader } from './primitives/avatar/AvatarUploader.svelte';
 export { default as PriceInput } from './compositions/forms/PriceInput.svelte';
 export { default as TagInput } from './compositions/forms/TagInput.svelte';
+export { default as CollectionSelector } from './compositions/forms/CollectionSelector.svelte';
 
 // Enhanced Toast System - Recommended for all new code
 export { toast, toasts } from './toast';

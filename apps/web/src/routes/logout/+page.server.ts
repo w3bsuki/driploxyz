@@ -6,11 +6,10 @@
 
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { createServerSupabase } from '$lib/auth/index';
 
-export const load = (async ({ cookies, fetch }) => {
-  // Create Supabase client and sign out
-  const supabase = createServerSupabase(cookies, fetch);
+export const load = (async ({ locals }) => {
+  // Use Supabase client from locals and sign out
+  const supabase = locals.supabase;
 
   try {
     await supabase.auth.signOut();

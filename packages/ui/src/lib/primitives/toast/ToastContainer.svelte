@@ -5,9 +5,9 @@
 -->
 <script lang="ts">
   // No lifecycle imports needed - using $effect
-  import { setToastProvider } from './store';
   import ToastProvider from './ToastProvider.svelte';
-  import type { ToastProviderProps } from './types';
+  import { setToastProvider } from './store';
+  import type { ToastProviderProps, ToastProviderHandle } from './types';
   
   interface Props extends ToastProviderProps {
     children?: import('svelte').Snippet;
@@ -22,12 +22,16 @@
     children
   }: Props = $props();
   
-  let provider: any = $state(null);
+  type ToastProviderInstance = InstanceType<typeof ToastProvider> & ToastProviderHandle;
+
+  let provider = $state<ToastProviderInstance | null>(null);
   
   // Connect the provider to the toast store on mount
   $effect(() => {
     if (provider) {
       setToastProvider(provider);
+    } else {
+      setToastProvider(null);
     }
   });
 </script>

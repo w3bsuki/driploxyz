@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { getCountryFromDomain, type CountryCode } from '$lib/country/detection';
+import { getCountryFromDomain, type CountryCode } from '$lib/country/constants';
 
 /**
  * Handle country-based redirects for proper subdomain access

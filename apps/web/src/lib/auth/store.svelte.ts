@@ -79,7 +79,7 @@ function createAuthStore() {
       supabase = createBrowserSupabase();
 
       // Set up auth state change listener
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event: string, session: AuthSession | null) => {
           console.log('[Auth] State change:', event);
 
@@ -88,7 +88,7 @@ function createAuthStore() {
 
           if (session) {
             try {
-              const { data: { user }, error: userError } = await supabase.auth.getUser();
+              const { data: { user }, error: userError } = await (supabase?.auth.getUser() ?? Promise.resolve({ data: { user: null as any }, error: null }));
               if (!userError && user) {
                 validatedUser = user;
               }
@@ -141,7 +141,7 @@ function createAuthStore() {
   /**
    * Handle successful sign in
    */
-  async function handleSignIn(session: AuthSession | null) {
+  async function handleSignIn(_session: AuthSession | null) {
     // Use validated user from state instead of session.user for security
     const validatedUser = state.user;
 

@@ -30,6 +30,14 @@ export interface Toast {
   persistent?: boolean;
 }
 
+export type ToastInput = Omit<Toast, 'id'> & { id?: string };
+
+export interface ToastProviderHandle {
+  addToastData: (toast: ToastInput) => string;
+  removeToastData: (id: string) => void;
+  clearAllToasts: () => void;
+}
+
 export interface ToastProps {
   /**
    * The toast data

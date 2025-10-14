@@ -33,9 +33,9 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
   
   try {
     // Check authentication
-    const { session } = await safeGetSession();
+    const { user } = await safeGetSession();
     
-    if (!session?.user) {
+    if (!user) {
       return error(401, 'Authentication required');
     }
 
@@ -77,9 +77,9 @@ export const GET: RequestHandler = async ({ request, locals: { safeGetSession },
   
   try {
     // Check authentication
-    const { session } = await safeGetSession();
+    const { user } = await safeGetSession();
     
-    if (!session?.user) {
+    if (!user) {
       return error(401, 'Authentication required');
     }
 

@@ -1,10 +1,9 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 
 export const GET: RequestHandler = async (event) => {
   try {
-    const supabase = createServerSupabaseClient(event);
+    const supabase = event.locals.supabase;
     
     const { data: plans, error } = await supabase
       .from('subscription_plans')

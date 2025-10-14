@@ -36,6 +36,7 @@ export const COOKIES = {
   COUNTRY: 'country',
   THEME: 'theme',
   CURRENCY: 'currency',
+  LOCALE_PROMPT_DISMISSED: 'locale_banner_dismissed',
   
   // Analytics
   GA_CLIENT: '_ga',
@@ -72,7 +73,13 @@ export const COOKIE_CATEGORIES = {
     name: 'Functional Cookies',
     description: 'Remember preferences like language, theme, and currency',
     required: false,
-    cookies: [COOKIES.LOCALE, COOKIES.COUNTRY, COOKIES.THEME, COOKIES.CURRENCY]
+    cookies: [
+      COOKIES.LOCALE,
+      COOKIES.COUNTRY,
+      COOKIES.THEME,
+      COOKIES.CURRENCY,
+      COOKIES.LOCALE_PROMPT_DISMISSED
+    ]
   },
   analytics: {
     id: 'analytics',

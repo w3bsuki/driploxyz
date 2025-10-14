@@ -430,7 +430,7 @@ function getSubcategoryIcon(name: string): string {
         onSearch={onSearch}
         searchId="search-page-input"
         showDropdown={enableQuickResults}
-        searchFunction={onQuickSearch}
+  searchFunction={onQuickSearch as unknown as (q: string) => Promise<{ data: import('../../compositions/forms/SearchInput.svelte').ProductWithImages[]; error: string | null }>}
         maxResults={6}
         {mode}
       >
@@ -485,7 +485,7 @@ function getSubcategoryIcon(name: string): string {
       <!-- Tabbed Dropdown -->
       {#if showCategoryDropdown}
         <div class="absolute top-full left-0 right-0 mt-1 z-50">
-          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-h-[350px] max-h-[80vh] overflow-hidden">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-h-[300px] max-h-[65vh] sm:max-h-[78vh] overflow-hidden">
             <!-- Tab Headers - Scrollable on mobile (40px preferred for secondary actions) -->
             <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto scrollbarhide" role="tablist" aria-label="Filter categories">
               <button

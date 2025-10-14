@@ -30,7 +30,7 @@
         <h1 class="text-3xl font-bold text-gray-900 flex items-center justify-center gap-3">
           Welcome to {planName}!
           {#if brandActivated}
-            <BrandBadge verified={true} size="lg" />
+            <BrandBadge size="lg" />
           {/if}
         </h1>
         <p class="text-lg text-gray-600 mt-2">

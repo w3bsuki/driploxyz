@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
+import { ProductDomainAdapter } from '@repo/core/services';
 
 // Define product interfaces
 interface ProductImage {
@@ -25,9 +26,26 @@ interface Product {
   condition?: string;
 }
 
+// Narrowed shapes from the Supabase SELECT used below
+type ProfileSummary = { username: string; full_name?: string | null; avatar_url?: string | null; rating?: number | null };
+type CategorySummary = { id: string; name: string; slug: string; parent_id?: string | null };
+type ProductQueryResult = {
+  id: string;
+  title: string;
+  slug: string;
+  seller_id: string;
+  category_id?: string | null;
+  product_images?: ProductImage[];
+  profiles?: ProfileSummary | ProfileSummary[];
+  categories?: CategorySummary | null;
+};
+
 export const load = (async ({ params, locals, depends, setHeaders }) => {
   const { session, user } = await locals.safeGetSession();
   const startTime = Date.now();
+
+  // Initialize domain adapter
+  const productAdapter = new ProductDomainAdapter(locals.supabase);
 
   // Mark dependencies for intelligent invalidation
   depends('app:product');
@@ -109,7 +127,8 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     .eq('slug', params.slug)
     .single();
 
-  const { data: product, error: productError } = productResult;
+  const { data: productRaw, error: productError } = productResult;
+  const product = productRaw as unknown as ProductQueryResult;
 
   if (productError || !product) {
     console.log('Product not found:', {
@@ -139,40 +158,32 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
       id: product.id,
       title: product.title,
       loadTime: Date.now() - startTime,
-      seller: product.seller_username,
+  seller: sellerUsername,
       slug: product.slug
     });
   }
 
   // Get complete category hierarchy for breadcrumb using domain adapter
-  let parentCategory = null;
-  let topLevelCategory = null;
+  let parentCategory: { id: string; name: string; slug: string; parent_id?: string | null } | null = null;
+  let topLevelCategory: { id: string; name: string; slug: string } | null = null;
 
   if (product.category_id) {
     // We could use the domain service for this too, but for now keep the existing logic
     // This could be enhanced in a future iteration to use domain services
     if (product.category_id) {
-      const { data: parent } = await withTimeout(
-        locals.supabase
-          .from('categories')
-          .select('id, name, slug, parent_id')
-          .eq('id', product.category_id)
-          .single(),
-        1500,
-        { data: null, error: { name: 'TimeoutError', message: 'Request timeout', details: '', hint: '', code: 'TIMEOUT' }, count: null, status: 408, statusText: 'Timeout' }
-      );
+      const { data: parent } = await locals.supabase
+        .from('categories')
+        .select('id, name, slug, parent_id')
+        .eq('id', product.category_id)
+        .single();
 
       // If we have a category, try to get its parent
       if (parent?.parent_id) {
-        const { data: topLevel } = await withTimeout(
-          locals.supabase
-            .from('categories')
-            .select('id, name, slug')
-            .eq('id', parent.parent_id)
-            .single(),
-          1500,
-          { data: null, error: { name: 'TimeoutError', message: 'Request timeout', details: '', hint: '', code: 'TIMEOUT' }, count: null, status: 408, statusText: 'Timeout' }
-        );
+        const { data: topLevel } = await locals.supabase
+          .from('categories')
+          .select('id, name, slug')
+          .eq('id', parent.parent_id)
+          .single();
         topLevelCategory = topLevel;
         parentCategory = parent;
       } else {
@@ -184,19 +195,20 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 
   // SvelteKit 2 Streaming: Fetch critical product data first, stream additional data
   // Critical data loads first for immediate page render
+  const imagesList: ProductImage[] = Array.isArray(product.product_images) ? product.product_images : [];
   const productData = {
     ...product,
-    images: product.images
-      ?.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-      .map(img => img.image_url)
-      .filter(Boolean) || [],
-    seller_name: product.seller_name || product.seller_username || 'Unknown Seller',
-    seller_username: product.seller_username,
-    seller_avatar: undefined, // This would need to be added to domain model
-    seller_rating: product.seller_rating,
-    seller_sales_count: 0, // This would need to be added to domain model
-    category_name: product.category_name,
-    category_slug: undefined, // This would need to be added to domain model
+    images: imagesList
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      .map((img) => img.image_url)
+      .filter(Boolean),
+    seller_name: sellerProfile?.full_name || sellerUsername || 'Unknown Seller',
+    seller_username: sellerUsername,
+    seller_avatar: sellerProfile?.avatar_url ?? undefined,
+    seller_rating: sellerProfile?.rating ?? undefined,
+    seller_sales_count: 0,
+    category_name: product.categories?.name,
+    category_slug: product.categories?.slug,
     parent_category: parentCategory,
     top_level_category: topLevelCategory,
     currency: 'EUR'
@@ -205,16 +217,14 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
   // Stream additional data in parallel without blocking initial render
   const [favoriteResult, similarResult, sellerResult, reviewsResult] = await Promise.allSettled([
     // Check if user has favorited (only if authenticated)
-    session && user ? withTimeout(
-      locals.supabase
-        .from('favorites')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('product_id', product.id)
-        .maybeSingle(),
-      1000,
-      { data: null, error: null, count: null, status: 408, statusText: 'Timeout' }
-    ) : Promise.resolve({ data: null }),
+    session && user
+      ? locals.supabase
+          .from('favorites')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('product_id', product.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null } as { data: { id: string } | null }),
 
     // Get similar products using domain service (same category)
     product.category_id
@@ -226,65 +236,67 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
             },
             limit: 6,
             sort: { by: 'created_at', direction: 'desc' }
-          }).then(result => result.data?.filter((p: ProductWithImages) => p.id !== product.id) || []),
+          }).then((result) => {
+            const arr = Array.isArray(result?.data) ? (result.data as Array<{ id: string }>) : [];
+            return arr.filter((p) => p.id !== product.id);
+          }),
           2500,
-          []
+          [] as Array<{ id: string }>
         )
-      : Promise.resolve({ data: [] }),
+      : Promise.resolve({ data: [] } as { data: Array<{ id: string }> }),
 
     // Get other seller products using domain service
     withTimeout(
       productAdapter.getSellerProducts(product.seller_id!, {
         limit: 4,
         sort: { by: 'created_at', direction: 'desc' }
-      }).then(result => result.data?.filter((p: ProductWithImages) => p.id !== product.id) || []),
+      }).then((result) => {
+        const arr = Array.isArray(result?.data) ? (result.data as Array<{ id: string }>) : [];
+        return arr.filter((p) => p.id !== product.id);
+      }),
       2000,
-      []
+      [] as Array<{ id: string }>
     ),
 
     // Get seller reviews and rating summary (keep existing logic for now)
-    withTimeout(
-      locals.supabase
-        .from('reviews')
-        .select(`
+    locals.supabase
+      .from('reviews')
+      .select(`
+        id,
+        rating,
+        comment,
+        created_at,
+        reviewer:profiles!reviews_reviewer_id_fkey (
           id,
-          rating,
-          comment,
-          created_at,
-          reviewer:profiles!reviews_reviewer_id_fkey (
-            id,
-            username,
-            avatar_url,
-            full_name
-          ),
-          order_items (
-            products (
-              title
-            )
+          username,
+          avatar_url,
+          full_name
+        ),
+        order_items (
+          products (
+            title
           )
-        `)
-        .eq('reviewee_id', product.seller_id!)
-        .eq('is_public', true)
-        .order('created_at', { ascending: false })
-        .limit(10),
-      2500,
-      { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
-    )
+        )
+      `)
+      .eq('reviewee_id', product.seller_id!)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(10)
   ]);
 
   const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
-  const similarProducts = similarResult.status === 'fulfilled' && 'data' in similarResult.value ? similarResult.value.data || [] : [];
-  const sellerProducts = sellerResult.status === 'fulfilled' && 'data' in sellerResult.value ? sellerResult.value.data || [] : [];
-  const reviews = reviewsResult.status === 'fulfilled' && 'data' in reviewsResult.value ? reviewsResult.value.data || [] : [];
+  const similarProducts = similarResult.status === 'fulfilled' && 'data' in similarResult.value ? (similarResult.value.data as Array<{ id: string; slug?: string; seller_username?: string; images?: Array<{ image_url: string }> | string[] }>) || [] : [];
+  const sellerProducts = sellerResult.status === 'fulfilled' && 'data' in sellerResult.value ? (sellerResult.value.data as Array<{ id: string; slug?: string; seller_username?: string; images?: Array<{ image_url: string }> | string[] }>) || [] : [];
+  const reviews = reviewsResult.status === 'fulfilled' && 'data' in reviewsResult.value ? (reviewsResult.value.data as Array<{ rating: number }>) || [] : [];
   const isOwner = session && user && user.id === product.seller_id;
 
   // Calculate rating summary
   const ratingSummary = reviews.length > 0 ? {
-    averageRating: reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length,
+  averageRating: reviews.reduce((sum, review) => sum + (review?.rating || 0), 0) / reviews.length,
     totalReviews: reviews.length,
     ratingDistribution: [5, 4, 3, 2, 1].map(rating => ({
       rating,
-      count: reviews.filter(review => review.rating === rating).length
+      count: reviews.filter((review) => review?.rating === rating).length
     }))
   } : null;
 
@@ -305,9 +317,11 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     // Stream similar products - enhances discoverability but not critical
     similarProducts: Promise.resolve().then(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
-      return Array.isArray(similarProducts) ? similarProducts.map((p: Product) => ({
+      return Array.isArray(similarProducts) ? similarProducts.map((p) => ({
         ...p,
-        images: p.images?.map((img: ProductImage) => img.image_url) || [],
+        images: Array.isArray(p.images)
+          ? (p.images as Array<{ image_url: string } | string>).map((img) => (typeof img === 'string' ? img : img.image_url)).filter((v): v is string => Boolean(v))
+          : [],
         canonicalUrl: p.slug && p.seller_username ? `/product/${p.seller_username}/${p.slug}` : `/product/${p.id}`
       })) : [];
     }),
@@ -315,9 +329,11 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     // Stream seller products - related content
     sellerProducts: Promise.resolve().then(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
-      return Array.isArray(sellerProducts) ? sellerProducts.map((p: Product) => ({
+      return Array.isArray(sellerProducts) ? sellerProducts.map((p) => ({
         ...p,
-        images: p.images?.map((img: ProductImage) => img.image_url) || [],
+        images: Array.isArray(p.images)
+          ? (p.images as Array<{ image_url: string } | string>).map((img) => (typeof img === 'string' ? img : img.image_url)).filter((v): v is string => Boolean(v))
+          : [],
         canonicalUrl: p.slug && p.seller_username ? `/product/${p.seller_username}/${p.slug}` : `/product/${p.id}`
       })) : [];
     }),

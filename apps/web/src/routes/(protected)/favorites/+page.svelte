@@ -10,8 +10,10 @@
   
   let { data }: Props = $props();
   
-  // Use real favorited products from server
-  const favoritedProducts = $derived(data.favoritedProducts || []);
+  import { mapProduct, type ProductUI } from '$lib/types/domain';
+
+  // Normalize favorited products to ProductUI
+  const favoritedProducts: ProductUI[] = $derived.by(() => (data.favoritedProducts || []).map(p => mapProduct(p as any)));
   
   // Price alerts will come from Supabase (future feature)
   const priceAlerts: { productId: string; targetPrice: number }[] = [];
@@ -27,8 +29,9 @@
   let isSelecting = $state(false);
   
   // Filtered and sorted products
-  let displayProducts = $derived.by(() => {
-    let products = [...favoritedProducts];
+  // Derived filtered/sorted favorite products (value, not function)
+  const displayProducts: ProductUI[] = $derived.by(() => {
+    let products: ProductUI[] = [...favoritedProducts];
 
     // Filter by collection if selected
     if (selectedCollection) {
@@ -46,8 +49,10 @@
         break;
       case 'recently-added':
         products = [...products].sort((a, b) => {
-          const aDate = new Date(a.favoritedAt || a.createdAt || a.created_at).getTime();
-          const bDate = new Date(b.favoritedAt || b.createdAt || b.created_at).getTime();
+          const aSrc = a.favoritedAt || a.createdAt || a.created_at;
+          const bSrc = b.favoritedAt || b.createdAt || b.created_at;
+          const aDate = aSrc ? new Date(aSrc).getTime() : 0;
+          const bDate = bSrc ? new Date(bSrc).getTime() : 0;
           return bDate - aDate;
         });
         break;
@@ -202,9 +207,9 @@
     {/if}
 
     <!-- Products Grid -->
-    {#if displayProducts().length > 0}
+  {#if displayProducts.length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each displayProducts() as product}
+  {#each displayProducts as product (product.id)}
           <div class="relative">
             {#if isSelecting}
               <div class="absolute top-2 left-2 z-10">
@@ -250,10 +255,10 @@
             </div>
             
             <!-- Price Drop Badge -->
-            {#if product.originalPrice && product.originalPrice > product.price}
+            {#if false && (product as any).originalPrice && (product as any).originalPrice > product.price}
               <div class="absolute bottom-14 left-2">
                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                  -{Math.round((1 - product.price / (product as any).originalPrice) * 100)}%
                 </span>
               </div>
             {/if}

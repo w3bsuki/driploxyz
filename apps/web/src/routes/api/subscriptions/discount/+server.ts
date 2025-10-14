@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';
@@ -11,7 +10,7 @@ const DISCOUNT_PERCENT = 50;
 
 export const GET: RequestHandler = async (event) => {
   try {
-    const supabase = createServerSupabaseClient(event);
+    const supabase = event.locals.supabase;
     
     // Check early bird eligibility without requiring authentication
     const { count, error } = await supabase

@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 
 export const POST: RequestHandler = async (event) => {
@@ -20,7 +19,7 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Invalid account type' }, { status: 400 });
     }
 
-    const supabase = createServerSupabaseClient(event);
+    const supabase = event.locals.supabase;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

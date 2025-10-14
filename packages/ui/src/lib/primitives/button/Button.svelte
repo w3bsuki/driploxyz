@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { Action } from 'svelte/action';
+  import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize, ButtonDensity } from '../../types';
   import { buttonVariants } from '../../utils/variants';
 
-  interface Props {
+  // Allow passing through standard HTML attributes (aria-*, data-*, etc.)
+  // for both <button> and <a> usages. We omit fields we control explicitly.
+  interface Props extends Omit<HTMLButtonAttributes, 'class' | 'type' | 'form' | 'disabled' | 'children' | 'onclick'>, Omit<HTMLAnchorAttributes, 'class' | 'href' | 'rel' | 'target' | 'children' | 'onclick'> {
     variant?: ButtonVariant;
     size?: ButtonSize;
     density?: ButtonDensity;
@@ -19,6 +22,8 @@
     class?: string;
     children?: import('svelte').Snippet;
     use?: Action<HTMLElement>[] | Action<HTMLElement> | null;
+    // Accept any additional attributes (e.g., data-testid, custom aria props)
+    [attr: string]: unknown;
   }
 
   let {
@@ -86,6 +91,7 @@
   tabindex={tabIndex}
   role={element === 'a' ? undefined : 'button'}
   use:applyActions
+  {...$$restProps}
 >
   {#if loading}
     <span

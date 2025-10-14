@@ -4,6 +4,7 @@
   import type { Database } from '@repo/database';
   import * as i18n from '@repo/i18n';
   import { getProductUrl } from '$lib/utils/seo-urls';
+  import type { Json } from '@repo/database';
   
   interface Props {
     data: PageData;
@@ -13,8 +14,31 @@
   
   let activeTab = $state<'all' | 'purchases' | 'sales' | 'to_review' | 'issues'>('all');
   let expandedOrders = $state<Set<string>>(new Set());
+  // Local view types to match +page.server transformation
+  type SimpleProduct = {
+    id: string;
+    title: string;
+    price: number;
+    condition: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
+    size: string | null;
+    product_images: { image_url: string }[];
+    first_image: string | null;
+  };
+  type ProfileLite = {
+    id: string;
+    username: string | null;
+    avatar_url: string | null;
+    full_name: string | null;
+  };
+  type OrderView = Database['public']['Tables']['orders']['Row'] & {
+    product: SimpleProduct | null;
+    seller?: ProfileLite;
+    buyer?: ProfileLite;
+    shipping_address?: Json | null;
+  };
+
   let reviewModalOpen = $state(false);
-  let selectedOrderForReview = $state(null);
+  let selectedOrderForReview = $state<OrderView | null>(null);
   
   function toggleOrderExpansion(orderId: string) {
     const newSet = new Set(expandedOrders);
@@ -26,7 +50,8 @@
     expandedOrders = newSet;
   }
   
-  function formatDate(dateString: string) {
+  function formatDate(dateString: string | null) {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -35,18 +60,18 @@
   }
 
   // Combine and filter orders based on active tab
-  const filteredOrders = $derived.by(() => {
-    const allOrders = [...(data.buyerOrders || []), ...(data.sellerOrders || [])];
+  const filteredOrders = $derived.by<OrderView[]>(() => {
+    const allOrders = ([...(data.buyerOrders || []), ...(data.sellerOrders || [])] as unknown[]) as OrderView[];
     
     switch (activeTab) {
       case 'purchases':
-        return data.buyerOrders || [];
+        return (data.buyerOrders as unknown as OrderView[]) || [];
       case 'sales':
-        return data.sellerOrders || [];
+        return (data.sellerOrders as unknown as OrderView[]) || [];
       case 'to_review':
-        return (data.buyerOrders || []).filter(order => order.status === 'delivered');
+        return ((data.buyerOrders as unknown as OrderView[]) || []).filter(order => (order.status ?? '') === 'delivered');
       case 'issues':
-        return allOrders.filter(order => ['disputed', 'cancelled'].includes(order.status));
+        return allOrders.filter(order => ['disputed', 'cancelled'].includes(order.status ?? ''));
       default:
         return allOrders;
     }
@@ -61,7 +86,7 @@
     });
   };
 
-  const openReviewModal = (order: Database['public']['Tables']['orders']['Row'] & { product?: { title: string; images: { image_url: string }[] }; seller?: { username: string } }) => {
+  const openReviewModal = (order: OrderView) => {
     selectedOrderForReview = order;
     reviewModalOpen = true;
   };
@@ -134,13 +159,13 @@
 
   <!-- Orders List -->
   <div class="space-y-4">
-    {#if filteredOrders().length === 0}
+  {#if filteredOrders.length === 0}
       <div class="text-center py-12">
         <p class="text-gray-500 mb-4">{i18n.orders_noOrdersFound()}</p>
         <Button href="/search">{i18n.orders_startShopping()}</Button>
       </div>
     {:else}
-      {#each filteredOrders() as order (order.id)}
+  {#each filteredOrders as order (order.id)}
         {@const isPurchase = order.buyer_id === data.user?.id}
         {@const isExpanded = expandedOrders.has(order.id)}
         
@@ -152,9 +177,9 @@
           >
             <div class="flex items-start gap-4">
               <!-- Product Image -->
-              {#if order.product?.first_image || order.product?.images?.[0]}
+              {#if order.product?.first_image || order.product?.product_images?.[0]?.image_url}
                 <img
-                  src={order.product.first_image || order.product.images[0]}
+                  src={order.product.first_image || order.product.product_images?.[0]?.image_url}
                   alt={order.product.title}
                   class="w-20 h-20 object-cover rounded-lg"
                 />
@@ -179,7 +204,7 @@
               <!-- Price and Status -->
               <div class="text-right">
                 <p class="text-xl font-semibold mb-2">${order.total_amount}</p>
-                <OrderStatus status={order.status} />
+                <OrderStatus status={(order.status ?? 'pending') as any} />
               </div>
 
               <!-- Expand Icon -->
@@ -199,10 +224,11 @@
             <div class="border-t border-gray-200 p-4 space-y-4">
               <!-- Order Timeline -->
               <OrderTimeline
-                status={order.status}
-                createdAt={order.created_at}
-                shippedAt={order.shipped_at}
-                deliveredAt={order.delivered_at}
+                currentStatus={(order.status ?? 'pending') as any}
+                createdAt={order.created_at ?? ''}
+                shippedAt={order.shipped_at ?? undefined}
+                deliveredAt={order.delivered_at ?? undefined}
+                trackingNumber={order.tracking_number ?? undefined}
               />
 
               <!-- Shipping Info -->
@@ -235,8 +261,16 @@
                   </Button>
                 {:else}
                   <OrderActions
-                    order={order}
-                    onStatusChange={handleOrderStatusChange}
+                    orderId={order.id}
+                    status={(order.status ?? 'pending') as any}
+                    userRole={isPurchase ? 'buyer' : 'seller'}
+                    trackingNumber={order.tracking_number ?? undefined}
+                    onMarkShipped={({ orderId }) => handleOrderStatusChange(orderId, 'shipped')}
+                    onMarkDelivered={({ orderId }) => handleOrderStatusChange(orderId, 'delivered')}
+                    onCancelOrder={({ orderId }) => handleOrderStatusChange(orderId, 'cancelled')}
+                    onDisputeOrder={({ orderId }) => handleOrderStatusChange(orderId, 'disputed')}
+                    onContactOtherParty={() => { /* handled by message buttons below */ }}
+                    onLeaveReview={() => openReviewModal(order as any)}
                   />
                   <!-- Message Buyer button for sellers -->
                   <Button 
@@ -247,7 +281,7 @@
                   </Button>
                 {/if}
                 
-                <Button href={order.product ? getProductUrl({ id: order.product.id, slug: order.product.slug }) : `/product/${order.product?.id}`} variant="secondary">
+                <Button href={order.product ? getProductUrl({ id: order.product.id, slug: (order.product as any).slug }) : `/product/${order.product?.id}`} variant="secondary">
                   {i18n.orders_viewProduct()}
                 </Button>
               </div>
@@ -264,7 +298,14 @@
       isOpen={reviewModalOpen}
       onClose={() => reviewModalOpen = false}
       onSubmit={submitReview}
-      productTitle={selectedOrderForReview.product?.title}
+      orderDetails={{
+        orderId: selectedOrderForReview.id,
+        seller: selectedOrderForReview.seller?.username,
+        buyer: selectedOrderForReview.buyer?.username,
+        product: selectedOrderForReview.product?.title,
+        productImage: selectedOrderForReview.product?.first_image || selectedOrderForReview.product?.product_images?.[0]?.image_url
+      }}
+      _userType={selectedOrderForReview.buyer_id === data.user?.id ? 'buyer' : 'seller'}
     />
   {/if}
 </div>

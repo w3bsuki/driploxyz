@@ -10,6 +10,7 @@
   // Determine if we should show bottom nav (exclude certain pages)
   const shouldShowBottomNav = $derived(
     !page.route.id?.includes('/onboarding') &&
+    !page.route.id?.includes('/sell') &&
     !(page.route.id?.includes('/messages') && page.url.searchParams.has('conversation'))
   );
 

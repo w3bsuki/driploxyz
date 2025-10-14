@@ -23,6 +23,7 @@
     onChange?: (event: Event) => void;
     onBlur?: (event: Event) => void;
     children?: Snippet;
+    'aria-describedby'?: string; // allow explicit pass-through even though we compute it
   }
 
   let {

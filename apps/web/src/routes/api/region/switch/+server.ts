@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { setCountryCookie } from '$lib/country/detection';
+import { setCountryCookie } from '$lib/server/country/detection.server';
 
 export const POST: RequestHandler = async (event) => {
   const { region } = await event.request.json();

@@ -2,18 +2,19 @@ import { redirect, fail } from '@sveltejs/kit';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '@repo/core/services';
-import { getUserCountry } from '$lib/country/detection';
+import { getUserCountry } from '$lib/server/country/detection.server';
 import { generateUniqueSlug, validateSlug } from '$lib/utils/slug';
 
 export const load = (async ({ locals }) => {
-  // Get the session and validated user from locals
-  const { supabase, session, user } = locals;
+  // Always validate session via Supabase to avoid tampering
+  const { session, user } = await locals.safeGetSession();
 
   // Redirect to login if not authenticated
   if (!session || !user) {
-    redirect(303, '/login?redirect=/sell');
+    throw redirect(303, '/login?redirect=/sell');
   }
 
+  const supabase = locals.supabase;
   const services = createServices(supabase, null); // No stripe needed for selling products
 
   try {
@@ -31,7 +32,22 @@ export const load = (async ({ locals }) => {
     }
 
     // Get ALL categories for the 3-tier selection system
-    const { data: allCategories } = await services.categories.getCategories();
+    // Use collections service or direct table query depending on available APIs
+  let allCategories: unknown[] | null = null;
+    try {
+      // Prefer collections service if it exposes categories by convention
+      const maybeCollections: unknown = services.collections;
+      if (maybeCollections && typeof (maybeCollections as { getCategories?: () => Promise<{ data?: unknown[] }> }).getCategories === 'function') {
+        const { data } = await (maybeCollections as { getCategories: () => Promise<{ data?: unknown[] }> }).getCategories();
+        allCategories = data ?? null;
+      } else {
+        // Fallback: query categories table directly
+        const { data } = await supabase.from('categories').select('*').order('name');
+        allCategories = data ?? null;
+      }
+    } catch {
+      allCategories = null;
+    }
 
     // Get available subscription plans for upgrade prompt
     const { data: plans } = await supabase
@@ -40,9 +56,10 @@ export const load = (async ({ locals }) => {
       .eq('is_active', true)
       .order('price_monthly', { ascending: true });
     return {
-      user: user,
+      session,
+      user,
       profile,
-      categories: allCategories || [],
+  categories: allCategories || [],
       canListProducts,
       plans: plans || [],
       needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
@@ -50,7 +67,8 @@ export const load = (async ({ locals }) => {
   } catch {
     // Return empty but valid data structure
     return {
-      user: user,
+      session,
+      user,
       profile: null,
       categories: [],
       canListProducts: true,
@@ -62,8 +80,10 @@ export const load = (async ({ locals }) => {
 
 export const actions = {
   create: async (event) => {
-    const { request, locals: { supabase, session } } = event;
-    if (!session) {
+    const { request, locals: { supabase, safeGetSession } } = event;
+    const { session, user } = await safeGetSession();
+
+    if (!session || !user) {
       return fail(401, { 
         errors: { _form: 'Not authenticated' }
       });
@@ -190,7 +210,7 @@ export const actions = {
           brand: brand?.trim() || null,
           size: size || null,
           location: null,
-          seller_id: session.user.id,
+          seller_id: user.id,
           shipping_cost: shipping_cost,
           tags: tags?.length > 0 ? tags : null,
           color: color?.trim() || null,
@@ -241,7 +261,7 @@ export const actions = {
       if (use_premium_boost) {
         // Use the database function to handle boost logic atomically
         const { data: boostResult } = await supabase.rpc('boost_product', {
-          p_user_id: session.user.id,
+          p_user_id: user.id,
           p_product_id: product.id,
           p_boost_duration_days: 7
         });

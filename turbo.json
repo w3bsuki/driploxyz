@@ -27,7 +27,8 @@
         ".vercel/**",
         "dist/**",
         "build/**",
-        "lib/**"
+        "lib/**",
+        ".expo/**"
       ],
       "env": [
         "PUBLIC_STRIPE_PUBLISHABLE_KEY",
@@ -43,11 +44,17 @@
         "SENTRY_PROJECT",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_RELEASE",
-        "PUBLIC_SITE_URL"
+        "PUBLIC_SITE_URL",
+        "EXPO_PUBLIC_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_SENTRY_DSN"
       ]
     },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "lint": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["topo"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "eslint.config.*",
@@ -55,7 +62,7 @@
       ]
     },
     "check-types": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["topo"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "tsconfig.json",
@@ -65,6 +72,26 @@
       "outputs": []
     },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "mobile#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "mobile#build": {
+      "outputs": ["dist/**", ".expo/**"],
+      "dependsOn": ["^build"]
+    },
+    "mobile#start": {
+      "cache": false,
+      "persistent": true
+    },
+    "mobile#android": {
+      "cache": false,
+      "persistent": true
+    },
+    "mobile#ios": {
       "cache": false,
       "persistent": true
     },

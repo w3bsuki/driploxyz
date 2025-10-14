@@ -1,6 +1,8 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { createServices } from '@repo/core/services';
+import type { Database } from '@repo/database';
+
+type ProductOwnership = { seller_id?: string | null };
 
 export const load = (async ({ params, locals }) => {
   const { session, user } = await locals.safeGetSession();
@@ -9,22 +11,28 @@ export const load = (async ({ params, locals }) => {
     redirect(303, `/login?redirect=/product/${params.id}/edit`);
   }
 
-  const services = createServices(locals.supabase, null); // No stripe needed for product editing
-
-  // Get the product
-  const { data: product, error } = await services.products.getProduct(params.id);
+  // Get the product directly from Supabase (domain method not implemented yet)
+  const { data: product, error } = await locals.supabase
+    .from('products')
+    .select('id, seller_id, title, description, price, category_id, condition, brand, size, color, material, shipping_cost, tags')
+    .eq('id', params.id)
+    .single();
 
   if (error || !product) {
     redirect(303, '/dashboard');
   }
 
   // Check if user owns this product
-  if (product.seller_id !== user.id) {
+  // Ensure product has seller_id shape; unknown from adapter is tolerated via runtime check
+  if ((product as ProductOwnership)?.seller_id !== user.id) {
     redirect(303, `/product/${params.id}`);
   }
 
   // Get categories for the form
-  const { data: categories } = await services.categories.getCategories();
+  const { data: categories } = await locals.supabase
+    .from('categories')
+    .select('id, name, slug')
+    .order('sort_order', { ascending: true });
 
   return {
     product,
@@ -41,27 +49,40 @@ export const actions = {
     }
 
     const formData = await request.formData();
-    const services = createServices(locals.supabase, null); // No stripe needed for product updates
-
-    const updates = {
+    const updates: Partial<Database['public']['Tables']['products']['Update']> = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
       price: parseFloat(formData.get('price') as string),
       category_id: formData.get('category_id') as string,
-      condition: formData.get('condition') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
-      brand: formData.get('brand') as string || null,
-      size: formData.get('size') as string || null,
-      color: formData.get('color') as string || null,
-      material: formData.get('material') as string || null,
-      shipping_cost: parseFloat(formData.get('shipping_cost') as string || '0'),
-      tags: (formData.get('tags') as string)?.split(',').map(t => t.trim()).filter(Boolean) || null
+      condition: formData.get('condition') as Database['public']['Enums']['product_condition'],
+      brand: (formData.get('brand') as string) || null,
+      size: (formData.get('size') as string) || null,
+      color: (formData.get('color') as string) || null,
+      material: (formData.get('material') as string) || null,
+      shipping_cost: parseFloat((formData.get('shipping_cost') as string) || '0'),
+      tags: ((formData.get('tags') as string) || '')
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 20) || null,
+      updated_at: new Date().toISOString()
     };
 
-    const { error } = await services.products.updateProduct(
-      params.id,
-      updates,
-      user.id
-    );
+    // Ensure ownership before update
+    const { data: ownership } = await locals.supabase
+      .from('products')
+      .select('id, seller_id')
+      .eq('id', params.id)
+      .single();
+
+    if (!ownership || ownership.seller_id !== user.id) {
+      return fail(403, { error: 'Forbidden' });
+    }
+
+    const { error } = await locals.supabase
+      .from('products')
+      .update(updates)
+      .eq('id', params.id);
 
     if (error) {
       return fail(400, { error });
@@ -77,8 +98,21 @@ export const actions = {
       return fail(401, { error: 'Not authenticated' });
     }
 
-    const services = createServices(locals.supabase, null); // No stripe needed for product deletion
-    const { error } = await services.products.deleteProduct(params.id, user.id);
+    // Ensure ownership before delete
+    const { data: ownership } = await locals.supabase
+      .from('products')
+      .select('id, seller_id')
+      .eq('id', params.id)
+      .single();
+
+    if (!ownership || ownership.seller_id !== user.id) {
+      return fail(403, { error: 'Forbidden' });
+    }
+
+    const { error } = await locals.supabase
+      .from('products')
+      .delete()
+      .eq('id', params.id);
 
     if (error) {
       return fail(400, { error });

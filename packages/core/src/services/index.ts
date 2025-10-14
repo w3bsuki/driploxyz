@@ -32,3 +32,8 @@ export function getProductAdapter(locals: { supabase: any }) {
 
 // Export service classes for direct use
 export { StripeService, SubscriptionService, ProfileService, CollectionService, TransactionService, ProductDomainAdapter, OrderService, activateBrandStatus };
+
+// Export types from domain
+export type { Product, ProductImage, ProductCondition } from '../../../domain/src/products/types.js';
+// Alias for backward compatibility
+export type { Product as ProductWithImages } from '../../../domain/src/products/types.js';

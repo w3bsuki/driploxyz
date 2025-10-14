@@ -9,10 +9,10 @@ const processingRequests = new Map<string, Promise<Response>>();
 export const GET: RequestHandler = async ({ params, locals, request, getClientAddress }) => {
 	// Generous rate limiting for read operations
 	const rateLimitResponse = await enforceRateLimit(
-		request, 
-		getClientAddress, 
+		request,
+		() => locals.clientIp ?? getClientAddress(),
 		'apiRead',
-		`favorites-check:${getClientAddress()}`
+		`favorites-check:${locals.clientIp ?? getClientAddress()}`
 	);
 	if (rateLimitResponse) return rateLimitResponse;
 	
@@ -50,10 +50,10 @@ export const GET: RequestHandler = async ({ params, locals, request, getClientAd
 export const POST: RequestHandler = async ({ params, locals, request, getClientAddress }) => {
 	// Rate limiting for favorite actions
 	const rateLimitResponse = await enforceRateLimit(
-		request, 
-		getClientAddress, 
+		request,
+		() => locals.clientIp ?? getClientAddress(),
 		'favorites',
-		`favorites-toggle:${getClientAddress()}`
+		`favorites-toggle:${locals.clientIp ?? getClientAddress()}`
 	);
 	if (rateLimitResponse) return rateLimitResponse;
 	

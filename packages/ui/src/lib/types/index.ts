@@ -49,8 +49,9 @@ export type ButtonDensity = 'spacious' | 'cozy' | 'compact';
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarVariant = 'circle' | 'square';
 
-export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
-export type BadgeSize = 'sm' | 'md' | 'lg';
+// Extended to include 'subtle' styling variant and 'xs' size used in some components
+export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'outline' | 'subtle';
+export type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 export type InputVariant = 'default' | 'error' | 'success';
@@ -109,6 +110,24 @@ export * from './product';
 
 // Search Types
 export * from './search';
+
+// Navigation / Breadcrumb types (lightweight; not persisted)
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+// Payments (UI-facing subset of Stripe PaymentIntent we actually use)
+export interface PaymentIntent {
+  id: string;
+  status: 'requires_payment_method' | 'requires_action' | 'processing' | 'succeeded' | 'canceled' | string;
+  amount?: number;
+  currency?: string;
+  client_secret?: string | null;
+}
+
+// Cross-env timeout handle unified
+export type Timeout = ReturnType<typeof setTimeout>;
 
 // Filter Types
 export * from './filters';

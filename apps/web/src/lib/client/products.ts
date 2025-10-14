@@ -5,7 +5,7 @@
 export async function getPriceSuggestions(params: {
   categoryId: string;
   brand?: string;
-  condition: 'new' | 'like-new' | 'good' | 'fair';
+  condition: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
   size?: string;
 }) {
   try {

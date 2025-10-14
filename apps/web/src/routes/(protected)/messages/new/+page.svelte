@@ -16,15 +16,15 @@
   let messageText = $state('');
   let sending = $state(false);
   
-  const searchParams = $derived(() => page.url.searchParams);
-  const recipientId = $derived(() => searchParams.get('to'));
-  const productId = $derived(() => searchParams.get('product'));
+  const searchParams = $derived(page.url.searchParams);
+  const recipientId = $derived(searchParams.get('to'));
+  const productId = $derived(searchParams.get('product'));
   
-  const recipient = $derived(() => data.recipient);
-  const product = $derived(() => data.product);
+  const recipient = $derived(data.recipient);
+  const product = $derived(data.product);
   
   async function sendMessage() {
-    if (!messageText.trim() || !data.user || !recipientId) return;
+  if (!messageText.trim() || !data.user || !recipientId) return;
     
     sending = true;
     
@@ -32,16 +32,18 @@
       const { error } = await supabase
         .from('messages')
         .insert({
+          content: messageText.trim(),
+          conversation_id: null,
+          receiver_id: recipientId ?? null,
           sender_id: data.user.id,
-          receiver_id: recipientId,
-          product_id: productId,
-          content: messageText.trim()
+          product_id: productId ?? null,
+          status: 'sent'
         });
       
       if (error) throw error;
       
       // Navigate to messages page with conversation context
-      const conversationParam = productId ? `${recipientId}__${productId}` : `${recipientId}__general`;
+  const conversationParam = productId ? `${recipientId}__${productId}` : `${recipientId}__general`;
       goto(`/messages?conversation=${conversationParam}`);
     } catch {
       sending = false;

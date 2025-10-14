@@ -25,31 +25,33 @@
   import { RealtimeNotificationService } from '$lib/realtime/notifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
-  import { createBrowserSupabaseClient } from '$lib/supabase/client';
+    import type { SupabaseClient } from '@supabase/supabase-js';
+    import type { Database } from '@repo/database';
+    import type { LanguageTag } from '@repo/i18n';
   import { afterNavigate } from '$app/navigation';
   interface Props {
+    supabase: SupabaseClient<Database> | null;
     showSearch?: boolean;
-    initialLanguage?: string;
+      initialLanguage?: LanguageTag;
     user?: User;
     profile?: Profile;
   }
   
   let {
+    supabase,
     showSearch = false,
     initialLanguage,
     user: propsUser,
     profile: propsProfile
   }: Props = $props();
   
-  // Create supabase client when needed (browser only)
-  const supabase = browser ? createBrowserSupabaseClient() : null;
   
   // Product service removed - search functionality will be handled by parent components
   
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
-  let NotificationPanel: unknown = $state(null);
+  let NotificationPanel: (new (...args: any) => any) | null = $state(null);
   let notificationPanelLoaded = $state(false);
   
   // Use props data directly
@@ -76,7 +78,7 @@
 
   $effect(() => {
     if (needsLanguageInit() && initialLanguage) {
-      i18n.setLocale(initialLanguage);
+      i18n.setLocale(initialLanguage as LanguageTag);
       currentLang = initialLanguage;
     }
   });
@@ -95,9 +97,7 @@
   async function handleSignOut() {
     signingOut = true;
     try {
-      if (supabase) {
-        await signOut(supabase);
-      }
+      await signOut();
       // The signOut function handles the redirect
     } catch {
       // Sign out error - reset loading state
@@ -124,7 +124,7 @@
   // Initialize notification service when user logs in
   $effect(() => {
     if (shouldInitNotifications() && currentUser) {
-      notificationService = new RealtimeNotificationService(supabase, currentUser.id);
+        notificationService = new RealtimeNotificationService(supabase as SupabaseClient<Database>, currentUser.id);
       notificationService.initialize();
     } else if (!currentUser && notificationService) {
       notificationService.destroy();
@@ -262,7 +262,7 @@
                 }
                 notificationActions.togglePanel();
               }}
-              aria-label={notificationTranslations.title}
+                aria-label="Notifications"
             />
 
             {#if notificationPanelLoaded && NotificationPanel}
@@ -346,7 +346,10 @@
 <!-- Message Toast Notifications -->
 {#each notificationStore.messageToasts as toast (toast.id)}
   <MessageNotificationToast 
-    notification={toast}
-    onClose={() => messageToastActions.remove(toast.id)}
+    show={true}
+    sender={toast.sender}
+    message={toast.message}
+    product={toast.product}
+    onDismiss={() => messageToastActions.remove(toast.id)}
   />
 {/each}

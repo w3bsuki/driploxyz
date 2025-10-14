@@ -9,7 +9,8 @@
   
   let { data }: Props = $props();
   
-  function formatDate(dateString: string) {
+  function formatDate(dateString: string | null | undefined) {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -22,19 +23,21 @@
   }
 
   // Analytics data
+  // Derived analytics metrics (treat as value, not callable)
   const analytics = $derived.by(() => {
     const now = new Date();
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     
-    const thisMonthOrders = data.orders.filter(o => new Date(o.created_at) >= thisMonth);
+    const thisMonthOrders = data.orders.filter(o => o.created_at && new Date(o.created_at) >= thisMonth);
     const lastMonthOrders = data.orders.filter(o => {
+      if (!o.created_at) return false;
       const date = new Date(o.created_at);
       return date >= lastMonth && date < thisMonth;
     });
     
-    const thisMonthEarnings = thisMonthOrders.reduce((sum, o) => sum + (o.seller_earnings || 0), 0);
-    const lastMonthEarnings = lastMonthOrders.reduce((sum, o) => sum + (o.seller_earnings || 0), 0);
+    const thisMonthEarnings = thisMonthOrders.reduce((sum, o) => sum + (o.seller_net_amount || 0), 0);
+    const lastMonthEarnings = lastMonthOrders.reduce((sum, o) => sum + (o.seller_net_amount || 0), 0);
     
     const earningsGrowth = lastMonthEarnings > 0 
       ? ((thisMonthEarnings - lastMonthEarnings) / lastMonthEarnings * 100)
@@ -96,8 +99,8 @@
         <p class="text-2xl font-bold text-blue-600">{data.soldProducts.length}</p>
       </div>
       <div class="bg-white rounded-lg p-4 shadow-sm">
-        <p class="text-sm text-gray-600">{i18n.sales_thisMonth()}</p>
-        <p class="text-2xl font-bold text-purple-600">{analytics().thisMonthSales}</p>
+    <p class="text-sm text-gray-600">{i18n.sales_thisMonth()}</p>
+  <p class="text-2xl font-bold text-purple-600">{analytics.thisMonthSales}</p>
       </div>
     </div>
 
@@ -129,7 +132,7 @@
                   {/if}
                   <h3 class="font-medium text-gray-900 mb-1 truncate">{product.title}</h3>
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-lg font-bold text-green-600">{formatPrice(product.sold_price || product.price)}</span>
+                    <span class="text-lg font-bold text-green-600">{formatPrice(product.price)}</span>
                     <span class="text-sm text-gray-500">Sold</span>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-600">
@@ -192,8 +195,8 @@
                         </p>
                       </div>
                       <div class="text-right">
-                        <p class="font-medium text-gray-900">{formatPrice(order.seller_earnings || 0)}</p>
-                        <OrderStatus status={order.status} />
+                        <p class="font-medium text-gray-900">{formatPrice(order.seller_net_amount || 0)}</p>
+                        <OrderStatus status={order.status ?? 'pending'} />
                       </div>
                     </div>
                   {/each}
@@ -207,18 +210,18 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <h3 class="text-sm font-medium text-gray-600 mb-2">{i18n.sales_thisMonthSales()}</h3>
-                <p class="text-2xl font-bold text-gray-900">{analytics().thisMonthSales}</p>
+                <p class="text-2xl font-bold text-gray-900">{analytics.thisMonthSales}</p>
                 <div class="flex items-center mt-2">
-                  {#if analytics().salesGrowth > 0}
+                  {#if analytics.salesGrowth > 0}
                     <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
-                    <span class="text-sm text-green-600">+{analytics().salesGrowth.toFixed(1)}%</span>
-                  {:else if analytics().salesGrowth < 0}
+                    <span class="text-sm text-green-600">+{analytics.salesGrowth.toFixed(1)}%</span>
+                  {:else if analytics.salesGrowth < 0}
                     <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                     </svg>
-                    <span class="text-sm text-red-600">{analytics().salesGrowth.toFixed(1)}%</span>
+                    <span class="text-sm text-red-600">{analytics.salesGrowth.toFixed(1)}%</span>
                   {:else}
                     <span class="text-sm text-gray-500">{i18n.sales_noChange()}</span>
                   {/if}
@@ -227,18 +230,18 @@
 
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <h3 class="text-sm font-medium text-gray-600 mb-2">{i18n.sales_thisMonthEarnings()}</h3>
-                <p class="text-2xl font-bold text-gray-900">{formatPrice(analytics().thisMonthEarnings)}</p>
+                <p class="text-2xl font-bold text-gray-900">{formatPrice(analytics.thisMonthEarnings)}</p>
                 <div class="flex items-center mt-2">
-                  {#if analytics().earningsGrowth > 0}
+                  {#if analytics.earningsGrowth > 0}
                     <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
-                    <span class="text-sm text-green-600">+{analytics().earningsGrowth.toFixed(1)}%</span>
-                  {:else if analytics().earningsGrowth < 0}
+                    <span class="text-sm text-green-600">+{analytics.earningsGrowth.toFixed(1)}%</span>
+                  {:else if analytics.earningsGrowth < 0}
                     <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                     </svg>
-                    <span class="text-sm text-red-600">{analytics().earningsGrowth.toFixed(1)}%</span>
+                    <span class="text-sm text-red-600">{analytics.earningsGrowth.toFixed(1)}%</span>
                   {:else}
                     <span class="text-sm text-gray-500">{i18n.sales_noChange()}</span>
                   {/if}
@@ -247,7 +250,7 @@
 
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <h3 class="text-sm font-medium text-gray-600 mb-2">{i18n.sales_averageOrder()}</h3>
-                <p class="text-2xl font-bold text-gray-900">{formatPrice(analytics().averageOrderValue)}</p>
+                <p class="text-2xl font-bold text-gray-900">{formatPrice(analytics.averageOrderValue)}</p>
                 <p class="text-sm text-gray-500 mt-2">{i18n.sales_perSale()}</p>
               </div>
 

@@ -1,20 +1,27 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, searchForWorkspaceRoot, type PluginOption } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	plugins: [
-		tailwindcss(),
-		sveltekit()
+		// SvelteKit first for correct plugin ordering
+		sveltekit() as unknown as PluginOption,
+		tailwindcss()
 	],
+	resolve: {
+		dedupe: ['svelte']
+	},
 	server: {
 		port: 5173,
-		host: true
+		host: true,
+		fs: {
+			allow: [searchForWorkspaceRoot(process.cwd())]
+		}
 	},
 	build: {
-		target: 'esnext'
+		target: 'es2022'
 	},
 	esbuild: {
-		target: 'esnext'
+		target: 'es2022'
 	}
 });

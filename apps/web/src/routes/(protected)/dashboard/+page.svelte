@@ -16,7 +16,14 @@
   
   let isLoading = $state(!data.products && !data.orders);
   let showWelcomeModal = $state(false);
-  let currentTutorialStep = $state<{ id: string; step: number; title: string; description: string; targetElement?: string; position?: string } | null>(null);
+  let currentTutorialStep = $state<{
+    id: string;
+    step: number;
+    title: string;
+    description: string;
+    targetElement?: string;
+    position?: 'top' | 'bottom' | 'left' | 'right';
+  } | null>(null);
   
   // Check for success message from listing creation and first time users
   $effect(() => {
@@ -72,7 +79,7 @@
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
     const activeListings = data.products?.filter(p => p.status === 'active' && !p.is_sold) || [];
-    const thisMonthOrders = data.orders?.filter(o => new Date(o.created_at) >= thisMonth) || [];
+    const thisMonthOrders = data.orders?.filter(o => (o.created_at ? new Date(o.created_at) >= thisMonth : false)) || [];
     const allTimeOrders = data.orders || [];
     
     const totalRevenue = allTimeOrders.reduce((sum, order) => sum + Number(order.total_amount), 0);
@@ -92,17 +99,22 @@
   
   // Recent orders from real data
   const recentOrders = $derived.by(() => {
+    const toTime = (d: string | null) => (d ? new Date(d).getTime() : 0);
     return (data.orders || [])
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .sort((a, b) => toTime(b.created_at) - toTime(a.created_at))
       .slice(0, 5)
-      .map(order => ({
-        id: order.id,
-        productTitle: order.product?.title || 'Unknown Product',
-        buyerName: order.buyer?.full_name || order.buyer?.username || 'Unknown Buyer',
-        price: Number(order.total_amount),
-        status: order.status,
-        date: order.created_at
-      }));
+      .map(order => {
+        const prod = (order as any)?.product as any;
+        const buyer = (order as any)?.buyer as any;
+        return {
+          id: order.id,
+          productTitle: prod?.title || 'Unknown Product',
+          buyerName: buyer?.full_name || buyer?.username || 'Unknown Buyer',
+          price: Number(order.total_amount),
+          status: order.status,
+          date: order.created_at
+        };
+      });
   });
   
   // Active listings from real data
@@ -129,7 +141,8 @@
   });
   
   
-  const timeAgo = (date: string) => {
+  const timeAgo = (date: string | null) => {
+    if (!date) return '-';
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
     if (seconds < 60) return i18n.dashboard_justNow();
     const minutes = Math.floor(seconds / 60);
@@ -140,8 +153,8 @@
     return i18n.dashboard_daysAgo({ days });
   };
   
-  const getStatusColor = (status: string) => {
-    switch(status) {
+  const getStatusColor = (status: string | null | undefined) => {
+    switch(status ?? '') {
       case 'pending_shipment': return 'bg-yellow-100 text-yellow-800';
       case 'shipped': return 'bg-[color:var(--status-info-bg)] text-[color:var(--status-info-text)]';
       case 'delivered': return 'bg-green-100 text-green-800';
@@ -150,8 +163,9 @@
     }
   };
   
-  const getStatusText = (status: string) => {
-    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const getStatusText = (status: string | null | undefined) => {
+    const s = (status ?? '').toString();
+    return s.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 </script>
 
@@ -251,8 +265,8 @@
 
     <!-- Balance Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-      {@render balanceCard(i18n.dashboard_availableBalance(), `$${stats().totalRevenue.toFixed(2)}`, i18n.dashboard_totalEarned(), 'text-green-500', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z')}
-      {@render balanceCard(i18n.dashboard_monthSales(), stats().monthlySales.toString(), i18n.dashboard_lastMonthIncrease(), 'text-primary', 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z')}
+      {@render balanceCard(i18n.dashboard_availableBalance(), `$${stats.totalRevenue.toFixed(2)}`, i18n.dashboard_totalEarned(), 'text-green-500', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z')}
+      {@render balanceCard(i18n.dashboard_monthSales(), stats.monthlySales.toString(), i18n.dashboard_lastMonthIncrease(), 'text-primary', 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z')}
     </div>
 
 
@@ -267,10 +281,10 @@
           </div>
         {/each}
       {:else}
-      {@render statsCard(i18n.dashboard_totalRevenue(), `$${stats().totalRevenue.toFixed(0)}`, i18n.dashboard_allTime())}
-      {@render statsCard(i18n.dashboard_activeListings(), stats().activeListings.toString(), i18n.dashboard_currentlyLive())}
-      {@render statsCard(i18n.dashboard_totalViews(), stats().monthlyViews.toString(), i18n.dashboard_thisMonth())}
-      {@render statsCard(i18n.dashboard_conversionRate(), `${stats().conversionRate.toFixed(1)}%`, i18n.dashboard_viewsToSales())}
+      {@render statsCard(i18n.dashboard_totalRevenue(), `$${stats.totalRevenue.toFixed(0)}`, i18n.dashboard_allTime())}
+      {@render statsCard(i18n.dashboard_activeListings(), stats.activeListings.toString(), i18n.dashboard_currentlyLive())}
+      {@render statsCard(i18n.dashboard_totalViews(), stats.monthlyViews.toString(), i18n.dashboard_thisMonth())}
+      {@render statsCard(i18n.dashboard_conversionRate(), `${stats.conversionRate.toFixed(1)}%`, i18n.dashboard_viewsToSales())}
       {/if}
     </div>
 
@@ -295,7 +309,7 @@
               </div>
             {/each}
           </div>
-        {:else if recentOrders().length === 0}
+        {:else if recentOrders.length === 0}
           <div class="p-8 text-center text-gray-500">
             <p>{i18n.dashboard_noRecentOrders()}</p>
           </div>
@@ -311,7 +325,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-              {#each recentOrders() as order}
+              {#each recentOrders as order}
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
                   <td class="px-4 py-3 text-sm text-gray-600">{order.buyerName}</td>
@@ -342,7 +356,7 @@
             <ProductCardSkeleton />
           {/each}
         </div>
-      {:else if activeListings().length === 0}
+      {:else if activeListings.length === 0}
         <div class="text-center py-12 bg-white rounded-lg">
           <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -353,7 +367,7 @@
         </div>
       {:else}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {#each activeListings() as product}
+          {#each activeListings as product}
             <a href={getProductUrl(product)} class="group cursor-pointer">
               <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                 <img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform" />

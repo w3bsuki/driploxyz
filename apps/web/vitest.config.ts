@@ -8,7 +8,7 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{js,ts}'],
     exclude: ['node_modules', 'dist', '.svelte-kit'],
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: [],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

@@ -5,19 +5,19 @@ import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 import { paymentLogger } from '$lib/utils/log';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country }, getClientAddress }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
   // Critical rate limiting for checkout operations
   const rateLimitResponse = await enforceRateLimit(
-    request, 
-    getClientAddress, 
+    request,
+    () => locals.clientIp ?? getClientAddress(),
     'checkout',
-    `checkout:${getClientAddress()}`
+    `checkout:${locals.clientIp ?? getClientAddress()}`
   );
   if (rateLimitResponse) return rateLimitResponse;
   
   paymentLogger.info('Starting checkout process');
   
-  const { session, user } = await safeGetSession();
+  const { session, user } = await locals.safeGetSession();
 
   if (!session || !user) {
     paymentLogger.warn('No session found - authentication required');
@@ -41,13 +41,13 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
       // Check if any items are sold or belong to buyer
       for (const item of bundleItems) {
-        const { data: product } = await supabase
+        const { data: product } = await locals.supabase
           .from('products')
           .select('id, is_sold, seller_id')
           .eq('id', item.id)
-          .eq('country_code', country || 'BG')
+          .eq('country_code', locals.country || 'BG')
           .single();
-        
+
         if (!product || product.is_sold) {
           return error(400, { message: `Product ${item.title} is no longer available` });
         }
@@ -69,19 +69,18 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     paymentLogger.debug('Creating services');
     // Create services with Stripe instance
-    const services = createServices(supabase, stripe);
+  const services = createServices(locals.supabase, stripe);
 
     if (!services.stripe) {
       paymentLogger.error('Services.stripe not available', new Error('Stripe service not initialized'));
       return error(500, { message: 'Payment service not available' });
     }
 
-    paymentLogger.debug('Services created successfully');
-
+  paymentLogger.debug('Services created successfully');
     // Single product logic (backward compatible)
     if (!bundleItems) {
       // Get product details
-      const { data: product, error: productError } = await supabase
+      const { data: product, error: productError } = await locals.supabase
         .from('products')
         .select(`
           *,
@@ -96,7 +95,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
           )
         `)
         .eq('id', productId)
-        .eq('country_code', country || 'BG')
+        .eq('country_code', locals.country || 'BG')
         .single();
 
       if (productError || !product) {
@@ -122,6 +121,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         totalAmount
       });
 
+      // Ensure user email exists for payment metadata
+      if (!user.email) {
+        return error(400, { message: 'User email is required for checkout' });
+      }
+
       // Create payment intent for single product
       paymentLogger.info('Creating payment intent for single product', { productId });
       
@@ -131,7 +135,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         productId,
         sellerId: product.seller_id,
         buyerId: user.id,
-        userEmail: user.email,
+  userEmail: user.email,
         metadata: {
           selectedSize: selectedSize || '',
           productTitle: product.title,
@@ -189,7 +193,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       const totalAmount = itemsTotal + serviceFee;
       
       // Create bundle session
-      const { data: bundleSession } = await supabase
+      const { data: bundleSession } = await locals.supabase
         .from('bundle_sessions')
         .insert({
           buyer_id: user.id,
@@ -200,6 +204,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         .select()
         .single();
       
+      // Ensure user email exists for payment metadata
+      if (!user.email) {
+        return error(400, { message: 'User email is required for checkout' });
+      }
+
       // Create payment intent for bundle
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
         amount: totalAmount,
@@ -241,9 +250,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     }
 
   } catch (err) {
-    paymentLogger.error('Checkout API error', err, {
-      userId: session?.user?.id
-    });
+    paymentLogger.error('Checkout API error', err);
     return error(500, { message: 'Internal server error' });
   }
 };

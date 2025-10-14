@@ -26,10 +26,7 @@ export const load = (async ({ url, locals }) => {
 
     // If user has brand_pending status, activate their brand
     if (profile?.brand_status === 'brand_pending') {
-      const result = await activateBrandStatus(locals.supabase, {
-        userId: user.id,
-        subscriptionId
-      });
+      const result = await activateBrandStatus(locals.supabase, user.id);
       
       if (result.success) {
         brandActivated = true;

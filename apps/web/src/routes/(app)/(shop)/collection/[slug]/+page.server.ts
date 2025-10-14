@@ -1,7 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { CollectionService } from '@repo/core';
-import type { CollectionWithProducts } from '@repo/core';
 import { createLogger } from '$lib/utils/log';
 
 const log = createLogger('collection-page-server');
@@ -20,71 +19,42 @@ export const load = (async ({ params, locals, url }) => {
   // Get query parameters for pagination
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const limit = parseInt(url.searchParams.get('limit') || '20', 10);
-  const offset = (page - 1) * limit;
+  // const offset = (page - 1) * limit;
 
   try {
     // Initialize collection service
     const collectionService = new CollectionService(locals.supabase);
 
-    // Get collection with products
-    const { data: collection, error: collectionError } = await collectionService.getBrandCollectionWithProducts(
-      slug,
-      limit,
-      offset
-    );
+  // Get collection metadata
+  const { data: collection, error: collectionError } = await collectionService.getCollectionBySlug(slug);
 
     if (collectionError || !collection) {
       log.error('Collection not found:', { slug, error: collectionError });
       error(404, 'Collection not found');
     }
 
-    // Get user favorites if logged in
-    let userFavorites: Record<string, boolean> = {};
-    if (user && collection.products.length > 0) {
-      try {
-        const productIds = collection.products.map(p => p.id);
-        const { data: favorites } = await locals.supabase
-          .from('favorites')
-          .select('product_id')
-          .eq('user_id', user.id)
-          .in('product_id', productIds);
-
-        if (favorites) {
-          userFavorites = favorites.reduce((acc, fav) => {
-            acc[fav.product_id] = true;
-            return acc;
-          }, {} as Record<string, boolean>);
-        }
-      } catch (favoriteError) {
-        log.warn('Failed to fetch user favorites:', { error: String(favoriteError) });
-        // Continue without favorites - non-critical
-      }
-    }
+    // Get user favorites if logged in (no products list available in core type)
+    const userFavorites: Record<string, boolean> = {};
 
     // Get related collections (same type, excluding current)
-    const { data: relatedCollections } = await collectionService.getBrandCollections({
-      collection_type: collection.collection_type,
-      is_featured: true,
-      is_active: true,
-      limit: 6
-    });
+    const { data: relatedCollections } = await collectionService.getCollections();
 
     const filteredRelatedCollections = relatedCollections?.filter(c => c.slug !== slug) || [];
 
     // Calculate pagination info
-    const hasMore = collection.products.length === limit;
+  const hasMore = collection.product_count > page * limit;
     const totalPages = hasMore ? page + 1 : page; // We don't have exact count, estimate
 
     log.info('Collection loaded successfully:', {
       slug,
       collectionId: collection.id,
-      productCount: collection.products.length,
+  productCount: collection.product_count,
       page,
       hasMore: hasMore ? 'true' : 'false'
     });
 
     return {
-      collection: collection as CollectionWithProducts,
+  collection,
       userFavorites,
       relatedCollections: filteredRelatedCollections.slice(0, 5),
       pagination: {
@@ -97,8 +67,8 @@ export const load = (async ({ params, locals, url }) => {
       user,
       meta: {
         title: `${collection.name} Collection - Driplo`,
-        description: collection.description || `Discover ${collection.name} collection on Driplo. ${collection.collection_type === 'designer' ? 'Luxury designer pieces' : 'Curated streetwear'} from top sellers.`,
-        image: collection.products[0]?.images[0] || null,
+        description: collection.description || `Discover ${collection.name} collection on Driplo. Curated items from top sellers.`,
+        image: null,
         canonical: `/collection/${collection.slug}`
       }
     };

@@ -149,9 +149,9 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
   
   // Optimize cache headers for search pages - user-specific but cacheable for short periods
   // Search results are user-agnostic but contain filtering data that changes frequently
-  const { session } = await locals.safeGetSession();
+  const { user } = await locals.safeGetSession();
   setHeaders({
-    'cache-control': session?.user ? 'private, max-age=120, stale-while-revalidate=600' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+    'cache-control': user ? 'private, max-age=120, stale-while-revalidate=600' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
     'vary': 'Accept-Encoding, Authorization',
     'x-cache-strategy': 'search-page'
   });

@@ -57,6 +57,66 @@ export class ProductDomainAdapter {
     }
   }
 
+  async getProducts(options: { filters?: any; limit?: number; offset?: number; sort?: ProductSearchOptions['sort'] }): Promise<{ data: unknown[] | null; error?: any }> {
+    try {
+      // TODO: Implement product fetching with filters
+      // This is a wrapper around searchProductsWithFilters for direct product fetching
+      console.log('Getting products with options:', options);
+
+      const { filters = {}, limit = 10, offset = 0, sort } = options;
+
+      // Build query parameters
+      let query = this.supabase
+        .from('products')
+        .select('*', { count: 'exact' });
+
+      // Apply filters
+      if (filters.category_ids?.length) {
+        query = query.in('category_id', filters.category_ids);
+      }
+      if (filters.country_code) {
+        query = query.eq('country_code', filters.country_code);
+      }
+      if (filters.min_price !== undefined) {
+        query = query.gte('price', filters.min_price);
+      }
+      if (filters.max_price !== undefined) {
+        query = query.lte('price', filters.max_price);
+      }
+      if (filters.conditions?.length) {
+        query = query.in('condition', filters.conditions);
+      }
+      if (filters.brands?.length) {
+        query = query.in('brand', filters.brands);
+      }
+
+      // Apply sorting
+      if (sort) {
+        query = query.order(sort.by, { ascending: sort.direction === 'asc' });
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      // Apply pagination
+      query = query.range(offset, offset + limit - 1);
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching products:', error);
+        return { data: null, error };
+      }
+
+      return { data };
+    } catch (error) {
+      console.error('Error getting products:', error);
+      return {
+        data: null,
+        error
+      };
+    }
+  }
+
   async getProduct(productId: string): Promise<{ data: unknown; error?: any }> {
     try {
       // TODO: Implement single product fetching
@@ -173,13 +233,36 @@ export class ProductDomainAdapter {
     }
   }
 
-  async getSellerProducts(sellerId: string, options?: { limit?: number }): Promise<{ data: unknown[]; error?: any }> {
+  async getSellerProducts(sellerId: string, options?: { limit?: number; sort?: ProductSearchOptions['sort'] }): Promise<{ data: unknown[]; error?: any }> {
     try {
-      // TODO: Implement seller's products fetching
       console.log('Getting seller products:', sellerId, options);
-      return {
-        data: []
-      };
+      
+      const { limit = 10, sort } = options || {};
+
+      // Build query
+      let query = this.supabase
+        .from('products')
+        .select('*')
+        .eq('seller_id', sellerId);
+
+      // Apply sorting
+      if (sort) {
+        query = query.order(sort.by, { ascending: sort.direction === 'asc' });
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      // Apply limit
+      query = query.limit(limit);
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching seller products:', error);
+        return { data: [], error };
+      }
+
+      return { data: data || [] };
     } catch (error) {
       console.error('Error getting seller products:', error);
       return {

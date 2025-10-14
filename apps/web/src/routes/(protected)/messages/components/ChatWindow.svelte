@@ -102,16 +102,16 @@
 
   // Enhanced scroll handling for progressive message loading
   let loadMoreThreshold = 50; // pixels from top
-  let scrollDebounceTimer: number | null = null;
+  let scrollDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   
   function handleScroll() {
     if (!messagesContainer || isLoadingOlder || !hasMoreMessages || !onLoadOlder) return;
     
     // Debounce scroll events for better performance
-    if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
+  if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
     
     scrollDebounceTimer = setTimeout(() => {
-      const { scrollTop } = messagesContainer;
+      const scrollTop = messagesContainer ? messagesContainer.scrollTop : 0;
       // scrollHeight and clientHeight not currently used but available for future scroll calculations
       
       // Load older messages when scrolled near the top (like Messenger/WhatsApp)
