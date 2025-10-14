@@ -1,5 +1,5 @@
 import type { Reroute } from '@sveltejs/kit';
-import { deLocalizeUrl } from '@repo/i18n';
+import { deLocalizeUrl } from '@repo/i18n/paraglide/runtime';
 
 /**
  * Reroute hook to handle language path prefixes using Paraglide's built-in deLocalizeUrl

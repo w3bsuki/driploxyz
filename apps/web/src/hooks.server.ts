@@ -4,6 +4,7 @@ import type { Database } from '@repo/database';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { dev } from '$app/environment';
 import { sequence } from '@sveltejs/kit/hooks';
+import { paraglideMiddleware } from '@repo/i18n/server';
 
 /**
  * PRODUCTION-READY SUPABASE SSR HOOK
@@ -111,6 +112,22 @@ const supabaseHandle: Handle = async ({ event, resolve }) => {
 };
 
 /**
+ * Paraglide i18n middleware
+ * Must run BEFORE Supabase/auth so the locale is available in locals and HTML lang is set
+ */
+const i18nHandle: Handle = ({ event, resolve }) =>
+  paraglideMiddleware(event.request, ({ request, locale }) => {
+    // set the de-localized request back onto the event
+    event.request = request;
+    // expose the resolved locale to downstream loaders/actions
+    (event.locals as App.Locals & { locale?: string }).locale = locale;
+
+    return resolve(event, {
+      transformPageChunk: ({ html }) => html.replace('%lang%', locale)
+    });
+  });
+
+/**
  * Security headers middleware
  * Add production-grade security headers to all responses
  */
@@ -138,4 +155,4 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
  * Export handlers in sequence
  * Supabase must run first to set up auth, then security headers
  */
-export const handle = sequence(supabaseHandle, securityHeadersHandle);
+export const handle = sequence(i18nHandle, supabaseHandle, securityHeadersHandle);
