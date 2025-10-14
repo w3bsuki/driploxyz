@@ -64,7 +64,7 @@
   });
   
   // Animation direction based on position
-  const getTransitionParams = $derived.by(() => {
+  const transitionParams = $derived.by(() => {
     const isTop = position.includes('top');
     const isLeft = position.includes('left');
     const isRight = position.includes('right');
@@ -122,21 +122,21 @@
 <!-- Toast Container -->
 <div
   use:portal
-  class={containerClasses()}
+  class={containerClasses}
   style="gap: {gap}px"
   aria-live="polite"
   aria-label="Notifications"
 >
   {#each activeToasts as toast (toast.id)}
     <div
-      class="pointer-events-auto {containerPadding()}"
+  class={`pointer-events-auto ${containerPadding}`}
       in:fly={{ 
-        ...getTransitionParams(), 
+        ...transitionParams, 
         duration: 300, 
         delay: 0 
       }}
       out:fly={{ 
-        ...getTransitionParams(), 
+        ...transitionParams, 
         duration: 200, 
         delay: 0 
       }}
