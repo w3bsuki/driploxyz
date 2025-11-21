@@ -125,7 +125,7 @@
 {#if isOpen}
   <!-- Backdrop with click to close -->
   <div
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+    class="fixed inset-0 bg-[var(--modal-overlay-bg)] backdrop-blur-sm"
     style="z-index: var(--z-max, 999999)"
     transition:fade={{ duration: 200 }}
     onclick={onClose}
@@ -236,7 +236,7 @@
               <p class="text-sm text-gray-500 mb-2">Failed to load listings</p>
               <button 
                 onclick={fetchSellerProducts}
-                class="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                class="text-xs text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] font-medium"
               >
                 Try again
               </button>

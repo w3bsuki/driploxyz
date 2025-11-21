@@ -13,8 +13,3 @@
 
 </div>
 
-<style>
-  .app-layout {
-    /* App-wide authenticated styles */
-  }
-</style>

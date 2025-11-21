@@ -259,7 +259,7 @@
       
       <!-- Admin Panel (Only for admins) -->
       {#if data.profile?.role === 'admin'}
-        {@render actionButton('/admin/payouts', 'outline', 'w-full h-10 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-purple-50 to-pink-50 border-purple-300 text-purple-900 hover:from-purple-100 hover:to-pink-100 font-medium', 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', i18n.dashboard_adminPanel())}
+        {@render actionButton('/admin/payouts', 'outline', 'w-full h-10 sm:h-12 text-sm sm:text-base bg-zinc-50 border-zinc-300 text-zinc-900 hover:bg-zinc-100 font-medium', 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', i18n.dashboard_adminPanel())}
       {/if}
     </div>
 
@@ -389,25 +389,25 @@
     show={showWelcomeModal}
     username={data.profile?.username || 'there'}
     translations={{
-      welcome: i18n.m.welcome_modal_welcome(),
-      welcomeBrand: i18n.m.welcome_modal_welcomeBrand(),
-      welcomePersonal: i18n.m.welcome_modal_welcomePersonal(),
-      discover: i18n.m.welcome_modal_discover(),
-      discoverDesc: i18n.m.welcome_modal_discoverDesc(),
-      sell: i18n.m.welcome_modal_sell(),
-      sellDesc: i18n.m.welcome_modal_sellDesc(),
-      ready: i18n.m.welcome_modal_ready(),
-      readyDesc: i18n.m.welcome_modal_readyDesc(),
-      back: i18n.m.welcome_modal_back(),
-      next: i18n.m.welcome_modal_next(),
-      getStarted: i18n.m.welcome_modal_getStarted(),
-      skip: i18n.m.welcome_modal_skip(),
-      designer: i18n.m.welcome_modal_designer(),
-      vintage: i18n.m.welcome_modal_vintage(),
-      trending: i18n.m.welcome_modal_trending(),
-      totalSales: i18n.m.welcome_modal_totalSales(),
-      happySellers: i18n.m.welcome_modal_happySellers(),
-      trustedMarketplace: i18n.m.welcome_modal_trustedMarketplace()
+      welcome: i18n.welcome_modal_welcome(),
+      welcomeBrand: i18n.welcome_modal_welcomeBrand(),
+      welcomePersonal: i18n.welcome_modal_welcomePersonal(),
+      discover: i18n.welcome_modal_discover(),
+      discoverDesc: i18n.welcome_modal_discoverDesc(),
+      sell: i18n.welcome_modal_sell(),
+      sellDesc: i18n.welcome_modal_sellDesc(),
+      ready: i18n.welcome_modal_ready(),
+      readyDesc: i18n.welcome_modal_readyDesc(),
+      back: i18n.welcome_modal_back(),
+      next: i18n.welcome_modal_next(),
+      getStarted: i18n.welcome_modal_getStarted(),
+      skip: i18n.welcome_modal_skip(),
+      designer: i18n.welcome_modal_designer(),
+      vintage: i18n.welcome_modal_vintage(),
+      trending: i18n.welcome_modal_trending(),
+      totalSales: i18n.welcome_modal_totalSales(),
+      happySellers: i18n.welcome_modal_happySellers(),
+      trustedMarketplace: i18n.welcome_modal_trustedMarketplace()
     }}
     onComplete={() => {
       showWelcomeModal = false;

@@ -21,6 +21,8 @@
     value?: string | null;
     minValue?: string;
     maxValue?: string;
+    minKey?: string; // explicit key for minimum value (e.g., 'minPrice')
+    maxKey?: string; // explicit key for maximum value (e.g., 'maxPrice')
     placeholder?: { min?: string; max?: string };
   }
 
@@ -216,6 +218,14 @@
     localFilters = { ...pendingFilters };
   });
 
+  // Precompute range key sets for detection (supports explicit minKey/maxKey)
+  const rangeMinKeys = $derived.by(() => new Set(
+    sections.filter(s => s.type === 'range').map(s => s.minKey || `${s.key}_min`)
+  ));
+  const rangeMaxKeys = $derived.by(() => new Set(
+    sections.filter(s => s.type === 'range').map(s => s.maxKey || `${s.key}_max`)
+  ));
+
   // Handle individual filter changes
   function handleFilterChange(key: string, value: any) {
     const section = sections.find(s => s.key === key || key.startsWith(s.key));
@@ -228,8 +238,8 @@
       if (announcementTemplate) {
         announcement = announcementTemplate(key, value, section.label);
       } else {
-        if (key.includes('_min') || key.includes('_max')) {
-          const type = key.includes('_min') ? 'minimum' : 'maximum';
+        if (key.includes('_min') || key.includes('_max') || rangeMinKeys.has(key) || rangeMaxKeys.has(key)) {
+          const type = (key.includes('_min') || rangeMinKeys.has(key)) ? 'minimum' : 'maximum';
           const displayValue = value || 'not set';
           announcement = `${section.label} ${type} set to ${displayValue}`;
         } else {
@@ -241,9 +251,9 @@
   }
 
   // Handle price range input
-  function handlePriceInput(key: string, type: 'min' | 'max', event: Event) {
+  function handlePriceInput(key: string, type: 'min' | 'max', event: Event, minKey?: string, maxKey?: string) {
     const target = event.target as HTMLInputElement;
-    const rangeKey = `${key}_${type}`;
+    const rangeKey = type === 'min' ? (minKey || `${key}_min`) : (maxKey || `${key}_max`);
     localFilters[rangeKey] = target.value;
     onPendingFilterChange?.(rangeKey, target.value);
   }
@@ -272,7 +282,7 @@
   function handleClear() {
     // Reset all filter values to defaults
     Object.keys(localFilters).forEach(key => {
-      if (key.includes('_min') || key.includes('_max')) {
+      if (key.includes('_min') || key.includes('_max') || rangeMinKeys.has(key) || rangeMaxKeys.has(key)) {
         localFilters[key] = '';
       } else {
         localFilters[key] = key === 'sortBy' ? 'relevance' : 'all';
@@ -314,7 +324,7 @@
   // Check if any filters are active
   const hasActiveFilters = $derived.by(() => {
     return Object.entries(localFilters).some(([key, value]) => {
-      if (key.includes('_min') || key.includes('_max')) {
+      if (key.includes('_min') || key.includes('_max') || rangeMinKeys.has(key) || rangeMaxKeys.has(key)) {
         return value !== '';
       }
       if (key === 'sortBy') {
@@ -327,14 +337,14 @@
   // Active filter count for display
   const activeFilterCount = $derived.by(() => {
     return Object.entries(appliedFilters).reduce((count, [key, value]) => {
-      if (key.includes('_min') || key.includes('_max')) {
+      if (key.includes('_min') || key.includes('_max') || rangeMinKeys.has(key) || rangeMaxKeys.has(key)) {
         return count; // Price range counts as 1 filter, handled elsewhere
       }
       if (key === 'sortBy') {
         return value !== 'relevance' ? count + 1 : count;
       }
       return value !== 'all' && value !== null && value !== '' ? count + 1 : count;
-    }, 0) + (appliedFilters.minPrice || appliedFilters.maxPrice ? 1 : 0);
+    }, 0) + ((appliedFilters.minPrice || appliedFilters.maxPrice) ? 1 : 0);
   });
 </script>
 
@@ -346,7 +356,7 @@
            transition-colors duration-[var(--duration-base)]
            min-h-[var(--touch-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2
            {activeFilterCount > 0 
-             ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)]' 
+             ? 'bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)]' 
              : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)] hover:text-[color:var(--text-primary)]'}"
     aria-label="Open filters"
     aria-describedby={activeFilterCount > 0 ? 'filter-count-description' : undefined}
@@ -370,7 +380,7 @@
 {#if isOpen}
   <!-- Backdrop -->
   <button
-    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm cursor-default"
+    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay-bg)] backdrop-blur-sm cursor-default"
     style="z-index: 9999;"
     onclick={() => {
       isOpen = false;
@@ -458,8 +468,8 @@
                   <input
                     type="number"
                     placeholder={section.placeholder?.min || minPriceLabel}
-                    value={localFilters[`${section.key}_min`] || ''}
-                    oninput={(e) => handlePriceInput(section.key, 'min', e)}
+                    value={localFilters[section.minKey || `${section.key}_min`] || ''}
+                    oninput={(e) => handlePriceInput(section.key, 'min', e, section.minKey, section.maxKey)}
                     class="w-full px-3 py-2 border border-[color:var(--border-default)] rounded-[var(--radius-md)] 
                            text-sm text-center min-h-[var(--touch-standard)]
                            bg-[color:var(--surface-base)] text-[color:var(--text-primary)]
@@ -475,8 +485,8 @@
                   <input
                     type="number"
                     placeholder={section.placeholder?.max || maxPriceLabel}
-                    value={localFilters[`${section.key}_max`] || ''}
-                    oninput={(e) => handlePriceInput(section.key, 'max', e)}
+                    value={localFilters[section.maxKey || `${section.key}_max`] || ''}
+                    oninput={(e) => handlePriceInput(section.key, 'max', e, section.minKey, section.maxKey)}
                     class="w-full px-3 py-2 border border-[color:var(--border-default)] rounded-[var(--radius-md)] 
                            text-sm text-center min-h-[var(--touch-standard)]
                            bg-[color:var(--surface-base)] text-[color:var(--text-primary)]
@@ -502,13 +512,13 @@
       <button
         onclick={handleApply}
         class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 
-               bg-[color:var(--primary)] text-[color:var(--primary-fg)] 
+               bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)] 
                rounded-[var(--radius-md)] font-medium text-sm
                min-h-[var(--touch-primary)] 
-               hover:bg-[color:var(--primary-600)] active:scale-98
+               hover:bg-zinc-800 active:scale-98
                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)]
                transition-all duration-[var(--duration-base)]
-               {hasPendingChanges ? 'ring-2 ring-[color:var(--primary-200)]' : ''}
+               {hasPendingChanges ? 'ring-2 ring-zinc-200' : ''}
                disabled:opacity-50 disabled:cursor-not-allowed"
         aria-describedby="apply-button-description"
       >
@@ -517,7 +527,7 @@
         </svg>
         {applyLabel}
         {#if hasPendingChanges}
-          <span class="w-1.5 h-1.5 bg-[color:var(--primary-200)] rounded-full" aria-hidden="true"></span>
+          <span class="w-1.5 h-1.5 bg-zinc-200 rounded-full" aria-hidden="true"></span>
         {/if}
       </button>
       <p id="apply-button-description" class="sr-only">

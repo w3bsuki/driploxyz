@@ -90,7 +90,7 @@
     {#if formData.use_premium_boost}
       <div class="flex justify-between py-2 border-b">
         <span class="text-sm text-gray-600">Premium Boost</span>
-        <span class="text-sm font-medium text-purple-600">{i18n.sell_premiumBoostActive()}</span>
+        <span class="text-sm font-medium text-zinc-600">{i18n.sell_premiumBoostActive()}</span>
       </div>
     {/if}
   </div>

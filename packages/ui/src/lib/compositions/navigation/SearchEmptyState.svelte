@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { SearchBarMode } from './types.js';
-import { useAnalytics } from '../../hooks/analytics.js';
+import type { SearchBarMode } from '../../types/search';
+import { useAnalytics } from '../../hooks/analytics';
 import Button from '../../primitives/button/Button.svelte';
 
 interface Props {

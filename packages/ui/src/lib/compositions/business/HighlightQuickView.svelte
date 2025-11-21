@@ -98,7 +98,7 @@
 
 <!-- Modal backdrop -->
 <div
-  class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+  class="fixed inset-0 bg-[var(--modal-overlay-bg)] z-50 flex items-center justify-center p-4"
   onclick={handleBackdropClick}
   onkeydown={handleBackdropKeyDown}
   role="button"
@@ -209,7 +209,7 @@
           {#each availableSizes as size}
             <button
               onclick={() => selectedSize = size}
-              class="px-2 py-1 text-xs border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {selectedSize === size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-gray-400'}"
+              class="px-2 py-1 text-xs border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--ring-focus)] {selectedSize === size ? 'bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] border-[var(--btn-primary-bg)]' : 'border-gray-300 hover:border-gray-400'}"
               role="radio"
               aria-checked={selectedSize === size}
               aria-label="Size {size}"
@@ -238,7 +238,7 @@
       <button 
         onclick={handleAddToCart}
         disabled={!canPurchase}
-        class="flex-1 bg-black text-white text-sm py-2.5 px-4 rounded-lg font-medium transition-colors hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-sm py-2.5 px-4 rounded-lg font-medium transition-colors hover:bg-[var(--btn-primary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--ring-focus)] disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Buy {product.title} now{selectedSize ? ` in size ${selectedSize}` : ''}"
       >
         Buy Now
@@ -246,7 +246,7 @@
       <button 
         onclick={handleToggleFavorite}
         disabled={isLoadingFavorite}
-        class="p-2.5 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {isLoadingFavorite ? 'opacity-50 cursor-wait' : ''} {isFavorited ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-300 hover:bg-gray-50'}"
+        class="p-2.5 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--ring-focus)] {isLoadingFavorite ? 'opacity-50 cursor-wait' : ''} {isFavorited ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-300 hover:bg-gray-50'}"
         aria-label="{isFavorited ? 'Remove from' : 'Add to'} favorites"
         aria-pressed={isFavorited}
       >

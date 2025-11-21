@@ -38,7 +38,7 @@
         persistent: true,
         action: {
           label: 'Retry now',
-          onClick: () => handleReconnect()
+          onclick: () => handleReconnect()
         }
       });
     }

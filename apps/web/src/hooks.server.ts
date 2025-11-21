@@ -5,6 +5,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import { dev } from '$app/environment';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '@repo/i18n/server';
+import { getUserCountry } from '$lib/server/country/detection.server';
 
 /**
  * PRODUCTION-READY SUPABASE SSR HOOK
@@ -16,6 +17,17 @@ import { paraglideMiddleware } from '@repo/i18n/server';
  * - Security headers
  * - PKCE flow support
  */
+
+/**
+ * Country detection middleware
+ * Must run BEFORE i18n so we can potentially influence locale
+ */
+const countryHandle: Handle = async ({ event, resolve }) => {
+  const country = await getUserCountry(event);
+  event.locals.country = country;
+  
+  return resolve(event);
+};
 
 const supabaseHandle: Handle = async ({ event, resolve }) => {
   // Validate environment variables at runtime
@@ -153,6 +165,6 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 
 /**
  * Export handlers in sequence
- * Supabase must run first to set up auth, then security headers
+ * Country detection -> i18n -> Supabase -> Security Headers
  */
-export const handle = sequence(i18nHandle, supabaseHandle, securityHeadersHandle);
+export const handle = sequence(countryHandle, i18nHandle, supabaseHandle, securityHeadersHandle);

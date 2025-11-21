@@ -1,6 +1,6 @@
 ﻿<svelte:head>
   <link rel="canonical" href={data.seo?.canonicalHref} />
-  {#each data.seo?.hreflangs || [] as hreflang}
+  {#each data.seo?.hreflangs || [] as hreflang (hreflang.href)}
     <link rel="alternate" hreflang={hreflang.hrefLang} href={hreflang.href} />
   {/each}
 </svelte:head>
@@ -8,7 +8,6 @@
 <script lang="ts">
   // import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import { UnifiedCookieConsent } from '@repo/ui';
-  // eslint-disable-next-line no-restricted-imports -- App-specific composite component
   import Header from '$lib/components/layout/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
@@ -19,10 +18,9 @@
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
-  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal, DiscoverModal } from '@repo/ui';
   import { ToastContainer } from '@repo/ui';
   import { ErrorBoundary } from '@repo/ui';
-  // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
   import LocaleSwitcherBanner from '$lib/components/LocaleSwitcherBanner.svelte';
   import { COUNTRY_CONFIGS } from '$lib/country/constants';
@@ -39,6 +37,11 @@
   // Region switch modal state
   let showRegionModal = $state(false);
   
+  // Discover modal state
+  let showDiscoverModal = $state(false);
+  let discoverData = $state<{ topSellers: any[]; topBrands: any[] }>({ topSellers: [], topBrands: [] });
+  let loadingDiscoverData = $state(false);
+  
   // Cookie consent handling - only invalidate auth for user-specific features
   function handleConsentChange() {
     // Only invalidate auth state for user-specific features (favorites, etc.)
@@ -49,6 +52,58 @@
       // Don't invalidate home:data - content should always be visible
     }
   }
+  
+  // Fetch discover data (sellers and brands)
+  async function fetchDiscoverData() {
+    if (!browser || !supabase || loadingDiscoverData) return;
+    
+    loadingDiscoverData = true;
+    try {
+      const [sellersResult, brandsResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, username, full_name, avatar_url, is_verified, rating')
+          .eq('is_verified', true)
+          .order('rating', { ascending: false, nullsFirst: false })
+          .limit(12),
+        supabase
+          .from('brands')
+          .select('id, name, slug, logo_url')
+          .eq('is_verified', true)
+          .limit(12)
+      ]);
+      
+      discoverData = {
+        topSellers: sellersResult.data || [],
+        topBrands: (brandsResult.data || []).map((b: any) => ({
+          ...b,
+          avatar: b.logo_url,
+          verified: true,
+          trending: '🔥',
+          items: 0
+        }))
+      };
+    } catch (error) {
+      console.error('Failed to fetch discover data:', error);
+    } finally {
+      loadingDiscoverData = false;
+    }
+  }
+  
+  // Listen for discover button click
+  $effect(() => {
+    if (!browser) return;
+    
+    const handleOpenDiscover = () => {
+      showDiscoverModal = true;
+      if (discoverData.topSellers.length === 0 && !loadingDiscoverData) {
+        fetchDiscoverData();
+      }
+    };
+    
+    document.addEventListener('openDiscover', handleOpenDiscover);
+    return () => document.removeEventListener('openDiscover', handleOpenDiscover);
+  });
 
   // Optimized route preloading - only preload when user shows intent
   $effect(() => {
@@ -95,8 +150,10 @@
   // Auth state change listener - invalidate when session expires_at changes
   $effect(() => {
     if (browser && supabase) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
-        if (_session?.expires_at !== session?.expires_at) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: unknown, _session: unknown) => {
+        // Type narrowing: check if _session has expires_at property
+        const newSession = _session as { expires_at?: number } | null;
+        if (newSession?.expires_at !== session?.expires_at) {
           invalidate('supabase:auth');
         }
       });
@@ -138,9 +195,10 @@
   let stickySearchQuery = $state('');
 
   let showLocaleBanner = $state(Boolean(data.shouldShowLocaleBanner));
-  const suggestedLocale = $derived(() => (data?.suggestedLocale ?? data?.language ?? 'bg') as LanguageTag);
+  const suggestedLocale = $derived.by(() => (data?.suggestedLocale ?? data?.language ?? 'bg') as LanguageTag);
+  import type { CountryCode } from '$lib/country/constants';
   const detectedCountryName = $derived.by(() => {
-    const code = data?.detectedCountry;
+    const code = data?.detectedCountry as CountryCode | undefined;
     if (code && COUNTRY_CONFIGS[code]) {
       return COUNTRY_CONFIGS[code].name;
     }
@@ -162,8 +220,9 @@
   }
 
   async function handleLocaleSwitch() {
-    const targetLocale = typeof suggestedLocale === 'string' && suggestedLocale.length > 0
-      ? suggestedLocale
+    const suggested = suggestedLocale as unknown;
+    const targetLocale = typeof suggested === 'string' && suggested.length > 0
+      ? (suggested as string)
       : (typeof data?.language === 'string' && data.language.length > 0 ? data.language : 'bg');
     if (!browser || !targetLocale) {
       return;
@@ -191,7 +250,7 @@
   // Use real categories from database, with fallback to basic structure
   const mainCategoriesWithCounts = $derived.by(() => {
     if (data?.mainCategories && data.mainCategories.length > 0) {
-      return data.mainCategories.map(cat => ({
+      return data.mainCategories.map((cat: { slug: string; name: string }) => ({
         key: cat.slug,
         label: cat.name,
         icon: getIconForCategory(cat.slug),
@@ -232,76 +291,7 @@
   ];
 
   // Dropdown data for search components
-  const dropdownCategories = $derived.by(() => {
-    return mainCategoriesWithCounts.map(cat => ({
-      id: cat.key,
-      name: cat.label,
-      slug: cat.key,
-      emoji: cat.icon,
-      level: 1,
-      product_count: cat.product_count || 0,
-      children: []
-    }));
-  });
-
-  // Mock sellers data for dropdown - in production this would come from server
-  const dropdownSellers = [
-    {
-      id: '1',
-      username: 'kush3',
-      full_name: 'Kush Store',
-      avatar_url: '/avatars/1.png',
-      total_products: 47,
-      rating: 4.8,
-      is_verified: true
-    },
-    {
-      id: '2',
-      username: 'indecisive_wear',
-      full_name: 'Indecisive Wear',
-      avatar_url: '/avatars/2.png',
-      total_products: 23,
-      rating: 4.9,
-      is_verified: true
-    },
-    {
-      id: '3',
-      username: 'Tintin',
-      full_name: 'Tintin Vintage',
-      avatar_url: '/avatars/3.png',
-      total_products: 156,
-      rating: 4.7,
-      is_verified: true
-    }
-  ];
-
-  // Collections data for dropdown
-  const dropdownCollections = [
-    {
-      key: 'trending',
-      label: i18n.trending_now ? i18n.trending_now() : 'Trending Now',
-      emoji: 'ðŸ”¥',
-      product_count: 234
-    },
-    {
-      key: 'new-arrivals',
-      label: i18n.nav_newArrivals ? i18n.nav_newArrivals() : 'New Arrivals',
-      emoji: 'âœ¨',
-      product_count: 89
-    },
-    {
-      key: 'vintage',
-      label: i18n.category_vintage ? i18n.category_vintage() : 'Vintage',
-      emoji: 'ðŸ•°ï¸',
-      product_count: 312
-    },
-    {
-      key: 'designer',
-      label: i18n.category_designer ? i18n.category_designer() : 'Designer',
-      emoji: 'ðŸ’Ž',
-      product_count: 156
-    }
-  ];
+  // Removed dropdown mock datasets (no longer passed to CategorySearchBar)
 
   // Virtual categories for quick access (clothing, shoes, etc.) - unused
   // const virtualCategories = [
@@ -513,9 +503,11 @@
       }, 100); // Batch multiple auth events within 100ms
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event: unknown, newSession: unknown) => {
       // Use secure authentication: validate with getUser() for security-sensitive events
-      switch (event) {
+      // Type narrowing for event
+      const authEvent = event as string;
+      switch (authEvent) {
         case 'SIGNED_IN':
         case 'SIGNED_OUT':
         case 'USER_UPDATED':
@@ -534,7 +526,7 @@
           // For token refresh, only invalidate if we can validate the user
           try {
             const { data: { user }, error: userError } = await supabase.auth.getUser();
-            if (!userError && user && newSession?.expires_at !== session?.expires_at) {
+            if (!userError && user && typeof (newSession as any)?.expires_at === 'number' && typeof (session as any)?.expires_at === 'number' && (newSession as any).expires_at !== (session as any).expires_at) {
               batchedInvalidate();
             }
           } catch (error) {
@@ -643,9 +635,6 @@
       onFilterRemove={handleStickyFilterRemove}
       onClearAllFilters={handleStickyClearAll}
       enableQuickResults={true}
-      dropdownCategories={dropdownCategories}
-      dropdownSellers={dropdownSellers}
-      dropdownCollections={dropdownCollections}
     />
   {/if}
 
@@ -668,30 +657,6 @@
   <Footer 
     currentLanguage={data?.language || 'en'}
     onLanguageChange={switchLanguage}
-    translations={{
-      company: 'Company',
-      about: 'About Driplo',
-      careers: 'Careers',
-      press: 'Press',
-      support: 'Support',
-      help: 'Help Center',
-      trustSafety: 'Trust & Safety',
-      legal: 'Legal',
-      privacy: 'Privacy Policy',
-      terms: 'Terms & Conditions',
-      cookies: 'Cookie Policy',
-      returns: 'Return Policy',
-      community: 'Community',
-      blog: 'Blog',
-      newsletter: 'Newsletter',
-      followUs: 'Follow Us',
-      madeWith: 'Made with',
-      in: 'in',
-      bulgaria: 'Bulgaria',
-      allRightsReserved: 'All rights reserved.',
-      newsletterPlaceholder: 'Enter your email',
-      subscribe: 'Subscribe'
-    }}
   />
 {/if}
 
@@ -760,6 +725,23 @@
   }}
   detectedRegion={data.detectedRegion || 'BG'}
   currentRegion={data.region || 'BG'}
+/>
+
+<!-- Discover Modal (Top Sellers & Brands) -->
+<DiscoverModal
+  open={showDiscoverModal}
+  topSellers={discoverData.topSellers}
+  topBrands={discoverData.topBrands}
+  onClose={() => showDiscoverModal = false}
+  onSellerClick={(seller) => {
+    showDiscoverModal = false;
+    goto(`/profile/${seller.username || seller.id}`);
+  }}
+  onBrandClick={(brand) => {
+    showDiscoverModal = false;
+    goto(`/search?brand=${encodeURIComponent(brand.name)}`);
+  }}
+  i18n={i18n}
 />
 
 <!-- Geo-based Locale Suggestion -->

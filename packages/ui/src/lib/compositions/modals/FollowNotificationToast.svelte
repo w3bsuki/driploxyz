@@ -45,7 +45,7 @@
       
       <!-- Progress bar -->
       <div class="h-0.5 bg-gray-100 relative overflow-hidden">
-        <div class="absolute inset-0 bg-blue-500 animate-[shrink_4s_linear_forwards] origin-left"></div>
+        <div class="absolute inset-0 bg-[var(--surface-brand-strong)]/50 animate-[shrink_4s_linear_forwards] origin-left"></div>
       </div>
 
       <!-- Content -->
@@ -57,7 +57,7 @@
               name={followerName} 
               size="md" 
             />
-            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white"></div>
+            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[var(--surface-brand-strong)]/50 rounded-full border-2 border-white"></div>
           </div>
           
           <div class="flex-1 min-w-0">
@@ -83,8 +83,8 @@
               {#if onViewProfile}
                 <button
                   onclick={onViewProfile}
-                  class="flex-1 px-3 py-2 bg-black text-white text-xs font-medium rounded-lg 
-                    hover:bg-gray-800 transition-colors"
+                  class="flex-1 px-3 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-xs font-medium rounded-lg 
+                    hover:bg-[var(--btn-primary-hover)] transition-colors"
                 >
                   View Profile
                 </button>

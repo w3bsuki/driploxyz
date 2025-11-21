@@ -7,6 +7,7 @@
   import { authPopupActions } from '$lib/stores/auth-popup.svelte';
   import type { PageData } from './$types';
   import type { Product } from '@repo/ui/types';
+  import { mapProduct } from '$lib/types/domain';
 
   let { data }: { data: PageData } = $props();
 
@@ -15,38 +16,8 @@
   let selectedCategory = $state(data.filters?.category || '');
   let loading = $state(false);
 
-  // Transform server data to Product type
-  const products = $derived<Product[]>(
-    (data.products || []).map(p => ({
-      id: p.id,
-      title: p.title,
-      description: p.description,
-      price: p.price,
-      images: (p.product_images || [])
-        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-        .map(img => img.image_url)
-        .filter(Boolean),
-      brand: p.brand,
-      size: p.size,
-      condition: p.condition as Product['condition'],
-      category: p.categories?.slug,
-      category_name: p.categories?.name,
-      sellerId: p.seller_id,
-      sellerName: p.profiles?.username || p.profiles?.full_name || 'Seller',
-      sellerRating: 0,
-      sellerAvatar: p.profiles?.avatar_url || undefined,
-      sellerAccountType: (p.profiles?.account_type === 'brand'
-        ? 'brand'
-        : p.profiles?.account_type === 'pro' || p.profiles?.account_type === 'premium'
-          ? 'pro'
-          : 'new_seller') as Product['sellerAccountType'],
-      createdAt: p.created_at,
-      is_sold: p.is_sold || false,
-      favorite_count: p.favorite_count || 0,
-      is_promoted: ['pro', 'brand', 'premium'].includes(p.profiles?.account_type || ''),
-      product_images: p.product_images
-    }))
-  );
+  // Transform server data to Product type using canonical mapper (no casts)
+  const products = $derived.by<Product[]>(() => (data.products || []).map(mapProduct));
 
   function formatPrice(price: number): string {
     const formatted = price % 1 === 0 ? price.toString() : price.toFixed(2);
@@ -159,10 +130,10 @@
               id="condition-select"
               bind:value={selectedCondition}
               onchange={applyFilters}
-              class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
             >
               <option value="">All conditions</option>
-              {#each data.filters?.availableConditions || [] as condition}
+              {#each data.filters?.availableConditions || [] as condition (condition)}
                 <option value={condition}>{translateCondition(condition)}</option>
               {/each}
             </select>
@@ -175,10 +146,10 @@
               id="category-select"
               bind:value={selectedCategory}
               onchange={applyFilters}
-              class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
             >
               <option value="">All categories</option>
-              {#each data.filters?.availableCategories || [] as category}
+              {#each data.filters?.availableCategories || [] as category (category.slug)}
                 <option value={category.slug}>{category.name}</option>
               {/each}
             </select>
@@ -202,9 +173,9 @@
         <div class="flex items-center gap-2 mt-4">
           <span class="text-sm text-gray-500">Active filters:</span>
           {#if selectedCondition}
-            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] rounded-full">
               {translateCondition(selectedCondition)}
-              <button onclick={() => { selectedCondition = ''; applyFilters(); }} class="hover:bg-blue-200 rounded-full p-0.5" aria-label="Remove condition filter">
+              <button onclick={() => { selectedCondition = ''; applyFilters(); }} class="hover:bg-[var(--surface-brand-strong)]/20 rounded-full p-0.5" aria-label="Remove condition filter">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>
@@ -212,9 +183,9 @@
             </span>
           {/if}
           {#if selectedCategory}
-            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-zinc-100 text-zinc-800 rounded-full">
               {translateCategory(selectedCategory)}
-              <button onclick={() => { selectedCategory = ''; applyFilters(); }} class="hover:bg-green-200 rounded-full p-0.5" aria-label="Remove category filter">
+              <button onclick={() => { selectedCategory = ''; applyFilters(); }} class="hover:bg-zinc-200 rounded-full p-0.5" aria-label="Remove category filter">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>
@@ -248,24 +219,24 @@
     {:else if products.length > 0}
       <!-- Product Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
-        {#each products as product}
+        {#each products as product (product.id)}
           <div class="relative">
             <!-- Pro Badge -->
             <div class="absolute top-2 right-2 z-10">
-              <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
+              <div class="bg-zinc-900 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
                 PRO
               </div>
             </div>
             
             <ProductCard
               {product}
-              currency={i18n.common_currency()}
-              onProductClick={handleProductClick}
-              onToggleFavorite={handleFavorite}
-              isFavorite={getFavoriteData(product.id).isFavorited}
-              isLoadingFavorite={getFavoriteData(product.id).isLoading}
-              {formatPrice}
-              showQuickActions={true}
+              onclick={handleProductClick}
+              onFavorite={handleFavorite}
+              favorited={getFavoriteData(product.id).isFavorited}
+              translations={{
+                currency: '£',
+                formatPrice
+              }}
             />
           </div>
         {/each}
@@ -337,10 +308,10 @@
           id="condition-select-mobile"
           bind:value={selectedCondition}
           onchange={applyFilters}
-          class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
         >
           <option value="">All conditions</option>
-          {#each data.filters?.availableConditions || [] as condition}
+          {#each data.filters?.availableConditions || [] as condition (condition)}
             <option value={condition}>{translateCondition(condition)}</option>
           {/each}
         </select>
@@ -353,10 +324,10 @@
           id="category-select-mobile"
           bind:value={selectedCategory}
           onchange={applyFilters}
-          class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
         >
           <option value="">All categories</option>
-          {#each data.filters?.availableCategories || [] as category}
+          {#each data.filters?.availableCategories || [] as category (category.slug)}
             <option value={category.slug}>{category.name}</option>
           {/each}
         </select>
@@ -364,7 +335,7 @@
     </div>
 
     <div class="p-4">
-      <button class="w-full px-4 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold" onclick={() => (document.getElementById('pro-filters-sheet') as HTMLDialogElement)?.close()}>
+      <button class="w-full px-4 py-3 rounded-xl bg-zinc-900 text-white text-sm font-semibold" onclick={() => (document.getElementById('pro-filters-sheet') as HTMLDialogElement)?.close()}>
         Done
       </button>
     </div>

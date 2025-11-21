@@ -15,12 +15,12 @@
   // let currentTag = $state('');
   let tags = $state(data.product.tags?.join(', ') || '');
   
-  const mainCategories = $derived(data.categories.filter(c => !c.parent_id));
-  const getSubcategories = (parentId: string) => 
-    data.categories.filter(c => c.parent_id === parentId);
+  const mainCategories = $derived((data.categories as Array<{ id: string; name: string; slug: string; parent_id?: string | null }>).filter(c => !c.parent_id));
+  const getSubcategories = (parentId: string) =>
+    (data.categories as Array<{ id: string; name: string; slug: string; parent_id?: string | null }>).filter(c => c.parent_id === parentId);
   
   const selectedMainCategory = $derived(
-    data.categories.find(c => c.id === data.product.category_id)?.parent_id ||
+    (data.categories as Array<{ id: string; name: string; slug: string; parent_id?: string | null }>).find(c => c.id === data.product.category_id)?.parent_id ||
     data.product.category_id
   );
   

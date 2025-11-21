@@ -25,7 +25,7 @@
 		preventScroll = true
 	}: Props = $props();
 
-	let dialogElement: HTMLDialogElement;
+	let dialogElement: HTMLDialogElement = $state()!;
 	let previousOverflow = '';
 
 	// Handle scroll prevention
@@ -75,7 +75,7 @@
 
 <dialog
 	bind:this={dialogElement}
-	class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 {className}"
+	class="fixed inset-0 z-50 bg-[var(--modal-overlay-bg)] backdrop-blur-sm flex items-center justify-center p-4 {className}"
 	oncancel={handleCancel}
 	onclick={handleClickOutside}
 	onkeydown={handleKeydown}

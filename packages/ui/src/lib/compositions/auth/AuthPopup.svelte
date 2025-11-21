@@ -35,7 +35,7 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div
-    class="fixed inset-0 bg-[color:var(--modal-overlay)] z-[var(--z-modal-backdrop)] flex items-center justify-center p-4"
+    class="fixed inset-0 bg-[color:var(--modal-overlay-bg)] z-[var(--z-overlay)] flex items-center justify-center p-4"
     style="padding-top: max(var(--safe-area-top), 1rem); padding-bottom: max(var(--safe-area-bottom), 1rem); padding-left: max(var(--safe-area-left), 1rem); padding-right: max(var(--safe-area-right), 1rem);"
     onclick={handleBackdropClick}
     onkeydown={(e) => e.key === 'Escape' && onClose()}

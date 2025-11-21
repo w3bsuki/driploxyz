@@ -4,56 +4,31 @@
 -->
 <script lang="ts">
   import { FollowButton } from '@repo/ui';
-  import {
-    realtimeService,
-    realtimeStore,
-    followStore,
-    followActions
-  } from '$lib/utils/realtimeSetup';
+  import { followActions } from '$lib/utils/realtimeSetup';
 
   interface Props {
     userId: string;
-    username?: string;
     following?: boolean;
     onFollow?: () => void;
     followText?: string;
     unfollowText?: string;
-    showCount?: boolean;
-    variant?: 'default' | 'compact' | 'text';
+    variant?: 'default' | 'outline' | 'ghost';
     disabled?: boolean;
   }
 
   let {
     userId,
-    username,
     following = false,
-    onFollow,
-    followText,
-    unfollowText,
-    showCount = true,
+  onFollow,
+  followText,
+  unfollowText,
     variant = 'default',
     disabled = false
   }: Props = $props();
 
-  // Get follower count from real-time store or follow store
-  const followerCount = $derived.by(() => {
-    const realtimeMetrics = realtimeStore.state.metrics.userMetrics[userId];
-    const followMetrics = followStore.followerCounts[userId];
-    return realtimeMetrics?.follower_count ?? followMetrics ?? 0;
-  });
+  // Follower counts are managed elsewhere; UI button doesn't display counts
 
-  // Subscribe to real-time updates for this user
-  $effect(() => {
-    if (realtimeService.instance && userId) {
-      realtimeService.instance.subscribeToUser(userId);
-    }
-
-    return () => {
-      if (realtimeService.instance && userId) {
-        realtimeService.instance.unsubscribeFromUser(userId);
-      }
-    };
-  });
+  // Real-time updates are disabled until the service is implemented
 
   async function handleFollow() {
     if (!userId) return;
@@ -67,17 +42,10 @@
 </script>
 
 <FollowButton
-  {userId}
-  {username}
   {following}
-  onFollow={onFollow || handleFollow}
-  {followText}
-  {unfollowText}
-  {showCount}
+  followText={followText}
+  followingText={unfollowText}
   {variant}
   {disabled}
-  {followActions}
-  realtimeService={realtimeService.instance}
-  realtimeStore={realtimeStore}
-  followerCount={followerCount()}
+  onclick={onFollow || handleFollow}
 />

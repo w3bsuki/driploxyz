@@ -67,7 +67,7 @@
   {#if action}
     <button
       onclick={action.handler}
-      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[var(--btn-primary-text)] bg-[var(--btn-primary-bg)] hover:bg-[var(--btn-primary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--state-focus)] transition-colors"
     >
       {action.label}
     </button>
@@ -92,15 +92,15 @@
     color: oklch(0.5 0.025 270);
   }
   
-  .bg-blue-600 {
+  :global(.bg-\[var\(--brand-primary-strong\)\]) {
     background-color: oklch(0.52 0.15 240);
   }
   
-  .bg-blue-600:hover {
+  :global(.bg-\[var\(--brand-primary-strong\)\]:hover) {
     background-color: oklch(0.42 0.18 240);
   }
   
-  .focus\:ring-blue-500:focus {
+  :global(.focus\:ring-\[var\(--state-focus\)\]:focus) {
     --tw-ring-color: oklch(0.62 0.12 240);
   }
 </style>

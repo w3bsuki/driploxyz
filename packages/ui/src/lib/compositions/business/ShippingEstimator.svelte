@@ -208,7 +208,7 @@
 <!-- Modal -->
 {#if dialogOpen}
   <button
-    class="fixed inset-0 z-50 bg-black/50 cursor-default"
+    class="fixed inset-0 z-50 bg-[var(--modal-overlay-bg)] cursor-default"
     onclick={() => { dialogOpen = false; onClose?.(); }}
     onkeydown={(e) => e.key === 'Enter' && (() => { dialogOpen = false; onClose?.(); })()}
     aria-label="Close shipping calculator"

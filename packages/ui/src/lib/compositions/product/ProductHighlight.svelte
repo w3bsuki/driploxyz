@@ -71,7 +71,7 @@
       <button 
         onclick={handleClick}
         onkeydown={handleKeyDown}
-        class="absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 z-10 min-h-[44px]"
+        class="absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)]/50 focus:ring-offset-1 z-10 min-h-[44px]"
         aria-label="View {product.title} - {formattedPrice}"
         aria-describedby="product-{product.id}-info"
         tabindex={index === 0 ? 0 : -1}

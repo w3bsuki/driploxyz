@@ -38,7 +38,7 @@
   const badgeClass = $derived(`
     ${position === 'absolute' ? 'absolute' : 'relative'}
     ${containerClasses[size]}
-    bg-black
+    bg-[var(--brand-primary)]
     rounded-full
     flex items-center justify-center
     border-2 border-white
@@ -56,7 +56,7 @@
 >
   <!-- Perfect checkmark SVG optimized for each size -->
   <svg
-    class="{sizeClasses[size]} text-white"
+    class="{sizeClasses[size]} text-[var(--text-inverse)]"
     fill="currentColor"
     viewBox="0 0 20 20"
     aria-hidden="true"

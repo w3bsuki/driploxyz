@@ -3,7 +3,7 @@
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/state';
+  import { page } from '$app/state';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
 
@@ -18,7 +18,7 @@
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'delivered': return 'text-green-600';
-      case 'shipped': return 'text-blue-600';
+      case 'shipped': return 'text-[var(--brand-primary-strong)]';
       case 'paid': return 'text-orange-600';
       case 'pending': return 'text-yellow-600';
       case 'cancelled': return 'text-red-600';
@@ -70,8 +70,8 @@
           name={data.profile.full_name || data.profile.username}
           size="xl"
         />
-        {#if data.profile.is_verified}
-          <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
+  {#if data.profile.verified}
+          <div class="absolute -bottom-1 -right-1 bg-[var(--surface-brand-strong)]/50 rounded-full p-1">
             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
@@ -140,7 +140,7 @@
         {/if}
       </div>
       <p class="text-xs text-gray-500">
-        {i18n.profile_joined()} {new Date(data.profile.created_at).toLocaleDateString()}
+        {i18n.profile_joined()} {data.profile.created_at ? new Date(data.profile.created_at).toLocaleDateString() : ''}
         {#if data.profile.location} • {data.profile.location}{/if}
       </p>
       {#if data.profile.bio}
@@ -227,13 +227,13 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-2">
                       <h4 class="font-medium text-sm line-clamp-2">{order.product?.title || 'Unknown Product'}</h4>
-                      <span class="text-sm font-semibold whitespace-nowrap ml-2">{formatPrice(order.total_amount, order.currency)}</span>
+                      <span class="text-sm font-semibold whitespace-nowrap ml-2">{formatPrice(order.total_amount, order.currency ?? 'BGN')}</span>
                     </div>
                     <div class="flex justify-between items-center text-xs text-gray-500">
-                      <span>From {order.seller?.username || 'Unknown Seller'}</span>
-                      <span class="{getStatusColor(order.status)} font-medium">{getStatusText(order.status)}</span>
+                      <span>From {order.seller?.username ?? 'Unknown Seller'}</span>
+                      <span class="{getStatusColor(order.status ?? '')} font-medium">{getStatusText(order.status ?? '')}</span>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">{formatDate(order.created_at)}</p>
+                    <p class="text-xs text-gray-400 mt-1">{order.created_at ? formatDate(order.created_at) : ''}</p>
                   </div>
                 </div>
               </div>
@@ -270,15 +270,15 @@
                     <div class="flex justify-between items-start mb-2">
                       <h4 class="font-medium text-sm line-clamp-2">{sale.product?.title || 'Unknown Product'}</h4>
                       <div class="text-right whitespace-nowrap ml-2">
-                        <div class="text-sm font-semibold">{formatPrice(sale.total_amount, sale.currency)}</div>
-                        <div class="text-xs text-green-600">+{formatPrice(sale.seller_net_amount || 0, sale.currency)} earned</div>
+                        <div class="text-sm font-semibold">{formatPrice(sale.total_amount, sale.currency ?? 'BGN')}</div>
+                        <div class="text-xs text-green-600">+{formatPrice(sale.seller_net_amount || 0, sale.currency ?? 'BGN')} earned</div>
                       </div>
                     </div>
                     <div class="flex justify-between items-center text-xs text-gray-500">
-                      <span>Sold to {sale.buyer?.username || 'Unknown Buyer'}</span>
-                      <span class="{getStatusColor(sale.status)} font-medium">{getStatusText(sale.status)}</span>
+                      <span>Sold to {sale.buyer?.username ?? 'Unknown Buyer'}</span>
+                      <span class="{getStatusColor(sale.status ?? '')} font-medium">{getStatusText(sale.status ?? '')}</span>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">{formatDate(sale.created_at)}</p>
+                    <p class="text-xs text-gray-400 mt-1">{sale.created_at ? formatDate(sale.created_at) : ''}</p>
                   </div>
                 </div>
               </div>
@@ -319,14 +319,14 @@
 
 <BottomNav 
   currentPath={page.url.pathname}
-  isNavigating={!!navigating}
-  navigatingTo={navigating?.to?.url.pathname}
   unreadMessageCount={unreadMessageCount()}
+  profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
+  isAuthenticated={!!data.user}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),
     sell: i18n.nav_sell(),
-    profile: i18n.nav_profile(),
-    messages: i18n.nav_messages()
+    messages: i18n.nav_messages(),
+    profile: i18n.nav_profile()
   }}
 />

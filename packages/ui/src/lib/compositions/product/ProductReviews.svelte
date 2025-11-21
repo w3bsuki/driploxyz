@@ -235,8 +235,7 @@
           <div class="rating-breakdown">
             {#each [5, 4, 3, 2, 1] as rating}
               <button
-                class="breakdown-row"
-                class:breakdown-row--active={filterRating === rating}
+                class={['breakdown-row', { 'breakdown-row--active': filterRating === rating }]}
                 onclick={() => filterRating = filterRating === rating ? null : rating}
                 type="button"
                 aria-label={filterRating === rating ? `Clear ${rating} star filter` : `Filter by ${rating} star reviews`}
@@ -332,8 +331,7 @@
             <!-- Review Text -->
             <div class="review-text-container">
               <p 
-                class="review-text"
-                class:review-text--expanded={expandedReviews.has(review.id)}
+                class={['review-text', { 'review-text--expanded': expandedReviews.has(review.id) }]}
               >
                 {review.comment}
               </p>
@@ -351,7 +349,7 @@
             <!-- Review Images -->
             {#if review.images && review.images.length > 0}
               <div class="review-images">
-                {#each review.images as image, index}
+                {#each review.images as image, index (index)}
                   <button 
                     class="review-image-btn"
                     onclick={() => openImageModal(review.images || [], index)}
@@ -376,8 +374,7 @@
           <!-- Review Actions -->
           <div class="review-actions">
             <button 
-              class="helpful-btn"
-              class:helpful-btn--active={review.helpful}
+              class={['helpful-btn', { 'helpful-btn--active': review.helpful }]}
             >
               <svg class="helpful-icon" viewBox="0 0 20 20">
                 <path fill="none" stroke="currentColor" stroke-width="1.5" d="M7 10v12l4-1.5 4 1.5V10M7 10L6.5 7.7c-.2-.6-.3-1.3-.3-2C6.2 3.5 8 1.8 9.8 1.8c1 0 1.8.9 1.8 2v3.4h4.5c1.2 0 2.2 1 2 2.2l-1 5.5c-.1.8-.8 1.4-1.6 1.4H7"/>

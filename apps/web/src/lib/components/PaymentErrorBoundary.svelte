@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { type ErrorDetails } from '$lib/utils/error-handling.svelte';
+  import { type ErrorDetails, ErrorType, ErrorSeverity } from '$lib/utils/error-handling.svelte';
   import { toast } from '@repo/ui';
   import ErrorBoundary from './ErrorBoundary.svelte';
 
@@ -129,7 +129,7 @@
 
     // Special handling for Stripe errors
     if (message.includes('stripe')) {
-      enhancedError.type = 'EXTERNAL_SERVICE';
+      enhancedError.type = ErrorType.UNKNOWN;
       if (!enhancedError.context?.paymentError) {
         enhancedError.userMessage = 'Payment processing error. Please try again or use a different payment method.';
       }
@@ -139,12 +139,12 @@
     paymentAttempts++;
 
     // Show appropriate toast
-    if (enhancedError.severity === 'HIGH' || paymentAttempts >= maxPaymentAttempts) {
+  if (enhancedError.severity === ErrorSeverity.HIGH || paymentAttempts >= maxPaymentAttempts) {
       toast.error(enhancedError.userMessage, {
         persistent: true,
         action: {
           label: 'Contact Support',
-          onClick: () => handleContactSupport()
+          onclick: () => handleContactSupport()
         }
       });
     } else {
@@ -184,8 +184,8 @@
 
     } catch {
       handlePaymentError({
-        type: 'EXTERNAL_SERVICE',
-        severity: 'HIGH',
+        type: ErrorType.UNKNOWN,
+        severity: ErrorSeverity.HIGH,
         message: 'Payment retry failed',
         userMessage: 'Unable to retry payment. Please try again later.',
         retryable: false,
@@ -291,11 +291,11 @@
         </div>
 
         <!-- Suggestions -->
-        {#if error.context?.suggestions}
+  {#if Array.isArray(error.context?.suggestions)}
           <div class="payment-suggestions mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
             <h4 class="text-sm font-medium text-yellow-800 mb-2">What you can try:</h4>
             <ul class="space-y-1 text-sm text-yellow-700">
-              {#each error.context.suggestions as suggestion}
+              {#each (error.context.suggestions as string[]) as suggestion}
                 <li class="flex items-start gap-2">
                   <span class="w-1 h-1 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></span>
                   {suggestion}
@@ -371,17 +371,4 @@
 
 <style>
   /* Custom styling for payment error states */
-  :global(.payment-processing) {
-    pointer-events: none;
-    opacity: 0.6;
-  }
-
-  :global(.payment-form-error input, .payment-form-error select) {
-    border-color: #ef4444;
-    background-color: #fef2f2;
-  }
-
-  :global(.payment-form-error input:focus, .payment-form-error select:focus) {
-    box-shadow: 0 0 0 2px #ef4444;
-  }
 </style>

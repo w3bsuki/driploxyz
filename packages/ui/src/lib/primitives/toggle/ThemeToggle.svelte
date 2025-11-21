@@ -42,7 +42,8 @@
     }
   });
 
-  const btnSize = $derived(size === 'sm' ? 'min-h-[32px] min-w-[32px] p-1.5 text-sm' : 'min-h-[36px] min-w-[36px] p-2 text-base');
+  // Phase 3: Touch target minimum 44px on mobile
+  const btnSize = $derived(size === 'sm' ? 'min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] p-1.5 text-sm' : 'min-h-[44px] min-w-[44px] p-2 text-base');
 </script>
 
 <button

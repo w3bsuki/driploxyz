@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
 
   interface SelectOption {
     value: string;
@@ -7,7 +8,19 @@
     disabled?: boolean;
   }
 
-  interface Props {
+  /**
+   * Select dropdown component with custom styling.
+   * 
+   * @example
+   * ```svelte
+   * <Select 
+   *   options={countryOptions}
+   *   bind:value={selectedCountry}
+   *   class={{ 'w-full': fullWidth }}
+   * />
+   * ```
+   */
+  export interface SelectProps {
     options: SelectOption[];
     value?: string | null;
     placeholder?: string;
@@ -19,12 +32,16 @@
     onBlur?: () => void;
     positioning?: 'top' | 'bottom' | 'left' | 'right';
     portal?: string | HTMLElement | null;
-    class?: string;
-    triggerClass?: string;
-    menuClass?: string;
-    optionClass?: string;
+    class?: ClassValue;
+    triggerClass?: ClassValue;
+    menuClass?: ClassValue;
+    optionClass?: ClassValue;
     children?: Snippet;
+    'aria-describedby'?: string;
+    [key: string]: unknown; // allow extra passthrough props
   }
+  
+  type Props = SelectProps;
 
   let {
     options = [],
@@ -40,7 +57,8 @@
     triggerClass = '',
     menuClass = '',
     optionClass = '',
-    children
+    children,
+    'aria-describedby': ariaDescribedBy
   }: Props = $props();
 
   // Simple state management
@@ -145,8 +163,7 @@
 
   <!-- Dropdown chevron icon -->
   <svg
-    class="w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-[var(--duration-fast)]"
-    class:rotate-180={isOpen}
+    class={['w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-[var(--duration-fast)]', { 'rotate-180': isOpen }]}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -236,7 +253,7 @@
   }
 
   /* Mobile-first responsive design */
-  @media (max-width: var(--screen-sm)) {
+  @media (max-width: 640px) {
     .menu {
       min-width: calc(100vw - 2rem);
       max-width: calc(100vw - 2rem);

@@ -35,14 +35,14 @@
 
   const variantClasses = {
     default: following
-      ? 'bg-gray-200 text-gray-700 hover:bg-red-50 hover:text-red-600'
-      : 'bg-blue-600 text-white hover:bg-blue-700',
+      ? 'bg-gray-200 text-gray-700 hover:bg-red-50 hover:text-[var(--status-error-solid)]'
+      : 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--btn-primary-hover)]',
     outline: following
-      ? 'border-2 border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600'
-      : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
+      ? 'border-2 border-gray-300 text-gray-700 hover:border-[var(--status-error-solid)] hover:text-[var(--status-error-solid)]'
+      : 'border-2 border-[var(--btn-primary-border)] text-[var(--brand-primary-strong)] hover:bg-[var(--surface-brand-strong)]/5',
     ghost: following
-      ? 'text-gray-700 hover:bg-red-50 hover:text-red-600'
-      : 'text-blue-600 hover:bg-blue-50'
+      ? 'text-gray-700 hover:bg-red-50 hover:text-[var(--status-error-solid)]'
+      : 'text-[var(--brand-primary-strong)] hover:bg-[var(--surface-brand-strong)]/5'
   };
 
   const buttonClass = $derived(`

@@ -25,7 +25,7 @@ declare module '@repo/i18n/paraglide/messages.js' {
 }
 
 // Generic analytics hook placeholder
-declare module '@repo/ui/src/lib/hooks/analytics.js' {
+declare module '@repo/ui/src/lib/hooks/analytics' {
   export function useAnalytics(): { track: (event: string, data?: Record<string, unknown>) => void };
 }
 

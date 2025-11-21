@@ -117,8 +117,8 @@
               {#if onReply}
                 <button
                   onclick={onReply}
-                  class="flex-1 px-3 py-2 bg-black text-white text-xs font-medium rounded-lg 
-                    hover:bg-gray-800 transition-colors"
+                  class="flex-1 px-3 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-xs font-medium rounded-lg 
+                    hover:bg-[var(--btn-primary-hover)] transition-colors"
                 >
 {translations.reply || 'Reply'}
                 </button>

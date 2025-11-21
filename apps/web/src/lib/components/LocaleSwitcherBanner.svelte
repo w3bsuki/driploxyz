@@ -54,10 +54,10 @@
 
 {#if show}
   <section class="locale-banner">
-    <div class="mx-auto flex max-w-5xl flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/70 p-4 text-sm text-blue-900 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-5">
+    <div class="mx-auto flex max-w-5xl flex-col gap-4 rounded-xl border border-zinc-200 bg-[var(--surface-brand-strong)]/5/70 p-4 text-sm text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)] shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-5">
       <div class="flex flex-col gap-2">
-        <p class="text-base font-semibold text-blue-900">{headline}</p>
-        <p class="text-xs text-blue-700">{rememberLabel}</p>
+        <p class="text-base font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]">{headline}</p>
+        <p class="text-xs text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">{rememberLabel}</p>
       </div>
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Button variant="ghost" class="justify-center sm:min-w-[10rem]" onclick={async () => { await onStay(); }}>

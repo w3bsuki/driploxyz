@@ -36,7 +36,7 @@
 
   // Brand badge variants for different contexts
   const variantClasses = {
-    black: 'bg-gray-900 text-white',
+    black: 'bg-gray-900 text-[var(--text-inverse)]',
     gold: 'bg-yellow-500 text-gray-900'
   };
 

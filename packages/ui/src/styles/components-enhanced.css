@@ -1,0 +1,471 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN SYSTEM — Enhanced Component Styles (Tailwind CSS v4)
+  Component utilities using @utility directives instead of @layer components
+  Modern patterns for luxury fashion marketplace
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BUTTON SYSTEM — Enhanced with @utility
+   Premium button variants with proper mobile touch targets
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--btn-height-lg);
+  padding: 0 var(--btn-padding-lg);
+  border-radius: var(--btn-radius);
+  font-weight: var(--btn-font-weight);
+  font-size: var(--btn-font-lg);
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+@utility btn-sm {
+  min-height: var(--btn-height-sm);
+  padding: 0 var(--btn-padding-sm);
+  font-size: var(--btn-font-sm);
+  border-radius: var(--btn-radius);
+}
+
+@utility btn-md {
+  min-height: var(--btn-height-md);
+  padding: 0 var(--btn-padding-md);
+  font-size: var(--btn-font-md);
+  border-radius: var(--btn-radius);
+}
+
+@utility btn-lg {
+  min-height: var(--btn-height-lg);
+  padding: 0 var(--btn-padding-lg);
+  font-size: var(--btn-font-lg);
+  border-radius: var(--btn-radius);
+}
+
+@utility btn-xl {
+  min-height: var(--btn-height-xl);
+  padding: 0 var(--btn-padding-xl);
+  font-size: var(--text-lg);
+  border-radius: var(--btn-radius-lg);
+}
+
+@utility btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-border);
+  box-shadow: var(--btn-shadow);
+}
+
+@utility btn-primary-hover:hover {
+  background-color: var(--btn-primary-hover);
+  box-shadow: var(--btn-shadow-lg);
+}
+
+@utility btn-primary-focus:focus {
+  outline: none;
+  box-shadow: var(--btn-focus-ring);
+}
+
+@utility btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border-color: var(--btn-secondary-border);
+  box-shadow: var(--btn-shadow);
+}
+
+@utility btn-secondary-hover:hover {
+  background-color: var(--btn-secondary-hover);
+  box-shadow: var(--btn-shadow-lg);
+}
+
+@utility btn-secondary-focus:focus {
+  outline: none;
+  box-shadow: var(--btn-focus-ring);
+}
+
+@utility btn-luxury {
+  background-color: var(--btn-luxury-bg);
+  color: var(--btn-luxury-text);
+  border-color: var(--btn-luxury-border);
+  box-shadow: var(--btn-shadow);
+}
+
+@utility btn-luxury-hover:hover {
+  background-color: var(--btn-luxury-hover);
+  box-shadow: var(--btn-shadow-lg);
+}
+
+@utility btn-luxury-focus:focus {
+  outline: none;
+  box-shadow: var(--btn-focus-ring-luxury);
+}
+
+@utility btn-premium {
+  background-color: var(--btn-premium-bg);
+  color: var(--btn-premium-text);
+  border-color: var(--btn-premium-border);
+  box-shadow: var(--btn-shadow);
+}
+
+@utility btn-premium-hover:hover {
+  background-color: var(--btn-premium-hover);
+  box-shadow: var(--btn-shadow-lg);
+}
+
+@utility btn-premium-focus:focus {
+  outline: none;
+  box-shadow: var(--btn-focus-ring-premium);
+}
+
+@utility btn-ghost {
+  background-color: var(--btn-ghost-bg);
+  color: var(--btn-ghost-text);
+  border-color: var(--btn-ghost-border);
+}
+
+@utility btn-ghost-hover:hover {
+  background-color: var(--btn-ghost-hover);
+}
+
+@utility btn-ghost-focus:focus {
+  outline: none;
+  box-shadow: var(--btn-focus-ring);
+}
+
+@utility btn-disabled:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   INPUT SYSTEM — Enhanced with @utility
+   Mobile-first form inputs with proper touch targets
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility input {
+  display: block;
+  width: 100%;
+  min-height: var(--input-height);
+  padding: var(--input-padding);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  background-color: var(--input-bg);
+  font-size: var(--input-font);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+@utility input-focus:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
+  box-shadow: var(--input-focus-ring);
+}
+
+@utility input-disabled:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CARD SYSTEM — Enhanced with @utility
+   Premium card components for product presentation
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+@utility card-sm {
+  padding: var(--card-padding-sm);
+  border-radius: var(--card-radius);
+}
+
+@utility card-md {
+  padding: var(--card-padding-md);
+  border-radius: var(--card-radius);
+}
+
+@utility card-lg {
+  padding: var(--card-padding-lg);
+  border-radius: var(--card-radius-lg);
+}
+
+@utility card-xl {
+  padding: var(--card-padding-xl);
+  border-radius: var(--card-radius-xl);
+}
+
+@utility card-hover:hover {
+  box-shadow: var(--card-shadow-lg);
+  transform: translateY(-2px);
+}
+
+@utility card-luxury {
+  background-color: var(--card-luxury-bg);
+  border-color: var(--card-luxury-border);
+  box-shadow: var(--card-luxury-shadow);
+}
+
+@utility card-premium {
+  background-color: var(--card-premium-bg);
+  border-color: var(--card-premium-border);
+  box-shadow: var(--card-premium-shadow);
+}
+
+@utility card-elegant {
+  background-color: var(--card-elegant-bg);
+  border-color: var(--card-elegant-border);
+  box-shadow: var(--card-elegant-shadow);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAVIGATION SYSTEM — Enhanced with @utility
+   Mobile-first navigation components
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility nav {
+  background-color: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--nav-shadow);
+  height: var(--nav-height);
+}
+
+@utility bottom-nav {
+  background-color: var(--bottom-nav-bg);
+  border-top: 1px solid var(--bottom-nav-border);
+  box-shadow: var(--bottom-nav-shadow);
+  height: var(--bottom-nav-height);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BADGE & PILL SYSTEM — Enhanced with @utility
+   Mobile-optimized badges and pills
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--badge-padding-sm);
+  border-radius: var(--badge-radius);
+  font-size: var(--badge-font);
+  font-weight: var(--badge-font-weight);
+}
+
+@utility badge-md {
+  padding: var(--badge-padding-md);
+}
+
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--pill-height);
+  padding: var(--pill-padding);
+  border-radius: var(--pill-radius);
+  font-size: var(--pill-font);
+  font-weight: var(--pill-font-weight);
+  background-color: var(--pill-bg);
+  color: var(--pill-text);
+  border: 1px solid var(--pill-border);
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  user-select: none;
+}
+
+@utility pill-hover:hover {
+  background-color: var(--pill-bg-hover);
+}
+
+@utility pill-active:active {
+  background-color: var(--pill-bg-active);
+  color: var(--pill-text-active);
+  border-color: var(--pill-border-active);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODAL & DIALOG SYSTEM — Enhanced with @utility
+   Mobile-friendly modal components
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility modal {
+  background-color: var(--modal-bg);
+  border-radius: var(--modal-radius);
+  box-shadow: var(--modal-shadow);
+  padding: var(--modal-padding);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@utility modal-mobile {
+  padding: var(--modal-padding-mobile);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   UTILITY PATTERNS — Enhanced Layout Helpers
+   Modern layout utilities
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@utility stack-sm {
+  gap: var(--space-2);
+}
+
+@utility stack-md {
+  gap: var(--space-4);
+}
+
+@utility stack-lg {
+  gap: var(--space-6);
+}
+
+@utility cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+@utility cluster-sm {
+  gap: var(--space-2);
+}
+
+@utility cluster-md {
+  gap: var(--space-4);
+}
+
+@utility cluster-lg {
+  gap: var(--space-6);
+}
+
+@utility center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE BREAKPOINTS — Mobile-First
+   Container queries for component responsiveness
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@container (min-width: 40rem) {
+  .btn {
+    min-height: var(--btn-height-lg);
+  }
+  
+  .input {
+    min-height: var(--input-height);
+  }
+}
+
+@container (min-width: 48rem) {
+  .btn {
+    min-height: var(--btn-height-lg);
+  }
+  
+  .nav {
+    height: var(--nav-height);
+  }
+}
+
+@container (min-width: 64rem) {
+  .btn {
+    min-height: var(--btn-height-lg);
+  }
+  
+  .nav {
+    height: var(--nav-height);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MOBILE OPTIMIZATIONS — Touch Targets & Gestures
+   Enhanced mobile experience
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 40rem) {
+  .btn {
+    min-height: var(--touch-primary);
+  }
+  
+  .input {
+    min-height: var(--touch-primary);
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .pill {
+    min-height: var(--touch-primary);
+  }
+  
+  .modal {
+    padding: var(--modal-padding-mobile);
+  }
+}
+
+/* Touch feedback enhancements */
+@media (hover: none) and (pointer: coarse) {
+  .btn-active:active {
+    transform: scale(0.95);
+  }
+  
+  .pill-active:active {
+    transform: scale(0.95);
+  }
+  
+  .card-active:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ACCESSIBILITY ENHANCEMENTS
+   WCAG AAA compliance features
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .input,
+  .card,
+  .pill,
+  .modal {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn {
+    border-width: 2px;
+  }
+  
+  .input {
+    border-width: 2px;
+  }
+  
+  .card {
+    border-width: 2px;
+  }
+}

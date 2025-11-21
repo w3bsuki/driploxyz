@@ -20,7 +20,7 @@
 </script>
 
 <span
-  class="inline-flex items-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium {sizeClasses[size]}"
+  class="inline-flex items-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-[var(--text-inverse)] font-medium {sizeClasses[size]}"
 >
   <span class="mr-0.5">💎</span>
   {label}

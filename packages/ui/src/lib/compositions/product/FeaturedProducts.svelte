@@ -11,6 +11,7 @@
     nav_sell: string;
     home_browseAll: string;
     home_itemCount: string;
+    home_itemCountNew?: (inputs: { count: number }) => string;
     home_updatedMomentsAgo: string;
     product_size: string;
     trending_newSeller: string;
@@ -31,7 +32,7 @@
   interface Props {
     products: Product[];
     errors?: { products?: string };
-    loading?: boolean;
+      loading?: boolean; // Changed _loading to loading
     onProductClick: (product: Product) => void;
     onFavorite: (productId: string) => void;
     onBrowseAll?: () => void;
@@ -39,7 +40,7 @@
     formatPrice?: (price: number) => string;
     translations: Translations;
     sectionTitle?: string;
-    favoritesState?: unknown;
+      favoritesState?: { favorites: Record<string, boolean>; favoriteCounts: Record<string, number> }; // Typed favoritesState
     showCategoryTabs?: boolean;
     activeCategory?: 'fresh' | 'recent';
     onCategoryChange?: (category: 'fresh' | 'recent') => void;
@@ -51,7 +52,7 @@
   let { 
     products = [], 
     errors, 
-    _loading = false, 
+      loading = false, // Changed _loading to loading
     onProductClick, 
     onFavorite, 
     onBrowseAll,
@@ -59,7 +60,7 @@
     formatPrice = (price: number) => `$${price.toFixed(2)}`,
     translations,
     sectionTitle = 'Newest listings', // Will be overridden by parent with proper translation
-    favoritesState,
+      favoritesState, // Typed favoritesState
     showCategoryTabs = false,
     activeCategory = 'fresh',
     onCategoryChange,
@@ -71,23 +72,41 @@
   // Derived states
   const hasProducts = $derived(products.length > 0);
   const hasErrors = $derived(!!errors?.products);
-  const gridId = $derived(() => {
-    const firstProductId = products[0]?.id;
-    return firstProductId ? `product-grid-${firstProductId}` : 'product-grid';
-  });
+    const gridId = $derived(products[0]?.id ? `product-grid-${products[0]?.id}` : 'product-grid'); // Simplified gridId computation
+
+  const sectionBaseClass = `
+    pb-[var(--space-5)] sm:pb-[var(--space-6)]
+  `.replace(/\s+/g, ' ').trim();
+
+  const bannerWrapperClass = `
+    px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]
+    mb-[var(--space-1)]
+  `.replace(/\s+/g, ' ').trim();
+
+  const gridWrapperClass = `
+    px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]
+    grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5
+    gap-[var(--space-2)] sm:gap-[var(--space-3)]
+  `.replace(/\s+/g, ' ').trim();
+
+  const emptyStateClass = `
+    px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]
+    text-center py-[var(--space-10)]
+  `.replace(/\s+/g, ' ').trim();
 </script>
 
 <!-- Product Grid Section with standardized spacing (tokens) -->
 <section
-  class="pb-2 sm:pb-3 {className}"
+  class={`${sectionBaseClass} ${className}`}
   aria-label={sectionTitle}
 >
   <!-- Section Banner with proper container -->
-  <div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
+  <div class={bannerWrapperClass}>
     <NewestListingsBanner
       heading={sectionTitle}
       copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
       itemCount={hasProducts ? products.length : undefined}
+      itemCountText={translations.home_itemCountNew ? translations.home_itemCountNew({ count: products.length }) : undefined}
       cta={showViewAllButton && hasProducts && onViewAll ? { label: translations.banner_viewAll ?? 'View All', action: onViewAll } : undefined}
       showCategoryTabs={showCategoryTabs && hasProducts}
       {activeCategory}
@@ -97,9 +116,9 @@
   
   
   <!-- Loading State -->
-  {#if _loading}
+  {#if loading}
     <div
-      class="px-2 sm:px-4 lg:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+      class={gridWrapperClass}
       role="status"
       aria-busy="true"
       aria-live="polite"
@@ -114,11 +133,11 @@
   {:else if hasProducts}
     <div
       id={gridId}
-      class="px-2 sm:px-4 lg:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+      class={gridWrapperClass}
       role="list"
       aria-label="Product grid with {products.length} items"
     >
-      {#each products as product, _index}
+      {#each products as product, _index (product.id)}
         <article
           role="listitem"
           aria-setsize={products.length}
@@ -153,7 +172,7 @@
     </div>
   {:else}
     <div
-      class="px-2 sm:px-4 lg:px-6 text-center py-12"
+      class={emptyStateClass}
       role="status"
       aria-label="No products available"
     >

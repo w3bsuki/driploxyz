@@ -17,13 +17,7 @@
 </svelte:head>
 
 <div class="max-w-2xl mx-auto text-center space-y-8 py-12">
-  {#if subscriptionStatus === 'checking'}
-    <div class="space-y-4">
-      <div class="text-6xl">⏳</div>
-      <h1 class="text-2xl font-bold text-gray-900">Processing your subscription...</h1>
-      <p class="text-gray-600">Please wait while we confirm your payment.</p>
-    </div>
-  {:else if subscriptionStatus === 'success'}
+  {#if subscriptionStatus === 'success'}
     <div class="space-y-6">
       <div class="text-6xl">{brandActivated ? '🏢' : '🎉'}</div>
       <div>

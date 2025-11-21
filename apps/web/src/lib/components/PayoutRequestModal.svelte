@@ -61,7 +61,7 @@ Creates payout requests via Supabase RPC calls
 		}).format(value);
 	};
 
-	const handleSubmit = async (e) => {
+	const handleSubmit = async (e: Event) => {
 		e.preventDefault();
 		if (!canSubmit) return;
 
@@ -235,7 +235,6 @@ Creates payout requests via Supabase RPC calls
 </Dialog>
 
 <style>
-	@reference theme();
 	
 	.payout-form {
 		display: flex;

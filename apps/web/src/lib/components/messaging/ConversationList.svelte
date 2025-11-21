@@ -93,18 +93,18 @@
         <div class="relative shrink-0">
           <Avatar src={conv.userAvatar} name={conv.userName} size="md" />
           {#if conv.unread}
-            <span class="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-blue-500 rounded-full border-2 border-white"></span>
+            <span class="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-[var(--surface-brand-strong)]/50 rounded-full border-2 border-white"></span>
           {/if}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex justify-between items-start">
             <h3 class="font-medium text-gray-900 text-sm truncate">{conv.userName}</h3>
-            <span class="text-xs text-gray-500 shrink-0 ml-2">{timeAgo(conv.lastMessageTime)}</span>
+            <span class="text-xs text-gray-500 shrink-0 ml-2">{timeAgo()}</span>
           </div>
           
           {#if conv.isOffer}
             <div class="inline-flex items-center space-x-1 mt-1">
-              <span class="bg-blue-100 text-blue-700 text-xs font-medium px-1.5 py-0.5 rounded-sm">Offer</span>
+              <span class="bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] text-xs font-medium px-1.5 py-0.5 rounded-sm">Offer</span>
               <span class="text-xs font-semibold text-gray-900">${conv.offerPrice}</span>
             </div>
           {:else}
@@ -113,7 +113,7 @@
                 <div class="flex items-center space-x-2">
                   <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded-sm object-cover" />
                   <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
-                  <span class="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm font-medium">Product</span>
+                  <span class="text-xs bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] px-1.5 py-0.5 rounded-sm font-medium">Product</span>
                 </div>
               {:else}
                 <div class="flex items-center space-x-2">

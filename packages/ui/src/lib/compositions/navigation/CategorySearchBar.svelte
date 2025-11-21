@@ -47,7 +47,7 @@ const categoryBreadcrumbs = $derived.by<CategoryBreadcrumbItem[]>(() =>
 );
 
 // Enhanced category display logic
-const currentCategoryDisplay = $derived(() => {
+const currentCategoryDisplay = $derived.by<{ label: string; icon: string; breadcrumb: string[] }>(() => {
   if (categoryBreadcrumbs.length > 0) {
     const breadcrumbLabels = categoryBreadcrumbs.map(crumb => crumb.label);
     const mainCategory = mainCategories.find(cat => cat.key === appliedFilters?.category);
@@ -219,22 +219,22 @@ const activeFilterCount = $derived.by(() => {
             aria-label="Select category"
             disabled={isNavigating}
           >
-            <span class="text-lg flex-shrink-0" role="img" aria-hidden="true">{currentCategoryDisplay().icon}</span>
-            <div class="items-start min-w-0">
-              {#if currentCategoryDisplay().breadcrumb && currentCategoryDisplay().breadcrumb.length > 1}
-                <span class="text-xs text-[color:var(--text-tertiary)] truncate max-w-32">
-                  {currentCategoryDisplay().breadcrumb.slice(0, -1).join(' → ')}
+            <span class="text-lg flex-shrink-0" role="img">{currentCategoryDisplay.icon}</span>
+            <div class="min-w-0">
+              {#if currentCategoryDisplay.breadcrumb && currentCategoryDisplay.breadcrumb.length > 1}
+                <span class="text-xs text-[color:var(--text-tertiary)] whitespace-nowrap text-ellipsis overflow-clip max-w-32">
+                  {currentCategoryDisplay.breadcrumb.slice(0, -1).join(' → ')}
                 </span>
-                <span class="text-sm font-medium text-[color:var(--text-primary)] truncate max-w-32">
-                  {currentCategoryDisplay().breadcrumb[currentCategoryDisplay().breadcrumb.length - 1]}
+                <span class="text-sm font-medium text-[color:var(--text-primary)] whitespace-nowrap text-ellipsis overflow-clip max-w-32">
+                  {currentCategoryDisplay.breadcrumb[currentCategoryDisplay.breadcrumb.length - 1]}
                 </span>
               {:else}
-                <span class="text-sm font-medium text-[color:var(--text-secondary)] truncate max-w-32">
-                  {currentCategoryDisplay().label}
+                <span class="text-sm font-medium text-[color:var(--text-secondary)] whitespace-nowrap text-ellipsis overflow-clip max-w-32">
+                  {currentCategoryDisplay.label}
                 </span>
               {/if}
             </div>
-            <svg class="w-4 h-4 text-[color:var(--text-secondary)] transition-transform duration-200 flex-shrink-0 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-[color:var(--text-secondary)] transition-transform duration-200 flex-shrink-0" class:rotate-180={showCategoryDropdown} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -243,7 +243,7 @@ const activeFilterCount = $derived.by(() => {
 
       <!-- Enhanced MegaMenuCategories Dropdown -->
       {#if showCategoryDropdown}
-        <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]">
+        <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-clip z-50 max-h-[70vh]">
           <MegaMenuCategories
             onCategoryClick={handleMegaMenuCategorySelect}
             onClose={handleCategoryDropdownClose}
@@ -268,7 +268,7 @@ const activeFilterCount = $derived.by(() => {
     <!-- Enhanced Quick Filter Pills -->
     <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbarhide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
       <!-- Main Category Pills -->
-      {#each mainCategories as category, index}
+      {#each mainCategories as category, index (category.key)}
         <CategoryPill
           variant={appliedFilters?.category === category.key ? 'primary' : 'outline'}
           label={category.label}
@@ -281,7 +281,7 @@ const activeFilterCount = $derived.by(() => {
       {/each}
 
       <!-- Condition Pills -->
-      {#each conditionFilters as condition, cIdx}
+      {#each conditionFilters as condition, cIdx (condition.key ?? condition.value)}
         <button
           type="button"
           onclick={() => handleConditionPillClick((condition.key ?? condition.value))}

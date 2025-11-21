@@ -13,8 +13,8 @@
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Trust & Safety</h1>
 		
 		<div class="bg-white shadow-sm rounded-lg p-6 space-y-8 prose prose-gray max-w-none">
-			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-				<p class="text-sm text-blue-700">
+			<div class="bg-[var(--surface-brand-strong)]/5 border border-[var(--surface-brand-strong)]/20 rounded-lg p-4">
+				<p class="text-sm text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
 				</p>
 			</div>
@@ -59,7 +59,7 @@
 					<div class="space-y-4">
 						<div class="border border-gray-200 rounded-lg p-4">
 							<div class="flex items-center mb-2">
-								<svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="w-6 h-6 text-zinc-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
 								</svg>
 								<h3 class="text-base font-semibold text-gray-900">24/7 Monitoring</h3>
@@ -167,8 +167,8 @@
 							</div>
 							
 							<div class="border border-gray-200 rounded-lg p-4 text-center">
-								<div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-									<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<div class="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-3">
+									<svg class="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
 									</svg>
 								</div>
@@ -181,7 +181,7 @@
 					<div>
 						<h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens After You Report</h3>
 						<div class="bg-[color:var(--status-info-bg)] rounded-lg p-4">
-							<ol class="list-decimal pl-6 text-blue-700 space-y-2 text-sm">
+							<ol class="list-decimal pl-6 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] space-y-2 text-sm">
 								<li><strong>Immediate Review:</strong> Our team reviews all reports within 24 hours</li>
 								<li><strong>Investigation:</strong> We gather evidence and may contact involved parties</li>
 								<li><strong>Action Taken:</strong> Violations result in warnings, restrictions, or account suspension</li>
@@ -344,7 +344,7 @@
 								</div>
 							</div>
 							<div class="flex items-center space-x-3">
-								<svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 								</svg>
 								<div>

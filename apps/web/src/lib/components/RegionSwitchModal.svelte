@@ -106,7 +106,7 @@
         
         <!-- Content -->
         <div class="text-center">
-          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[var(--surface-brand-strong)]/10 mb-4">
             <span class="text-2xl">{detected.flag}</span>
           </div>
           

@@ -38,7 +38,7 @@
     },
     brand: {
       label: 'BRAND',
-      bgColor: 'bg-black',
+      bgColor: 'bg-[var(--brand-primary)]',
       icon: '🏢'
     }
   };
@@ -46,6 +46,6 @@
   const config = $derived(badgeConfig[type]);
 </script>
 
-<div class="inline-flex items-center {config.bgColor} text-white font-semibold rounded-full shadow-sm {sizeClasses[size]} {className}">
+<div class="inline-flex items-center {config.bgColor} text-[var(--text-inverse)] font-semibold rounded-full shadow-sm {sizeClasses[size]} {className}">
   <span>{config.label}</span>
 </div>

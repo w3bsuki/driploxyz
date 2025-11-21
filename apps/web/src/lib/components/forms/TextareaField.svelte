@@ -109,6 +109,15 @@
     handleInput(event);
     autoResize(target);
   }
+
+  // Normalize value to a string for the textarea DOM API
+  const textValue = $derived(
+    fieldState.value === null || fieldState.value === undefined
+      ? ''
+      : typeof fieldState.value === 'string'
+        ? fieldState.value
+        : String(fieldState.value)
+  );
 </script>
 
 <div class="form-field">
@@ -126,7 +135,7 @@
   <div class="relative">
     <textarea
       {...accessibleTextareaProps}
-      value={fieldState.value}
+      value={textValue}
       class="{textareaClasses} resize-{resize}"
       oninput={handleInputWithResize}
       onblur={handleBlur}

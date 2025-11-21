@@ -20,7 +20,7 @@
   }: Props = $props();
 </script>
 
-<div class="bg-white rounded-[var(--card-radius)] border p-6 {featured ? 'ring-2 ring-blue-500' : ''}">
+<div class="bg-white rounded-[var(--card-radius)] border p-6 {featured ? 'ring-2 ring-[var(--state-focus)]' : ''}">
   <h3 class="text-xl font-semibold mb-2">{title}</h3>
   <div class="text-3xl font-bold mb-4">{price}</div>
   <p class="text-gray-500 mb-6">{description}</p>
@@ -39,7 +39,7 @@
   {/if}
   
   <button
-  class="w-full bg-blue-600 text-white px-4 py-2 rounded-[var(--btn-radius-lg)] hover:bg-blue-700 transition-colors"
+  class="w-full bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] px-4 py-2 rounded-[var(--btn-radius-lg)] hover:bg-[var(--btn-primary-hover)] transition-colors"
     {onclick}
   >
     {buttonText}

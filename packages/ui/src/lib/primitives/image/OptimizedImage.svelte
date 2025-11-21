@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { isBrowser } from '../../utils/runtime';
   import { onMount, onDestroy } from 'svelte';
 
   interface Props {
@@ -101,7 +101,7 @@
 
   // Setup intersection observer for lazy loading
   const setupIntersectionObserver = () => {
-    if (!browser || !('IntersectionObserver' in window) || priority) {
+    if (!isBrowser || !('IntersectionObserver' in window) || priority) {
       isIntersecting = true;
       return;
     }
@@ -156,7 +156,7 @@
   });
 
   // Compute container styles
-  const containerStyles = $derived(() => {
+  const containerStyles = $derived.by(() => {
     let styles = style;
 
     if (width && height) {
@@ -168,7 +168,7 @@
   });
 
   // Compute image styles
-  const imageStyles = $derived(() => {
+  const imageStyles = $derived.by(() => {
     let styles = `object-fit: ${objectFit};`;
 
     if (!isLoaded && blurDataUrl) {
@@ -208,8 +208,8 @@
       {height}
       loading={priority ? 'eager' : loading}
       decoding="async"
-      class="main-image"
-      style={imageStyles}
+  class="main-image"
+  style={imageStyles}
       onload={handleLoad}
       onerror={handleError}
     />
@@ -248,7 +248,7 @@
   .optimized-image-container {
     position: relative;
     overflow: hidden;
-    background-color: #f3f4f6;
+    background-color: var(--surface-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -279,7 +279,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #6b7280;
+    color: var(--text-subtle);
     z-index: 3;
   }
 
@@ -305,8 +305,8 @@
   .loading-spinner {
     width: 2rem;
     height: 2rem;
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
+    border: 2px solid var(--border-subtle);
+    border-top: 2px solid var(--state-focus);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }

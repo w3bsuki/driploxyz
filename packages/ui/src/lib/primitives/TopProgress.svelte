@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isBrowser } from '../../utils/runtime.js';
+  import { isBrowser } from '../utils/runtime';
 
   interface Props {
     isNavigating?: boolean;

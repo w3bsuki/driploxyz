@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import { isBrowser } from '../../utils/runtime.js';
   import * as i18n from '@repo/i18n';
   
@@ -344,7 +344,7 @@
 
 {#if showBanner}
   <!-- Semi-transparent backdrop -->
-  <div class="fixed inset-0 bg-black/40 md:backdrop-blur-sm md:bg-black/30 z-[9998]" aria-hidden="true"></div>
+  <div class="fixed inset-0 bg-[var(--modal-overlay-bg)] md:backdrop-blur-sm z-[9998]" aria-hidden="true"></div>
   
   <!-- Main Banner Container -->
   <div class="fixed inset-x-0 bottom-0 z-[9999] max-h-[90vh] overflow-y-auto">
@@ -534,8 +534,8 @@
             <div class="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-64">
               <button
                 onclick={acceptAll}
-                class="min-h-[44px] px-4 py-3 bg-blue-600 text-white rounded-xl font-semibold 
-                       hover:bg-blue-700 transition-all hover:scale-[1.02] shadow-lg text-sm"
+                class="min-h-[44px] px-4 py-3 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] rounded-xl font-semibold 
+                       hover:bg-[var(--btn-primary-hover)] transition-all hover:scale-[1.02] shadow-lg text-sm"
               >
                 Accept All
               </button>
@@ -559,8 +559,8 @@
               {:else}
                 <button
                   onclick={savePreferences}
-                  class="min-h-[44px] px-4 py-3 bg-blue-600 
-                         text-white rounded-xl font-semibold hover:shadow-lg hover:bg-blue-700 transition-all text-sm"
+                  class="min-h-[44px] px-4 py-3 bg-[var(--btn-primary-bg)] 
+                         text-[var(--btn-primary-text)] rounded-xl font-semibold hover:shadow-lg hover:bg-[var(--btn-primary-hover)] transition-all text-sm"
                 >
                   Save My Choices
                 </button>

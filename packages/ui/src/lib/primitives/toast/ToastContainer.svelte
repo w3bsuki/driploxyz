@@ -22,9 +22,7 @@
     children
   }: Props = $props();
   
-  type ToastProviderInstance = InstanceType<typeof ToastProvider> & ToastProviderHandle;
-
-  let provider = $state<ToastProviderInstance | null>(null);
+  let provider = $state<ToastProviderHandle | null>(null);
   
   // Connect the provider to the toast store on mount
   $effect(() => {
@@ -37,7 +35,7 @@
 </script>
 
 <ToastProvider
-  bind:this={provider}
+  bind:this={provider as any}
   {limit}
   {duration}
   {position}

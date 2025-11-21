@@ -76,24 +76,24 @@
       title: translations.discover || 'Discover Quality Fashion',
       description: translations.discoverDesc || 'Browse curated items from verified sellers. Find authentic pieces, designer brands, and unique vintage items.',
       icon: '🔍',
-      gradient: 'bg-blue-600',
-      color: 'bg-blue-600'
+      gradient: 'bg-[var(--brand-primary-strong)]',
+      color: 'bg-[var(--brand-primary-strong)]'
     },
     {
       id: 'sell',
       title: translations.sell || 'Sell with Confidence',
       description: translations.sellDesc || 'List your items quickly with our simple tools. Secure payments, buyer protection, and transparent fees.',
       icon: '💼',
-      gradient: 'bg-green-600',
-      color: 'bg-green-600'
+      gradient: 'bg-[var(--status-success-solid)]',
+      color: 'bg-[var(--status-success-solid)]'
     },
     {
       id: 'ready',
       title: translations.ready || 'Ready to Start',
       description: translations.readyDesc || 'Complete your profile setup to start buying and selling. Your secure marketplace experience begins now.',
       icon: '✅',
-      gradient: 'bg-black',
-      color: 'bg-black'
+      gradient: 'bg-[var(--brand-primary)]',
+      color: 'bg-[var(--brand-primary)]'
     }
   ]);
 
@@ -157,7 +157,7 @@
         {#each effectiveSteps as step, index}
           <button
             onclick={() => currentStep = index}
-            class="w-2 h-2 rounded-full transition-colors duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
+            class="w-2 h-2 rounded-full transition-colors duration-300 {index === currentStep ? 'bg-[var(--brand-primary)] w-8' : 'bg-gray-300 hover:bg-gray-400'}"
             aria-label={`Go to step ${index + 1}`}
           ></button>
         {/each}
@@ -189,7 +189,7 @@
             <div class="text-xs text-gray-500">{translations.totalSales || 'Total Sales'}</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <div class="text-lg font-bold text-blue-600 mb-1">50K+</div>
+            <div class="text-lg font-bold text-[var(--brand-primary-strong)] mb-1">50K+</div>
             <div class="text-xs text-gray-500">{translations.happySellers || 'Happy Sellers'}</div>
           </div>
         </div>
@@ -210,7 +210,7 @@
 
       <button
         onclick={handleNext}
-        class="btn btn-primary flex-1 min-h-[44px] px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+        class="btn btn-primary flex-1 min-h-[44px] px-6 py-3 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] font-semibold rounded-xl hover:bg-[var(--btn-primary-hover)] transition-colors"
       >
         {#if isLastStep}
           {translations.getStarted || 'Get Started'}

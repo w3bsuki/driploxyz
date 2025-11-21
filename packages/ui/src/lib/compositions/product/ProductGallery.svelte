@@ -389,10 +389,9 @@
   {#if images.length > 1}
     <div class="thumbnails-container">
       <div class="thumbnails-strip" bind:this={thumbnailsRef}>
-        {#each images as image, index}
+        {#each images as image, index (index)}
           <button 
-            class="thumbnail"
-            class:thumbnail-active={selectedImage === index}
+            class={['thumbnail', { 'thumbnail-active': selectedImage === index }]}
             onclick={() => selectImage(index)}
             aria-label={`View image ${index + 1}`}
           >

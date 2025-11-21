@@ -24,6 +24,7 @@
 		"tests/**",
 		"**/*.spec.ts",
 		"**/*.spec.tsx",
+		"vite.config.ts",
 		"../../packages/i18n/messages/**",
 		"../../packages/i18n/lib/**",
 		"../../packages/mobile-shared/**",

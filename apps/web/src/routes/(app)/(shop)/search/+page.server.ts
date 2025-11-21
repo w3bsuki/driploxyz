@@ -232,7 +232,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     const offset = (page - 1) * pageSize;
     
     // Call the RPC function - using type assertion since it's not in generated types yet
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rpcResponse = await (locals.supabase.rpc as any)('search_products', {
       query_text: query?.trim() || '',
       filter_category: categorySlug,
@@ -242,7 +241,8 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       filter_condition: condition && condition !== 'all' ? condition : null,
       filter_brand: brand && brand !== 'all' ? brand : null,
       result_limit: pageSize,
-      result_offset: offset
+      result_offset: offset,
+      filter_country_code: locals.country || 'BG'
     });
     
     const searchResults = rpcResponse.data as SearchProductResult[] | null;
@@ -289,25 +289,90 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         imagesMap.get(img.product_id)!.push(img.image_url);
       });
 
-      // Enrich products with profile and image data
+      // Build lookups for category resolution
+      const categoryById = new Map<string, Category>();
+      (allCategories || []).forEach((cat: Category) => categoryById.set(cat.id, cat));
+      const categoryByName = new Map<string, Category>();
+      (allCategories || []).forEach((cat: Category) => categoryByName.set(cat.name.trim().toLowerCase(), cat));
+      const categoryBySlug = new Map<string, Category>();
+      (allCategories || []).forEach((cat: Category) => categoryBySlug.set(cat.slug.trim().toLowerCase(), cat));
+
+      // Enrich products with profile and image data + proper category hierarchy
       products = products.map(product => {
         const profile = profilesMap.get(product.seller_id);
         const images = imagesMap.get(product.id) || [];
         
+        // Resolve category hierarchy safely
+        let resolvedMain: string | null = null;
+        let resolvedSub: string | null = null;
+        let resolvedSpecific: string | null = null;
+        let resolvedCategoryNode: Category | null = null;
+
+        // Try to resolve by provided categories field first (if RPC returns it)
+        const rpcCategory = (product as any).categories as { id: string; name: string; slug: string; parent_id: string | null; level: number } | null | undefined;
+        if (rpcCategory?.id && categoryById.has(rpcCategory.id)) {
+          resolvedCategoryNode = categoryById.get(rpcCategory.id)!;
+        } else if (rpcCategory?.slug) {
+          const maybe = categoryBySlug.get(rpcCategory.slug.trim().toLowerCase());
+          if (maybe) resolvedCategoryNode = maybe;
+        }
+
+        // If still unknown, attempt name-based resolution from product.category string
+        if (!resolvedCategoryNode && product.category) {
+          const maybe = categoryByName.get(product.category.trim().toLowerCase());
+          if (maybe) resolvedCategoryNode = maybe;
+        }
+
+        // If we have a node, walk up to construct L1/L2/L3 names
+        if (resolvedCategoryNode) {
+          const node = resolvedCategoryNode;
+          if (node.level === 3) {
+            resolvedSpecific = node.name;
+            const parent = node.parent_id ? categoryById.get(node.parent_id) : undefined;
+            if (parent) {
+              resolvedSub = parent.name;
+              const grandparent = parent.parent_id ? categoryById.get(parent.parent_id) : undefined;
+              if (grandparent) resolvedMain = grandparent.name;
+            }
+          } else if (node.level === 2) {
+            resolvedSub = node.name;
+            const parent = node.parent_id ? categoryById.get(node.parent_id) : undefined;
+            if (parent) resolvedMain = parent.name;
+          } else if (node.level === 1) {
+            resolvedMain = node.name;
+          }
+        } else if (categorySlug) {
+          // Fallback: resolve by current filter slug when available
+          const maybe = categoryBySlug.get(categorySlug.trim().toLowerCase());
+          if (maybe) {
+            if (maybe.level === 1) resolvedMain = maybe.name;
+            if (maybe.level === 2) {
+              resolvedSub = maybe.name; const parent = maybe.parent_id ? categoryById.get(maybe.parent_id) : undefined; if (parent) resolvedMain = parent.name;
+            }
+            if (maybe.level === 3) {
+              resolvedSpecific = maybe.name; const parent = maybe.parent_id ? categoryById.get(maybe.parent_id) : undefined; if (parent) { resolvedSub = parent.name; const grandparent = parent.parent_id ? categoryById.get(parent.parent_id) : undefined; if (grandparent) resolvedMain = grandparent.name; }
+            }
+          }
+        }
+
         return {
           ...product,
           profiles: profile || null,
           product_images: images.map(url => ({ image_url: url })),
           // Parse images JSON from RPC if it exists
           images: product.images || images,
-          categories: product.category ? {
-            id: product.id,
-            name: product.category,
-            slug: categorySlug || '',
-            parent_id: null,
-            level: 1
-          } : null
-        };
+          categories: resolvedCategoryNode ? {
+            id: resolvedCategoryNode.id,
+            name: resolvedCategoryNode.name,
+            slug: resolvedCategoryNode.slug,
+            parent_id: resolvedCategoryNode.parent_id,
+            level: resolvedCategoryNode.level
+          } : null,
+          // Attach resolved names for later mapping
+          main_category_name_resolved: resolvedMain,
+          subcategory_name_resolved: resolvedSub,
+          specific_category_name_resolved: resolvedSpecific
+        } as any;
       });
 
       // For count, we'll need to run a separate count query
@@ -361,12 +426,16 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     const categoryLookup = new Map<string, Category>();
     allCategories?.forEach(cat => categoryLookup.set(cat.id, cat));
 
-    const transformedProducts = (products || []).map((product: SearchProductResult) => {
+    const transformedProducts = (products || []).map((product: SearchProductResult & any) => {
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
 
-      if (product.categories) {
+      if (product.main_category_name_resolved || product.subcategory_name_resolved || product.specific_category_name_resolved) {
+        mainCategoryName = product.main_category_name_resolved || '';
+        subcategoryName = product.subcategory_name_resolved || '';
+        specificCategoryName = product.specific_category_name_resolved || '';
+      } else if (product.categories) {
         const category = product.categories;
 
         if (category.level === 1) {
@@ -398,8 +467,9 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         // Preserve seller username for URL generation
         seller_username: product.profiles?.username || null,
         category: product.categories || null,
-        main_category_name: mainCategoryName || product.category || null,
-        category_name: mainCategoryName || product.category || null, // For backward compatibility
+        // Only use resolved category hierarchy - never fallback to product.category for main_category_name
+        main_category_name: mainCategoryName || null,
+        category_name: specificCategoryName || subcategoryName || mainCategoryName || null, // For display
         subcategory_name: subcategoryName || null,
         specific_category_name: specificCategoryName || null,
         // Include relevance rank from full-text search if query was provided

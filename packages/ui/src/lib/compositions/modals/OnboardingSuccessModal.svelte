@@ -28,7 +28,7 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 md:backdrop-blur-xs">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--modal-overlay-bg)] md:backdrop-blur-xs">
     <div class="w-full max-w-md bg-white rounded-xl shadow-sm md:shadow-xl border border-gray-200 p-8 text-center">
       <!-- Success Icon -->
       <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
@@ -73,7 +73,7 @@
                 window.location.href = '/';
                 onClose?.();
               }}
-              class="bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              class="bg-[var(--status-success-solid)] text-[var(--text-inverse)] font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -85,7 +85,7 @@
                 window.location.href = '/sell';
                 onClose?.();
               }}
-              class="bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              class="bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold py-3 px-4 rounded-lg hover:bg-[var(--btn-primary-hover)] transition-colors flex items-center justify-center gap-2"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -103,7 +103,7 @@
           <!-- Original button for brand accounts -->
           <button
             onclick={onClose}
-            class="w-full bg-black text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
+            class="w-full bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] font-semibold py-3 px-4 rounded-lg hover:bg-[var(--btn-primary-hover)] transition-colors"
           >
             {translations.goToDashboard || 'Go to Dashboard & Subscribe'}
           </button>

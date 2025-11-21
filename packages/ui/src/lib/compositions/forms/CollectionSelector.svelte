@@ -71,7 +71,7 @@
       <div class="flex items-center gap-2">
         <span class="text-lg">💧</span>
         <h4 class="font-medium text-gray-900">DRIP Collections</h4>
-        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Trendy</span>
+        <span class="text-xs bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] px-2 py-0.5 rounded-full">Trendy</span>
       </div>
 
       <div class="grid grid-cols-1 gap-2">
@@ -81,7 +81,7 @@
             onclick={() => onCollectionChange(selectedCollectionId === collection.id ? null : collection.id)}
             class="text-left p-3 rounded-lg border-2 transition-all duration-200 {
               selectedCollectionId === collection.id
-                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 ring-2 ring-blue-200'
                 : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
             }"
           >
@@ -93,7 +93,7 @@
               </div>
               {#if selectedCollectionId === collection.id}
                 <div class="flex-shrink-0">
-                  <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-5 h-5 text-[var(--brand-primary-strong)]" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                   </svg>
                 </div>

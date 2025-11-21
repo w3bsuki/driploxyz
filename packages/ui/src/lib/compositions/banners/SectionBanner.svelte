@@ -48,18 +48,18 @@
 
     switch (colorTheme) {
       case 'charcoal':
-        return `${baseClasses} bg-gray-900 text-white`;
+        return `${baseClasses} bg-zinc-900 text-[var(--text-inverse)]`;
       case 'navy':
-        return `${baseClasses} bg-blue-900 text-white`;
+        return `${baseClasses} bg-zinc-900 text-[var(--text-inverse)]`;
       case 'graphite':
-        return `${baseClasses} bg-slate-800 text-white`;
+        return `${baseClasses} bg-zinc-800 text-[var(--text-inverse)]`;
       case 'accent':
-        return `${baseClasses} bg-blue-50 text-blue-900`;
+        return `${baseClasses} bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]`;
       case 'gradient':
-        return `${baseClasses} bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900`;
+        return `${baseClasses} bg-gradient-to-r from-zinc-100 to-zinc-200 text-zinc-900`;
       case 'subtle':
       default:
-        return `${baseClasses} bg-gray-100 text-gray-900`;
+        return `${baseClasses} bg-zinc-100 text-zinc-900`;
     }
   });
 

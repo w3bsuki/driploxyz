@@ -1,7 +1,7 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
 
-import { config } from '../eslint-config/index.js';
+import config from '../eslint-config/index.js';
 
 export default [// Inherit shared config (includes svelte flat recommended)
 ...config, // Ignore build output and types

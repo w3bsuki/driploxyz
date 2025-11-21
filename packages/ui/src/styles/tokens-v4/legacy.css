@@ -12,8 +12,8 @@
 @theme {
   /* Primary/Brand (deprecated - use --brand-* instead) */
   --primary: var(--brand-primary-strong);
-  --primary-600: var(--color-indigo-700);
-  --primary-700: var(--color-indigo-800);
+  --primary-600: var(--color-zinc-700);
+  --primary-700: var(--color-zinc-800);
   --primary-fg: var(--text-inverse);
 
   /* Status (deprecated - use --status-* instead) */
@@ -39,4 +39,10 @@
 
   /* Text (deprecated - use --text-* instead) */
   --fg-muted: var(--text-muted);
+
+  /* Overlays (deprecated aliases) */
+  /* Older components reference --modal-overlay and --z-modal-backdrop */
+  /* Map them to the v4 tokens to avoid regressions while we migrate */
+  --modal-overlay: var(--modal-overlay-bg);
+  --z-modal-backdrop: var(--z-overlay);
 }

@@ -64,7 +64,7 @@
         tabindex={activeTab === tab.id ? 0 : -1}
         class="flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors scroll-snap-align-start min-h-[36px]
           {activeTab === tab.id
-            ? 'bg-black text-white'
+            ? 'bg-[var(--btn-primary-bg)] text-[var(--text-inverse)]'
             : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}"
         onclick={() => handleTabClick(tab.id)}
         onkeydown={(e) => handleKeydown(e, tab.id)}

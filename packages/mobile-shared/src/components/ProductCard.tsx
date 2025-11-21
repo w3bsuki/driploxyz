@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
-import { router } from 'expo-router';
 import type { Database } from '@repo/database';
 
 type Product = Database['public']['Tables']['products']['Row'] & {

@@ -62,7 +62,7 @@
   >
     <!-- Backdrop -->
     <button
-      class="absolute inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm border-0 cursor-default"
+      class="absolute inset-0 bg-[var(--modal-overlay-bg)] supports-[backdrop-filter]:backdrop-blur-sm border-0 cursor-default"
       onclick={handleBackdropClick}
       aria-label="Close"
       tabindex="-1"

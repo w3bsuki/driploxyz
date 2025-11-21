@@ -78,4 +78,25 @@ export class ProfileService {
       error: null
     };
   }
+
+  // Following relationships
+  async followUser(followerId: string, followeeId: string): Promise<{ error: any }> {
+    // TODO: Implement follow logic
+    return { error: null };
+  }
+
+  async unfollowUser(followerId: string, followeeId: string): Promise<{ error: any }> {
+    // TODO: Implement unfollow logic
+    return { error: null };
+  }
+
+  async getFollowers(userId: string): Promise<{ data: Array<{ id: string; username?: string | null; full_name?: string | null; avatar_url?: string | null; sales_count?: number | null }>; error: any }> {
+    // TODO: Implement get followers
+    return { data: [], error: null };
+  }
+
+  async getFollowing(userId: string): Promise<{ data: Array<{ id: string; username?: string | null; full_name?: string | null; avatar_url?: string | null; sales_count?: number | null }>; error: any }> {
+    // TODO: Implement get following
+    return { data: [], error: null };
+  }
 }

@@ -58,10 +58,10 @@
     }
   }}
   positioning="bottom-end"
-  gutter={12}
+  gutter={0}
   portal="body"
-  menuClass="menu w-auto sm:w-56 z-[60] bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] shadow-[var(--shadow-lg)] rounded-[var(--radius-lg)]"
-  triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center min-w-[44px] min-h-[44px] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+  menuClass="menu w-auto sm:w-56 z-[60] bg-surface-base shadow-lg rounded-b-lg"
+  triggerClass="p-0 bg-transparent hover:bg-[var(--state-hover)] focus:bg-[var(--state-hover)] active:bg-[var(--state-active)] border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center min-w-[length:var(--touch-standard)] min-h-[length:var(--touch-standard)] sm:min-w-[length:var(--touch-primary)] sm:min-h-[length:var(--touch-primary)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)]"
   ariaLabel={`Open user menu for ${userDisplayName}`}
 >
   {#snippet trigger()}
@@ -72,16 +72,16 @@
       size={avatarSize}
       variant={avatarVariant}
       fallback={initials}
-      class="sm:w-12 sm:h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all cursor-pointer"
+  class="w-[length:var(--avatar-sm)] h-[length:var(--avatar-sm)] sm:w-[length:var(--avatar-md)] sm:h-[length:var(--avatar-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)] transition-all cursor-pointer"
     />
   {/snippet}
   
   {#snippet children()}
     <!-- User Info Header inside menu -->
-    <div class="px-4 py-3 border-b border-[color:var(--border-subtle)]">
+    <div class="px-4 py-2.5 border-b border-border-subtle">
       <div class="flex-1 min-w-0">
-        <p class="font-semibold text-[color:var(--text-primary)] truncate text-sm">{userDisplayName}</p>
-        <p class="text-xs text-[color:var(--text-secondary)] truncate">{user?.email}</p>
+        <p class="font-semibold text-text-primary truncate text-sm">{userDisplayName}</p>
+        <p class="text-xs text-text-secondary truncate">{user?.email}</p>
       </div>
     </div>
     
@@ -89,7 +89,7 @@
     <div class="py-1">
       <a 
         href="/account" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
+        class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors min-h-[44px]" 
         role="menuitem" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
@@ -97,14 +97,14 @@
           window.location.href = '/account';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-4 h-4 mr-3 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
         {translations.myProfile}
       </a>
       <a 
         href="/orders" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
+        class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors min-h-[44px]" 
         role="menuitem" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
@@ -112,14 +112,14 @@
           window.location.href = '/orders';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-4 h-4 mr-3 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
         {translations.orders}
       </a>
       <a 
         href="/favorites" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
+        class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors min-h-[44px]" 
         role="menuitem" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
@@ -127,7 +127,7 @@
           window.location.href = '/favorites';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-4 h-4 mr-3 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
         {translations.favorites}
@@ -135,7 +135,7 @@
       {#if !canSell}
         <a 
           href="/sell" 
-          class="flex items-center px-4 py-2 text-sm text-[color:var(--primary)] hover:bg-[color:var(--status-info-bg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
+          class="flex items-center px-4 py-2.5 text-sm text-brand-primary hover:bg-surface-brand-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors min-h-[44px]" 
           role="menuitem" 
           onclick={(e: MouseEvent) => {
             e.preventDefault();
@@ -143,7 +143,7 @@
             window.location.href = '/sell';
           }}
         >
-          <svg class="w-4 h-4 mr-3 text-[color:var(--primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-4 h-4 mr-3 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {translations.startSelling}
@@ -151,10 +151,10 @@
       {/if}
     </div>
     
-    <div class="border-t border-[color:var(--border-subtle)] pt-1">
+    <div class="border-t border-border-subtle pt-1">
       <a 
         href="/settings" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
+        class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors min-h-[44px]" 
         role="menuitem" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
@@ -162,7 +162,7 @@
           window.location.href = '/settings';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="w-4 h-4 mr-3 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.50 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -174,17 +174,17 @@
           onSignOut();
         }}
         disabled={signingOut}
-        class="flex items-center w-full px-4 py-2 text-sm text-[color:var(--status-error-text)] hover:bg-[color:var(--status-error-bg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-primary)]" 
+        class="flex items-center w-full px-4 py-2.5 text-sm text-status-error-text hover:bg-status-error-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]" 
         role="menuitem"
       >
         {#if signingOut}
-          <svg class="animate-spin w-4 h-4 mr-3 text-[color:var(--status-error-solid)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="animate-spin w-4 h-4 mr-3 text-status-error-text" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           {translations.signingOut}
         {:else}
-          <svg class="w-4 h-4 mr-3 text-[color:var(--status-error-solid)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="w-4 h-4 mr-3 text-status-error-text" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           {translations.signOut}

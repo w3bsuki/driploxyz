@@ -8,7 +8,7 @@ declare module '../paraglide/messages.js' {
 
 declare module '../paraglide/runtime.js' {
   export function setLanguage(lang: string): void;
-  export function t(key: string, vars?: Record<string, any>): string;
+  export function t(key: string, vars?: Record<string, unknown>): string;
 }
 
 declare module './paraglide/server.js' {
@@ -17,5 +17,5 @@ declare module './paraglide/server.js' {
 
 declare module './paraglide/runtime.js' {
   export function setLanguage(lang: string): void;
-  export function t(key: string, vars?: Record<string, any>): string;
+  export function t(key: string, vars?: Record<string, unknown>): string;
 }

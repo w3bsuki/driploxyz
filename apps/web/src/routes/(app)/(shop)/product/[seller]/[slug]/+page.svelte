@@ -1,12 +1,36 @@
 ﻿<script lang="ts">
   import { goto } from '$app/navigation';
   import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard } from '@repo/ui';
+  import { mapProduct } from '$lib/types/domain';
   import { Heart, Clock } from '@lucide/svelte';
   import { buildProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import * as m from '@repo/i18n';
 
   let { data }: { data: PageData } = $props();
+
+  // Safe access helpers (no `any`):
+  function pickString(obj: unknown, key: string): string | undefined {
+    if (obj && typeof obj === 'object' && key in (obj as Record<string, unknown>)) {
+      const v = (obj as Record<string, unknown>)[key];
+      return typeof v === 'string' ? v : undefined;
+    }
+    return undefined;
+  }
+  function pickNumber(obj: unknown, key: string): number | undefined {
+    if (obj && typeof obj === 'object' && key in (obj as Record<string, unknown>)) {
+      const v = (obj as Record<string, unknown>)[key];
+      return typeof v === 'number' ? v : undefined;
+    }
+    return undefined;
+  }
+  function pickBoolean(obj: unknown, key: string): boolean | undefined {
+    if (obj && typeof obj === 'object' && key in (obj as Record<string, unknown>)) {
+      const v = (obj as Record<string, unknown>)[key];
+      return typeof v === 'boolean' ? v : undefined;
+    }
+    return undefined;
+  }
 
   // Canonical URL
   const canonicalUrl = buildProductUrl({
@@ -17,12 +41,18 @@
   });
 
   // State (simplified)
-  let isLiked = $state(data.isFavorited);
-  let favoriteCount = $state<number>(data.product.favorite_count || 0);
+  // Ensure boolean state even if server streamed this as a Promise<boolean>
+  const initialLiked = (() => {
+    const v = pickBoolean(data, 'isFavorited');
+    return Boolean(v);
+  })();
+  let isLiked = $state(initialLiked);
+  let favoriteCount = $state<number>(pickNumber(data.product, 'favorite_count') ?? 0);
   let descExpanded = $state(false);
   // Lazy sections control
-  const hasSimilar = (data.similarProducts?.length || 0) > 0;
-  const hasSeller = (data.sellerProducts?.length || 0) > 0;
+  // These are streamed as Promises; defer length checks to the await blocks
+  const hasSimilar = true;
+  const hasSeller = true;
   let showSimilar = $state(false);
   let showSeller = $state(false);
   let sentinel: HTMLElement | null = $state(null);
@@ -87,18 +117,23 @@
   function handleNavigate(url: string) { goto(url); }
 
   // SEO metadata
+  const productBrand = pickString(data.product, 'brand');
+  const productSize = pickString(data.product, 'size');
+  const productCondition = pickString(data.product, 'condition');
+  // Additional optional fields can be read similarly via pickString if needed
+
   const seoTitle = [
-    data.product.brand,
+    productBrand,
     data.product.title,
-    data.product.size && `Size ${data.product.size}`,
-    data.product.condition
+    productSize && `Size ${productSize}`,
+    productCondition
   ].filter(Boolean).join(' · ');
   
   const seoDescription = [
     data.product.description || `${data.product.title} by ${data.product.seller_name}`,
-    data.product.brand && `Brand: ${data.product.brand}`,
-    data.product.size && `Size: ${data.product.size}`,
-    data.product.condition && `Condition: ${data.product.condition}`,
+    productBrand && `Brand: ${productBrand}`,
+    productSize && `Size: ${productSize}`,
+    productCondition && `Condition: ${productCondition}`,
     `Price: €${data.product.price}`
   ].filter(Boolean).join(' · ').substring(0, 160);
 
@@ -142,18 +177,18 @@
   url={canonicalUrl}
   image={data.product.images?.[0]}
   type="product"
-  product={data.product}
-  seller={data.product.seller}
+  product={data.product as any}
+  seller={(data.product as any).seller}
   canonical={`https://driplo.xyz${canonicalUrl}`}
   preloadImages={data.product.images?.slice(0, 2) || []}
   enableImageOptimization={true}
 />
 
 <!-- Breadcrumb -->
-<ProductBreadcrumb
+  <ProductBreadcrumb
   category={{
-    id: data.product.category_id,
-    name: data.product.categories?.name || 'Unknown',
+    id: data.product.category_id || '',
+  name: (data.product as any)?.categories?.name || 'Unknown',
     slug: data.product.category_slug || ''
   }}
   parentCategory={data.product.parent_category ? {
@@ -171,7 +206,7 @@
     full_name: data.product.seller_name
   }}
   productTitle={data.product.title}
-  variant="flat"
+  variant="default"
 />
 
 <!-- Main Layout: Gallery + Info/Actions -->
@@ -182,8 +217,8 @@
       <ProductGallery
         images={data.product.images || []}
         title={data.product.title || ''}
-        isSold={data.product.is_sold || false}
-        condition={data.product.condition}
+  isSold={Boolean(pickBoolean(data.product, 'is_sold'))}
+  condition={productCondition as any}
       />
 
       <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
@@ -202,10 +237,10 @@
                 <div class="flex items-center gap-1.5 text-xs text-gray-500 truncate">
                   {#if data.product.seller_username}
                     <span class="truncate">@{data.product.seller_username}</span>
-                    {#if data.product.location}<span aria-hidden="true">·</span>{/if}
+                    {#if (data.product as any).location}<span aria-hidden="true">·</span>{/if}
                   {/if}
-                  {#if data.product.location}
-                    <span class="truncate">{data.product.location}</span>
+                  {#if (data.product as any).location}
+                    <span class="truncate">{(data.product as any).location}</span>
                   {/if}
                 </div>
               </div>
@@ -214,7 +249,7 @@
               <button
                 type="button"
                 class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-gray-200 bg-white text-gray-700'}`}
-                aria-pressed={isLiked}
+                aria-pressed={Boolean(isLiked)}
                 onclick={async () => { const r = await handleFavorite(); return r; }}
               >
                 <Heart class={`size-4 ${isLiked ? 'text-rose-600 fill-rose-600' : 'text-gray-500'}`}/>
@@ -225,9 +260,9 @@
 
           <!-- Condition + Title (inline, condition on the left) -->
           <div class="mt-3 flex items-center gap-3">
-            {#if data.product.condition}
+            {#if (data.product as any).condition}
               <span class="shrink-0">
-                <ConditionBadge condition={data.product.condition} />
+                <ConditionBadge condition={(data.product as any).condition} />
               </span>
             {/if}
             <h1 class="flex-1 text-lg font-semibold text-gray-900 leading-snug tracking-tight truncate">
@@ -236,14 +271,14 @@
           </div>
 
           <!-- Description -->
-          {#if data.product.description}
+          {#if (data.product as any).description}
             <p class="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
-              {data.product.description}
+              {(data.product as any).description}
             </p>
-            {#if data.product.description.length > 160}
+            {#if ((data.product as any).description as string).length > 160}
               <button
                 type="button"
-                class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
+                class="mt-2 text-xs font-medium text-zinc-600 hover:text-zinc-900"
                 onclick={() => descExpanded = !descExpanded}
               >{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}</button>
             {/if}
@@ -256,34 +291,34 @@
             <h3 class="text-sm font-semibold text-gray-900">{m.pdp_details()}</h3>
           </div>
           <dl class="divide-y divide-[color:var(--gray-100)]">
-            {#if data.product.brand}
+            {#if (data.product as any).brand}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
                 <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_brand()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.brand}</dd>
+                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).brand}</dd>
               </div>
             {/if}
-            {#if data.product.size}
+            {#if (data.product as any).size}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
                 <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_size()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.size}</dd>
+                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).size}</dd>
               </div>
             {/if}
-            {#if data.product.condition}
+            {#if (data.product as any).condition}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
                 <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_condition()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{translateCondition(data.product.condition || '')}</dd>
+                <dd class="font-semibold text-gray-900 text-right truncate">{translateCondition(((data.product as any).condition || '') as string)}</dd>
               </div>
             {/if}
-            {#if data.product.color}
+            {#if (data.product as any).color}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
                 <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_color()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.color}</dd>
+                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).color}</dd>
               </div>
             {/if}
-            {#if data.product.material}
+            {#if (data.product as any).material}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
                 <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_material()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.material}</dd>
+                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).material}</dd>
               </div>
             {/if}
           </dl>
@@ -291,13 +326,13 @@
       </div>
     <SellerCard
       id={data.product.seller_id}
-      name={data.product.seller_name}
-      avatar={data.product.seller_avatar}
+      name={data.product.seller_name || ''}
+      avatar={(data.product.seller_avatar ?? undefined) as string | undefined}
       stats={{
         rating: data.product.seller_rating || 0,
         totalSales: data.product.seller_sales_count || 0,
         responseTime: 24,
-        joinedDate: data.product.seller?.created_at || ''
+        joinedDate: (data.product as any).seller?.created_at || ''
       }}
       onMessage={handleMessage}
       onViewProfile={() => handleNavigate(`/profile/${data.product.seller_id}`)}
@@ -314,9 +349,9 @@
           <div class="p-4 sm:p-6">
 
             <!-- Brand (tiny) -->
-            {#if data.product.brand}
+            {#if (data.product as any).brand}
               <div class="mb-1">
-                <span class="text-xs text-gray-500 uppercase tracking-wide">{data.product.brand}</span>
+                <span class="text-xs text-gray-500 uppercase tracking-wide">{(data.product as any).brand}</span>
               </div>
             {/if}
 
@@ -328,29 +363,29 @@
             <!-- Price Section -->
             <div class="mt-5 pb-5 border-b border-[color:var(--gray-100)]">
               <div class="flex items-baseline gap-3">
-                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price" data-testid="product-price">€{data.product.price}</span>
-                {#if data.product.original_price && data.product.original_price > data.product.price}
-                  <span class="text-lg text-gray-500 line-through" aria-label="Original price">€{data.product.original_price}</span>
-                  <span class="sr-only">Reduced from €{data.product.original_price} to €{data.product.price}</span>
+                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price" data-testid="product-price">€{Number((data.product as any).price)}</span>
+                {#if (data.product as any).original_price && (data.product as any).original_price > (data.product as any).price}
+                  <span class="text-lg text-gray-500 line-through" aria-label="Original price">€{(data.product as any).original_price}</span>
+                  <span class="sr-only">Reduced from €{(data.product as any).original_price} to €{(data.product as any).price}</span>
                 {/if}
               </div>
             </div>
 
             <!-- Product Attributes -->
             <div class="flex flex-wrap gap-2.5 mt-5" role="list" aria-label="Product attributes">
-              {#if data.product.size}
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200" role="listitem">
-                  Size {data.product.size}
+              {#if (data.product as any).size}
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-zinc-50 text-zinc-900 border border-zinc-200" role="listitem">
+                  Size {(data.product as any).size}
                 </span>
               {/if}
-              {#if data.product.color}
+              {#if (data.product as any).color}
                 <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200" role="listitem">
-                  {data.product.color}
+                  {(data.product as any).color}
                 </span>
               {/if}
-              {#if data.product.material}
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-purple-50 text-purple-700 border border-purple-200" role="listitem">
-                  {data.product.material}
+              {#if (data.product as any).material}
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-zinc-50 text-zinc-900 border border-zinc-200" role="listitem">
+                  {(data.product as any).material}
                 </span>
               {/if}
             </div>
@@ -359,16 +394,16 @@
         </article>
 
         <!-- Description -->
-        {#if data.product.description}
+        {#if (data.product as any).description}
           <div class="hidden md:block bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <h2 class="text-base font-semibold text-gray-900 mb-3">{m.pdp_description()}</h2>
             <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
-              {data.product.description}
+              {(data.product as any).description}
             </p>
-            {#if data.product.description.length > 150}
+            {#if ((data.product as any).description as string).length > 150}
               <button 
                 type="button" 
-                class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
+                class="mt-2 text-xs font-medium text-zinc-600 hover:text-zinc-900"
                 onclick={() => descExpanded = !descExpanded}
               >
                 {descExpanded ? m.pdp_showLess() : m.pdp_readMore()}
@@ -391,11 +426,11 @@
             </div>
           {/snippet}
           <dl role="list" aria-label="Product specifications">
-            {#if data.product.brand}{@render fact(m.pdp_brand(), data.product.brand)}{/if}
-            {#if data.product.size}{@render fact(m.pdp_size(), data.product.size)}{/if}
-            {#if data.product.condition}{@render fact(m.pdp_condition(), translateCondition(data.product.condition || ''))}{/if}
-            {#if data.product.color}{@render fact(m.pdp_color(), data.product.color)}{/if}
-            {#if data.product.material}{@render fact(m.pdp_material(), data.product.material)}{/if}
+            {#if (data.product as any).brand}{@render fact(m.pdp_brand(), (data.product as any).brand)}{/if}
+            {#if (data.product as any).size}{@render fact(m.pdp_size(), (data.product as any).size)}{/if}
+            {#if (data.product as any).condition}{@render fact(m.pdp_condition(), translateCondition((data.product as any).condition || ''))}{/if}
+            {#if (data.product as any).color}{@render fact(m.pdp_color(), (data.product as any).color)}{/if}
+            {#if (data.product as any).material}{@render fact(m.pdp_material(), (data.product as any).material)}{/if}
             {#if data.product.category_name}{@render fact(m.pdp_category(), data.product.category_name)}{/if}
           </dl>
         </section>
@@ -405,10 +440,10 @@
       <div class="mt-6">
         <ProductActions
           className="hidden md:flex"
-          price={data.product.price}
+          price={Number((data.product as any).price)}
           currency="€"
-          isOwner={data.isOwner}
-          isSold={data.product.is_sold}
+          isOwner={Boolean(data.isOwner)}
+          isSold={Boolean((data.product as any).is_sold)}
           onBuyNow={handleBuyNow}
           onMessage={handleMessage}
           onMakeOffer={handleMakeOffer}
@@ -426,34 +461,40 @@
     {#if showSimilar}
       <section class="mt-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_youMayAlsoLike()}</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {#each data.similarProducts as p (p.id)}
-            <ProductCard
-              product={{
-                ...p,
-                currency: 'EUR'
-              }}
-              class="h-full"
-            />
-          {/each}
-        </div>
+        {#await data.similarProducts then similar}
+          {#if Array.isArray(similar) && similar.length > 0}
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {#each similar as p (p.id)}
+                {@const product = mapProduct(p as Record<string, any>)}
+                <ProductCard
+                  {product}
+                  class="h-full"
+                  translations={{ currency: '€' }}
+                />
+              {/each}
+            </div>
+          {/if}
+        {/await}
       </section>
     {/if}
 
     {#if showSeller}
       <section class="mt-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_moreFromSeller()}</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {#each data.sellerProducts as p (p.id)}
-            <ProductCard
-              product={{
-                ...p,
-                currency: 'EUR'
-              }}
-              class="h-full"
-            />
-          {/each}
-        </div>
+        {#await data.sellerProducts then sellerItems}
+          {#if Array.isArray(sellerItems) && sellerItems.length > 0}
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {#each sellerItems as p (p.id)}
+                {@const product = mapProduct(p as Record<string, any>)}
+                <ProductCard
+                  {product}
+                  class="h-full"
+                  translations={{ currency: '€' }}
+                />
+              {/each}
+            </div>
+          {/if}
+        {/await}
       </section>
     {/if}
   </div>
@@ -462,26 +503,26 @@
 <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-gray-200 md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
   <div class="relative">
     <ProductActions
-      price={data.product.price}
+      price={Number((data.product as any).price)}
       currency="€"
-      isOwner={data.isOwner}
-      isSold={data.product.is_sold}
+  isOwner={Boolean(data.isOwner ?? false)}
+  isSold={Boolean(pickBoolean(data.product, 'is_sold'))}
       onBuyNow={handleBuyNow}
       onMessage={handleMessage}
       onMakeOffer={handleMakeOffer}
       seller={{
-        username: data.product.seller_username,
-        avatar_url: data.product.images?.[0],
-        rating: data.product.seller?.rating,
-        full_name: data.product.seller_name
+        username: (data.product as any).seller_username,
+        avatar_url: (data.product as any).images?.[0],
+        rating: (data.product as any).seller_rating ?? (data.product as any).seller?.rating,
+        full_name: (data.product as any).seller_name
       }}
-      productTitle={data.product.title}
-      productDescription={data.product.description}
+      productTitle={(data.product as any).title}
+      productDescription={(data.product as any).description}
       showSellerInfo={true}
     />
     <div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-gray-500">
       <Clock class="size-3.5 text-gray-400" aria-hidden="true" />
-      <span>{formatRelativeDate(data.product.created_at)}</span>
+  <span>{formatRelativeDate(((data.product as any).created_at ?? (data.product as any).createdAt) as string)}</span>
     </div>
   </div>
 </div>

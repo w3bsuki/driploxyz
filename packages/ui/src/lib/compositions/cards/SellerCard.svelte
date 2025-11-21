@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
   const m: any = i18n;
-  // @ts-expect-error: Svelte component types are resolved by svelte2tsx during build
   import Avatar from '../../primitives/avatar/Avatar.svelte';
 
   interface SellerStats {

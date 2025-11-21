@@ -54,7 +54,7 @@
   }: Props = $props();
 
   // State using $state rune
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement = $state()!;
   let isDragging = $state(false);
   let isProcessing = $state(false);
   let conversionProgress = $state({ current: 0, total: 0 });
@@ -356,24 +356,24 @@
 <div class="w-full space-y-4">
   <!-- Upload progress -->
   {#if uploading || isProcessing}
-    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <div class="p-4 bg-[var(--surface-brand-strong)]/5 rounded-lg border border-[var(--surface-brand-strong)]/20">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-sm font-medium text-blue-700">
+        <span class="text-sm font-medium text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">
           {uploadingImagesText}
         </span>
         {#if conversionProgress.total > 0}
-          <span class="text-sm text-blue-600">
+          <span class="text-sm text-[var(--brand-primary-strong)]">
             {conversionProgress.current}/{conversionProgress.total}
           </span>
         {/if}
       </div>
-      <div class="w-full bg-blue-200 rounded-full h-2">
+      <div class="w-full bg-[var(--surface-brand-strong)]/20 rounded-full h-2">
         <div 
-          class="bg-blue-600 h-2 rounded-full transition-colors duration-300 ease-out"
+          class="bg-[var(--brand-primary-strong)] h-2 rounded-full transition-colors duration-300 ease-out"
           style="width: {conversionProgress.total > 0 ? (conversionProgress.current / conversionProgress.total) * 100 : 0}%"
         ></div>
       </div>
-      <p class="text-xs text-blue-600 mt-2">
+      <p class="text-xs text-[var(--brand-primary-strong)] mt-2">
         {imagesOptimizedText}
       </p>
     </div>
@@ -400,13 +400,13 @@
         
         <!-- Cover badge for first image -->
         {#if index === 0}
-          <div class="absolute top-1.5 left-1.5 bg-green-600 text-white text-xs px-2 py-0.5 rounded font-medium">
+          <div class="absolute top-1.5 left-1.5 bg-[var(--status-success-solid)] text-[var(--text-inverse)] text-xs px-2 py-0.5 rounded font-medium">
             {coverText}
           </div>
         {/if}
         
         <!-- Format badge -->
-        <div class="absolute top-1.5 right-1.5 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-mono">
+        <div class="absolute top-1.5 right-1.5 bg-[var(--modal-overlay-bg)] text-[var(--text-inverse)] text-xs px-1.5 py-0.5 rounded font-mono">
           {#if image.url.toLowerCase().endsWith('.webp')}
             WebP
           {:else if image.url.toLowerCase().includes('.jp')}
@@ -421,7 +421,7 @@
           type="button"
           onclick={() => removeImage(index)}
           disabled={uploading || isProcessing}
-          class="absolute bottom-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center
+          class="absolute bottom-1.5 right-1.5 bg-[var(--status-error-solid)] hover:bg-red-600 text-[var(--text-inverse)] rounded-full p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center
                  opacity-0 group-hover:opacity-100 transition-colors duration-200 
                  disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={removeImageText}
@@ -440,18 +440,18 @@
         class="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center 
                cursor-pointer transition-colors duration-200 w-full
                {isDragging 
-                 ? 'border-blue-500 bg-blue-50 scale-105' 
+                 ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 scale-105' 
                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"
         onclick={triggerFileInput}
         aria-label={addPhotoText}
       >
         <div class="flex flex-col items-center space-y-1">
           {#if isDragging}
-            <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-6 w-6 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <span class="text-xs text-blue-600 font-medium text-center px-1">{dropHereText}</span>
+            <span class="text-xs text-[var(--brand-primary-strong)] font-medium text-center px-1">{dropHereText}</span>
           {:else}
             <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -497,7 +497,7 @@
               {#if failedFiles.length > 0 && retryAttempts < 3 && (hasError.includes('network') || hasError.includes('timeout') || hasError.includes('Try Again'))}
                 <button
                   type="button"
-                  class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition-colors"
+                  class="text-xs bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] px-3 py-1.5 rounded-md hover:bg-[var(--btn-primary-hover)] transition-colors"
                   onclick={retryUpload}
                   disabled={isProcessing}
                 >
@@ -541,7 +541,7 @@
       </div>
     {:else if helpText}
       <div class="flex items-start space-x-2">
-        <svg class="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-4 w-4 text-[var(--brand-primary-strong)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <p class="text-xs text-gray-500">{helpText}</p>
@@ -558,7 +558,7 @@
           {/if}
         </span>
         <span class="flex items-center">
-          <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+          <span class="inline-block w-2 h-2 bg-[var(--status-success-solid)] rounded-full mr-1"></span>
           {optimizedForWebText}
         </span>
       </div>

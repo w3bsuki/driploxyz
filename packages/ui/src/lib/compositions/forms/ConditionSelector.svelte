@@ -85,10 +85,10 @@
     }
     
     if (isSelected) {
-      return `${base} border-blue-500 bg-blue-500 text-white cursor-pointer shadow-md`;
+      return `${base} border-zinc-900 bg-zinc-900 text-white cursor-pointer shadow-md`;
     }
     
-    return `${base} border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 cursor-pointer`;
+    return `${base} border-gray-200 bg-white hover:border-zinc-300 hover:bg-zinc-50 cursor-pointer`;
   }
 </script>
 
@@ -129,7 +129,7 @@
             {/if}
             <div>
               <span class="font-medium text-sm block">{condition.label}</span>
-              <p class="text-xs mt-0.5 {value === condition.value ? 'text-blue-200' : 'text-gray-500'}">
+              <p class="text-xs mt-0.5 {value === condition.value ? 'text-zinc-400' : 'text-gray-500'}">
                 {condition.description}
               </p>
             </div>

@@ -129,8 +129,8 @@
 
 	function handleContactSupport() {
 		// Generate support context
-		const supportContext = {
-			errorId: error?.id,
+	    const supportContext = {
+		    errorId: (errorDetails?.code as string | undefined) || undefined,
 			statusCode: status,
 			timestamp: new Date().toISOString(),
 			userAgent: browser ? navigator.userAgent : 'unknown',
@@ -194,17 +194,17 @@
 
 					<!-- Error Context -->
 					<div class="mt-6 space-y-2">
-						{#if error?.id}
+						{#if errorDetails?.code}
 							<p class="text-sm text-[color:var(--text-muted)] flex items-center gap-2">
-								<span class="font-medium">Error ID:</span>
-								<code class="font-mono bg-[color:var(--surface-muted)] px-2 py-1 rounded text-xs">{error.id}</code>
+									<span class="font-medium">Error Code:</span>
+									<code class="font-mono bg-[color:var(--surface-muted)] px-2 py-1 rounded text-xs">{errorDetails.code}</code>
 								<button
 									type="button"
 									class="text-[color:var(--text-link)] hover:text-[color:var(--text-link-hover)] text-xs"
 									onclick={() => {
 										if (browser) {
-											navigator.clipboard?.writeText(error.id || '');
-											toast.success('Error ID copied to clipboard');
+												navigator.clipboard?.writeText(String(errorDetails?.code ?? ''));
+												toast.success('Error code copied to clipboard');
 										}
 									}}
 									aria-label="Copy error ID to clipboard"

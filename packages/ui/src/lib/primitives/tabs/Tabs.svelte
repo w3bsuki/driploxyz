@@ -72,26 +72,26 @@
 
 	// Size variants for touch targets (mobile-first)
 	const sizeClasses = {
-		sm: 'min-h-[32px] px-3 py-1.5 text-sm',
-		md: 'min-h-[36px] px-4 py-2 text-sm',
-		lg: 'min-h-[44px] px-6 py-3 text-base'
+		sm: 'min-h-[var(--touch-compact)] px-[var(--space-3)] py-[calc(var(--spacing)*1.5)] text-sm',
+		md: 'min-h-[var(--touch-standard)] px-[var(--space-4)] py-[var(--space-2)] text-sm',
+		lg: 'min-h-[var(--touch-primary)] px-[var(--space-6)] py-[var(--space-3)] text-base'
 	};
 
 	// Variant styles
 	const variantClasses = {
 		default: {
-			container: 'border-b border-gray-200',
-			tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 text-gray-500',
+			container: 'border-b border-[var(--border-subtle)]',
+			tab: 'border-b-2 border-transparent hover:border-[var(--border-default)] data-[state=active]:border-[var(--brand-primary-strong)] data-[state=active]:text-[var(--brand-primary-strong)] text-[var(--text-secondary)]',
 			list: 'flex'
 		},
 		pills: {
-			container: 'p-1 bg-gray-100 rounded-lg',
-			tab: 'rounded-md hover:bg-gray-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm text-gray-500',
-			list: 'flex gap-1'
+			container: 'p-[var(--space-1)] bg-[var(--surface-subtle)] rounded-[var(--radius-lg)]',
+			tab: 'rounded-[var(--radius-md)] hover:bg-[var(--state-hover)] data-[state=active]:bg-[var(--surface-base)] data-[state=active]:text-[var(--brand-primary-strong)] data-[state=active]:shadow-sm text-[var(--text-secondary)]',
+			list: 'flex gap-[var(--space-1)]'
 		},
 		underline: {
-			container: 'border-b border-gray-200',
-			tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 text-gray-500 relative',
+			container: 'border-b border-[var(--border-subtle)]',
+			tab: 'border-b-2 border-transparent hover:border-[var(--border-default)] data-[state=active]:border-[var(--brand-primary-strong)] data-[state=active]:text-[var(--brand-primary-strong)] text-[var(--text-secondary)] relative',
 			list: 'flex'
 		}
 	};
@@ -102,11 +102,11 @@
 	);
 
 	const listClasses = $derived(
-		`tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-gray-200' : ''} ${tabListClass}`
+		`tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[var(--border-subtle)]' : ''} ${tabListClass}`
 	);
 
 	const getTabClasses = (tab: TabData, isActive: boolean) => {
-		const baseClasses = `tabs-trigger font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 whitespace-nowrap flex items-center gap-2 ${sizeClasses[size]} ${variantClasses[variant].tab}`;
+		const baseClasses = `tabs-trigger font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--state-focus)] whitespace-nowrap flex items-center gap-2 ${sizeClasses[size]} ${variantClasses[variant].tab}`;
 		const stateClasses = isActive ? 'active' : '';
 		const disabledClasses = tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 		return `${baseClasses} ${stateClasses} ${disabledClasses} ${tabClass}`;
@@ -115,7 +115,7 @@
 	const panelClasses = $derived(`tabs-content focus-visible:outline-none ${panelClass}`);
 
 	// Scroll behavior for mobile
-	let tabListElement: HTMLElement;
+	let tabListElement: HTMLElement = $state()!;
 
 	const scrollToActiveTab = () => {
 		if (!scrollable || !tabListElement || orientation === 'vertical') return;
@@ -212,10 +212,10 @@
 						<span
 							class="tab-count ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-medium
 								{isActive
-									? variant === 'pills'
-										? 'bg-gray-200 text-current'
-										: 'bg-blue-100 text-blue-600'
-									: 'bg-gray-100 text-gray-600'}"
+									? (variant === 'pills'
+										? 'bg-[var(--surface-subtle)] text-current'
+										: 'bg-[var(--surface-brand-strong)]/10 text-[var(--brand-primary-strong)]')
+									: 'bg-[var(--surface-subtle)] text-[var(--text-secondary)]'}"
 							aria-label="{tab.count} items"
 						>
 							{tab.count}
@@ -225,7 +225,7 @@
 					<!-- Badge -->
 					{#if tab.badge}
 						<span
-							class="tab-badge ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600 font-medium"
+							class="tab-badge ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-[var(--status-error-bg)] text-[var(--status-error-text)] font-medium"
 							aria-label="Badge: {tab.badge}"
 						>
 							{tab.badge}
@@ -261,14 +261,14 @@
 
 	/* Focus styles for accessibility */
 	.tabs-trigger:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--state-focus);
 		outline-offset: 2px;
 		z-index: 1;
 	}
 
 	/* Hover states */
 	.tabs-trigger:hover:not(:disabled) {
-		background-color: #f3f4f6;
+		background-color: var(--surface-subtle);
 	}
 
 	/* Active state animations */
@@ -321,8 +321,8 @@
 	/* High contrast mode support */
 	@media (prefers-contrast: high) {
 		.tabs-trigger[data-state="active"] {
-			background-color: #f9fafb;
-			color: #111827;
+			background-color: var(--surface-subtle);
+			color: var(--text-primary);
 		}
 
 		.tabs-trigger:focus-visible {
@@ -351,7 +351,7 @@
 
 	.tabs-root[data-orientation="vertical"] .tabs-list {
 		flex-direction: column;
-		border-right: 1px solid #e5e7eb;
+		border-right: 1px solid var(--border-subtle);
 		border-bottom: none;
 		min-width: 200px;
 		padding: 8px;

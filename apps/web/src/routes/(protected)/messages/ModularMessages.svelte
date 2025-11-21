@@ -26,10 +26,6 @@
   let activeConversationMessages = $state.raw<Message[]>([]); // Use $state.raw for message arrays
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
   let isLoadingOlder = $state(false);
-   
-  let _showSidebarOnMobile = $state(false);
-   
-  let _isLoadingConversation = $state(false);
   let hasMoreMessages = $state(true);
   let isInitializing = $state(true);
   let isSendingMessage = $state(false);
@@ -120,8 +116,7 @@
     try {
       const freshConversations = await conversationService.loadConversations();
       messagingLogger.info('Setting conversations in UI', { 
-        conversationCount: freshConversations.length,
-        conversations: freshConversations 
+        conversationCount: freshConversations.length
       });
       
       conversations = freshConversations;
@@ -156,16 +151,16 @@
       if (conversation) {
         activeConversation = conversation;
         void loadConversationMessages(conversationParam);
-        _showSidebarOnMobile = false;
+        // Mobile sidebar handling would go here
       } else {
         // Create new conversation from server data (for starting new conversations)
         const [otherUserId, productId] = conversationParam.split('__');
         
         const newConversation: Conversation = {
           id: conversationParam,
-          userId: otherUserId,
+          userId: otherUserId || '',
           userName: data.conversationUser?.username || data.conversationUser?.full_name || 'User',
-          userAvatar: data.conversationUser?.avatar_url,
+          userAvatar: data.conversationUser?.avatar_url ?? undefined,
           productId: productId === 'general' ? null : productId,
           productTitle: (data.conversationProduct as any)?.title || null,
           productImage: (data.conversationProduct as any)?.product_images?.[0]?.image_url || (data.conversationProduct as any)?.first_image || null,
@@ -192,23 +187,18 @@
         if (!conversations.find(c => c.id === conversationParam)) {
           conversations = [newConversation, ...conversations];
         }
-        _showSidebarOnMobile = false;
+        // Mobile sidebar handling would go here
       }
     } else if (!conversationParam) {
       activeConversation = null;
       activeConversationMessages = [];
-      _showSidebarOnMobile = true;
+      // Mobile sidebar handling would go here
     }
   });
 
   // Event handlers
   function handleConversationSelect(conversationId: string) {
-    _isLoadingConversation = true;
     goto(`/messages?conversation=${conversationId}`);
-    // Reset loading state after navigation
-    setTimeout(() => {
-      _isLoadingConversation = false;
-    }, 500);
   }
 
   function handleBackToList() {

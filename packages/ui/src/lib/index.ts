@@ -15,8 +15,8 @@ export { default as Modal } from './primitives/modal/Modal.svelte';
 export { default as Overlay } from './primitives/overlay/Overlay.svelte';
 export { default as ProductCard } from './compositions/cards/ProductCard.svelte';
 export { default as IntegratedSearchBar } from './compositions/navigation/IntegratedSearchBar.svelte';
+export { default as SearchDropdownInput } from './compositions/search/SearchDropdownInput.svelte';
 export { default as CategoryDropdown } from './compositions/navigation/CategoryDropdown.svelte';
-export { default as CategoryBottomSheet } from './compositions/navigation/CategoryNavigationSheet.svelte';
 export { default as Avatar } from './primitives/avatar/Avatar.svelte';
 export { default as SellerProfileCard } from './compositions/cards/SellerProfileCard.svelte';
 export { default as FeaturedSellers } from './compositions/business/FeaturedSellers.svelte';
@@ -27,7 +27,6 @@ export { default as LazyImage } from './primitives/image/LazyImage.svelte';
 export { default as EngagementBanner } from './compositions/banners/EngagementBanner.svelte';
 
 // Enhanced product components
-export { default as BuyBox } from './compositions/business/BuyBox.svelte';
 export { default as ShippingEstimator } from './compositions/business/ShippingEstimator.svelte';
 export { default as TrustBadges } from './compositions/badges/TrustBadges.svelte';
 
@@ -79,6 +78,9 @@ export { default as FilterResultsAnnouncer } from './compositions/product/Filter
 
 // Rating components
 export { default as RatingModal } from './compositions/modals/RatingModal.svelte';
+
+// Discovery modal
+export { default as DiscoverModal } from './compositions/modals/DiscoverModal.svelte';
 
 // Notification components
 export { default as NotificationBell } from './compositions/notifications/NotificationBell.svelte';
@@ -306,3 +308,17 @@ export { default as RegionSwitchModal } from './compositions/modals/RegionSwitch
 
 // Search Compositions
 export { default as HeroSearch } from './compositions/search/HeroSearch.svelte';
+
+// === NEWLY CREATED MOBILE-FIRST SEARCH COMPONENTS (2025-10-18) ===
+
+// Simple search bar for /search page
+export { default as SearchBarSimple } from './compositions/navigation/SearchBarSimple.svelte';
+
+// Mobile-first filter and browse components
+export { default as FilterDrawer } from './compositions/product/FilterDrawer.svelte';
+export { default as CategorySideDrawer } from './compositions/navigation/CategorySideDrawer.svelte';
+export { default as CategoryPills } from './compositions/product/CategoryPills.svelte';
+
+// Legacy components (kept for backwards compatibility)
+export { default as CategoryBrowseSheet } from './compositions/navigation/CategoryBrowseSheet.svelte';
+export { default as QuickConditionPills } from './compositions/product/QuickConditionPills.svelte';

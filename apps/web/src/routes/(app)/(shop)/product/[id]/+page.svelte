@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard, ErrorBoundary } from '@repo/ui';
 	import { Heart, Clock } from '@lucide/svelte';
-	import { buildProductUrl } from '$lib/utils/seo-urls';
 	import type { PageData } from './$types';
 	import * as m from '@repo/i18n';
+	import { mapProduct } from '$lib/types/domain';
 
 	let { data }: { data: PageData } = $props();
 
@@ -14,7 +14,7 @@
 	const canonicalUrl = `/product/${data.product.id}`;
 
 	// State (simplified)
-	let isLiked = $state(data.isFavorited);
+	let isLiked = $state(Boolean((data as any).isFavorited));
 	let favoriteCount = $state<number>(data.product.favorite_count || 0);
 	let descExpanded = $state(false);
 	// Lazy sections control
@@ -140,8 +140,8 @@
 		url={canonicalUrl}
 		image={data.product.images?.[0]}
 		type="product"
-		product={data.product}
-		seller={data.product.seller}
+		product={data.product as any}
+		seller={(data.product as any).seller}
 		canonical={`https://driplo.xyz${canonicalUrl}`}
 		enableImageOptimization={true}
 	/>
@@ -150,7 +150,7 @@
 <ErrorBoundary name="ProductPageContent">
 
 <!-- Simple breadcrumb for legacy route -->
-<ProductBreadcrumb
+	<ProductBreadcrumb
 	category={data.product.category_name ? {
 		id: data.product.category_id || '',
 		name: data.product.category_name,
@@ -161,7 +161,7 @@
 		full_name: data.product.seller_name
 	}}
 	productTitle={data.product.title}
-	variant="flat"
+		variant="default"
 />
 
 <!-- Main Layout: Gallery + Info/Actions -->
@@ -172,7 +172,7 @@
 			<ProductGallery
 				images={data.product.images || []}
 				title={data.product.title || ''}
-				isSold={data.product.is_sold || false}
+				isSold={Boolean((data.product as any).is_sold)}
 				condition={data.product.condition}
 			/>
 
@@ -229,7 +229,7 @@
 						{#if data.product.description.length > 160}
 							<button
 								type="button"
-								class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
+								class="mt-2 text-xs font-medium text-zinc-600 hover:text-zinc-900"
 								onclick={() => descExpanded = !descExpanded}
 							>{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}</button>
 						{/if}
@@ -282,7 +282,7 @@
 						<!-- Product Attributes -->
 						<div class="flex flex-wrap gap-2.5 mt-5" role="list" aria-label="Product attributes">
 							{#if data.product.size}
-								<span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200" role="listitem">
+								<span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-zinc-50 text-zinc-900 border border-zinc-200" role="listitem">
 									Size {data.product.size}
 								</span>
 							{/if}
@@ -305,7 +305,7 @@
 						{#if data.product.description.length > 150}
 							<button
 								type="button"
-								class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
+								class="mt-2 text-xs font-medium text-zinc-600 hover:text-zinc-900"
 								onclick={() => descExpanded = !descExpanded}
 							>
 								{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}
@@ -321,8 +321,8 @@
 					className="hidden md:flex"
 					price={data.product.price}
 					currency="€"
-					isOwner={data.isOwner}
-					isSold={data.product.is_sold}
+					isOwner={Boolean((data as any).isOwner)}
+					isSold={Boolean((data.product as any).is_sold)}
 					onBuyNow={handleBuyNow}
 					onMessage={handleMessage}
 					onMakeOffer={handleMakeOffer}
@@ -341,14 +341,8 @@
 		<section class="mt-6">
 			<h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_youMayAlsoLike()}</h2>
 			<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-				{#each data.similarProducts as p (p.id)}
-					<ProductCard
-						product={{
-							...p,
-							currency: 'EUR'
-						}}
-						class="h-full"
-					/>
+				{#each (data.similarProducts as any[]) as p (p.id)}
+					<ProductCard product={mapProduct(p as any)} class="h-full" />
 				{/each}
 			</div>
 		</section>
@@ -359,13 +353,7 @@
 			<h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_moreFromSeller()}</h2>
 			<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
 				{#each data.sellerProducts as p (p.id)}
-					<ProductCard
-						product={{
-							...p,
-							currency: 'EUR'
-						}}
-						class="h-full"
-					/>
+					<ProductCard product={mapProduct(p as any)} class="h-full" />
 				{/each}
 			</div>
 		</section>
@@ -379,8 +367,8 @@
 		<ProductActions
 			price={data.product.price}
 			currency="€"
-			isOwner={data.isOwner}
-			isSold={data.product.is_sold}
+			isOwner={Boolean((data as any).isOwner)}
+			isSold={Boolean((data.product as any).is_sold)}
 			onBuyNow={handleBuyNow}
 			onMessage={handleMessage}
 			onMakeOffer={handleMakeOffer}
@@ -396,7 +384,7 @@
 		/>
 		<div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-gray-500">
 			<Clock class="size-3.5 text-gray-400" aria-hidden="true" />
-			<span>{formatRelativeDate(data.product.created_at)}</span>
+			<span>{formatRelativeDate((data.product.created_at || new Date().toISOString()) as string)}</span>
 		</div>
 	</div>
 </div>

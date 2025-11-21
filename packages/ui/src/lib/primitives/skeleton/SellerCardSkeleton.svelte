@@ -49,7 +49,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
+      color-mix(in oklch, var(--surface-base) 40%, transparent) 50%,
       transparent 100%
     );
     animation: shimmer 2s ease-in-out infinite;

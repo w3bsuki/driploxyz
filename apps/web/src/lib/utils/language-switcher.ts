@@ -67,6 +67,8 @@ export function initializeLanguage(serverLanguage?: string) {
   
   // Use server language if provided (SSR first)
   if (serverLanguage && i18n.locales.includes(serverLanguage as i18n.Locale)) {
+    // Align client runtime with server-selected locale
+    i18n.setLocale(serverLanguage as i18n.Locale);
     document.documentElement.lang = serverLanguage;
     return;
   }
@@ -86,6 +88,8 @@ export function initializeLanguage(serverLanguage?: string) {
     // Cookie reading failed
   }
   if (storedLang && i18n.locales.includes(storedLang as i18n.Locale)) {
+    // Apply stored preference to runtime and html lang
+    i18n.setLocale(storedLang as i18n.Locale);
     document.documentElement.lang = storedLang;
   } else {
     // Last resort: browser language detection
@@ -96,6 +100,7 @@ export function initializeLanguage(serverLanguage?: string) {
     }
     
     const finalLang = i18n.locales.includes(browserLang as i18n.Locale) ? browserLang : 'en';
+    i18n.setLocale(finalLang as i18n.Locale);
     document.documentElement.lang = finalLang;
   }
 }

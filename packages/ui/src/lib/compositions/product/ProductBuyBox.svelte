@@ -79,10 +79,10 @@
   });
 </script>
 
-<div class="buy-box {className} buy-box--{variant}" class:buy-box--loading={isLoading}>
+<div class={[`buy-box buy-box--${variant}`, className, { 'buy-box--loading': isLoading }]}>
   <!-- Price Section -->
   <div class="price-section">
-    <div class="price-main" class:price-animated={showPriceAnimation}>
+    <div class={['price-main', { 'price-animated': showPriceAnimation }]}>
       <div class="price-current">
         <span class="currency">{currency}</span>
         <span class="price-amount">{formatPrice(product.price)}</span>

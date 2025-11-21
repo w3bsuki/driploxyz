@@ -49,7 +49,7 @@
 {#if isActive}
   <div class="fixed left-0 right-0 z-[60] pointer-events-none" style="top: var(--app-header-offset, 0px);">
     <div 
-      class="h-0.5 bg-gradient-to-r from-[color:var(--primary)] via-[color:var(--primary-400)] to-[color:var(--primary-300)] shadow-sm transition-[width] duration-150 ease-out"
+      class="h-0.5 bg-gradient-to-r from-[color:var(--brand-primary-strong)] via-zinc-700 to-zinc-500 shadow-sm transition-[width] duration-150 ease-out"
       style={`width:${progress}%;`}
     ></div>
   </div>

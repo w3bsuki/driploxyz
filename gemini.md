@@ -4,7 +4,7 @@
 
 | File | Recommendation | Justification |
 |---|---|---|
-| `apps/web/.prettierrc` | Consolidate | This file is a slightly modified version of the root `.prettierrc`. The configurations should be merged to the root `.prettierrc` and this file should be deleted. |
+| `apps/web/.prettierrc` | Delete (consolidate to root) | This file is a slightly modified version of the root `.prettierrc`. Merge any differences into the root `.prettierrc` and delete this file to avoid drift. |
 | `packages/core/eslint.config.js` | **Delete** | This file is a duplicate of `packages/core/eslint.config.ts`. The `.ts` version should be used. |
 | `packages/domain/eslint.config.js` | **Delete** | This file is a duplicate of `packages/domain/eslint.config.ts`. The `.ts` version should be used. |
 
@@ -179,7 +179,7 @@
 | `.gitignore` | Keep | Git configuration. |
 | `.npmrc` | Keep | NPM configuration. |
 | `.prettierignore` | Keep | Prettier configuration. |
-| `.prettierrc` | Keep | Prettier configuration. |
+| `.prettierrc` | Delete | Consolidate to root `.prettierrc` to avoid drift and duplication. |
 | `eslint.config.ts` | Keep | ESLint configuration. |
 | `lighthouserc.cjs` | Keep | Lighthouse configuration. |
 | `package.json` | Keep | Project manifest. |
@@ -220,8 +220,8 @@
 | `dist/` | **Delete** | Build artifact. |
 | `node_modules/` | **Delete** | Dependency folder. |
 | `src/` | Keep | Source code. |
-| `src/generated.ts` | **Delete** | Generated file. |
-| `src/generated/database.ts` | **Delete** | Generated file. |
+| `src/generated.ts` | Keep | Canonical Supabase generated types used to produce `generated.js` consumed by `src/index.ts`. Keep tracked or regenerate in CI via `pnpm db:types`. |
+| `src/generated/database.ts` | Keep | Compatibility shim re-exporting from `../generated.js`; required by existing imports and internal re-exports. |
 
 ## packages/domain Directory
 
@@ -332,3 +332,29 @@
 | `config.toml` | Keep | Supabase configuration. |
 | `functions/` | Keep | Supabase functions. |
 | `migrations/` | Keep | Supabase database migrations. |
+
+## Post-cleanup verification checklist
+
+Run these in order to ensure nothing broke after applying this plan:
+
+1) Install and validate workspace
+- pnpm install
+- pnpm -w lint
+- pnpm -w test
+
+2) Regenerate Supabase types (local dev)
+- pnpm db:types
+- Verify types compile: pnpm -w check-types
+
+3) Web app sanity
+- pnpm --filter web check-types
+- pnpm --filter web exec svelte-check --fail-on-warnings
+
+4) Packages sanity
+- pnpm --filter ./packages/* check-types
+
+5) Optional deep checks
+- pnpm --filter web test
+- pnpm --filter @driplo/ui test
+
+If any step fails, revert only the offending deletion or config change and re-run. Preserve `packages/database/src/generated.ts` and `packages/database/src/generated/database.ts` at all times; they are required by `packages/database/src/index.ts` and should be kept in Git or regenerated in CI via `pnpm db:types`.

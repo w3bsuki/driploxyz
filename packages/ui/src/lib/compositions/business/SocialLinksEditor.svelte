@@ -79,7 +79,7 @@
                 id={`platform-${index}`}
                 bind:value={link.type}
                 onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => updateLink(index, 'type', e.currentTarget.value)}
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent bg-white/80"
               >
                 {#each socialPlatforms as platform}
                   <option value={platform.value}>{platform.label}</option>
@@ -131,13 +131,13 @@
     <Button
       onclick={addLink}
       variant="outline"
-      class="w-full py-3 border-dashed border-2 hover:bg-indigo-50 hover:border-indigo-300 group"
+      class="w-full py-3 border-dashed border-2 hover:bg-zinc-50 hover:border-zinc-300 group"
     >
       <div class="flex items-center justify-center space-x-2">
-        <svg class="w-5 h-5 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 group-hover:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
-        <span class="font-medium group-hover:text-indigo-600">Add Social Link</span>
+        <span class="font-medium group-hover:text-zinc-900">Add Social Link</span>
       </div>
     </Button>
   </div>

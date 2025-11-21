@@ -22,17 +22,18 @@
 
   // Track current focused index for keyboard navigation
   let focusedIndex = $state(-1);
-  let containerRef: HTMLDivElement;
+  let containerRef: HTMLDivElement = $state()!;
   let announcement = $state('');
 
   // Simple toggle group placeholder implementation
-  let toggleValue = $state(value ?? undefined);
+  let toggleValue = $state<string | string[] | undefined>(value ?? undefined);
 
   // Create dummy elements to match melt-ui interface
-  const root = $derived({
-    'data-melt-toggle-group-root': '',
-    role: 'group'
-  });
+  function root(node: HTMLElement) {
+    node.setAttribute('data-melt-toggle-group-root', '');
+    node.setAttribute('role', 'group');
+    return {};
+  }
 
   const item = $derived({
     'data-melt-toggle-group-item': '',
@@ -191,7 +192,7 @@
     {@const isActive = isPressed(option.value)}
     {@const activeClasses = isActive 
       ? (option.bgGradient 
-          ? `${option.bgGradient} text-white shadow-md border-transparent ${activePillClass}` 
+          ? `${option.bgGradient} text-[var(--text-inverse)] shadow-md border-transparent ${activePillClass}` 
           : `bg-[color:var(--primary)] text-[color:var(--primary-fg)] shadow-md border-transparent ${activePillClass}`)
       : `bg-[color:var(--surface-base)] text-[color:var(--text-primary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-subtle)]`
     }

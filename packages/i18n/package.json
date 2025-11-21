@@ -6,11 +6,12 @@
     "node": ">=22.12.0 <23"
   },
   "scripts": {
-    "build": "pnpm run clean && pnpm run generate && pnpm run types",
+    "build": "pnpm run clean && pnpm run generate && pnpm run fix-generated && pnpm run types",
     "compile": "pnpm run generate",
     "generate": "node ./scripts/generate-message-exports.mjs",
+    "fix-generated": "node ./scripts/fix-paraglide-exports.mjs",
     "types": "tsc",
-    "dev": "pnpm run generate && tsc --watch",
+    "dev": "pnpm run generate && pnpm run fix-generated && tsc --watch",
     "clean": "node -e \"const fs=require('fs');fs.rmSync('lib',{recursive:true,force:true});fs.rmSync('dist',{recursive:true,force:true});\"",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
@@ -20,30 +21,31 @@
   },
   "main": "./lib/src/index.js",
   "types": "./lib/src/index.d.ts",
+  "module": "./lib/src/index.js",
   "exports": {
     ".": {
-      "types": "./lib/src/index.d.ts",
       "import": "./lib/src/index.js",
+      "require": "./lib/src/index.js",
       "default": "./lib/src/index.js"
     },
     "./runtime": {
-      "types": "./lib/src/runtime.d.ts",
       "import": "./lib/src/runtime.js",
+      "require": "./lib/src/runtime.js",
       "default": "./lib/src/runtime.js"
     },
     "./paraglide/runtime": {
-      "types": "./lib/src/paraglide/runtime.d.ts",
       "import": "./lib/src/paraglide/runtime.js",
+      "require": "./lib/src/paraglide/runtime.js",
       "default": "./lib/src/paraglide/runtime.js"
     },
     "./paraglide/messages": {
-      "types": "./lib/src/paraglide/messages/_index.d.ts",
       "import": "./lib/src/paraglide/messages/_index.js",
+      "require": "./lib/src/paraglide/messages/_index.js",
       "default": "./lib/src/paraglide/messages/_index.js"
     },
     "./server": {
-      "types": "./lib/src/server.d.ts",
       "import": "./lib/src/server.js",
+      "require": "./lib/src/server.js",
       "default": "./lib/src/server.js"
     }
   },

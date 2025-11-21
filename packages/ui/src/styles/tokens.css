@@ -1,9 +1,6 @@
 /*
   Legacy tokens entry point.
-  Deprecated in favour of @repo/ui/styles.css but maintained for backwards compatibility.
+  REDIRECTS TO v4 TOKENS - Old v3 system deleted
 */
 
-@import './tokens/foundations.css';
-@import './tokens/semantic.css';
-@import './tokens/components.css';
-@import './tokens/alias.css';
+@import './tokens-v4/tokens.css';

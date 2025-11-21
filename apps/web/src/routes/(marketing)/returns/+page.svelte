@@ -13,8 +13,8 @@
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Return Policy</h1>
 		
 		<div class="bg-white shadow-sm rounded-lg p-6 space-y-8">
-			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-				<p class="text-sm text-blue-800">
+			<div class="bg-[var(--surface-brand-strong)]/5 border border-[var(--surface-brand-strong)]/20 rounded-lg p-4">
+				<p class="text-sm text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)]">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
 				</p>
 			</div>
@@ -65,7 +65,7 @@
 				<h2 class="text-2xl font-semibold mb-4">Return Process</h2>
 				<div class="space-y-6">
 					<div class="flex items-start space-x-4">
-						<div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+						<div class="flex-shrink-0 w-8 h-8 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center font-bold">1</div>
 						<div>
 							<h3 class="font-semibold text-gray-900 mb-2">Report the Issue (Within 48 Hours)</h3>
 							<p class="text-gray-600 text-sm mb-3">
@@ -80,7 +80,7 @@
 					</div>
 
 					<div class="flex items-start space-x-4">
-						<div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+						<div class="flex-shrink-0 w-8 h-8 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center font-bold">2</div>
 						<div>
 							<h3 class="font-semibold text-gray-900 mb-2">Provide Evidence</h3>
 							<p class="text-gray-600 text-sm mb-3">
@@ -96,7 +96,7 @@
 					</div>
 
 					<div class="flex items-start space-x-4">
-						<div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+						<div class="flex-shrink-0 w-8 h-8 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center font-bold">3</div>
 						<div>
 							<h3 class="font-semibold text-gray-900 mb-2">Investigation & Mediation</h3>
 							<p class="text-gray-600 text-sm mb-3">
@@ -112,7 +112,7 @@
 					</div>
 
 					<div class="flex items-start space-x-4">
-						<div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+						<div class="flex-shrink-0 w-8 h-8 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center font-bold">4</div>
 						<div>
 							<h3 class="font-semibold text-gray-900 mb-2">Resolution</h3>
 							<p class="text-gray-600 text-sm mb-3">
@@ -132,9 +132,9 @@
 			<section>
 				<h2 class="text-2xl font-semibold mb-4">Refund Information</h2>
 				<div class="space-y-4">
-					<div class="bg-blue-50 rounded-lg p-4">
-						<h3 class="font-semibold text-blue-800 mb-2">Refund Timeline</h3>
-						<ul class="text-blue-700 space-y-1 text-sm">
+					<div class="bg-[var(--surface-brand-strong)]/5 rounded-lg p-4">
+						<h3 class="font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] mb-2">Refund Timeline</h3>
+						<ul class="text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] space-y-1 text-sm">
 							<li>• Credit cards: 5-10 business days</li>
 							<li>• PayPal: 1-3 business days</li>
 							<li>• Bank transfers: 3-7 business days</li>
@@ -238,7 +238,7 @@
 							<svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
 							</svg>
-							<a href="mailto:support@driplo.xyz" class="text-blue-600 hover:underline">support@driplo.xyz</a>
+							<a href="mailto:support@driplo.xyz" class="text-[var(--brand-primary-strong)] hover:underline">support@driplo.xyz</a>
 						</div>
 						<div class="flex items-center space-x-3">
 							<svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

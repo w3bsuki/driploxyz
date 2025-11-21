@@ -11,10 +11,11 @@ export default defineConfig({
     navigationTimeout: 15000
   },
   webServer: {
-    command: 'pnpm --filter web dev',
+    command: 'pnpm dev',
     url: 'http://localhost:5173',
     reuseExistingServer: true,
-    timeout: 180 * 1000
+    timeout: 180 * 1000,
+    cwd: '.'
   },
   projects: [
     {

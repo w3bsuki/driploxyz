@@ -55,11 +55,11 @@
     <!-- Action/Price -->
     <div class="flex-shrink-0">
       <div 
-        class="bg-gray-200 rounded"
-        class:h-8={variant === 'compact'}
-        class:w-16={variant === 'compact'}
-        class:h-10={variant !== 'compact'}
-        class:w-20={variant !== 'compact'}
+        class={{
+          'bg-gray-200 rounded': true,
+          'h-8 w-16': variant === 'compact',
+          'h-10 w-20': variant !== 'compact'
+        }}
       ></div>
     </div>
   </div>

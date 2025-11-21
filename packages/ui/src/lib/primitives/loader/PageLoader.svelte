@@ -14,7 +14,7 @@
   }: Props = $props();
   
   let showLoader = $state(false);
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   
   // Show loader after delay to avoid flash on fast operations
   $effect(() => {

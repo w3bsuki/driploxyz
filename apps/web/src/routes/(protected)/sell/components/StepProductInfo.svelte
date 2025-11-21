@@ -21,7 +21,7 @@
   
   let { 
     formData = $bindable(),
-    sizeOptions,
+  sizeOptions = [],
     errors,
     touched,
     onFieldChange,
@@ -29,27 +29,28 @@
   }: Props = $props();
   
   function showError(field: string): boolean {
-    return touched[field] && !!errors[field];
+    return Boolean(touched[field]) && Boolean(errors[field]);
   }
 
   // Size groups
   const sizeGroups = $derived.by(() => {
-    const groups: Record<string, SizeOption[]> = {
+    const groups: { 'XS-XL': SizeOption[]; 'Numbers': SizeOption[]; 'UK/EU': SizeOption[]; 'Other': SizeOption[] } = {
       'XS-XL': [],
       'Numbers': [],
       'UK/EU': [],
       'Other': []
     };
     
-    sizeOptions.forEach(size => {
+    const sizesArr = Array.isArray(sizeOptions) ? sizeOptions : [];
+    sizesArr.forEach((size) => {
       if (['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].includes(size.value)) {
-        groups['XS-XL'] = [...groups['XS-XL'], size];
+        groups['XS-XL'].push(size);
       } else if (/^\d+$/.test(size.value)) {
-        groups['Numbers'] = [...groups['Numbers'], size];
+        groups['Numbers'].push(size);
       } else if (size.value.includes('UK') || size.value.includes('EU')) {
-        groups['UK/EU'] = [...groups['UK/EU'], size];
+        groups['UK/EU'].push(size);
       } else {
-        groups['Other'] = [...groups['Other'], size];
+        groups['Other'].push(size);
       }
     });
     
@@ -86,7 +87,7 @@
 
   // Initialize custom brand if value doesn't match popular brands
   $effect(() => {
-    if (formData.brand && !POPULAR_BRANDS.includes(formData.brand)) {
+    if (formData.brand && !POPULAR_BRANDS.includes(formData.brand as any)) {
       showCustomBrand = true;
       customBrand = formData.brand;
     }
@@ -214,7 +215,7 @@
           <div 
             class="w-full aspect-square rounded-lg border-2 transition-colors {
               formData.color === color.name 
-                ? 'border-[color:var(--state-focus)] ring-2 ring-[color:var(--state-focus)] ring-opacity-50' 
+                ? 'border-zinc-900 ring-2 ring-zinc-900 ring-opacity-50' 
                 : 'border-gray-200 hover:border-gray-300'
             }"
             style="background: {color.hex}; {color.hex === '#FFFFFF' ? 'box-shadow: inset 0 0 0 1px #e5e7eb;' : ''}"
@@ -255,7 +256,7 @@
           onclick={() => { formData.material = material; onFieldChange('material', material); }}
           class="flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors {
             formData.material === material 
-              ? 'border-[color:var(--state-focus)] bg-[color:var(--status-info-bg)] text-[color:var(--status-info-text)]' 
+              ? 'border-zinc-900 bg-zinc-100 text-zinc-900' 
               : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
           }"
         >

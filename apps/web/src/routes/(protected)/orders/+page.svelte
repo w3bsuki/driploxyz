@@ -3,7 +3,6 @@
   import type { PageData } from './$types';
   import type { Database } from '@repo/database';
   import * as i18n from '@repo/i18n';
-  import { getProductUrl } from '$lib/utils/seo-urls';
   import type { Json } from '@repo/database';
   
   interface Props {
@@ -247,7 +246,7 @@
                       {i18n.orders_leaveReview()}
                     </Button>
                   {/if}
-                  {#if order.status === 'pending' || order.status === 'processing'}
+                  {#if order.status === 'pending' || order.status === 'paid' || order.status === null}
                     <Button onclick={() => handleOrderStatusChange(order.id, 'cancelled')} variant="danger">
                       {i18n.orders_cancelOrder()}
                     </Button>
@@ -281,7 +280,7 @@
                   </Button>
                 {/if}
                 
-                <Button href={order.product ? getProductUrl({ id: order.product.id, slug: (order.product as any).slug }) : `/product/${order.product?.id}`} variant="secondary">
+                <Button href={`/product/${order.product?.id ?? ''}`} variant="secondary">
                   {i18n.orders_viewProduct()}
                 </Button>
               </div>
@@ -300,9 +299,9 @@
       onSubmit={submitReview}
       orderDetails={{
         orderId: selectedOrderForReview.id,
-        seller: selectedOrderForReview.seller?.username,
-        buyer: selectedOrderForReview.buyer?.username,
-        product: selectedOrderForReview.product?.title,
+  seller: selectedOrderForReview.seller?.username ?? undefined,
+  buyer: selectedOrderForReview.buyer?.username ?? undefined,
+  product: selectedOrderForReview.product?.title ?? undefined,
         productImage: selectedOrderForReview.product?.first_image || selectedOrderForReview.product?.product_images?.[0]?.image_url
       }}
       _userType={selectedOrderForReview.buyer_id === data.user?.id ? 'buyer' : 'seller'}

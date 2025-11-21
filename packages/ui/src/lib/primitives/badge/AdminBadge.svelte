@@ -21,7 +21,7 @@
   };
 
   const variantClasses = {
-    primary: 'bg-blue-100 text-[color:var(--status-info-text)] border-blue-200',
+    primary: 'bg-[var(--surface-brand-strong)]/10 text-[color:var(--status-info-text)] border-[var(--surface-brand-strong)]/20',
     secondary: 'bg-gray-100 text-[color:var(--text-secondary)] border-gray-200',
     success: 'bg-green-100 text-green-800 border-green-200',
     warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',

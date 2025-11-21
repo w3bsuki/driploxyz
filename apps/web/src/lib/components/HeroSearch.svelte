@@ -61,8 +61,9 @@
         break;
     }
     
-    const buttons = document.querySelectorAll('[role="group"] button');
-    buttons[selectedCategoryIndex + 1]?.focus();
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[role="group"] button');
+  const nextBtn = buttons.item(selectedCategoryIndex + 1);
+  nextBtn?.focus();
   }
 </script>
 

@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { slide } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
 
   interface MenuItemData {
     id: string;
@@ -140,15 +142,15 @@
 
   // Calculate position based on positioning prop
   const menuStyle = $derived(() => {
-    const baseStyles = 'z-50 min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2';
+    const baseStyles = 'z-50 min-w-[8rem] rounded-b-lg bg-surface-base p-1 text-text-primary shadow-md';
 
     const positionClasses = {
-      'bottom-start': 'top-full left-0 mt-1',
-      'bottom-end': 'top-full right-0 mt-1',
-      'top-start': 'bottom-full left-0 mb-1',
-      'top-end': 'bottom-full right-0 mb-1',
-      'bottom': 'top-full left-1/2 transform -translate-x-1/2 mt-1',
-      'top': 'bottom-full left-1/2 transform -translate-x-1/2 mb-1'
+      'bottom-start': 'top-full left-0',
+      'bottom-end': 'top-full right-0',
+      'top-start': 'bottom-full left-0 mb-1 rounded-t-lg rounded-b-none',
+      'top-end': 'bottom-full right-0 mb-1 rounded-t-lg rounded-b-none',
+      'bottom': 'top-full left-1/2 transform -translate-x-1/2',
+      'top': 'bottom-full left-1/2 transform -translate-x-1/2 mb-1 rounded-t-lg rounded-b-none'
     };
 
     return `${baseStyles} ${positionClasses[positioning]}`;
@@ -183,11 +185,12 @@
     class="{menuClasses} {menuStyle}"
     role="menu"
     tabindex="-1"
+    transition:slide={{ duration: 200, easing: quintOut }}
   >
     <!-- Static Menu Items from Array -->
     {#each items.filter(item => !item.separator) as item, index (item.id)}
       <button
-        class="menu-item relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        class="menu-item relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-surface-muted hover:text-text-primary focus:bg-surface-muted focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
         disabled={item.disabled}
         role="menuitem"
         tabindex={index === focusedIndex ? 0 : -1}
@@ -208,7 +211,7 @@
     <!-- Separators -->
     {#each items.filter(item => item.separator) as item (item.id)}
       <div class="menu-separator px-1 py-1" role="separator">
-        <div class="h-px bg-gray-200 my-1"></div>
+        <div class="h-px bg-border-subtle my-1"></div>
       </div>
     {/each}
 
@@ -216,7 +219,7 @@
     {#if children}
       {#if items.length > 0}
         <div class="menu-separator px-1 py-1" role="separator">
-          <div class="h-px bg-gray-200 my-1"></div>
+          <div class="h-px bg-border-subtle my-1"></div>
         </div>
       {/if}
       {@render children()}
@@ -227,12 +230,12 @@
 <style>
   /* Menu item hover states */
   .menu-item:hover:not(:disabled) {
-    background-color: oklch(98% 0.01 250);
+    background-color: var(--surface-muted);
   }
 
   .menu-item:focus-visible {
-    background-color: oklch(96% 0.02 250);
-    outline: 2px solid oklch(60% 0.2 250);
+    background-color: var(--surface-muted);
+    outline: 2px solid var(--primary);
     outline-offset: -2px;
   }
 
@@ -249,8 +252,8 @@
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .menu-item:hover:not(:disabled) {
-      background-color: oklch(85% 0.05 250);
-      color: oklch(10% 0.02 250);
+      background-color: var(--surface-emphasis);
+      color: var(--text-primary);
     }
 
     .menu-item:focus-visible {

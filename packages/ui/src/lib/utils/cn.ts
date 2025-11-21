@@ -37,7 +37,7 @@ function toClassString(value: ClassValue): string[] {
  *
  * @example
  * cn('px-2 py-1', 'px-4') // "px-2 py-1 px-4"
- * cn('text-red-500', condition && 'text-blue-500') // conditional classes
+ * cn('text-red-500', condition && 'text-[var(--brand-primary-strong)]') // conditional classes
  * cn({ 'font-bold': isActive }, 'text-lg') // object notation
  */
 export function cn(...inputs: ClassValue[]): string {

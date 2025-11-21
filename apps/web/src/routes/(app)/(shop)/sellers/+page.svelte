@@ -43,8 +43,8 @@
 
   function getBadgeColor(badge: 'brand' | 'pro' | 'verified' | 'free'): string {
     const colors: Record<'brand' | 'pro' | 'verified' | 'free', string> = {
-      brand: 'bg-purple-100 text-purple-800',
-      pro: 'bg-blue-100 text-blue-800', 
+      brand: 'bg-zinc-900 text-white',
+      pro: 'bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)]', 
       verified: 'bg-green-100 text-green-800',
       free: 'bg-gray-100 text-gray-600'
     };
@@ -109,7 +109,7 @@
               placeholder="Search sellers..."
               bind:value={searchQuery}
               onkeydown={(e) => e.key === 'Enter' && applySorting()}
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
             />
           </div>
           
@@ -119,7 +119,7 @@
                 onclick={() => handleSortChange(sort.key)}
                 class="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors {
                   selectedSort === sort.key 
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200' 
+                    ? 'bg-[var(--surface-brand-strong)]/10 text-[var(--surface-brand-strong)] border border-[var(--surface-brand-strong)]/20' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }"
                 disabled={loading}
@@ -193,7 +193,7 @@
                     </span>
                     
                     {#if seller.verified}
-                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg class="w-4 h-4 text-[var(--brand-primary-strong)]" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                       </svg>
                     {/if}
@@ -248,10 +248,10 @@
                 
                 <!-- Action -->
                 <div class="flex-shrink-0">
-                  <Button
+                    <Button
                     size="sm"
                     variant="outline"
-                    onclick={() => handleSellerClick(seller)}
+                    onclick={() => handleSellerClick({ id: seller.id, username: seller.username ?? undefined })}
                   >
                     View Profile
                   </Button>
@@ -341,7 +341,7 @@
     </div>
 
     <div class="p-4">
-      <button class="w-full px-4 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold" onclick={() => (document.getElementById('seller-filters-sheet') as HTMLDialogElement)?.close()}>
+      <button class="w-full px-4 py-3 rounded-xl bg-[var(--brand-primary-strong)] text-white text-sm font-semibold hover:bg-[color-mix(in_oklch,var(--brand-primary-strong)_85%,black_15%)] active:bg-[color-mix(in_oklch,var(--brand-primary-strong)_75%,black_25%)]" onclick={() => (document.getElementById('seller-filters-sheet') as HTMLDialogElement)?.close()}>
         Done
       </button>
     </div>

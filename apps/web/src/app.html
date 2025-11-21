@@ -17,7 +17,7 @@
 		<link rel="stylesheet" href="%sveltekit.assets%/fonts/inter.css">
 
 		<!-- Early theme init: apply saved theme before CSS paints -->
-		<script nonce="%sveltekit.nonce%">
+		<script>
 			(function(){
 				try {
 					var t = localStorage.getItem('theme');
@@ -28,7 +28,7 @@
 		</script>
 
 		<!-- No-FOUC script: prevent flash of unstyled content with robust fallback -->
-		<script nonce="%sveltekit.nonce%">
+		<script>
 			(function(){
 				// Hide body until CSS is loaded to prevent FOUC
 				document.documentElement.style.visibility = 'hidden';
@@ -65,7 +65,7 @@
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
 		
 		<!-- Error handling and monitoring -->
-		<script nonce="%sveltekit.nonce%">
+		<script>
 			// Global error handler for uncaught JavaScript errors
 			window.addEventListener('error', function(event) {
 				console.error('Global error:', event.error);

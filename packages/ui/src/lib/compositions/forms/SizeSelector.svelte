@@ -125,7 +125,7 @@
 
   <!-- Size Guide Link -->
   <div class="flex items-center justify-between text-sm">
-    <button class="text-blue-600 hover:text-blue-800 underline font-medium transition-colors">
+    <button class="text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] underline font-medium transition-colors">
       Size guide
     </button>
     

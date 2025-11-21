@@ -38,6 +38,13 @@ type ProductQueryResult = {
   product_images?: ProductImage[];
   profiles?: ProfileSummary | ProfileSummary[];
   categories?: CategorySummary | null;
+  // Frequently used product fields (present in products table)
+  price: number;
+  currency?: string | null;
+  description?: string | null;
+  condition?: string | null;
+  brand?: string | null;
+  size?: string | null;
 };
 
 export const load = (async ({ params, locals, depends, setHeaders }) => {

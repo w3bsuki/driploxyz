@@ -124,7 +124,7 @@ export interface MobileNavigationDialogProps {
   // Actions / callbacks
   onSignOut?: () => void;
   onLanguageChange?: (lang: string) => void;
-  searchFunction?: (q: string) => Promise<unknown> | unknown;
+  searchFunction?: SearchFunction;
 
   // Notifications / counts
   unreadMessages?: number;
@@ -160,4 +160,5 @@ export interface SearchDropdownProps {
   onSellerSelect?: (seller: SearchSeller) => void;
   onCollectionSelect?: (collection: Collection) => void;
   translations?: Record<string, string>;
+  filterType?: 'products' | 'brands' | 'sellers';
 }

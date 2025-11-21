@@ -49,7 +49,7 @@
   let isLoaded = $state(false);
   let isError = $state(false);
   let isIntersecting = $state(false);
-  let imgElement = $state<HTMLImageElement>();
+  // Image ref not needed for current logic
   let containerElement = $state<HTMLDivElement>();
 
   // Intersection Observer for lazy loading
@@ -156,8 +156,8 @@
   });
 
   // Compute container styles
-  const containerStyles = $derived(() => {
-    let styles = style;
+  const containerStyles = $derived.by(() => {
+    let styles = style ?? '';
 
     if (width && height) {
       const aspectRatio = (height / width) * 100;
@@ -168,7 +168,7 @@
   });
 
   // Compute image styles
-  const imageStyles = $derived(() => {
+  const imageStyles = $derived.by(() => {
     let styles = `object-fit: ${objectFit};`;
 
     if (!isLoaded && blurDataUrl) {
@@ -192,14 +192,13 @@
   {#if !isLoaded && (placeholder || blurDataUrl)}
     <div
       class="image-placeholder"
-      style="background-image: url({blurPlaceholder}); background-size: cover; background-position: center;"
+  style={`background-image: url(${blurPlaceholder}); background-size: cover; background-position: center;`}
     ></div>
   {/if}
 
   <!-- Main image - only load when intersecting -->
   {#if isIntersecting}
     <img
-      bind:this={imgElement}
       src={optimizedSrc}
       srcset={responsiveSrcset}
       sizes={sizes}
@@ -209,7 +208,7 @@
       loading={priority ? 'eager' : loading}
       decoding="async"
       class="main-image"
-      style={imageStyles}
+  style={imageStyles}
       onload={handleLoad}
       onerror={handleError}
     />
@@ -248,7 +247,7 @@
   .optimized-image-container {
     position: relative;
     overflow: hidden;
-    background-color: #f3f4f6;
+    background-color: var(--surface-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -279,18 +278,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #6b7280;
+    color: var(--text-subtle);
     z-index: 3;
   }
 
   .error-icon {
-    width: 2rem;
-    height: 2rem;
-    margin-bottom: 0.5rem;
+    width: var(--space-8);
+    height: var(--space-8);
+    margin-bottom: var(--space-2);
   }
 
   .error-text {
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     text-align: center;
   }
 
@@ -303,10 +302,10 @@
   }
 
   .loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
+    width: var(--space-8);
+    height: var(--space-8);
+    border: 2px solid var(--border-subtle);
+    border-top: 2px solid var(--state-focus);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }

@@ -178,7 +178,7 @@
 			product: selectedOrder.product.title,
 			productImage: selectedOrder.product.image_url
 		}}
-		userType="buyer"
+		_userType="buyer"
 	/>
 {/if}
 

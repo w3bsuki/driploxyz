@@ -13,8 +13,6 @@
   } from '@repo/ui';
   import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
-  // Force fresh i18n import
-  // Auth stores removed - using props directly
   import { signOut, canSell } from '$lib/auth';
   import {
     notificationStore,
@@ -25,18 +23,20 @@
   import { RealtimeNotificationService } from '$lib/realtime/notifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
-    import type { SupabaseClient } from '@supabase/supabase-js';
-    import type { Database } from '@repo/database';
-    import type { LanguageTag } from '@repo/i18n';
+  import { goto } from '$app/navigation';
+  import type { SupabaseClient } from '@supabase/supabase-js';
+  import type { Database } from '@repo/database';
+  import type { LanguageTag } from '@repo/i18n';
   import { afterNavigate } from '$app/navigation';
+  
   interface Props {
     supabase: SupabaseClient<Database> | null;
     showSearch?: boolean;
-      initialLanguage?: LanguageTag;
+    initialLanguage?: LanguageTag;
     user?: User;
     profile?: Profile;
   }
-  
+
   let {
     supabase,
     showSearch = false,
@@ -45,16 +45,14 @@
     profile: propsProfile
   }: Props = $props();
   
-  
-  // Product service removed - search functionality will be handled by parent components
-  
+  // State management
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
-  let NotificationPanel: (new (...args: any) => any) | null = $state(null);
+  let NotificationPanel: any | null = $state(null);
   let notificationPanelLoaded = $state(false);
   
-  // Use props data directly
+  // User-related derived state
   const currentUser = $derived(propsUser);
   const currentProfile = $derived(propsProfile);
   const isLoggedIn = $derived(!!currentUser);
@@ -68,39 +66,30 @@
     '?'
   );
   
-  // Language handling
-  let currentLang = $state(initialLanguage || i18n.getLocale());
+  // Language handling - use $derived instead of $state assignment in $effect
+  const currentLang = $derived(initialLanguage || i18n.getLocale());
   
-  // Check if language needs to be set from initial prop
-  const needsLanguageInit = $derived(() =>
-    initialLanguage && initialLanguage !== i18n.getLocale()
-  );
-
+  // Initialize language on mount
   $effect(() => {
-    if (needsLanguageInit() && initialLanguage) {
+    if (initialLanguage && initialLanguage !== i18n.getLocale()) {
       i18n.setLocale(initialLanguage as LanguageTag);
-      currentLang = initialLanguage;
     }
   });
   
+  // Update HTML lang attribute reactively
   $effect(() => {
-    const newLang = i18n.getLocale();
-    if (newLang !== currentLang) {
-      currentLang = newLang;
-      // Update HTML lang attribute
-      if (browser) {
-        document.documentElement.lang = newLang;
-      }
+    if (browser) {
+      document.documentElement.lang = currentLang;
     }
   });
 
   async function handleSignOut() {
     signingOut = true;
     try {
-      await signOut();
-      // The signOut function handles the redirect
+      if (supabase) {
+        await signOut(supabase);
+      }
     } catch {
-      // Sign out error - reset loading state
       signingOut = false;
     }
   }
@@ -109,22 +98,20 @@
     mobileMenuOpen = false;
   }
 
-  // Mobile-perfect behavior: auto-close on route change (official API)
+  // Auto-close on route change (mobile-first)
   if (browser) {
     afterNavigate(() => {
-      if (mobileMenuOpen) mobileMenuOpen = false;
+      closeMenus();
     });
   }
 
   // Check if notification service should be initialized
-  const shouldInitNotifications = $derived(() =>
-    currentUser && supabase && !notificationService
-  );
+  const shouldInitNotifications = $derived(currentUser && supabase && !notificationService);
 
   // Initialize notification service when user logs in
   $effect(() => {
-    if (shouldInitNotifications() && currentUser) {
-        notificationService = new RealtimeNotificationService(supabase as SupabaseClient<Database>, currentUser.id);
+    if (shouldInitNotifications && currentUser) {
+      notificationService = new RealtimeNotificationService(supabase as SupabaseClient<Database>, currentUser.id);
       notificationService.initialize();
     } else if (!currentUser && notificationService) {
       notificationService.destroy();
@@ -139,7 +126,7 @@
     };
   });
   
-  // Translation objects
+  // Translation objects - all derived for reactivity
   const navTranslations = $derived({
     browse: i18n.menu_browse(),
     sell: i18n.nav_sell(),
@@ -196,48 +183,149 @@
     supportLabel: i18n.common_support ? i18n.common_support() : 'Support'
   });
 
-  // Search function for quick results dropdown - delegate to parent
-  async function handleQuickSearch(query: string) {
-    // Return empty results - parent components should handle search
+  // Unread messages - derived from store
+  const unreadMessages = $derived(unreadMessageCountStore());
+
+  // Search function for quick results dropdown
+  async function handleQuickSearch(_query: string) {
     return { data: [], error: null };
   }
 </script>
 
 <header
-  class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur"
+  class="bg-surface-base supports-[backdrop-filter]:backdrop-blur relative z-50 border-b border-border-subtle"
   aria-label="Site header"
 >
-  <div class="px-2 sm:px-4 lg:px-6 safe-area">
-    <!-- Bar -->
-    <div class="flex items-center justify-between h-14 sm:h-16">
-      <!-- Left: Mobile Menu + Logo -->
-      <div class="flex items-center gap-0">
-        <button
-          onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden inline-flex items-center justify-center h-10 w-10 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
-          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-navigation"
-          aria-haspopup="dialog"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            {#if mobileMenuOpen}
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            {:else}
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            {/if}
-          </svg>
-        </button>
+  <div class="px-[length:var(--space-3)] sm:px-[length:var(--space-4)] lg:px-[length:var(--space-6)] safe-area">
+      <!-- MOBILE LAYOUT: Compact, clean like Vinted -->
+  <div class="flex sm:hidden items-center justify-between h-[length:var(--nav-height-mobile)]">
+        <!-- Left: Hamburger + Logo -->
+        <div class="flex items-center justify-start gap-0 h-[length:var(--touch-primary)]">
+          <button
+            onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+            class={[
+              'inline-flex items-center justify-center',
+              'h-[length:var(--touch-primary)] w-[length:var(--touch-primary)] -ml-2',
+              'rounded-[length:var(--radius-md)]',
+              'text-text-secondary hover:text-text-primary hover:bg-surface-subtle',
+              'transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]'
+            ]}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-haspopup="dialog"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              {#if mobileMenuOpen}
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              {:else}
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              {/if}
+            </svg>
+          </button>
+          <HeaderLogo size="lg" />
+        </div>
 
-        <div>
-          <HeaderLogo />
+        <!-- Right: Icons -->
+        <div class="flex items-center justify-end gap-1">
+          <!-- Discover Button -->
+          <button
+            onclick={() => {
+              const event = new CustomEvent('openDiscover', { bubbles: true });
+              document.dispatchEvent(event);
+            }}
+            class={[
+              'inline-flex items-center justify-center',
+              'h-9 w-9',
+              'rounded-[length:var(--radius-md)]',
+              'text-text-secondary hover:text-text-brand hover:bg-surface-subtle',
+              'transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]'
+            ]}
+            aria-label="Discover top sellers and brands"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </button>
+
+          {#if isLoggedIn}
+            <!-- Notifications -->
+            <div class="relative">
+              <NotificationBell
+                count={notificationStore.unreadCount}
+                onclick={async () => {
+                  if (!notificationPanelLoaded && !NotificationPanel) {
+                    const module = await import('@repo/ui');
+                    NotificationPanel = module.NotificationPanel;
+                    notificationPanelLoaded = true;
+                  }
+                  notificationActions.togglePanel();
+                }}
+              />
+
+              {#if notificationPanelLoaded && NotificationPanel}
+                <NotificationPanel
+                  notifications={notificationStore.notifications}
+                  show={notificationStore.notificationPanelOpen}
+                  onMarkAsRead={notificationActions.markAsRead}
+                  onMarkAllAsRead={notificationActions.markAllAsRead}
+                  onClose={notificationActions.closePanel}
+                  translations={notificationTranslations}
+                />
+              {/if}
+            </div>
+
+            <!-- User Menu -->
+            <HeaderUserMenu
+              user={currentUser}
+              profile={currentProfile}
+              {userDisplayName}
+              {initials}
+              canSell={userCanSell}
+              onSignOut={handleSignOut}
+              onClose={closeMenus}
+              {signingOut}
+              avatarSize="md"
+              translations={userMenuTranslations}
+            />
+          {/if}
+
+          {#if !isLoggedIn}
+            <!-- Auth: Sign In Button -->
+            <button
+              onclick={async () => await goto('/login')}
+              class={[
+                'inline-flex items-center justify-center',
+                'h-9 px-4',
+                'rounded-[length:var(--radius-md)]',
+                'bg-brand text-white font-medium text-sm',
+                'hover:bg-brand-dark transition-colors',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]'
+              ]}
+              type="button"
+            >
+              {i18n.auth_signIn()}
+            </button>
+            <!-- Auth: Sign Up Button (mobile) -->
+            <Button href="/signup" variant="secondary" size="sm">
+              {i18n.auth_signUp()}
+            </Button>
+          {/if}
         </div>
       </div>
 
-      <!-- Right: Actions -->
-      <div class="flex items-center justify-end gap-2">
-        <!-- Desktop: Language + Theme -->
-        <div class="hidden sm:flex items-center gap-1">
+      <!-- DESKTOP LAYOUT -->
+      <div class="hidden sm:flex items-center justify-between h-[length:var(--nav-height)]">
+        <!-- Left: Logo -->
+        <div class="flex items-center">
+          <HeaderLogo />
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="flex items-center justify-end gap-[length:var(--space-2)]">
+          <!-- Language + Theme -->
           <LanguageSwitcher
             currentLanguage={currentLang}
             {languages}
@@ -245,103 +333,131 @@
             variant="dropdown"
           />
           <ThemeToggle size="sm" tooltip="Toggle theme" />
-        </div>
 
-        
+          <!-- Discover Button -->
+          <button
+            onclick={() => {
+              const event = new CustomEvent('openDiscover', { bubbles: true });
+              document.dispatchEvent(event);
+            }}
+            class={[
+              'inline-flex items-center justify-center',
+              'h-[length:var(--touch-standard)] w-[length:var(--touch-standard)]',
+              'rounded-[length:var(--radius-md)]',
+              'text-text-secondary hover:text-text-brand hover:bg-surface-subtle',
+              'transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]'
+            ]}
+            aria-label="Discover top sellers and brands"
+            title="Discover"
+          >
+            <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </button>
 
-        {#if isLoggedIn}
-          <!-- Notifications -->
-          <div class="relative">
-            <NotificationBell
-              count={notificationStore.unreadCount}
-              onclick={async () => {
-                if (!notificationPanelLoaded && !NotificationPanel) {
-                  const module = await import('@repo/ui');
-                  NotificationPanel = module.NotificationPanel;
-                  notificationPanelLoaded = true;
-                }
-                notificationActions.togglePanel();
-              }}
-                aria-label="Notifications"
-            />
-
-            {#if notificationPanelLoaded && NotificationPanel}
-              <NotificationPanel
-                notifications={notificationStore.notifications}
-                show={notificationStore.notificationPanelOpen}
-                onMarkAsRead={notificationActions.markAsRead}
-                onMarkAllAsRead={notificationActions.markAllAsRead}
-                onClose={notificationActions.closePanel}
-                translations={notificationTranslations}
+          {#if isLoggedIn}
+            <!-- Notifications -->
+            <div class="relative">
+              <NotificationBell
+                count={notificationStore.unreadCount}
+                onclick={async () => {
+                  if (!notificationPanelLoaded && !NotificationPanel) {
+                    const module = await import('@repo/ui');
+                    NotificationPanel = module.NotificationPanel;
+                    notificationPanelLoaded = true;
+                  }
+                  notificationActions.togglePanel();
+                }}
               />
-            {/if}
-          </div>
 
-          <!-- User Menu -->
-          <HeaderUserMenu
-            user={currentUser}
-            profile={currentProfile}
-            {userDisplayName}
-            {initials}
-            canSell={userCanSell}
-            onSignOut={handleSignOut}
-            onClose={closeMenus}
-            {signingOut}
-            translations={userMenuTranslations}
-          />
-        {:else}
-          <!-- Auth: Sign in always visible; Sign up desktop-only -->
-          <div class="flex items-center gap-2">
+              {#if notificationPanelLoaded && NotificationPanel}
+                <NotificationPanel
+                  notifications={notificationStore.notifications}
+                  show={notificationStore.notificationPanelOpen}
+                  onMarkAsRead={notificationActions.markAsRead}
+                  onMarkAllAsRead={notificationActions.markAllAsRead}
+                  onClose={notificationActions.closePanel}
+                  translations={notificationTranslations}
+                />
+              {/if}
+            </div>
+
+            <!-- User Menu -->
+            <HeaderUserMenu
+              user={currentUser}
+              profile={currentProfile}
+              {userDisplayName}
+              {initials}
+              canSell={userCanSell}
+              onSignOut={handleSignOut}
+              onClose={closeMenus}
+              {signingOut}
+              translations={userMenuTranslations}
+            />
+          {:else}
+            <!-- Auth: Sign in + Sign up -->
             <a
               href="/login"
-              class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium text-sm sm:text-base rounded-[var(--radius-md)] px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-colors duration-[var(--duration-fast)]"
+              class={[
+                'text-text-secondary hover:text-text-primary',
+                'font-medium text-base',
+                'rounded-[length:var(--radius-md)]',
+                'px-[length:var(--header-link-padding-x)] py-[length:var(--header-link-padding-y)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]',
+                'transition-colors'
+              ]}
             >
               {i18n.auth_signIn()}
             </a>
-            <Button href="/signup" variant="primary" size="sm" class="hidden sm:inline-flex">
+            <Button href="/signup" variant="primary" size="sm">
               {i18n.auth_signUp()}
             </Button>
+          {/if}
+        </div>
+      </div>
+
+      <!-- Desktop Secondary: Nav or Search -->
+      <div class="hidden sm:flex items-center justify-between py-[length:var(--space-2)]">
+        {#if showSearch}
+          <div class="w-full">
+            <HeaderSearch
+              placeholder={i18n.search_placeholder()}
+              searchFunction={handleQuickSearch}
+            />
           </div>
+        {:else}
+          <HeaderNav {isLoggedIn} canSell={userCanSell} translations={navTranslations} />
         {/if}
       </div>
-    </div>
-
-    <!-- Desktop secondary: Nav or Search below the bar -->
-    <div class="hidden sm:flex items-center justify-between py-2">
-      {#if showSearch}
-        <div class="w-full"><HeaderSearch placeholder={i18n.search_placeholder()} searchFunction={handleQuickSearch} /></div>
-      {:else}
-        <HeaderNav {isLoggedIn} canSell={userCanSell} translations={navTranslations} />
-      {/if}
-    </div>
   </div>
 
-  <!-- Mobile Menu -->
+  <!-- Mobile Menu (shared across mobile/desktop logic) -->
   <MobileNavigationDialog
     id="mobile-navigation"
     isOpen={mobileMenuOpen}
-      {isLoggedIn}
-      user={currentUser}
-      profile={currentProfile}
-      {userDisplayName}
-      {initials}
-      canSell={userCanSell}
-      unreadMessages={unreadMessageCountStore()}
-      unreadNotifications={notificationStore.unreadCount}
-      currentLanguage={currentLang}
-      {languages}
-      {signingOut}
-      onLanguageChange={switchLanguage}
-      onSignOut={handleSignOut}
-      onClose={closeMenus}
-      onCategoryClick={(category) => {
-        closeMenus();
-        window.location.href = `/category/${category}`;
-      }}
-      translations={mobileNavTranslations}
-    />
+    {isLoggedIn}
+    user={currentUser}
+    profile={currentProfile}
+    categories={[]}
+    {userDisplayName}
+    {initials}
+    canSell={userCanSell}
+    unreadMessages={unreadMessages}
+    unreadNotifications={notificationStore.unreadCount}
+    currentLanguage={currentLang}
+    {languages}
+    {signingOut}
+    onLanguageChange={switchLanguage}
+    onSignOut={handleSignOut}
+    onClose={closeMenus}
+    onCategoryClick={(category) => {
+      closeMenus();
+      window.location.href = `/category/${category}`;
+    }}
+    translations={mobileNavTranslations}
+  />
 </header>
-
 
 <!-- Message Toast Notifications -->
 {#each notificationStore.messageToasts as toast (toast.id)}

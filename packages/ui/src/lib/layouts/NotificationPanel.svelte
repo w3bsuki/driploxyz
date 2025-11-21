@@ -93,7 +93,7 @@
 {#if show}
   <!-- Glass Morphism Backdrop -->
   <button
-    class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-[100] border-0 cursor-default"
+    class="fixed inset-0 bg-[var(--modal-overlay-bg)] supports-[backdrop-filter]:backdrop-blur-sm z-[100] border-0 cursor-default"
     onclick={onClose}
     aria-label="Close notifications panel"
     tabindex="-1"
@@ -159,11 +159,11 @@
         {:else}
           <!-- Notifications -->
           <div class="p-2">
-            {#each notifications as notification}
+            {#each notifications as notification (notification.id)}
               <button
                 onclick={() => handleNotificationClick(notification)}
                 class="w-full text-left p-3 rounded-xl hover:bg-gray-50/50 transition-colors
-                  {!notification.read ? 'bg-blue-50/30 border border-blue-100/50' : ''}"
+                  {!notification.read ? 'bg-[var(--surface-brand-strong)]/5/30 border border-blue-100/50' : ''}"
               >
                 <div class="flex items-start space-x-3">
                   <!-- Icon/Avatar -->
@@ -216,7 +216,7 @@
 
                   <!-- Unread Indicator -->
                   {#if !notification.read}
-                    <div class="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
+                    <div class="w-2 h-2 bg-[var(--surface-brand-strong)]/50 rounded-full shrink-0 mt-2"></div>
                   {/if}
                 </div>
               </button>

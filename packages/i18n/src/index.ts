@@ -1,9 +1,8 @@
-// Re-export all Paraglide-generated message functions
-// Following Paraglide v2 + SvelteKit 2 best practices
-export * from '../paraglide/messages.js';
+// Re-export all Paraglide message functions
+export * from './paraglide/messages/_index.js';
 
 // Re-export Paraglide runtime functions
-export * from '../paraglide/runtime.js';
+export * from './paraglide/runtime.js';
 
 // Legacy custom runtime (kept for backward compatibility)
 import {

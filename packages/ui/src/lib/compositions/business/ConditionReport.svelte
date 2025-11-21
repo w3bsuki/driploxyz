@@ -42,9 +42,9 @@
     'like-new': {
       label: 'Like new',
       color: 'blue',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-900',
-      borderColor: 'border-blue-200',
+      bgColor: 'bg-[var(--surface-brand-strong)]/5',
+      textColor: 'text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]',
+      borderColor: 'border-[var(--surface-brand-strong)]/20',
       score: 4.5,
       icon: '✨',
       description: 'Excellent condition with minimal to no signs of wear'
@@ -94,7 +94,7 @@
 
   function getRatingColor(rating: number) {
     if (rating >= 4.5) return 'text-emerald-500';
-    if (rating >= 3.5) return 'text-blue-500';
+    if (rating >= 3.5) return 'text-[var(--brand-primary-strong)]';
     if (rating >= 2.5) return 'text-amber-500';
     return 'text-orange-500';
   }
@@ -105,7 +105,7 @@
   <div class="flex items-center justify-between">
     <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Condition</h3>
     {#if authenticatedBy}
-      <span class="text-xs text-blue-600 font-medium">✓ Verified by {authenticatedBy}</span>
+      <span class="text-xs text-[var(--brand-primary-strong)] font-medium">✓ Verified by {authenticatedBy}</span>
     {/if}
   </div>
 
@@ -253,14 +253,14 @@
 
       <!-- Authenticity Badge -->
       {#if authenticatedBy}
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div class="bg-[var(--surface-brand-strong)]/5 border border-[var(--surface-brand-strong)]/20 rounded-lg p-3">
           <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-5 h-5 text-[var(--brand-primary-strong)]" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <div>
-              <p class="text-sm font-semibold text-blue-900">Authenticated by {authenticatedBy}</p>
-              <p class="text-xs text-blue-700">This item has been verified for authenticity and condition</p>
+              <p class="text-sm font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]">Authenticated by {authenticatedBy}</p>
+              <p class="text-xs text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">This item has been verified for authenticity and condition</p>
             </div>
           </div>
         </div>

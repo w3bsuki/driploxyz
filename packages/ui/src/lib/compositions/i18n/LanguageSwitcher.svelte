@@ -46,8 +46,8 @@
 				onclick={() => selectLanguage(lang.code)}
 				class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 hover:scale-105 active:scale-95
 					{currentLanguage === lang.code 
-						? 'bg-blue-600 text-white shadow-md' 
-						: 'bg-white text-gray-900 hover:bg-blue-50 border border-gray-200 hover:border-blue-200'}"
+						? 'bg-[var(--brand-primary-strong)] text-white shadow-md' 
+						: 'bg-white text-gray-900 hover:bg-[var(--surface-brand-strong)]/5 border border-gray-200 hover:border-[var(--surface-brand-strong)]/20'}"
 			>
 				{#if lang.flag}
 					<span class="mr-1.5">{lang.flag}</span>
@@ -63,8 +63,8 @@
 				onclick={() => selectLanguage(lang.code)}
 				class="w-10 h-10 flex items-center justify-center text-lg font-medium rounded-full transition-colors duration-200 hover:scale-110 active:scale-95
 					{currentLanguage === lang.code 
-						? 'bg-blue-600 text-white shadow-sm md:shadow-lg ring-2 ring-blue-300' 
-						: 'bg-white text-gray-900 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 hover:shadow-md'}"
+						? 'bg-[var(--brand-primary-strong)] text-white shadow-sm md:shadow-lg ring-2 ring-blue-300' 
+						: 'bg-white text-gray-900 hover:bg-[var(--surface-brand-strong)]/5 border border-gray-200 hover:border-[var(--surface-brand-strong)]/20 hover:shadow-md'}"
 				title={lang.name}
 			>
 				{lang.flag || lang.code.toUpperCase().slice(0, 2)}
@@ -75,7 +75,7 @@
 	<div class="relative {className}">
 		<button
 			onclick={() => showDropdown = !showDropdown}
-			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors duration-200 hover:shadow-md active:scale-98"
+			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-[var(--surface-brand-strong)]/5 hover:border-[var(--surface-brand-strong)]/20 transition-colors duration-200 hover:shadow-md active:scale-98"
 			aria-haspopup="menu"
 			aria-expanded={showDropdown}
 			aria-label="Change language"
@@ -95,8 +95,8 @@
 					{#each languages as lang}
 						<button
 							onclick={() => selectLanguage(lang.code)}
-							class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-900 hover:bg-blue-50 transition-colors duration-150 hover:translate-x-1
-								{currentLanguage === lang.code ? 'bg-blue-50 font-semibold text-blue-700 border-l-2 border-blue-500' : ''}"
+							class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-900 hover:bg-[var(--surface-brand-strong)]/5 transition-colors duration-150 hover:translate-x-1
+								{currentLanguage === lang.code ? 'bg-[var(--surface-brand-strong)]/5 font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] border-l-2 border-[var(--brand-primary)]' : ''}"
 						>
 							{#if lang.flag}
 								<span>{lang.flag}</span>

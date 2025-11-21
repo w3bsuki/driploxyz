@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import * as i18n from '@repo/i18n';
 	import { SEOMetaTags } from '@repo/ui';
-	import type { PageData } from './$types';
-
-	let { data }: { data: PageData } = $props();
+    
 
 	const pageTitle = 'Careers at Driplo - Join Our Team';
 	const pageDescription = 'Explore career opportunities at Driplo. Join our mission to make sustainable fashion accessible across Bulgaria and the UK.';
@@ -20,20 +17,20 @@
 />
 
 <!-- Hero Section -->
-<section class="bg-gradient-to-br from-purple-50 via-white to-blue-50 py-16 px-4">
+<section class="bg-zinc-50 py-16 px-4">
 	<div class="max-w-4xl mx-auto text-center">
 		<h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-			Join <span class="text-purple-600">Driplo</span>
+			Join <span class="text-zinc-900">Driplo</span>
 		</h1>
 		<p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
 			Help us build the future of sustainable fashion in Bulgaria and the UK.
 			We're looking for passionate people who want to make a difference.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-4 justify-center">
-			<a href="#open-positions" class="inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+			<a href="#open-positions" class="inline-flex items-center justify-center px-6 py-3 bg-zinc-900 text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 				View Open Positions
 			</a>
-			<a href="#culture" class="inline-flex items-center justify-center px-6 py-3 bg-white text-purple-600 font-medium rounded-lg border border-purple-600 hover:bg-purple-50 transition-colors">
+			<a href="#culture" class="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-900 font-medium rounded-lg border border-zinc-900 hover:bg-zinc-50 transition-colors">
 				Our Culture
 			</a>
 		</div>
@@ -55,7 +52,7 @@
 				</p>
 			</div>
 			<div class="text-center">
-				<div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-20 h-20 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-3xl">🚀</span>
 				</div>
 				<h3 class="text-xl font-semibold text-gray-900 mb-3">Grow With Us</h3>
@@ -64,7 +61,7 @@
 				</p>
 			</div>
 			<div class="text-center">
-				<div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-3xl">🌍</span>
 				</div>
 				<h3 class="text-xl font-semibold text-gray-900 mb-3">Remote-First</h3>
@@ -85,7 +82,7 @@
 				<h3 class="text-2xl font-semibold text-gray-900 mb-6">What We Value</h3>
 				<div class="space-y-6">
 					<div class="flex gap-4">
-						<div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+						<div class="flex-shrink-0 w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
 							<span class="text-xl">🤝</span>
 						</div>
 						<div>
@@ -94,7 +91,7 @@
 						</div>
 					</div>
 					<div class="flex gap-4">
-						<div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+						<div class="flex-shrink-0 w-12 h-12 bg-[var(--surface-brand-strong)]/10 rounded-lg flex items-center justify-center">
 							<span class="text-xl">💡</span>
 						</div>
 						<div>
@@ -191,7 +188,7 @@
 							We're looking for an experienced frontend developer to help build amazing user experiences using SvelteKit, TypeScript, and modern web technologies.
 						</p>
 					</div>
-					<a href="/careers/senior-frontend-developer" class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+					<a href="/careers/senior-frontend-developer" class="inline-flex items-center justify-center px-4 py-2 bg-zinc-900 text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 						Apply Now
 					</a>
 				</div>
@@ -219,7 +216,7 @@
 							Help us build and engage our community of fashion lovers across Bulgaria and the UK. Perfect for someone passionate about sustainable fashion.
 						</p>
 					</div>
-					<a href="/careers/community-manager" class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+					<a href="/careers/community-manager" class="inline-flex items-center justify-center px-4 py-2 bg-zinc-900 text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 						Apply Now
 					</a>
 				</div>
@@ -247,19 +244,19 @@
 							Be the face of Driplo and help our users have amazing experiences. Great communication skills and empathy required.
 						</p>
 					</div>
-					<a href="/careers/customer-support" class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+					<a href="/careers/customer-support" class="inline-flex items-center justify-center px-4 py-2 bg-zinc-900 text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 						Apply Now
 					</a>
 				</div>
 			</div>
 		</div>
 
-		<div class="mt-12 bg-purple-50 p-8 rounded-xl text-center">
+		<div class="mt-12 bg-zinc-50 p-8 rounded-xl text-center">
 			<h3 class="text-2xl font-semibold text-gray-900 mb-4">Don't See Your Dream Role?</h3>
 			<p class="text-gray-600 mb-6">
 				We're always looking for talented people to join our team. Send us your resume and tell us why you'd be a great fit.
 			</p>
-			<a href="mailto:careers@driplo.xyz" class="inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+			<a href="mailto:careers@driplo.xyz" class="inline-flex items-center justify-center px-6 py-3 bg-zinc-900 text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 				Send Your Resume
 			</a>
 		</div>
@@ -272,28 +269,28 @@
 		<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Our Hiring Process</h2>
 		<div class="grid md:grid-cols-4 gap-6">
 			<div class="text-center">
-				<div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
+				<div class="w-12 h-12 bg-zinc-900 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
 					1
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Application</h3>
 				<p class="text-gray-600 text-sm">Submit your resume and cover letter</p>
 			</div>
 			<div class="text-center">
-				<div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
+				<div class="w-12 h-12 bg-zinc-900 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
 					2
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Screening Call</h3>
 				<p class="text-gray-600 text-sm">30-minute video call with our team</p>
 			</div>
 			<div class="text-center">
-				<div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
+				<div class="w-12 h-12 bg-zinc-900 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
 					3
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Technical Interview</h3>
 				<p class="text-gray-600 text-sm">Role-specific assessment or case study</p>
 			</div>
 			<div class="text-center">
-				<div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
+				<div class="w-12 h-12 bg-zinc-900 text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold">
 					4
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Final Interview</h3>
@@ -304,17 +301,17 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600">
+<section class="py-16 px-4 bg-zinc-900">
 	<div class="max-w-4xl mx-auto text-center">
 		<h2 class="text-3xl font-bold text-white mb-6">Ready to Join Our Team?</h2>
-		<p class="text-xl text-purple-100 mb-8">
+		<p class="text-xl text-zinc-300 mb-8">
 			Help us build the future of sustainable fashion. We can't wait to hear from you.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-4 justify-center">
-			<a href="#open-positions" class="inline-flex items-center justify-center px-8 py-4 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+			<a href="#open-positions" class="inline-flex items-center justify-center px-8 py-4 bg-white text-zinc-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
 				Browse Open Positions
 			</a>
-			<a href="mailto:careers@driplo.xyz" class="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-purple-600 transition-colors">
+			<a href="mailto:careers@driplo.xyz" class="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-zinc-900 transition-colors">
 				Contact Recruiting
 			</a>
 		</div>

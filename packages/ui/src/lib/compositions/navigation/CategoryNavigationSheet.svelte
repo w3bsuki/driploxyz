@@ -98,7 +98,7 @@
     >
       <!-- Backdrop -->
       <div
-        class="fixed inset-0 bg-black/50"
+        class="fixed inset-0 bg-[var(--modal-overlay-bg)]"
         role="button"
         tabindex="0"
         onclick={() => onOpenChange(false)}

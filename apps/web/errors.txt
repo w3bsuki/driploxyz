@@ -1,0 +1,1458 @@
+Loading svelte-check in workspace: k:\driplo-turbo-1\apps\web
+Getting Svelte diagnostics...
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\auth\AuthProvider.svelte[39m:13:3
+[31mError[39m: 'createBrowserSupabase' is declared but its value is never read. (ts)
+[36m  import { authStore } from './store.svelte';
+  [35mimport { createBrowserSupabase } from './index';[36m
+  import type { AuthUser, AuthSession, Profile } from './index';[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\BrandPaymentModal.svelte[39m:3:3
+[31mError[39m: A component cannot have a default export
+https://svelte.dev/e/module_illegal_default_export (svelte)
+[36m  // Re-export the shared brand payment modal from the UI package for modal injection.
+  [35mexport { BrandPaymentModal as default } from '@repo/ui';[36m
+</script>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\BrandPaymentModal.svelte[39m:3:33
+[31mError[39m: A module cannot have multiple default exports. (ts)
+[36m  // Re-export the shared brand payment modal from the UI package for modal injection.
+  export { BrandPaymentModal as [35mdefault[36m } from '@repo/ui';
+</script>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FavoriteButtonWithRealtimeWrapper.svelte[39m:9:5
+[31mError[39m: Module '"$lib/utils/realtimeSetup"' has no exported member 'realtimeService'. (ts)
+[36m  import {
+    [35mrealtimeService[36m,
+    realtimeStore,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FavoriteButtonWithRealtimeWrapper.svelte[39m:10:5
+[31mError[39m: Module '"$lib/utils/realtimeSetup"' has no exported member 'realtimeStore'. (ts)
+[36m    realtimeService,
+    [35mrealtimeStore[36m,
+    favoritesStore,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FavoriteButtonWithRealtimeWrapper.svelte[39m:52:51
+[31mError[39m: 'metrics' is of type 'unknown'. (ts)
+[36m          Object.entries(realtime.metrics.productMetrics).map(
+            ([productId, metrics]) => [productId, [35mmetrics[36m.favorite_count]
+          )[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FavoriteButtonWithRealtimeWrapper.svelte[39m:84:4
+[31mError[39m: Object literal may only specify known properties, and 'product' does not exist in type 'Props'. (ts)
+[36m<FavoriteButton
+  {[35mproduct[36m}
+  {favorited}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FollowButtonWithRealtimeWrapper.svelte[39m:8:5
+[31mError[39m: Module '"$lib/utils/realtimeSetup"' has no exported member 'realtimeService'. (ts)
+[36m  import {
+    [35mrealtimeService[36m,
+    realtimeStore,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FollowButtonWithRealtimeWrapper.svelte[39m:9:5
+[31mError[39m: Module '"$lib/utils/realtimeSetup"' has no exported member 'realtimeStore'. (ts)
+[36m    realtimeService,
+    [35mrealtimeStore[36m,
+    followStore,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FollowButtonWithRealtimeWrapper.svelte[39m:77:4
+[31mError[39m: Type '"text" | "default" | "compact"' is not assignable to type '"default" | "outline" | "ghost" | undefined'.
+  Type '"text"' is not assignable to type '"default" | "outline" | "ghost" | undefined'. (ts)
+[36m  {showCount}
+  {[35mvariant[36m}
+  {disabled}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:215:22
+[31mError[39m: colon expected (css)
+[36m    display: flex;
+    align-items-start[35m;[36m
+    gap: 0.25rem;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:66:13
+[31mError[39m: Type '{}' is not assignable to type 'Record<string, string[]>'.
+  Index signature for type 'string' is missing in type '{}'. (ts)
+[36m          if (result.data?.errors) {
+            [35mformErrors[36m = result.data.errors;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:70:27
+[31mError[39m: Argument of type '{}' is not assignable to parameter of type 'string'. (ts)
+[36m            if (result.data.message) {
+              toast.error([35mresult.data.message[36m);
+            }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:76:15
+[31mError[39m: Type '"VALIDATION"' is not assignable to type 'ErrorType'. (ts)
+[36m            handleFormError({
+              [35mtype[36m: 'VALIDATION',
+              severity: 'MEDIUM',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:77:15
+[31mError[39m: Type '"MEDIUM"' is not assignable to type 'ErrorSeverity'. (ts)
+[36m              type: 'VALIDATION',
+              [35mseverity[36m: 'MEDIUM',
+              message: errorMessage,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:78:15
+[31mError[39m: Type '{}' is not assignable to type 'string'. (ts)
+[36m              severity: 'MEDIUM',
+              [35mmessage[36m: errorMessage,
+              userMessage: errorMessage,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:79:15
+[31mError[39m: Type '{}' is not assignable to type 'string'. (ts)
+[36m              message: errorMessage,
+              [35muserMessage[36m: errorMessage,
+              retryable: true,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:87:13
+[31mError[39m: Type '"SERVER"' is not assignable to type 'ErrorType'. (ts)
+[36m          handleFormError({
+            [35mtype[36m: 'SERVER',
+            severity: 'HIGH',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:88:13
+[31mError[39m: Type '"HIGH"' is not assignable to type 'ErrorSeverity'. (ts)
+[36m            type: 'SERVER',
+            [35mseverity[36m: 'HIGH',
+            message: result.error?.message || 'Server error',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\FormErrorBoundary.svelte[39m:106:15
+[31mError[39m: Object is possibly 'undefined'. (ts)
+[36m  function hasFieldError(fieldName: string): boolean {
+    return !!([35mformErrors[fieldName]?.length[36m > 0);
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\HeroSearch.svelte[39m:65:41
+[31mError[39m: Property 'focus' does not exist on type 'Element'. (ts)
+[36m    const buttons = document.querySelectorAll('[role="group"] button');
+    buttons[selectedCategoryIndex + 1]?.[35mfocus[36m();
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\LocaleSuggestionBanner.svelte[39m:3:3
+[31mError[39m: 'page' is declared but its value is never read. (ts)
+[36m  import { browser } from '$app/environment';
+  [35mimport { page } from '$app/stores';[36m
+  import { localizeHref, setLocale, type Locale } from '@repo/i18n';[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\LocaleSuggestionBanner.svelte[39m:4:12
+[31mError[39m: 'localizeHref' is declared but its value is never read. (ts)
+[36m  import { page } from '$app/stores';
+  import { [35mlocalizeHref[36m, setLocale, type Locale } from '@repo/i18n';
+  import * as m from '@repo/i18n/messages';[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\LocaleSuggestionBanner.svelte[39m:5:22
+[31mError[39m: Cannot find module '@repo/i18n/messages' or its corresponding type declarations. (ts)
+[36m  import { localizeHref, setLocale, type Locale } from '@repo/i18n';
+  import * as m from [35m'@repo/i18n/messages'[36m;
+  import { X } from 'lucide-svelte';[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\LocaleSuggestionBanner.svelte[39m:6:21
+[31mError[39m: Cannot find module 'lucide-svelte' or its corresponding type declarations. (ts)
+[36m  import * as m from '@repo/i18n/messages';
+  import { X } from [35m'lucide-svelte'[36m;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\OnboardingSuccessModal.svelte[39m:3:3
+[31mError[39m: A component cannot have a default export
+https://svelte.dev/e/module_illegal_default_export (svelte)
+[36m  // Surface the shared UI modal for onboarding success within the web app bundle.
+  [35mexport { OnboardingSuccessModal as default } from '@repo/ui';[36m
+</script>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\OnboardingSuccessModal.svelte[39m:3:38
+[31mError[39m: A module cannot have multiple default exports. (ts)
+[36m  // Surface the shared UI modal for onboarding success within the web app bundle.
+  export { OnboardingSuccessModal as [35mdefault[36m } from '@repo/ui';
+</script>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\OptimizedImage.svelte[39m:52:7
+[31mError[39m: 'imgElement' is declared but its value is never read. (ts)
+[36m  let isIntersecting = $state(false);
+  let [35mimgElement[36m = $state<HTMLImageElement>();
+  let containerElement = $state<HTMLDivElement>();[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\OptimizedImage.svelte[39m:187:10
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m  class="optimized-image-container {className}"
+  style={[35mcontainerStyles[36m}
+  role="img"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\OptimizedImage.svelte[39m:212:14
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m      class="main-image"
+      style={[35mimageStyles[36m}
+      onload={handleLoad}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PageLoader.svelte[39m:22:7
+[31mError[39m: Type 'Timeout' is not assignable to type 'number'. (ts)
+[36m    if (show) {
+      [35mtimer[36m = setTimeout(() => {
+        showLoader = true;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PaymentErrorBoundary.svelte[39m:132:7
+[31mError[39m: Type '"EXTERNAL_SERVICE"' is not assignable to type 'ErrorType'. (ts)
+[36m    if (message.includes('stripe')) {
+      [35menhancedError.type[36m = 'EXTERNAL_SERVICE';
+      if (!enhancedError.context?.paymentError) {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PaymentErrorBoundary.svelte[39m:147:11
+[31mError[39m: Object literal may only specify known properties, but 'onClick' does not exist in type 'ToastAction'. Did you mean to write 'onclick'? (ts)
+[36m          label: 'Contact Support',
+          [35monClick[36m: () => handleContactSupport()
+        }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PaymentErrorBoundary.svelte[39m:187:9
+[31mError[39m: Type '"EXTERNAL_SERVICE"' is not assignable to type 'ErrorType'. (ts)
+[36m      handlePaymentError({
+        [35mtype[36m: 'EXTERNAL_SERVICE',
+        severity: 'HIGH',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PaymentErrorBoundary.svelte[39m:188:9
+[31mError[39m: Type '"HIGH"' is not assignable to type 'ErrorSeverity'. (ts)
+[36m        type: 'EXTERNAL_SERVICE',
+        [35mseverity[36m: 'HIGH',
+        message: 'Payment retry failed',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PaymentErrorBoundary.svelte[39m:298:22
+[31mError[39m: Argument of type '{}' is not assignable to parameter of type 'ArrayLike<unknown> | Iterable<unknown> | null | undefined'. (ts)
+[36m            <ul class="space-y-1 text-sm text-yellow-700">
+              {#each [35merror.context.suggestions[36m as suggestion}
+                <li class="flex items-start gap-2">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PayoutRequestModal.svelte[39m:238:2
+[33mWarn[39m: Unknown at rule @reference (css)
+[36m<style>
+	[35m@reference[36m theme();[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\PayoutRequestModal.svelte[39m:64:30
+[31mError[39m: Parameter 'e' implicitly has an 'any' type. (ts)
+[36m
+	const handleSubmit = async ([35me[36m) => {
+		e.preventDefault();[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\RealtimeErrorBoundary.svelte[39m:41:11
+[31mError[39m: Object literal may only specify known properties, but 'onClick' does not exist in type 'ToastAction'. Did you mean to write 'onclick'? (ts)
+[36m          label: 'Retry now',
+          [35monClick[36m: () => handleReconnect()
+        }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:87:5
+[31mError[39m: Type 'Timeout' is not assignable to type 'number'. (ts)
+[36m
+    [35mscrollTimeout[36m = setTimeout(() => {
+      const target = event.target as HTMLElement;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:177:16
+[31mError[39m: Argument of type '() => Product[]' is not assignable to parameter of type 'ArrayLike<unknown> | Iterable<unknown> | null | undefined'. (ts)
+[36m      >
+        {#each [35mvisibleProducts[36m as product (product.id)}
+          <div[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:177:44
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m      >
+        {#each visibleProducts as product ([35mproduct[36m.id)}
+          <div[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:181:47
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Product'. (ts)
+[36m            style="height: {itemHeight - 16}px;"
+            onclick={() => handleProductClick([35mproduct[36m)}
+            role="gridcell"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:187:36
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Product'. (ts)
+[36m                e.preventDefault();
+                handleProductClick([35mproduct[36m);
+              }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:192:35
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Product'. (ts)
+[36m            <a
+              href={getProductUrl([35mproduct[36m)}
+              class="product-link"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:194:33
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m              class="product-link"
+              aria-label="View {[35mproduct[36m.title}"
+            >[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:198:22
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m              <div class="product-image">
+                {#if [35mproduct[36m.images?.[0]}
+                  <img[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:200:26
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m                  <img
+                    src={[35mproduct[36m.images[0]}
+                    alt={product.title}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:201:26
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m                    src={product.images[0]}
+                    alt={[35mproduct[36m.title}
+                    loading="lazy"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:217:44
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m              <div class="product-info">
+                <h3 class="product-title">{[35mproduct[36m.title}</h3>
+                <p class="product-price">{formatPrice(product.price)}</p>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:218:55
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m                <h3 class="product-title">{product.title}</h3>
+                <p class="product-price">{formatPrice([35mproduct[36m.price)}</p>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:220:22
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m
+                {#if [35mproduct[36m.condition}
+                  <span class="product-condition">{product.condition}</span>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:221:52
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m                {#if product.condition}
+                  <span class="product-condition">{[35mproduct[36m.condition}</span>
+                {/if}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:224:22
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m
+                {#if [35mproduct[36m.seller_username}
+                  <p class="product-seller">by {product.seller_username}</p>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\VirtualProductGrid.svelte[39m:225:49
+[31mError[39m: 'product' is of type 'unknown'. (ts)
+[36m                {#if product.seller_username}
+                  <p class="product-seller">by {[35mproduct[36m.seller_username}</p>
+                {/if}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\banners\EarlyBirdBanner.svelte[39m:17:7
+[31mError[39m: 'dismissed' is declared but its value is never read. (ts)
+[36m  
+  let [35mdismissed[36m = $state(false);
+  let idx = $state(0);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\banners\EarlyBirdBanner.svelte[39m:52:48
+[31mError[39m: This expression is not callable.
+  Type 'Boolean' has no call signatures. (ts)
+[36m  // Initialize banner state
+  const effectiveDismissed = $derived.by(() => [35mshouldDismiss[36m());
+  const effectiveItems = $derived.by(() => {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\banners\EarlyBirdBanner.svelte[39m:73:12
+[31mError[39m: This expression is not callable.
+  Type 'Boolean' has no call signatures. (ts)
+[36m
+    return [35mshouldDismiss[36m();
+  });[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\EnhancedForm.svelte[39m:51:7
+[31mError[39m: 'formElement' is declared but its value is never read. (ts)
+[36m
+  let [35mformElement[36m = $state<HTMLFormElement>();
+  let isSubmitting = $state(false);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\EnhancedForm.svelte[39m:78:19
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Error | ActionResult'. (ts)
+[36m      } catch (error) {
+        onError?.([35merror[36m);
+      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\EnhancedForm.svelte[39m:90:21
+[31mError[39m: Argument of type 'Record<string, unknown>' is not assignable to parameter of type 'ActionResult'.
+  Type 'Record<string, unknown>' is missing the following properties from type '{ type: "failure"; status: number; data?: Record<string, any> | undefined; }': type, status (ts)
+[36m      if (isValid) {
+        onSuccess?.([35mvalidator.formState.values[36m);
+      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\EnhancedForm.svelte[39m:93:17
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Error | ActionResult'. (ts)
+[36m    } catch (error) {
+      onError?.([35merror[36m);
+    } finally {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\EnhancedForm.svelte[39m:113:4
+[31mError[39m: Type 'string' is not assignable to type '"GET" | "POST" | "dialog" | "get" | "post" | "DIALOG" | null | undefined'. (ts)
+[36m  {action}
+  {[35mmethod[36m}
+  class={className}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\MultiStepForm.svelte[39m:158:19
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Error | ActionResult'. (ts)
+[36m      } catch (error) {
+        onError?.([35merror[36m);
+      } finally {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\MultiStepForm.svelte[39m:210:19
+[31mError[39m: Argument of type 'unknown' is not assignable to parameter of type 'Error | ActionResult'. (ts)
+[36m      } catch (error) {
+        onError?.([35merror[36m);
+      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\MultiStepForm.svelte[39m:294:6
+[31mError[39m: Type 'string' is not assignable to type '"GET" | "POST" | "dialog" | "get" | "post" | "DIALOG" | null | undefined'. (ts)
+[36m    {action}
+    {[35mmethod[36m}
+    novalidate[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\MultiStepForm.svelte[39m:316:18
+[31mError[39m: Type '{ formState: FormState<Record<string, unknown>>; readonly isValid: boolean; readonly hasErrors: boolean; readonly isDirty: boolean; validateField: (fieldName: string, value: unknown) => Promise<...>; ... 6 more ...; getFieldProps: (fieldName: string) => { ...; }; } | undefined' is not assignable to type '{ formState: FormState<Record<string, unknown>>; readonly isValid: boolean; readonly hasErrors: boolean; readonly isDirty: boolean; validateField: (fieldName: string, value: unknown) => Promise<string | null>; ... 6 more ...; getFieldProps: (fieldName: string) => { ...; }; }'.
+  Type 'undefined' is not assignable to type '{ formState: FormState<Record<string, unknown>>; readonly isValid: boolean; readonly hasErrors: boolean; readonly isDirty: boolean; validateField: (fieldName: string, value: unknown) => Promise<string | null>; ... 6 more ...; getFieldProps: (fieldName: string) => { ...; }; }'. (ts)
+[36m            {formContext}
+            bind:[35mvalidator[36m={stepValidators[currentStepIndex]}
+          />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\forms\TextareaField.svelte[39m:129:7
+[31mError[39m: Type 'unknown' is not assignable to type 'string | number | string[] | null | undefined'. (ts)
+[36m      {...accessibleTextareaProps}
+      [35mvalue[36m={fieldState.value}
+      class="{textareaClasses} resize-{resize}"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\layout\Header.svelte[39m:200:36
+[31mError[39m: 'query' is declared but its value is never read. (ts)
+[36m  // Search function for quick results dropdown - delegate to parent
+  async function handleQuickSearch([35mquery[36m: string) {
+    // Return empty results - parent components should handle search[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\layout\Header.svelte[39m:260:19
+[31mError[39m: Type 'Component<Props, {}, "">' is not assignable to type 'new (...args: any) => any'.
+  Type 'Component<Props, {}, "">' provides no match for the signature 'new (...args: any): any'. (ts)
+[36m                  const module = await import('@repo/ui');
+                  [35mNotificationPanel[36m = module.NotificationPanel;
+                  notificationPanelLoaded = true;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\layout\Header.svelte[39m:265:17
+[31mError[39m: Object literal may only specify known properties, and '"aria-label"' does not exist in type 'Props'. (ts)
+[36m              }}
+                [35maria-label[36m="Notifications"
+            />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\layout\Header.svelte[39m:320:4
+[31mError[39m: Property 'categories' is missing in type '{ id: string; isOpen: boolean; isLoggedIn: boolean; user: User | undefined; profile: { account_locked_until: string | null; account_type: string | null; avatar_url: string | null; ... 51 more ...; weekly_sales_count: number | null; } | undefined; ... 12 more ...; translations: { ...; }; }' but required in type 'MobileNavigationDialogProps'. (ts)
+[36m  <!-- Mobile Menu -->
+  <[35mMobileNavigationDialog[36m
+    id="mobile-navigation"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\ConversationList.svelte[39m:102:72
+[31mError[39m: Expected 0 arguments, but got 1. (ts)
+[36m            <h3 class="font-medium text-gray-900 text-sm truncate">{conv.userName}</h3>
+            <span class="text-xs text-gray-500 shrink-0 ml-2">{timeAgo([35mconv.lastMessageTime[36m)}</span>
+          </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:101:12
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ pending: { text: string; color: string; icon: string; }; paid: { text: string; color: string; icon: string; }; shipped: { text: string; color: string; icon: string; }; delivered: { text: string; color: string; icon: string; }; completed: { ...; }; cancelled: { ...; }; disputed: { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ pending: { text: string; color: string; icon: string; }; paid: { text: string; color: string; icon: string; }; shipped: { text: string; color: string; icon: string; }; delivered: { text: string; color: string; icon: string; }; completed: { ...; }; cancelled: { ...; }; disputed: { ...; }; }'. (ts)
+[36m    
+    return [35mstatusMap[status][36m || { text: status, color: 'gray', icon: '' };
+  };[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:114:7
+[31mError[39m: 'u' is of type 'unknown'. (ts)
+[36m    Array.from(typingUsers.values()).find(u => 
+      [35mu[36m.conversationId === conversation?.id
+    )[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:137:82
+[31mError[39m: Argument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'. (ts)
+[36m          <h3 class="font-medium text-gray-900 text-sm">{conversation.userName}</h3>
+          <p class="text-xs text-gray-500">{getActiveStatus(conversation.userId, [35mconversation.lastActiveAt[36m)}</p>
+        </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:208:96
+[31mError[39m: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type. (ts)
+[36m            <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
+            <p class="text-xs text-blue-700">{conversation.bundleItems?.length} items ΓÇó Save ${[35m(conversation.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0)[36m - conversation.offerPrice}</p>
+          </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:208:151
+[31mError[39m: 'item' is of type 'unknown'. (ts)
+[36m            <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
+            <p class="text-xs text-blue-700">{conversation.bundleItems?.length} items ΓÇó Save ${(conversation.bundleItems?.reduce((sum, item) => sum + [35mitem[36m.price, 0) || 0) - conversation.offerPrice}</p>
+          </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:208:174
+[31mError[39m: 'conversation.offerPrice' is possibly 'undefined'. (ts)
+[36m            <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
+            <p class="text-xs text-blue-700">{conversation.bundleItems?.length} items ΓÇó Save ${(conversation.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0) - [35mconversation.offerPrice[36m}</p>
+          </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:271:20
+[31mError[39m: Property 'message_type' does not exist on type 'Message'. (ts)
+[36m    {#each sortedMessages as message (message.id)}
+      {#if message.[35mmessage_type[36m === 'system' || message.message_type === 'order_update'}
+        <!-- System/Order Update Messages -->[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:271:57
+[31mError[39m: Property 'message_type' does not exist on type 'Message'. (ts)
+[36m    {#each sortedMessages as message (message.id)}
+      {#if message.message_type === 'system' || message.[35mmessage_type[36m === 'order_update'}
+        <!-- System/Order Update Messages -->[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:278:60
+[31mError[39m: Expected 0 arguments, but got 1. (ts)
+[36m            </div>
+            <p class="text-xs text-gray-400 mt-1">{timeAgo([35mmessage.created_at[36m)}</p>
+          </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:290:26
+[31mError[39m: Expected 0 arguments, but got 1. (ts)
+[36m              <p class="text-xs text-gray-500 {message.sender_id === currentUserId ? 'order-2' : ''}">
+                {timeAgo([35mmessage.created_at[36m)}
+              </p>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\messaging\MessageThread.svelte[39m:329:30
+[31mError[39m: Property 'username' does not exist on type '{}'. (ts)
+[36m        show={true}
+        username={typingUser.[35musername[36m}
+      />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\LocaleDetector.svelte[39m:21:11
+[31mError[39m: Argument of type '() => Promise<void>' is not assignable to parameter of type '() => void | (() => void)'.
+  Type 'Promise<void>' is not assignable to type 'void | (() => void)'. (ts)
+[36m  // Detect and handle locale on component mount
+  $effect([35masync () => {[36m
+    // Skip if user is authenticated and has a stored preference in their profile[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:67:11
+[31mError[39m: Object literal may only specify known properties, but 'onClick' does not exist in type 'ToastAction'. Did you mean to write 'onclick'? (ts)
+[36m          label: 'Retry',
+          [35monClick[36m: () => handleReconnect()
+        }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:134:14
+[31mError[39m: Property 'catch' does not exist on type 'PostgrestFilterBuilder<any, any, any, any, "mark_message_delivered", null, "RPC">'. Did you mean 'match'? (ts)
+[36m            p_message_id: newMessage.id
+          }).[35mcatch[36m(() => {
+            // Message delivery marking failed (non-critical)[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:183:9
+[31mError[39m: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '"postgres_changes"' is not assignable to parameter of type '"system"'. (ts)
+[36m      .on(
+        [35m'postgres_changes'[36m,
+        {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:194:9
+[31mError[39m: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '"postgres_changes"' is not assignable to parameter of type '"system"'. (ts)
+[36m      .on(
+        [35m'postgres_changes'[36m,
+        {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:254:36
+[31mError[39m: Property 'user_id' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m          const presence = Array.isArray(presences) ? presences[0] : presences;
+          if (presence && presence.[35muser_id[36m) {
+            onlineUserIds.add(presence.user_id);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:255:40
+[31mError[39m: Property 'user_id' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m          if (presence && presence.user_id) {
+            onlineUserIds.add(presence.[35muser_id[36m);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:257:26
+[31mError[39m: Property 'typing_in' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m            
+            if (presence.[35mtyping_in[36m) {
+              typingUsers.set(presence.user_id, {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:258:40
+[31mError[39m: Property 'user_id' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m            if (presence.typing_in) {
+              typingUsers.set(presence.[35muser_id[36m, {
+                username: presence.username || 'User',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:259:36
+[31mError[39m: Property 'username' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m              typingUsers.set(presence.user_id, {
+                username: presence.[35musername[36m || 'User',
+                conversationId: presence.typing_in[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:260:42
+[31mError[39m: Property 'typing_in' does not exist on type '{ presence_ref: string; }'. (ts)
+[36m                username: presence.username || 'User',
+                conversationId: presence.[35mtyping_in[36m
+              });[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:281:45
+[31mError[39m: Property 'email' does not exist on type '{ account_locked_until: string | null; account_type: string | null; avatar_url: string | null; avg_shipping_hours: number | null; bio: string | null; boost_credits_used_this_month: number | null; ... 48 more ...; weekly_sales_count: number | null; }'. (ts)
+[36m            user_id: user.id,
+            username: user.username || user.[35memail[36m?.split('@')[0] || 'User',
+            online_at: new Date().toISOString()[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:357:26
+[31mError[39m: Type 'Promise<void> | Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+  Type 'Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+    Type 'void | "error" | "ok" | "timed out"' is not assignable to type 'void'.
+      Type 'string' is not assignable to type 'void'. (ts)
+[36m
+      cleanupPromises = [[35m...cleanupPromises[36m,
+        supabase.removeChannel(channelToCleanup).catch((error) => {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:358:9
+[31mError[39m: Type 'Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+  Type 'void | "error" | "ok" | "timed out"' is not assignable to type 'void'.
+    Type 'string' is not assignable to type 'void'. (ts)
+[36m      cleanupPromises = [...cleanupPromises,
+        [35msupabase.removeChannel(channelToCleanup).catch((error) => {
+          logError('Message channel cleanup error:', error);
+        })[36m
+      ];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:368:26
+[31mError[39m: Type 'Promise<void> | Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+  Type 'Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+    Type 'void | "error" | "ok" | "timed out"' is not assignable to type 'void'.
+      Type 'string' is not assignable to type 'void'. (ts)
+[36m
+      cleanupPromises = [[35m...cleanupPromises[36m,
+        channelToCleanup.untrack().then(() =>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\lib\components\realtime\RealtimeManager.svelte[39m:369:9
+[31mError[39m: Type 'Promise<void | "error" | "ok" | "timed out">' is not assignable to type 'Promise<void>'.
+  Type 'void | "error" | "ok" | "timed out"' is not assignable to type 'void'.
+    Type 'string' is not assignable to type 'void'. (ts)
+[36m      cleanupPromises = [...cleanupPromises,
+        [35mchannelToCleanup.untrack().then(() =>
+          supabase.removeChannel(channelToCleanup)
+        ).catch((error) => {
+          logError('Presence channel cleanup error:', error);
+        })[36m
+      ];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+error.svelte[39m:133:20
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m		const supportContext = {
+			errorId: error?.[35mid[36m,
+			statusCode: status,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+error.svelte[39m:197:19
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m					<div class="mt-6 space-y-2">
+						{#if error?.[35mid[36m}
+							<p class="text-sm text-[color:var(--text-muted)] flex items-center gap-2">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+error.svelte[39m:200:98
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m								<span class="font-medium">Error ID:</span>
+								<code class="font-mono bg-[color:var(--surface-muted)] px-2 py-1 rounded text-xs">{error.[35mid[36m}</code>
+								<button[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+error.svelte[39m:206:49
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m										if (browser) {
+											navigator.clipboard?.writeText(error.[35mid[36m || '');
+											toast.success('Error ID copied to clipboard');[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:146:17
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<CountryCode, CountryConfig>'. (ts)
+[36m    const code = data?.detectedCountry;
+    if (code && [35mCOUNTRY_CONFIGS[code][36m) {
+      return COUNTRY_CONFIGS[code].name;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:147:14
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<CountryCode, CountryConfig>'. (ts)
+[36m    if (code && COUNTRY_CONFIGS[code]) {
+      return [35mCOUNTRY_CONFIGS[code][36m.name;
+    }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:167:81
+[31mError[39m: Property 'length' does not exist on type 'never'. (ts)
+[36m  async function handleLocaleSwitch() {
+    const targetLocale = typeof suggestedLocale === 'string' && suggestedLocale.[35mlength[36m > 0
+      ? suggestedLocale[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:541:51
+[31mError[39m: Property 'expires_at' does not exist on type '{}'. (ts)
+[36m            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            if (!userError && user && newSession?.[35mexpires_at[36m !== session?.expires_at) {
+              batchedInvalidate();[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:650:7
+[31mError[39m: Object literal may only specify known properties, and '"dropdownCategories"' does not exist in type 'CategorySearchBarProps'. (ts)
+[36m      enableQuickResults={true}
+      [35mdropdownCategories[36m={dropdownCategories}
+      dropdownSellers={dropdownSellers}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+layout.svelte[39m:675:5
+[31mError[39m: Object literal may only specify known properties, and '"translations"' does not exist in type 'FooterProps'. (ts)
+[36m    onLanguageChange={switchLanguage}
+    [35mtranslations[36m={{
+      company: 'Company',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:13:2
+[31mError[39m: 'Seller' is declared but its value is never read. (ts)
+[36m	import type { PageData } from './$types';
+	[35mimport type { Seller } from '@repo/ui/types';[36m
+	import { logInfo, logError } from '$lib/utils/error-logger';[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:85:3
+[31mError[39m: 'id' is specified more than once, so this usage will be overwritten. (ts)
+[36m	const displayProducts = $derived(featuredProducts.map((product: NonNullable<typeof featuredProducts>[number]) => ({
+		[35mid: product.id[36m,
+		title: product.title,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:86:3
+[31mError[39m: 'title' is specified more than once, so this usage will be overwritten. (ts)
+[36m		id: product.id,
+		[35mtitle: product.title[36m,
+		price: product.price,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:87:3
+[31mError[39m: 'price' is specified more than once, so this usage will be overwritten. (ts)
+[36m		title: product.title,
+		[35mprice: product.price[36m,
+		currency: i18n.common_currency(),[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:324:5
+[31mError[39m: Type '{ products: string | null; categories: string | null; sellers: string | null; brands: null; } | { products: string; categories: string; sellers: string; brands: string; }' is not assignable to type '{ products?: string | undefined; } | undefined'.
+  Type '{ products: string | null; categories: string | null; sellers: string | null; brands: null; }' is not assignable to type '{ products?: string | undefined; }'.
+    Types of property 'products' are incompatible.
+      Type 'string | null' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m				products={displayProducts as unknown as Product[]}
+				[35merrors[36m={data.errors}
+				sectionTitle={i18n.home_newestListings()}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:362:5
+[31mError[39m: Type 'TopSellerUI[]' is not assignable to type 'Seller[]'.
+  Type 'TopSellerUI' is missing the following properties from type 'Seller': account_locked_until, account_type, avg_shipping_hours, bio, and 45 more. (ts)
+[36m			<FeaturedSellers
+				[35msellers[36m={topSellers}
+				onSellerClick={(seller) => {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:364:6
+[31mError[39m: Cannot find name 'selectedSeller'. (ts)
+[36m				onSellerClick={(seller) => {
+					[35mselectedSeller[36m = seller;
+					showSellerModal = true;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\+page.svelte[39m:365:6
+[31mError[39m: Cannot find name 'showSellerModal'. (ts)
+[36m					selectedSeller = seller;
+					[35mshowSellerModal[36m = true;
+				}}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\+error.svelte[39m:107:15
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m		<!-- Error Details for Admins -->
+		{#if error?.[35mid[36m}
+			<div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-8">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\+error.svelte[39m:113:80
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m						<span class="font-medium">ID:</span>
+						<code class="bg-white px-2 py-1 rounded text-xs font-mono border">{error.[35mid[36m}</code>
+						<button[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\+error.svelte[39m:119:47
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m								if (browser) {
+									navigator.clipboard?.writeText(error.[35mid[36m || '');
+								}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\+error.svelte[39m:202:88
+[31mError[39m: Property 'id' does not exist on type 'Error'. (ts)
+[36m				<a
+					href="mailto:admin@driplo.com?subject=Admin Error {status}&body=Error ID: {error?.[35mid[36m || 'N/A'}"
+					class="text-blue-600 hover:text-blue-800 font-medium"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\admin\+page.svelte[39m:143:33
+[31mError[39m: Property 'username' does not exist on type 'SelectQueryError<"Could not embed because more than one relationship was found for 'profiles' and 'orders' you need to hint the column with profiles!<columnName> ?">'. (ts)
+[36m                <td class="px-6 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                  {order.buyer?.[35musername[36m || 'Unknown'}
+                </td>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\admin\+page.svelte[39m:146:34
+[31mError[39m: Property 'username' does not exist on type 'SelectQueryError<"Could not embed because more than one relationship was found for 'profiles' and 'orders' you need to hint the column with profiles!<columnName> ?">'. (ts)
+[36m                <td class="px-6 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                  {order.seller?.[35musername[36m || 'Unknown'}
+                </td>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\admin\+page.svelte[39m:152:124
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class={`inline-flex px-3 py-1 text-xs font-semibold rounded-full backdrop-blur-sm ${getStatusColor([35morder.status[36m)}`}>
+                    {order.status}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(admin)\admin\+page.svelte[39m:157:31
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatDate([35morder.created_at[36m)}
+                </td>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\+layout.svelte[39m:17:3
+[33mWarn[39m: Do not use empty rulesets (css)
+[36m<style>
+  [35m.app-layout[36m {
+    /* App-wide authenticated styles */[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(account)\pro\+page.svelte[39m:238:15
+[31mError[39m: Object literal may only specify known properties, and '"currency"' does not exist in type 'Props'. (ts)
+[36m              {product}
+              [35mcurrency[36m={i18n.common_currency()}
+              onProductClick={handleProductClick}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(account)\profile\[id]\+page.svelte[39m:359:69
+[31mError[39m: Property 'review_count' does not exist on type '{ products_count: number; active_listings: number; sold_listings: number; followers_count: number; following_count: number; id: string; user_id: string; username: string; full_name: string; ... 11 more ...; updated_at: string; }'. (ts)
+[36m                {#if data.profile.rating}
+                  {data.profile.rating.toFixed(1)}/5 ({data.profile.[35mreview_count[36m || 0} {i18n.profile_reviews()})
+                {:else}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\+layout.svelte[39m:21:3
+[33mWarn[39m: Do not use empty rulesets (css)
+[36m<style>
+  [35m.shop-layout[36m {
+    /* Shop-specific styles */[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\brands\+page.svelte[39m:328:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 2;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\brands\+page.svelte[39m:142:160
+[31mError[39m: Argument of type '{ id: string; username: string | null; full_name: string | null; avatar_url: string | null; bio: string | null; verified: boolean | null; total_sales: number | null; rating: number | null; total_reviews: number | null; followers_count: number | null; }' is not assignable to parameter of type '{ username?: string | undefined; id: string; }'.
+  Types of property 'username' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m          {#each data.featuredBrands as brand}
+            <button type="button" class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow text-left w-full" onclick={() => handleBrandClick([35mbrand[36m)} aria-label={`View ${brand.full_name || brand.username || 'brand'}`}>
+              <div class="flex flex-col items-center text-center">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\brands\+page.svelte[39m:167:24
+[31mError[39m: 'brand.rating' is possibly 'null'. (ts)
+[36m                  <span>{brand.total_sales} sales</span>
+                  {#if [35mbrand.rating[36m > 0}
+                    <span class="flex items-center gap-0.5">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\brands\+page.svelte[39m:172:24
+[31mError[39m: 'brand.rating' is possibly 'null'. (ts)
+[36m                      </svg>
+                      {[35mbrand.rating[36m.toFixed(1)}
+                    </span>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\brands\+page.svelte[39m:266:53
+[31mError[39m: Argument of type '{ id: string; username: string | null; full_name: string | null; avatar_url: string | null; bio: string | null; verified: boolean; created_at: string | null; location: string | null; ... 8 more ...; rank: number; }' is not assignable to parameter of type '{ username?: string | undefined; id: string; }'.
+  Types of property 'username' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m                    variant="outline"
+                    onclick={() => handleBrandClick([35mbrand[36m)}
+                    class="w-full"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\category\[...segments]\+page.svelte[39m:449:48
+[31mError[39m: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+[36m            <button
+              onclick={() => openSellerModal({ [35mid[36m: seller.id, username: seller.username, avatar_url: seller.avatar_url || '', itemCount: seller.itemCount })}
+              class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\collection\[slug]\+page.svelte[39m:268:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 2;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\designer\+page.svelte[39m:150:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 3;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\drip\+page.svelte[39m:150:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 3;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[id]\+page.svelte[39m:324:28
+[31mError[39m: Property 'isOwner' does not exist on type '{ country: CountryCode; detectedCountry: CountryCode; suggestedLocale: any; shouldShowLocaleBanner: boolean; language: any; currency: string; seo: SeoData; ... 12 more ...; isLegacyRoute: boolean; }'. (ts)
+[36m					currency="Γé¼"
+					isOwner={Boolean(data.[35misOwner[36m)}
+					isSold={Boolean((data.product as any).is_sold)}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[id]\+page.svelte[39m:344:39
+[31mError[39m: 'p' is of type 'unknown'. (ts)
+[36m			<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+				{#each data.similarProducts as p ([35mp[36m.id)}
+					<ProductCard product={mapProduct(p as any)} class="h-full" />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[id]\+page.svelte[39m:370:26
+[31mError[39m: Property 'isOwner' does not exist on type '{ country: CountryCode; detectedCountry: CountryCode; suggestedLocale: any; shouldShowLocaleBanner: boolean; language: any; currency: string; seo: SeoData; ... 12 more ...; isLegacyRoute: boolean; }'. (ts)
+[36m			currency="Γé¼"
+			isOwner={Boolean(data.[35misOwner[36m)}
+			isSold={Boolean((data.product as any).is_sold)}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:93:18
+[31mError[39m: Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m  const seoTitle = [
+    data.product.[35mbrand[36m,
+    data.product.title,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:95:18
+[31mError[39m: Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.title,
+    data.product.[35msize[36m && `Size ${data.product.size}`,
+    data.product.condition[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:95:47
+[31mError[39m: Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.title,
+    data.product.size && `Size ${data.product.[35msize[36m}`,
+    data.product.condition[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:96:18
+[31mError[39m: Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.size && `Size ${data.product.size}`,
+    data.product.[35mcondition[36m
+  ].filter(Boolean).join(' ┬╖ ');[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:100:18
+[31mError[39m: Property 'description' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'description' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m  const seoDescription = [
+    data.product.[35mdescription[36m || `${data.product.title} by ${data.product.seller_name}`,
+    data.product.brand && `Brand: ${data.product.brand}`,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:101:18
+[31mError[39m: Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.description || `${data.product.title} by ${data.product.seller_name}`,
+    data.product.[35mbrand[36m && `Brand: ${data.product.brand}`,
+    data.product.size && `Size: ${data.product.size}`,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:101:50
+[31mError[39m: Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.description || `${data.product.title} by ${data.product.seller_name}`,
+    data.product.brand && `Brand: ${data.product.[35mbrand[36m}`,
+    data.product.size && `Size: ${data.product.size}`,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:102:18
+[31mError[39m: Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.brand && `Brand: ${data.product.brand}`,
+    data.product.[35msize[36m && `Size: ${data.product.size}`,
+    data.product.condition && `Condition: ${data.product.condition}`,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:102:48
+[31mError[39m: Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'size' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.brand && `Brand: ${data.product.brand}`,
+    data.product.size && `Size: ${data.product.[35msize[36m}`,
+    data.product.condition && `Condition: ${data.product.condition}`,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:103:18
+[31mError[39m: Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.size && `Size: ${data.product.size}`,
+    data.product.[35mcondition[36m && `Condition: ${data.product.condition}`,
+    `Price: Γé¼${data.product.price}`[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:103:58
+[31mError[39m: Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.size && `Size: ${data.product.size}`,
+    data.product.condition && `Condition: ${data.product.[35mcondition[36m}`,
+    `Price: Γé¼${data.product.price}`[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:104:29
+[31mError[39m: Property 'price' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'price' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m    data.product.condition && `Condition: ${data.product.condition}`,
+    `Price: Γé¼${data.product.[35mprice[36m}`
+  ].filter(Boolean).join(' ┬╖ ').substring(0, 160);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:157:5
+[31mError[39m: Type 'string | null | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+[36m  category={{
+    [35mid[36m: data.product.category_id,
+    name: data.product.categories?.name || 'Unknown',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:158:24
+[31mError[39m: Property 'categories' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'categories' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: null; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; condition?: string | undefined; }'. (ts)
+[36m    id: data.product.category_id,
+    name: data.product.[35mcategories[36m?.name || 'Unknown',
+    slug: data.product.category_slug || ''[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:188:33
+[31mError[39m: Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'condition' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m        isSold={Boolean((data.product as any).is_sold)}
+        condition={data.product.[35mcondition[36m}
+      />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:297:7
+[31mError[39m: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m      name={data.product.seller_name || ''}
+      [35mavatar[36m={data.product.seller_avatar}
+      stats={{[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:319:31
+[31mError[39m: Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m            <!-- Brand (tiny) -->
+            {#if data.product.[35mbrand[36m}
+              <div class="mb-1">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:321:91
+[31mError[39m: Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; } | { ...; }'.
+  Property 'brand' does not exist on type '{ images: string[]; seller_name: string; seller_username: string; seller_avatar: string | undefined; seller_rating: number | undefined; seller_sales_count: number; category_name: string | undefined; ... 11 more ...; categories?: CategorySummary | ... 1 more ... | undefined; }'. (ts)
+[36m              <div class="mb-1">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">{data.product.[35mbrand[36m}</span>
+              </div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(app)\(shop)\product\[seller]\[slug]\+page.svelte[39m:477:7
+[31mError[39m: Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+  Type 'null' is not assignable to type 'boolean | undefined'. (ts)
+[36m      currency="Γé¼"
+      [35misOwner[36m={data.isOwner}
+      isSold={Boolean((data.product as any).is_sold)}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(marketing)\+layout.svelte[39m:13:3
+[33mWarn[39m: Do not use empty rulesets (css)
+[36m<style>
+  [35m.marketing-layout[36m {
+    /* Marketing-specific styles */[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:39:63
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m          o.sellerId === userId && 
+          ['paid', 'processing', 'pending_shipment'].includes([35mo.status[36m)
+        ) || [];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:46:46
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m          o.sellerId === userId && 
+          ['shipped', 'in_transit'].includes([35mo.status[36m)
+        ) || [];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:53:88
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m          o.buyerId === userId && 
+          ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes([35mo.status[36m)
+        ) || [];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:60:47
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m          (o.sellerId === userId || o.buyerId === userId) && 
+          ['delivered', 'completed'].includes([35mo.status[36m)
+        ) || [];[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:75:59
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m      o.seller_id === userId && 
+      ['paid', 'processing', 'pending_shipment'].includes([35mo.status[36m)
+    ).length;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:79:84
+[31mError[39m: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'. (ts)
+[36m      o.buyer_id === userId && 
+      ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes([35mo.status[36m)
+    ).length;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:170:5
+[31mError[39m: Type '{ id: string; product?: { title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | null | undefined; seller?: { username?: string | undefined; } | undefined; }' is not assignable to type '{ id: string; product?: { title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | undefined; seller?: { username?: string | undefined; } | undefined; }'.
+  Types of property 'product' are incompatible.
+    Type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | null | undefined' is not assignable to type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | undefined'.
+      Type 'null' is not assignable to type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | undefined'. (ts)
+[36m  function openReviewModal(order: { id: string; product?: { title?: string; first_image?: string; images?: string[] } | null; seller?: { username?: string } }) {
+    [35mreviewOrder[36m = order;
+    showReviewModal = true;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:208:71
+[31mError[39m: 'reviewOrder' is possibly 'null'. (ts)
+[36m      if (Array.isArray(data.orders)) {
+        const orderIndex = data.orders.findIndex((o: any) => o.id === [35mreviewOrder[36m.id);
+        if (orderIndex !== -1) {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:586:60
+[31mError[39m: Argument of type 'OrderUI' is not assignable to parameter of type '{ id: string; tracking_number?: string | null | undefined; status: OrderStatusType; }'.
+  Types of property 'status' are incompatible.
+    Type '"completed" | "delivered" | "pending" | "paid" | "shipped" | "cancelled" | "disputed" | "failed" | null' is not assignable to type 'OrderStatusType'.
+      Type 'null' is not assignable to type 'OrderStatusType'. (ts)
+[36m                        <Button
+                          onclick={() => openTrackingModal([35morder[36m)}
+                          size="sm"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:601:58
+[31mError[39m: Argument of type 'OrderUI' is not assignable to parameter of type '{ id: string; status: OrderStatusType; }'.
+  Types of property 'status' are incompatible.
+    Type '"completed" | "delivered" | "pending" | "paid" | "shipped" | "cancelled" | "disputed" | "failed" | null' is not assignable to type 'OrderStatusType'.
+      Type 'null' is not assignable to type 'OrderStatusType'. (ts)
+[36m                        <Button
+                          onclick={() => confirmDelivery([35morder[36m)}
+                          size="sm"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\order-management\+page.svelte[39m:616:58
+[31mError[39m: Argument of type 'OrderUI' is not assignable to parameter of type '{ id: string; product?: { title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | null | undefined; seller?: { username?: string | undefined; } | undefined; }'.
+  Types of property 'product' are incompatible.
+    Type 'ProductUI | null' is not assignable to type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | null | undefined'.
+      Type 'ProductUI' is not assignable to type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; } | null | undefined'.
+        Type 'ProductUI' is not assignable to type '{ title?: string | undefined; first_image?: string | undefined; images?: string[] | undefined; }'.
+          Types of property 'first_image' are incompatible.
+            Type 'string | null' is not assignable to type 'string | undefined'.
+              Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m                        <Button
+                          onclick={() => openReviewModal([35morder[36m)}
+                          size="sm"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\dashboard\upgrade\success\+page.svelte[39m:20:8
+[31mError[39m: This comparison appears to be unintentional because the types '"failed" | "success"' and '"checking"' have no overlap. (ts)
+[36m<div class="max-w-2xl mx-auto text-center space-y-8 py-12">
+  {#if [35msubscriptionStatus === 'checking'[36m}
+    <div class="space-y-4">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\components\ConversationSidebar.svelte[39m:93:42
+[31mError[39m: Argument of type 'string' is not assignable to parameter of type '"all" | "buying" | "selling" | "offers" | "unread"'. (ts)
+[36m        <button
+          onclick={() => handleTabChange([35mtab.id[36m)}
+          class="flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\components\ChatWindow.svelte[39m:352:32
+[31mError[39m: Property 'status' does not exist on type 'Message'. (ts)
+[36m                <div class="flex items-center">
+                  {#if message.[35mstatus[36m === 'sending'}
+                    <div class="w-3 h-3 border-2 border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\components\ChatWindow.svelte[39m:354:37
+[31mError[39m: Property 'is_read' does not exist on type 'Message'. (ts)
+[36m                    <div class="w-3 h-3 border-2 border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>
+                  {:else if message.[35mis_read[36m}
+                    <!-- Read: Show recipient's avatar -->[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\ModularMessages.svelte[39m:120:9
+[31mError[39m: Type 'Conversation[]' is not assignable to type 'string | number | undefined'. (ts)
+[36m        conversationCount: freshConversations.length,
+        [35mconversations[36m: freshConversations 
+      });[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\ModularMessages.svelte[39m:162:11
+[31mError[39m: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. (ts)
+[36m          id: conversationParam,
+          [35muserId[36m: otherUserId,
+          userName: data.conversationUser?.username || data.conversationUser?.full_name || 'User',[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\messages\ModularMessages.svelte[39m:164:11
+[31mError[39m: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m          userName: data.conversationUser?.username || data.conversationUser?.full_name || 'User',
+          [35muserAvatar[36m: data.conversationUser?.avatar_url,
+          productId: productId === 'general' ? null : productId,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:32:9
+[31mError[39m: 'supabase' is declared but its value is never read. (ts)
+[36m  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [35msupabase[36m = createBrowserSupabaseClient();[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:235:60
+[31mError[39m: Type 'string | boolean' is not assignable to type 'string | number | undefined'.
+  Type 'false' is not assignable to type 'string | number | undefined'. (ts)
+[36m    }
+    log.debug('Account type state updated', { accountType, [35mcanProceed[36m: canProceed });
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:457:11
+[31mError[39m: Object literal may only specify known properties, and '"translations"' does not exist in type 'Props'. (ts)
+[36m          onSelect={handleAvatarSelect}
+          [35mtranslations[36m={{
+            chooseAvatar: m.onboarding_chooseAvatar(),[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:559:50
+[31mError[39m: Argument of type 'Record<string, unknown> | undefined' is not assignable to parameter of type 'LogContext | undefined'.
+  Type 'Record<string, unknown>' is not assignable to type 'LogContext'.
+    'string' index signatures are incompatible.
+      Type 'unknown' is not assignable to type 'string | number | undefined'. (ts)
+[36m            if (result.type === 'success') {
+              log.debug('Completion successful', [35mresult.data[36m);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:562:41
+[31mError[39m: Property 'onboarding_completed' does not exist on type '{}'. (ts)
+[36m              // Check if we got a verified profile back
+              if (result.data?.profile?.[35monboarding_completed[36m === true) {
+                log.debug('Profile verified as complete');[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:578:74
+[31mError[39m: Type 'unknown' is not assignable to type 'string | number | undefined'. (ts)
+[36m              } else {
+                log.error('Profile not properly completed', undefined, { [35mprofile[36m: result.data?.profile });
+                toasts.error('Profile update may have failed. Please try again.');[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:583:57
+[31mError[39m: Argument of type 'Record<string, unknown> | undefined' is not assignable to parameter of type 'LogContext | undefined'.
+  Type 'Record<string, unknown>' is not assignable to type 'LogContext'.
+    'string' index signatures are incompatible.
+      Type 'unknown' is not assignable to type 'string | number | undefined'. (ts)
+[36m            } else if (result.type === 'failure') {
+              log.error('Completion failed', undefined, [35mresult.data[36m);
+              toasts.error(result.data?.error || 'Failed to complete onboarding');[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:584:28
+[31mError[39m: Argument of type '{}' is not assignable to parameter of type 'string'. (ts)
+[36m              log.error('Completion failed', undefined, result.data);
+              toasts.error([35mresult.data?.error || 'Failed to complete onboarding'[36m);
+            } else {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:644:5
+[31mError[39m: Type '"brand" | "pro" | "personal"' is not assignable to type '"brand" | "personal" | undefined'.
+  Type '"pro"' is not assignable to type '"brand" | "personal" | undefined'. (ts)
+[36m    show={showSuccessModal}
+    [35maccountType[36m={accountType}
+    onClose={handleSuccessComplete}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\onboarding\+page.svelte[39m:665:5
+[31mError[39m: Type '"brand" | "pro" | "personal"' is not assignable to type '"brand" | "pro" | undefined'.
+  Type '"personal"' is not assignable to type '"brand" | "pro" | undefined'. (ts)
+[36m    show={showBrandPayment}
+    [35maccountType[36m={accountType}
+    initialDiscountCode={discountCode}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\orders\+page.svelte[39m:250:54
+[31mError[39m: This comparison appears to be unintentional because the types '"completed" | "delivered" | "paid" | "shipped" | "cancelled" | "disputed" | "failed" | null' and '"processing"' have no overlap. (ts)
+[36m                  {/if}
+                  {#if order.status === 'pending' || [35morder.status === 'processing'[36m}
+                    <Button onclick={() => handleOrderStatusChange(order.id, 'cancelled')} variant="danger">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\orders\+page.svelte[39m:284:151
+[31mError[39m: Property 'id' does not exist on type 'never'. (ts)
+[36m                
+                <Button href={order.product ? getProductUrl({ id: order.product.id, slug: (order.product as any).slug }) : `/product/${order.product?.[35mid[36m}`} variant="secondary">
+                  {i18n.orders_viewProduct()}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\orders\+page.svelte[39m:303:9
+[31mError[39m: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m        orderId: selectedOrderForReview.id,
+        [35mseller[36m: selectedOrderForReview.seller?.username,
+        buyer: selectedOrderForReview.buyer?.username,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\orders\+page.svelte[39m:304:9
+[31mError[39m: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'. (ts)
+[36m        seller: selectedOrderForReview.seller?.username,
+        [35mbuyer[36m: selectedOrderForReview.buyer?.username,
+        product: selectedOrderForReview.product?.title,[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\product\[id]\edit\+page.svelte[39m:18:66
+[31mError[39m: Property 'parent_id' does not exist on type '{ id: string; name: string; slug: string; }'. (ts)
+[36m  
+  const mainCategories = $derived(data.categories.filter(c => !c.[35mparent_id[36m));
+  const getSubcategories = (parentId: string) =>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\product\[id]\edit\+page.svelte[39m:20:35
+[31mError[39m: Property 'parent_id' does not exist on type '{ id: string; name: string; slug: string; }'. (ts)
+[36m  const getSubcategories = (parentId: string) => 
+    data.categories.filter(c => c.[35mparent_id[36m === parentId);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\product\[id]\edit\+page.svelte[39m:23:67
+[31mError[39m: Property 'parent_id' does not exist on type '{ id: string; name: string; slug: string; }'. (ts)
+[36m  const selectedMainCategory = $derived(
+    data.categories.find(c => c.id === data.product.category_id)?.[35mparent_id[36m ||
+    data.product.category_id[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepCategory.svelte[39m:230:28
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type '{ 1: boolean; 2: boolean; 3: boolean; 4: boolean; }'.
+  No index signature with a parameter of type 'number' was found on type '{ 1: boolean; 2: boolean; 3: boolean; 4: boolean; }'. (ts)
+[36m    {@const step = stepIndex + 1}
+    {@const isAccessible = [35msubStepAccessible[step][36m}
+    {@const isActive = currentSubStep === step}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPricing.svelte[39m:20:7
+[31mError[39m: Property 'tags' of type 'string[]' is not assignable to 'string' index type 'string | number | boolean | null | undefined'. (ts)
+[36m      shipping_cost: number;
+      [35mtags[36m: string[];
+      use_premium_boost: boolean;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPricing.svelte[39m:52:5
+[31mError[39m: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'. (ts)
+[36m  function showError(field: string): boolean {
+    [35mreturn[36m touched[field] && !!errors[field];
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPricing.svelte[39m:70:12
+[31mError[39m: Type 'number' is not assignable to type 'string'. (ts)
+[36m    <PriceInput
+      bind:[35mvalue[36m={formData.price}
+      label={i18n.sell_priceLabel()}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPricing.svelte[39m:98:12
+[31mError[39m: Type 'number' is not assignable to type 'string'. (ts)
+[36m    <PriceInput
+      bind:[35mvalue[36m={formData.shipping_cost}
+      label={i18n.sell_shippingCostLabel()}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:523:17
+[31mError[39m: Type 'unknown[]' is not assignable to type 'Category[]'.
+  Type 'unknown' is not assignable to type 'Category'. (ts)
+[36m              <StepCategory
+                [35mcategories[36m={data.categories}
+                bind:formData[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:541:65
+[31mError[39m: Property 'id' does not exist on type '{}'. (ts)
+[36m                      if (genderCat) {
+                        formData.gender_category_id = genderCat.[35mid[36m;
+                      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:547:61
+[31mError[39m: Property 'id' does not exist on type '{}'. (ts)
+[36m                      if (typeCat) {
+                        formData.type_category_id = typeCat.[35mid[36m;
+                      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:553:60
+[31mError[39m: Property 'id' does not exist on type '{}'. (ts)
+[36m                      if (specificCat) {
+                        formData.category_id = specificCat.[35mid[36m;
+                      }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:627:97
+[31mError[39m: Property 'name' does not exist on type '{}'. (ts)
+[36m                    {#if genderCategories.find((c: any) => c.id === formData.gender_category_id)}
+                      {genderCategories.find((c: any) => c.id === formData.gender_category_id)?.[35mname[36m}
+                    {/if}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\+page.svelte[39m:630:95
+[31mError[39m: Property 'name' does not exist on type '{}'. (ts)
+[36m                    {#if typeCategories.find((c: any) => c.id === formData.type_category_id)}
+                      ΓÇ║ {typeCategories.find((c: any) => c.id === formData.type_category_id)?.[35mname[36m}
+                    {/if}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosAndBasicInfo.svelte[39m:52:7
+[31mError[39m: Type '(images: UploadedImage[]) => void' is not assignable to type '(files: File[]) => Promise<UploadedImage[]>'.
+  Types of parameters 'images' and 'files' are incompatible.
+    Type 'File[]' is not assignable to type 'UploadedImage[]'.
+      Type 'File' is missing the following properties from type 'UploadedImage': url, path (ts)
+[36m      bind:images={uploadedImages}
+      [35monUpload[36m={onImageUpload}
+      onDelete={onImageDelete}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosAndBasicInfo.svelte[39m:53:7
+[31mError[39m: Type '(index: number) => Promise<void>' is not assignable to type '(path: string) => Promise<boolean>'.
+  Types of parameters 'index' and 'path' are incompatible.
+    Type 'string' is not assignable to type 'number'. (ts)
+[36m      onUpload={onImageUpload}
+      [35monDelete[36m={onImageDelete}
+      bind:uploading={isUploadingImages}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosDetails.svelte[39m:61:5
+[31mError[39m: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'. (ts)
+[36m  function showError(field: string): boolean {
+    [35mreturn[36m touched[field] && !!errors[field];
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosDetails.svelte[39m:78:7
+[31mError[39m: Object literal may only specify known properties, and '"class"' does not exist in type 'Props'. (ts)
+[36m      bind:uploading={isUploadingImages}
+      [35mclass[36m="mb-2"
+    />[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosDetails.svelte[39m:107:7
+[31mError[39m: Object literal may only specify known properties, and '"onchange"' does not exist in type 'Props'. (ts)
+[36m      required
+      [35monchange[36m={() => {
+        onFieldChange('gender_category_id', formData.gender_category_id);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosDetails.svelte[39m:129:9
+[31mError[39m: Object literal may only specify known properties, and '"onchange"' does not exist in type 'Props'. (ts)
+[36m        required
+        [35monchange[36m={() => {
+          onFieldChange('type_category_id', formData.type_category_id);[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepPhotosDetails.svelte[39m:151:9
+[31mError[39m: Object literal may only specify known properties, and '"onchange"' does not exist in type 'Props'. (ts)
+[36m        required
+        [35monchange[36m={() => onFieldChange('category_id', formData.category_id)}
+        name="category_id"[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepProductInfo.svelte[39m:32:5
+[31mError[39m: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'. (ts)
+[36m  function showError(field: string): boolean {
+    [35mreturn[36m touched[field] && !!errors[field];
+  }[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepProductInfo.svelte[39m:46:31
+[31mError[39m: Type 'SizeOption[] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator. (ts)
+[36m      if (['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].includes(size.value)) {
+        groups['XS-XL'] = [...[35mgroups['XS-XL'][36m, size];
+      } else if (/^\d+$/.test(size.value)) {[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\sell\components\StepProductInfo.svelte[39m:89:52
+[31mError[39m: Argument of type 'string' is not assignable to parameter of type '"Nike" | "Adidas" | "Zara" | "H&M" | "Levi's" | "Gap" | "Uniqlo" | "Forever 21" | "Urban Outfitters" | "Mango" | "COS" | "Other"'. (ts)
+[36m  $effect(() => {
+    if (formData.brand && !POPULAR_BRANDS.includes([35mformData.brand[36m)) {
+      showCustomBrand = true;[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:278:25
+[31mError[39m: Property 'toggle' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'toggle' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; }'. (ts)
+[36m            {#each category.items as item}
+              {#if item.[35mtoggle[36m}
+                <div class="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:327:31
+[31mError[39m: Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; toggle?: undefined; enabled?: undefined; }'. (ts)
+[36m                  <div class="flex items-center gap-1 sm:gap-2">
+                    {#if item.[35mbadge[36m}
+                      <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full {item.badge === 'Premium' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}">[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:328:105
+[31mError[39m: Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; toggle?: undefined; enabled?: undefined; }'. (ts)
+[36m                    {#if item.badge}
+                      <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full {item.[35mbadge[36m === 'Premium' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}">
+                        {item.badge}[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:329:31
+[31mError[39m: Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'badge' does not exist on type '{ title: string; description: string; href: string; icon: string; toggle?: undefined; enabled?: undefined; }'. (ts)
+[36m                      <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full {item.badge === 'Premium' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}">
+                        {item.[35mbadge[36m}
+                      </span>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:332:31
+[31mError[39m: Property 'value' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'value' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; }'. (ts)
+[36m                    {/if}
+                    {#if item.[35mvalue[36m}
+                      <span class="text-xs sm:text-sm text-gray-400 hidden sm:inline">{item.value}</span>[39m
+
+k:\driplo-turbo-1\apps\web\[32msrc\routes\(protected)\settings\+page.svelte[39m:333:93
+[31mError[39m: Property 'value' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; } | { title: string; description: string; href: string; icon: string; badge: string | null; } | { title: string; ... 4 more ...; enabled?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }'.
+  Property 'value' does not exist on type '{ title: string; description: string; href: string; icon: string; badge?: undefined; }'. (ts)
+[36m                    {#if item.value}
+                      <span class="text-xs sm:text-sm text-gray-400 hidden sm:inline">{item.[35mvalue[36m}</span>
+                    {/if}[39m
+
+====================================
+[31msvelte-check found 216 errors and 8 warnings in 55 files
+[39m

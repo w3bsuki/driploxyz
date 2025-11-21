@@ -123,7 +123,7 @@
 	let mounted = $state(false);
 
 	// Form elements
-	let cardContainer: HTMLElement;
+	let cardContainer: HTMLElement = $state()!;
 	let formElement: HTMLFormElement;
 
 	// Initialize Stripe Elements
@@ -342,7 +342,7 @@
 				disabled={disabled || paymentProcessing}
 				class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
 				       bg-white dark:bg-gray-700 text-[color:var(--text-primary)] dark:text-gray-100
-				       focus:ring-2 focus:ring-blue-500 focus:border-transparent
+				       focus:ring-2 focus:ring-[var(--state-focus)] focus:border-transparent
 				       disabled:opacity-50 disabled:cursor-not-allowed"
 			/>
 		</div>
@@ -355,12 +355,12 @@
 			class="p-4 border border-gray-300 dark:border-gray-600 rounded-lg 
 			       bg-white dark:bg-gray-700 min-h-30
 			       transition-colors duration-200
-			       {validationErrors.card ? 'border-red-500 dark:border-red-400' : ''}"
+			       {validationErrors.card ? 'border-[var(--status-error-solid)] dark:border-red-400' : ''}"
 		>
 			<!-- Stripe Elements will be mounted here -->
 			{#if !mounted && stripe}
 				<div class="flex items-center justify-center h-full">
-					<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+					<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--brand-primary)]"></div>
 					<span class="ml-2 text-sm text-[color:var(--text-muted)] dark:text-gray-400">
 						Loading payment form...
 					</span>
@@ -390,7 +390,7 @@
 				type="checkbox"
 				bind:checked={saveCard}
 				disabled={disabled || paymentProcessing}
-				class="h-4 w-4 text-[color:var(--text-link)] focus:ring-blue-500 border-gray-300 rounded"
+				class="h-4 w-4 text-[color:var(--text-link)] focus:ring-[var(--state-focus)] border-gray-300 rounded"
 			/>
 			<label for="save-card" class="ml-2 block text-sm text-[color:var(--text-primary)] dark:text-gray-300">
 				Save this payment method for future purchases

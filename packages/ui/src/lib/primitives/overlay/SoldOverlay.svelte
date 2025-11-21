@@ -22,7 +22,7 @@
 </script>
 
 {#if show}
-  <div class="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+  <div class="absolute inset-0 bg-[var(--modal-overlay-bg)] flex items-center justify-center z-10">
     <div class="bg-white rounded-lg p-3 sm:p-4 mx-4 text-center shadow-sm md:shadow-lg">
       <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full mx-auto mb-2">
         <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">

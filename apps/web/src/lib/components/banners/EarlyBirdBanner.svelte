@@ -14,12 +14,12 @@
   const ROTATE_DELAY = 5000;
   const FADE_DURATION = 300;
   
-  let dismissed = $state(false);
+  // Dismissal is tracked via localStorage timing; no local state needed
   let idx = $state(0);
   let items = $state<Listing[]>([]);
   let visible = $state(true);
   
-  const current = $derived.by(() => effectiveItems()[idx]);
+  const current = $derived.by(() => effectiveItems[idx]);
 
   // Check if banner should be dismissed based on stored time
   const shouldDismiss = $derived.by(() => {
@@ -49,14 +49,14 @@
   }
   
   // Initialize banner state
-  const effectiveDismissed = $derived.by(() => shouldDismiss());
+  const effectiveDismissed = $derived.by(() => !!shouldDismiss);
   const effectiveItems = $derived.by(() => {
-    if (effectiveDismissed()) return [];
+    if (effectiveDismissed) return [] as Listing[];
 
     const cached = getCachedListings();
     if (cached) return cached;
 
-    return items;
+  return items;
   });
 
   // Sync dismissed state with derived value
@@ -70,7 +70,7 @@
       return false;
     }
 
-    return shouldDismiss();
+  return !!shouldDismiss;
   });
 
   // Side effects: fetch only
@@ -85,7 +85,7 @@
   
   // Rotation effect
   $effect(() => {
-    if (!browser || syncDismissed || effectiveItems().length <= 1) return;
+  if (!browser || syncDismissed || effectiveItems.length <= 1) return;
 
     const interval = setInterval(rotate, ROTATE_DELAY);
     return () => clearInterval(interval);
@@ -109,7 +109,7 @@
   }
   
   function rotate() {
-    const effectiveItemsList = effectiveItems();
+  const effectiveItemsList = effectiveItems;
     if (effectiveItemsList.length <= 1) return;
     visible = false;
     setTimeout(() => {
@@ -119,7 +119,7 @@
   }
   
   function dismiss() {
-    dismissed = true;
+    // Persist dismissal time; derived state will hide the banner
     localStorage.setItem('banner-dismissed-time', String(Date.now()));
   }
 </script>

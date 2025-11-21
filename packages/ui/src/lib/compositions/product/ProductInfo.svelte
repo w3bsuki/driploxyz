@@ -135,7 +135,7 @@
     <section class="facts-card" aria-labelledby="facts-heading">
       <h2 id="facts-heading" class="visually-hidden">Product details</h2>
       <DescriptionList>
-        {#each attributes as attr}
+        {#each attributes as attr (attr.key)}
           <DescriptionTerm>{attr.label}</DescriptionTerm>
           <DescriptionDetails>
             {#if attr.key === 'condition' && isValidCondition(attr.value)}
@@ -179,10 +179,9 @@
   {#if tabs.length > 0}
     <div class="tabs-section">
       <div class="tab-nav" role="tablist">
-        {#each tabs as tab}
+        {#each tabs as tab (tab.id)}
           <button 
-            class="tab-button"
-            class:tab-button--active={activeTab === tab.id}
+            class={['tab-button', { 'tab-button--active': activeTab === tab.id }]}
             onclick={() => activeTab = tab.id}
             role="tab"
             aria-selected={activeTab === tab.id}
@@ -208,7 +207,7 @@
           >
             <div class="details-content">
               <div class="details-list">
-                {#each attributes as attr}
+                {#each attributes as attr (attr.key)}
                   <div class="detail-row">
                     <span class="detail-label">{attr.label}</span>
                     <span class="detail-value">{attr.value}</span>

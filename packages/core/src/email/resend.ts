@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 // TODO: Initialize Resend with proper API key from environment
 // const resend = new Resend(process.env.RESEND_API_KEY);
 
-let resend: Resend | null = null;
+const resend: Resend | null = null;
 
 export async function sendEmail(options: {
   to: string | string[];

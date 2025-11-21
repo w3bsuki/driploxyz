@@ -1,6 +1,5 @@
 <script lang="ts">
   // Account layout - wrap account pages with account-specific UI
-  import { page } from '$app/state';
 
   // Ensure user is authenticated (could add guard here)
   let { children } = $props();

@@ -3,11 +3,11 @@
   import SellerQuickView from './SellerQuickView.svelte';
   import FeaturedSellersBanner from '../../compositions/banners/FeaturedSellersBanner.svelte';
   import * as i18n from '@repo/i18n';
-  import type { Seller } from '../../types/index';
+  import type { Seller, SellerLike } from '../../types/index';
   import type { Product } from '../../types/product';
 
   interface Props {
-    sellers: Seller[];
+    sellers: Array<Seller | SellerLike>;
     sellerProducts?: Record<string, Product[]>;
     onSellerClick?: (seller: Seller) => void;
     onViewAll?: () => void;
@@ -83,13 +83,16 @@
     }
   }
 
+  // Normalize incoming sellers to the expected shape
   const displaySellers = $derived(
     sellers
-      .filter((seller) => seller && seller.id && seller.username)
+      .filter((seller) => seller && (seller as any).id && ((seller as any).username || (seller as any).full_name))
       .map((s) => ({
-        ...s,
-        avatar_url: s.avatar_url ?? ''
-      })) as unknown as any[]
+        ...(s as any),
+        username: (s as any).username ?? (s as any).id,
+        avatar_url: (s as any).avatar_url ?? (s as any).avatar ?? '',
+        is_verified: (s as any).is_verified ?? (s as any).verified ?? false,
+      })) as unknown as Seller[]
   );
 </script>
 
@@ -138,7 +141,7 @@
     <!-- Ultrathink: Standardized spacing in sellers container -->
     <div class="px-2 sm:px-4 lg:px-6">
       <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbarhide" onscroll={updateScrollButtons}>
-      {#each displaySellers as seller}
+      {#each displaySellers as seller (seller.id)}
         <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>
           <SellerProfileCard
             {seller}

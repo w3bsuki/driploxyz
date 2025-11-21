@@ -6,13 +6,13 @@
 
   // Placeholder services for now
   class PayoutService {
-    supabase: any;
+    supabase: unknown;
 
-    constructor(supabase: any) {
+    constructor(supabase: unknown) {
       this.supabase = supabase;
     }
 
-    async getSellerEarnings(userId: string) {
+    async getSellerEarnings(_userId: string) {
       return {
         totalEarnings: 0,
         pendingPayout: 0,
@@ -21,23 +21,23 @@
       };
     }
 
-    async getSellerPayouts(userId: string) {
+    async getSellerPayouts(_userId: string) {
       return { data: [], error: null };
     }
 
-    async requestPayout(userId: string, amount: number, method: any) {
+    async requestPayout(_userId: string, _amount: number, _method: { type: string; details: string; name?: string } | null) {
       return { error: null };
     }
   }
 
   class TransactionService {
-    supabase: any;
+    supabase: unknown;
 
-    constructor(supabase: any) {
+    constructor(supabase: unknown) {
       this.supabase = supabase;
     }
 
-    async getSellerTransactions(userId: string, limit: number) {
+    async getSellerTransactions(_userId: string, _limit: number) {
       return { data: [], error: null };
     }
   }
@@ -49,15 +49,38 @@
 
   let { data }: Props = $props();
 
-  let earnings = $state({
+  type EarningsSummary = {
+    totalEarnings: number;
+    pendingPayout: number;
+    totalPaidOut: number;
+    lastPayoutAt: string | null;
+  };
+
+  let earnings = $state<EarningsSummary>({
     totalEarnings: 0,
     pendingPayout: 0,
     totalPaidOut: 0,
     lastPayoutAt: null
   });
 
-  let transactions = $state.raw([]);
-  let payouts = $state.raw([]);
+  type Txn = {
+    products?: { title?: string } | null;
+    profiles?: { username?: string } | null;
+    product_price?: number;
+    seller_amount?: number;
+    commission_amount?: number;
+    created_at?: string;
+    payment_status?: string;
+  };
+  type Payout = {
+    amount?: number;
+    payout_method?: { type: string; details: string; name?: string } | null;
+    status?: string;
+    requested_at?: string;
+    completed_at?: string | null;
+  };
+  let transactions = $state.raw<Txn[]>([]);
+  let payouts = $state.raw<Payout[]>([]);
   let loading = $state(true);
   let showPayoutModal = $state(false);
   let payoutAmount = $state('');
@@ -69,13 +92,12 @@
   const transactionService = new TransactionService(supabase);
 
   // Load earnings data when component mounts
-  $effect(async () => {
-    await Promise.all([
-      loadEarnings(),
-      loadTransactions(),
-      loadPayouts()
-    ]);
-    loading = false;
+  $effect(() => {
+    // kick off async loads without making the effect async
+    (async () => {
+      await Promise.all([loadEarnings(), loadTransactions(), loadPayouts()]);
+      loading = false;
+    })();
   });
 
   async function loadEarnings() {
@@ -98,7 +120,8 @@
   }
 
   async function requestPayout() {
-    if (!data.profile?.payout_method) {
+    const method = normalizePayoutMethod(data.profile?.payout_method);
+    if (!method) {
       alert('Please set up your payout method in profile settings first');
       return;
     }
@@ -116,14 +139,11 @@
 
     requesting = true;
     try {
-      const { error } = await payoutService.requestPayout(
-        data.user.id,
-        amount,
-        data.profile.payout_method
-      );
+      const { error } = await payoutService.requestPayout(data.user.id, amount, method);
 
       if (error) {
-        alert('Failed to request payout: ' + error.message);
+        const msg = typeof error === 'object' && error && 'message' in error ? String((error as any).message) : '';
+        alert('Failed to request payout' + (msg ? `: ${msg}` : ''));
       } else {
         alert('Payout requested successfully! We will process it within 2-3 business days.');
         showPayoutModal = false;
@@ -137,17 +157,29 @@
     }
   }
 
-  function formatPayoutMethod(method: { type: string; details: string; name?: string } | null) {
+  type PaymentMethod = { type: string; details: string; name?: string };
+
+  function normalizePayoutMethod(input: unknown): PaymentMethod | null {
+    if (!input || typeof input !== 'object') return null;
+    const candidate = input as Record<string, unknown>;
+    const type = typeof candidate.type === 'string' ? candidate.type : null;
+    const details = typeof candidate.details === 'string' ? candidate.details : null;
+    const name = typeof candidate.name === 'string' ? candidate.name : undefined;
+    if (!type || !details) return null;
+    return { type, details, name };
+  }
+
+  function formatPayoutMethod(method: PaymentMethod | null | undefined) {
     if (!method) return 'Not set';
     const { type, details, name } = method;
     const displayName = name ? ` (${name})` : '';
     return `${type.toUpperCase()}: ${details}${displayName}`;
   }
 
-  function getStatusColor(status: string) {
+  function getStatusColor(status?: string) {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'processing': return 'bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)]';
       case 'completed': return 'bg-green-100 text-green-800';
       case 'failed': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -186,7 +218,7 @@
       
       <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="text-sm font-medium text-gray-600">Total Paid Out</div>
-        <div class="text-2xl font-bold text-blue-600">{earnings.totalPaidOut.toFixed(2)} BGN</div>
+        <div class="text-2xl font-bold text-[var(--brand-primary-strong)]">{earnings.totalPaidOut.toFixed(2)} BGN</div>
         <div class="text-xs text-gray-500 mt-1">Processed payouts</div>
       </div>
       
@@ -214,8 +246,8 @@
       <div class="text-sm text-gray-600">
         <p>• Minimum payout amount: 20 BGN</p>
         <p>• Processing time: 2-3 business days</p>
-        <p>• Payout method: {formatPayoutMethod(data.profile?.payout_method)}</p>
-        {#if !data.profile?.payout_method}
+        <p>• Payout method: {formatPayoutMethod(normalizePayoutMethod(data.profile?.payout_method))}</p>
+        {#if !normalizePayoutMethod(data.profile?.payout_method)}
           <p class="text-red-600 mt-2">⚠️ Please set up your payout method in <a href="/profile/edit" class="underline">profile settings</a> first</p>
         {/if}
       </div>
@@ -259,11 +291,11 @@
                     <div class="text-xs text-gray-500">-{transaction.commission_amount} BGN commission</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(transaction.created_at).toLocaleDateString()}
+                    {transaction.created_at ? new Date(transaction.created_at).toLocaleDateString() : '-'}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {getStatusColor(transaction.payment_status)}">
-                      {transaction.payment_status}
+                      {transaction.payment_status ?? 'unknown'}
                     </span>
                   </td>
                 </tr>
@@ -301,15 +333,15 @@
                     <div class="text-sm font-medium text-gray-900">{payout.amount} BGN</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{formatPayoutMethod(payout.payout_method)}</div>
+                    <div class="text-sm text-gray-900">{formatPayoutMethod(normalizePayoutMethod(payout.payout_method))}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {getStatusColor(payout.status)}">
-                      {payout.status}
+                      {payout.status ?? 'unknown'}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(payout.requested_at).toLocaleDateString()}
+                    {payout.requested_at ? new Date(payout.requested_at).toLocaleDateString() : '-'}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {payout.completed_at ? new Date(payout.completed_at).toLocaleDateString() : '-'}
@@ -350,7 +382,7 @@
         <div>
           <div class="text-sm font-medium text-gray-700 mb-1">Payout Method</div>
           <div class="text-sm text-gray-900 p-3 bg-gray-50 rounded-lg">
-            {formatPayoutMethod(data.profile?.payout_method)}
+            {formatPayoutMethod(normalizePayoutMethod(data.profile?.payout_method))}
           </div>
         </div>
       </div>

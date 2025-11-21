@@ -1,0 +1,252 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN SYSTEM — Performance Optimizations (Tailwind CSS v4)
+  Performance-focused utilities for optimal loading and rendering
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CRITICAL CSS — Above-the-Fold Content
+   Critical CSS for immediate rendering
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.critical-above-fold {
+  display: block;
+}
+
+.critical-hidden {
+  display: none;
+}
+
+/* Critical navigation styles */
+.critical-nav {
+  background-color: var(--surface-base);
+  border-bottom: 1px solid var(--border-subtle);
+  height: var(--nav-height);
+  position: relative;
+  z-index: var(--z-sticky);
+}
+
+/* Critical bottom navigation */
+.critical-bottom-nav {
+  background-color: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
+  height: var(--bottom-nav-height);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LAZY LOADING — Deferred Content Loading
+   Optimize loading of non-critical content
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.lazy-load {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
+}
+
+.lazy-load-image {
+  /* Note: 'loading' is an HTML attribute, not a CSS property */
+  object-fit: cover;
+}
+
+/* Skeleton loading states */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-muted) 25%, var(--surface-subtle) 50%, var(--surface-muted) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESOURCE HINTS — Performance Optimizations
+   Optimize resource loading and rendering
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.preload-font {
+  font-display: swap;
+}
+
+.optimize-render {
+  contain: layout style paint;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CODE SPLITTING — Modular CSS Loading
+   Split CSS for optimal loading
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Core styles - Always loaded */
+.core-styles {
+  /* Essential layout and typography */
+  display: block;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* Component styles - Loaded on demand */
+.component-styles {
+  /* Component-specific styles */
+  display: block;
+}
+
+/* Theme styles - Loaded after core */
+.theme-styles {
+  /* Theme-specific styles */
+  display: block;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BUNDLE OPTIMIZATIONS — Size Reduction
+   Optimize bundle size and loading
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Note: Tailwind v4 @utility directives require at least one property.
+   These placeholders can be removed or customized as needed. */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NETWORK OPTIMIZATIONS — Loading Performance
+   Optimize network requests and caching
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.cache-asset {
+  /* Assets that should be cached */
+  /* Placeholder property - customize as needed */
+  --cache-hint: true;
+}
+
+.no-cache {
+  /* Assets that should not be cached */
+  /* Placeholder property - customize as needed */
+  --cache-hint: false;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RENDERING OPTIMIZATIONS — Paint Performance
+   Optimize rendering and paint performance
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.paint-optimized {
+  /* Optimized for paint performance */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.compositing-optimized {
+  /* Optimized for compositing */
+  isolation: isolate;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MEMORY OPTIMIZATIONS — Resource Management
+   Optimize memory usage and prevent leaks
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.memory-optimized {
+  /* Optimized for memory usage */
+  contain: strict;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PERFORMANCE MONITORING — Debug Utilities
+   Utilities for performance monitoring and debugging
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.perf-marker {
+  /* Performance marker for debugging */
+  outline: 2px dashed red;
+}
+
+.perf-slow {
+  /* Mark slow elements */
+  animation: perf-pulse 2s infinite;
+}
+
+@keyframes perf-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MOBILE PERFORMANCE — Touch Optimization
+   Optimize performance for mobile devices
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.touch-optimized {
+  /* Optimized for touch interactions */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-optimized {
+  /* Optimized for mobile performance */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PRIORITY LOADING — Content Prioritization
+   Prioritize loading of important content
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.priority-high {
+  /* High priority content */
+  z-index: var(--z-modal);
+}
+
+.priority-medium {
+  /* Medium priority content */
+  z-index: var(--z-dropdown);
+}
+
+.priority-low {
+  /* Low priority content */
+  z-index: var(--z-base);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ADAPTIVE LOADING — Context-Aware Loading
+   Adaptive loading based on network and device
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Slow network optimizations */
+@media (prefers-reduced-data: reduce) {
+  .adaptive-loading {
+    /* Optimized for slow networks */
+    content-visibility: auto;
+  }
+}
+
+/* Low-end device optimizations */
+@media (max-resolution: 1dppx) {
+  .adaptive-performance {
+    /* Optimized for low-end devices */
+    transform: none;
+    transition: none;
+  }
+}

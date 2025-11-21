@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '@repo/ui';
-	import type { App } from '@sveltejs/kit';
 
 	const error = $derived(page.error as App.Error);
 	const status = $derived(page.status);

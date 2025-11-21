@@ -95,7 +95,7 @@
     <div class="flex items-start space-x-3">
       <!-- Step indicator -->
       <div class="flex-shrink-0">
-        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+        <div class="w-8 h-8 bg-[var(--surface-brand-strong)]/50 text-white rounded-full flex items-center justify-center text-sm font-semibold">
           {step}
         </div>
       </div>
@@ -110,7 +110,7 @@
           <div class="flex space-x-1">
             {#each Array(totalSteps) as _, i}
               <div 
-                class="w-1.5 h-1.5 rounded-full transition-colors {i + 1 <= step ? 'bg-blue-500' : 'bg-gray-300'}"
+                class="w-1.5 h-1.5 rounded-full transition-colors {i + 1 <= step ? 'bg-[var(--surface-brand-strong)]/50' : 'bg-gray-300'}"
               ></div>
             {/each}
           </div>
@@ -128,7 +128,7 @@
             {#if step < totalSteps}
               <button
                 onclick={handleNext}
-                class="text-xs font-medium text-blue-600 hover:text-blue-700"
+                class="text-xs font-medium text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]"
                 aria-label={`Go to step ${step + 1} of tutorial`}
                 type="button"
               >

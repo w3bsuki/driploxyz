@@ -15,11 +15,11 @@
   
   interface Props {
     formData: {
-      price: number;
-      shipping_cost: number;
+      price: number | string;
+      shipping_cost: number | string;
       tags: string[];
       use_premium_boost: boolean;
-      [key: string]: string | boolean | number | null | undefined;
+      [key: string]: unknown;
     };
     profile?: Profile | null;
     priceSuggestion: PriceSuggestion | null;
@@ -49,7 +49,7 @@
   );
   
   function showError(field: string): boolean {
-    return touched[field] && !!errors[field];
+    return Boolean(touched[field]) && Boolean(errors[field]);
   }
 
   // Premium boost feature visibility - Pro and Brand accounts only
@@ -61,18 +61,29 @@
   const boostEmoji = $derived(
     formData.use_premium_boost ? '🚀' : '✨'
   );
+
+  // Keep numeric formData in sync when bound values change as strings
+  $effect(() => {
+    if (typeof formData.price === 'string') {
+      const n = parseFloat(formData.price);
+      if (!Number.isNaN(n)) onFieldChange('price', n);
+    }
+    if (typeof formData.shipping_cost === 'string') {
+      const n = parseFloat(formData.shipping_cost);
+      if (!Number.isNaN(n)) onFieldChange('shipping_cost', n);
+    }
+  });
 </script>
 
 <div class="space-y-3">
   <!-- Price Input with Suggestions -->
   <div>
     <PriceInput
-      bind:value={formData.price}
+      bind:value={(formData.price as unknown as string)}
       label={i18n.sell_priceLabel()}
       error={showError('price') ? errors.price : ''}
       required
-      suggestion={priceSuggestion}
-      onchange={() => onFieldChange('price', formData.price)}
+      
       name="price"
     />
     
@@ -95,12 +106,12 @@
   <!-- Shipping Cost -->
   <div>
     <PriceInput
-      bind:value={formData.shipping_cost}
+      bind:value={(formData.shipping_cost as unknown as string)}
       label={i18n.sell_shippingCostLabel()}
       error={showError('shipping_cost') ? errors.shipping_cost : ''}
       placeholder="0.00"
       name="shipping_cost"
-      onchange={() => onFieldChange('shipping_cost', formData.shipping_cost)}
+      
     />
     <p class="text-xs text-[color:var(--text-muted)] mt-1">
       {i18n.sell_freeShippingAttractsBuyers()}

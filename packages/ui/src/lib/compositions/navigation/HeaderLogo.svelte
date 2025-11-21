@@ -28,9 +28,9 @@
 
   // Tech startup typography using design system tokens - balanced with header elements
   const logoClasses = {
-    sm: 'text-xl sm:text-2xl font-semibold leading-tight tracking-tight',
-    md: 'text-xl sm:text-2xl md:text-3xl font-semibold leading-tight tracking-tight',
-    lg: 'text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight tracking-tight'
+    sm: 'text-xl sm:text-2xl font-semibold leading-[var(--leading-tight)] tracking-tight',
+    md: 'text-xl sm:text-2xl md:text-3xl font-semibold leading-[var(--leading-tight)] tracking-tight',
+    lg: 'text-2xl sm:text-3xl md:text-4xl font-semibold leading-[var(--leading-tight)] tracking-tight'
   };
 
   const subtitleClasses = {
@@ -42,7 +42,7 @@
 
 <a
   href="/"
-  class="flex {subtitle ? 'flex-col items-start' : 'items-center'} no-underline hover:no-underline group transition-opacity duration-200"
+  class="flex {subtitle ? 'flex-col items-start' : 'items-center justify-center'} no-underline hover:no-underline group transition-opacity duration-200"
   bind:this={logoRef}
 >
   <span class="{logoClasses[size]} text-[color:var(--text-primary)] group-hover:text-[color:var(--text-secondary)] transition-colors duration-200">

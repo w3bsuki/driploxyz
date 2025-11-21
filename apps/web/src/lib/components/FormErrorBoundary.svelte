@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import { enhance } from '$app/forms';
-  import { type ErrorDetails } from '$lib/utils/error-handling.svelte';
+  import { type ErrorDetails, ErrorType, ErrorSeverity } from '$lib/utils/error-handling.svelte';
   import { toast } from '@repo/ui';
   import ErrorBoundary from './ErrorBoundary.svelte';
 
@@ -27,7 +27,7 @@
   // Handle form submission errors
   function handleFormError(error: ErrorDetails) {
     // Parse form validation errors
-    if (error.type === 'VALIDATION' && error.context?.fields) {
+    if (error.type === ErrorType.VALIDATION && error.context?.fields) {
       formErrors = error.context.fields as Record<string, string[]>;
 
       // Focus first error field if auto-focus enabled
@@ -62,19 +62,19 @@
 
         if (result.type === 'failure') {
           // Handle validation errors
-          if (result.data?.errors) {
-            formErrors = result.data.errors;
+          if (result.data?.errors && typeof result.data.errors === 'object') {
+            formErrors = result.data.errors as Record<string, string[]>;
 
             // Show general error message
-            if (result.data.message) {
+            if (typeof result.data.message === 'string') {
               toast.error(result.data.message);
             }
           } else {
             // Handle general form errors
-            const errorMessage = result.data?.message || 'Form submission failed';
+            const errorMessage = typeof result.data?.message === 'string' ? result.data.message : 'Form submission failed';
             handleFormError({
-              type: 'VALIDATION',
-              severity: 'MEDIUM',
+              type: ErrorType.VALIDATION,
+              severity: ErrorSeverity.MEDIUM,
               message: errorMessage,
               userMessage: errorMessage,
               retryable: true,
@@ -84,8 +84,8 @@
         } else if (result.type === 'error') {
           // Handle server errors
           handleFormError({
-            type: 'SERVER',
-            severity: 'HIGH',
+            type: ErrorType.SERVER,
+            severity: ErrorSeverity.HIGH,
             message: result.error?.message || 'Server error',
             userMessage: 'Something went wrong. Please try again.',
             retryable: true,
@@ -103,7 +103,8 @@
 
   // Check if field has error
   function hasFieldError(fieldName: string): boolean {
-    return !!(formErrors[fieldName]?.length > 0);
+    const errs = formErrors[fieldName];
+    return Array.isArray(errs) && errs.length > 0;
   }
 
 
@@ -198,38 +199,4 @@
 
 <style>
   /* Field error styling that can be inherited by child forms */
-  :global(.field-error) {
-    border-color: var(--status-error-border) !important;
-    background-color: var(--status-error-bg);
-  }
-
-  :global(.field-error:focus) {
-    box-shadow: 0 0 0 2px var(--status-error-border);
-  }
-
-  :global(.field-error-message) {
-    color: var(--status-error-text);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-    display: flex;
-    align-items-start;
-    gap: 0.25rem;
-  }
-
-  :global(.field-error-icon) {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    margin-top: 0.125rem;
-  }
-
-  /* Form submission loading state */
-  :global(.form-submitting) {
-    pointer-events: none;
-    opacity: 0.6;
-  }
-
-  :global(.form-submitting button[type="submit"]) {
-    cursor: not-allowed;
-  }
 </style>

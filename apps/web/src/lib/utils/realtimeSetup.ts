@@ -38,7 +38,6 @@ export function setupRealtimeServices(_supabase: SupabaseClient<Database>) {
   */
 }
 
-// Export services and stores for components to use
-// export { realtimeService, realtimeStore } from '../services/realtime.svelte';
+// Export stores for components to use
 export { favoritesActions, favoritesStore } from '../stores/favorites.svelte';
 export { followStoreInstance as followActions, followStoreInstance as followStore } from '../stores/follow.svelte';

@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import * as i18n from '@repo/i18n';
 	import { SEOMetaTags } from '@repo/ui';
-	import type { PageData } from './$types';
-
-	let { data }: { data: PageData } = $props();
+    
 
 	const pageTitle = 'Help Center - Driplo Support';
 	const pageDescription = 'Get help with buying, selling, and using Driplo. Find answers to common questions, contact support, and learn how to make the most of your experience.';
@@ -33,7 +30,7 @@
 			<input
 				type="search"
 				placeholder="Search for help..."
-				class="w-full px-6 py-4 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+				class="w-full px-6 py-4 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-transparent"
 			/>
 		</div>
 	</div>
@@ -45,7 +42,7 @@
 		<h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Quick Help</h2>
 		<div class="grid md:grid-cols-3 gap-6">
 			<a href="/help#buying" class="block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
-				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+				<div class="w-12 h-12 bg-[var(--surface-brand-strong)]/10 rounded-lg flex items-center justify-center mb-4">
 					<span class="text-2xl">🛍️</span>
 				</div>
 				<h3 class="text-lg font-semibold text-gray-900 mb-2">Buying on Driplo</h3>
@@ -59,7 +56,7 @@
 				<p class="text-gray-600 text-sm">List items, manage sales, and grow your business</p>
 			</a>
 			<a href="/help#account" class="block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
-				<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+				<div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center mb-4">
 					<span class="text-2xl">👤</span>
 				</div>
 				<h3 class="text-lg font-semibold text-gray-900 mb-2">Account & Settings</h3>
@@ -78,28 +75,28 @@
 				<h3 class="text-xl font-semibold text-gray-900 mb-4">How to Buy</h3>
 				<ol class="space-y-3">
 					<li class="flex gap-3">
-						<span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">1</span>
+						<span class="flex-shrink-0 w-6 h-6 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center text-sm font-semibold">1</span>
 						<div>
 							<p class="font-medium text-gray-900">Browse and Find Items</p>
 							<p class="text-gray-600 text-sm">Use search, categories, and filters to discover items you love</p>
 						</div>
 					</li>
 					<li class="flex gap-3">
-						<span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">2</span>
+						<span class="flex-shrink-0 w-6 h-6 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center text-sm font-semibold">2</span>
 						<div>
 							<p class="font-medium text-gray-900">Check Item Details</p>
 							<p class="text-gray-600 text-sm">Review photos, descriptions, condition, and seller information</p>
 						</div>
 					</li>
 					<li class="flex gap-3">
-						<span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">3</span>
+						<span class="flex-shrink-0 w-6 h-6 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center text-sm font-semibold">3</span>
 						<div>
 							<p class="font-medium text-gray-900">Purchase Securely</p>
 							<p class="text-gray-600 text-sm">Use our secure checkout with buyer protection</p>
 						</div>
 					</li>
 					<li class="flex gap-3">
-						<span class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">4</span>
+						<span class="flex-shrink-0 w-6 h-6 bg-[var(--brand-primary-strong)] text-white rounded-full flex items-center justify-center text-sm font-semibold">4</span>
 						<div>
 							<p class="font-medium text-gray-900">Track Your Order</p>
 							<p class="text-gray-600 text-sm">Monitor shipping and confirm receipt when your item arrives</p>
@@ -222,21 +219,21 @@
 				</p>
 				<div class="space-y-3">
 					<div class="flex gap-3">
-						<span class="text-blue-600 text-xl">📦</span>
+						<span class="text-[var(--brand-primary-strong)] text-xl">📦</span>
 						<div>
 							<p class="font-medium text-gray-900">Easy Shipping</p>
 							<p class="text-gray-600 text-sm">Print shipping labels directly from your dashboard</p>
 						</div>
 					</div>
 					<div class="flex gap-3">
-						<span class="text-blue-600 text-xl">🚚</span>
+						<span class="text-[var(--brand-primary-strong)] text-xl">🚚</span>
 						<div>
 							<p class="font-medium text-gray-900">Multiple Options</p>
 							<p class="text-gray-600 text-sm">Choose from standard, express, or local pickup</p>
 						</div>
 					</div>
 					<div class="flex gap-3">
-						<span class="text-blue-600 text-xl">📍</span>
+						<span class="text-[var(--brand-primary-strong)] text-xl">📍</span>
 						<div>
 							<p class="font-medium text-gray-900">Tracking Included</p>
 							<p class="text-gray-600 text-sm">Both you and the buyer can track the shipment</p>
@@ -316,12 +313,12 @@
 		</p>
 		<div class="grid md:grid-cols-3 gap-6 mb-12">
 			<div class="bg-white p-6 rounded-xl shadow-sm">
-				<div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-12 h-12 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-2xl">💬</span>
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Live Chat</h3>
 				<p class="text-gray-600 text-sm mb-4">Chat with our support team in real-time</p>
-				<button class="text-blue-600 font-medium text-sm hover:text-blue-700" aria-label="Start live chat with support team">Start Chat →</button>
+				<button class="text-[var(--brand-primary-strong)] font-medium text-sm hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]" aria-label="Start live chat with support team">Start Chat →</button>
 			</div>
 			<div class="bg-white p-6 rounded-xl shadow-sm">
 				<div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -329,15 +326,15 @@
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Email Support</h3>
 				<p class="text-gray-600 text-sm mb-4">Get help via email within 24 hours</p>
-				<a href="mailto:support@driplo.xyz" class="text-blue-600 font-medium text-sm hover:text-blue-700">Email Us →</a>
+				<a href="mailto:support@driplo.xyz" class="text-[var(--brand-primary-strong)] font-medium text-sm hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">Email Us →</a>
 			</div>
 			<div class="bg-white p-6 rounded-xl shadow-sm">
-				<div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-2xl">📚</span>
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Help Articles</h3>
 				<p class="text-gray-600 text-sm mb-4">Browse our comprehensive help articles</p>
-				<a href="/help/articles" class="text-blue-600 font-medium text-sm hover:text-blue-700">Browse Articles →</a>
+				<a href="/help/articles" class="text-[var(--brand-primary-strong)] font-medium text-sm hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">Browse Articles →</a>
 			</div>
 		</div>
 	</div>

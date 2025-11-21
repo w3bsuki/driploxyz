@@ -33,6 +33,18 @@ export interface Seller extends Profile {
   avatar?: string;        // Alias for avatar_url for component compatibility
 }
 
+// Lightweight variant accepted by UI components where full Profile is unnecessary
+export type SellerLike = Pick<Seller, 'id' | 'username' | 'full_name' | 'avatar_url'> & {
+  // Common optional fields used in cards/banners
+  is_verified?: boolean;
+  verified?: boolean; // allow alternative naming, normalized in components
+  total_products?: number;
+  average_rating?: number;
+  account_type?: string;
+  name?: string;
+  avatar?: string;
+};
+
 // Replace manual interfaces with Supabase types as single source of truth
 export type Category = Tables<'categories'>;
 export type Order = Tables<'orders'>;

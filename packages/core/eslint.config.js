@@ -1,7 +1,7 @@
-import { config } from '@repo/eslint-config/index.js';
+import shared from '@repo/eslint-config/index.js';
 
 export default [
-	...config.map(cfg => ({
+	...shared.map(cfg => ({
 		...cfg,
 		languageOptions: {
 			...cfg.languageOptions,

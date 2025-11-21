@@ -8,8 +8,8 @@
 import { browser } from '$app/environment';
 import { env as publicEnv } from '$env/dynamic/public';
 
-// Helper function to safely get OAuth environment variables
-async function getOAuthEnvVars() {
+// Helper function to safely get OAuth environment variables (synchronous)
+function getOAuthEnvVars() {
   // Use dynamic public env to allow optional keys without needing static typing declarations
   return {
     PUBLIC_GOOGLE_CLIENT_ID: publicEnv.PUBLIC_GOOGLE_CLIENT_ID,
@@ -38,16 +38,16 @@ export interface OAuthConfig {
 /**
  * Get available OAuth providers based on environment variables
  */
-export async function getOAuthProviders(): Promise<OAuthProvider[]> {
+export function getOAuthProviders(): OAuthProvider[] {
   const providers: OAuthProvider[] = [];
-  const envVars = await getOAuthEnvVars();
+  const envVars = getOAuthEnvVars();
 
   if (envVars.PUBLIC_GOOGLE_CLIENT_ID) {
     providers.push({
       id: 'google',
       name: 'Google',
       icon: '🔍',
-      color: 'bg-blue-600 hover:bg-blue-700',
+      color: 'bg-zinc-900 hover:bg-zinc-800',
       enabled: true
     });
   }
@@ -57,7 +57,7 @@ export async function getOAuthProviders(): Promise<OAuthProvider[]> {
       id: 'facebook',
       name: 'Facebook',
       icon: '📘',
-      color: 'bg-blue-700 hover:bg-blue-800',
+      color: 'bg-zinc-900 hover:bg-zinc-800',
       enabled: true
     });
   }
@@ -67,7 +67,7 @@ export async function getOAuthProviders(): Promise<OAuthProvider[]> {
       id: 'github',
       name: 'GitHub',
       icon: '🐙',
-      color: 'bg-gray-800 hover:bg-gray-900',
+      color: 'bg-zinc-900 hover:bg-zinc-800',
       enabled: true
     });
   }
@@ -78,8 +78,8 @@ export async function getOAuthProviders(): Promise<OAuthProvider[]> {
 /**
  * Check if any OAuth providers are configured
  */
-export async function hasOAuthProviders(): Promise<boolean> {
-  const providers = await getOAuthProviders();
+export function hasOAuthProviders(): boolean {
+  const providers = getOAuthProviders();
   return providers.length > 0;
 }
 
@@ -193,10 +193,10 @@ export const OAUTH_PROVIDER_CONFIG = {
   facebook: {
     name: 'Continue with Facebook',
     icon: '/icons/facebook.svg',
-    bgColor: 'bg-blue-600',
+    bgColor: 'bg-zinc-900',
     textColor: 'text-white',
-    borderColor: 'border-blue-600',
-    hoverBg: 'hover:bg-blue-700'
+    borderColor: 'border-zinc-900',
+    hoverBg: 'hover:bg-zinc-800'
   },
   github: {
     name: 'Continue with GitHub',
@@ -211,9 +211,9 @@ export const OAUTH_PROVIDER_CONFIG = {
 /**
  * Validate OAuth configuration
  */
-export async function validateOAuthConfig(): Promise<{ valid: boolean; errors: string[] }> {
+export function validateOAuthConfig(): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  const envVars = await getOAuthEnvVars();
+  const envVars = getOAuthEnvVars();
 
   // Check for required Supabase config
   if (!envVars.PUBLIC_GOOGLE_CLIENT_ID && !envVars.PUBLIC_FACEBOOK_CLIENT_ID && !envVars.PUBLIC_GITHUB_CLIENT_ID) {

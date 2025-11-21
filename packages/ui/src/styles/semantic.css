@@ -145,7 +145,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-50);
-  background-color: var(--modal-overlay);
+  background-color: var(--modal-overlay-bg);
   backdrop-filter: blur(4px);
 }
 

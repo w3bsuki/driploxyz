@@ -43,7 +43,7 @@
       placeholder: '@your_revolut_tag',
       hint: 'Your Revolut tag should start with @ (e.g., @username)',
       recommended: true,
-      color: 'bg-gradient-to-br from-blue-600 to-indigo-700'
+      color: 'bg-zinc-900'
     },
     {
       type: 'paypal',
@@ -53,7 +53,7 @@
       svgIcon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.419a.641.641 0 01.633-.542h7.26c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19a.641.641 0 00-.633.542l-1.259 6.934a.641.641 0 01-.633.542zm7.392-17.15h-4.79L7.69 15.123h2.022c3.359 0 5.632-1.469 6.276-4.715.32-1.61.094-2.81-.65-3.478-.665-.596-1.732-.91-3.08-.91l.21-1.833z"/></svg>`,
       placeholder: 'your-email@example.com',
       hint: 'Use the email address associated with your PayPal account',
-      color: 'bg-gradient-to-br from-blue-500 to-sky-600'
+      color: 'bg-zinc-800'
     },
     {
       type: 'card',
@@ -63,7 +63,7 @@
       svgIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`,
       placeholder: 'Bank account or card details',
       hint: 'Include bank name, account number, or card details for transfers',
-      color: 'bg-gradient-to-br from-gray-700 to-gray-900'
+      color: 'bg-zinc-700'
     }
   ];
 

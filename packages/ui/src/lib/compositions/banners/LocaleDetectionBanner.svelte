@@ -1,17 +1,17 @@
 <script lang="ts">
-  import type { LanguageTag } from '@repo/i18n';
+  import type { Locale } from '@repo/i18n';
   
   interface Props {
-    detectedLocale: LanguageTag;
+    detectedLocale: Locale;
     detectedCountry?: string | null;
-    currentLocale: LanguageTag;
+    currentLocale: Locale;
     onAccept: () => void;
     onDismiss: () => void;
   }
   
   let { detectedLocale, detectedCountry, currentLocale, onAccept, onDismiss }: Props = $props();
   
-  const localeNames: Record<LanguageTag, string> = {
+  const localeNames: Record<Locale, string> = {
     en: 'English',
     bg: 'Български'
   };

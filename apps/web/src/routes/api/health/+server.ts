@@ -33,8 +33,8 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		
 		// Check auth service
 		try {
-			// Try to get session (won't fail if no session, just returns null)
-			const { error: authError } = await locals.supabase.auth.getSession();
+			// Validate via getUser() which contacts Auth server and verifies JWT
+			const { error: authError } = await locals.supabase.auth.getUser();
 			checks.auth = !authError;
 		} catch {
 			// Auth health check failed

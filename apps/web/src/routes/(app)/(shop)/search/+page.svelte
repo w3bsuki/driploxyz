@@ -1,28 +1,19 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchPageSearchBar, BottomNav, StickyFilterModal, AppliedFilterPills, type Product } from '@repo/ui';
+  import { 
+    ProductCard, 
+    Button, 
+    BottomNav, 
+    CategoryPills,
+    FilterDrawer,
+    SearchDropdownInput,
+    ProductCardSkeleton
+  } from '@repo/ui';
 
-  // Type definitions for category hierarchy
-  interface CategoryData {
-    id: string;
-    name: string;
-    level2?: Record<string, SubcategoryData>;
-  }
-
-  interface SubcategoryData {
-    id: string;
-    name: string;
-    level3?: SpecificCategoryData[];
-  }
-
-  interface SpecificCategoryData {
-    id: string;
-    name: string;
-    slug: string;
-  }
+  // Type definitions removed (no longer used)
 
   import { unreadCount } from '$lib/stores/notifications.svelte';
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/state';
+  import { page } from '$app/state';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
@@ -31,7 +22,6 @@
   import { browser } from '$app/environment';
   import { debounce } from '$lib/utils/debounce';
   import { getProductUrl } from '$lib/utils/seo-urls';
-  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   
   // Infinite scroll sentinel - properly managed with reactive cleanup
   let loadMoreTrigger = $state<HTMLDivElement | null>(null);
@@ -45,8 +35,9 @@
       return;
     }
 
-    intersectionObserver = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) loadMore();
+    intersectionObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting) loadMore();
     }, { rootMargin: '400px 0px' });
 
     intersectionObserver.observe(loadMoreTrigger);
@@ -63,170 +54,133 @@
   
   let { data }: Props = $props();
   
-  // Create client-side Supabase client for RPC calls
-  const supabase = createBrowserSupabaseClient();
-  
   // Initialize filter store with persistence
   const filterStore = createProductFilter();
   
   // Core UI state
-  let showStickyFilterModal = $state(false);
-  let showCategoryDropdown = $state(false);
+  let showFilterDrawer = $state(false);
   let searchQuery = $state('');
   let ariaLiveMessage = $state('');
 
   
   // Single derived filter state for performance
   let filters = $derived(filterStore.filters);
-  let pendingFilters = $derived(filterStore.pendingFilters);
   let previewFilteredProducts = $derived(filterStore.previewFilteredProducts);
 
   // Client-side script initialized
 
-  // Category hierarchy from server data
-  let categoryHierarchy = $derived.by(() => {
-    if (!data.categoryHierarchy || Object.keys(data.categoryHierarchy).length === 0) {
-      return {
-        categories: [],
-        subcategories: {},
-        specifics: {}
-      };
-    }
-    
-    const categories: Array<{key: string, name: string, icon: string, id: string}> = [];
-    const subcategories: Record<string, Array<{key: string, name: string, icon: string, id: string}>> = {};
-    const specifics: Record<string, Array<{key: string, name: string, icon: string, id: string}>> = {};
+  // Popular brands
+  const popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gap', 'Levi\'s', 'North Face'];
 
-    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, CategoryData]) => {
-      categories.push({
-        key: slug,
-        name: translateCategory(catData.name),
-        icon: getCategoryIcon(catData.name),
-        id: catData.id
-      });
-
-      if (catData.level2) {
-        const subcatArray: Array<{key: string, name: string, icon: string, id: string}> = [];
-        Object.entries(catData.level2).forEach(([l2Slug, l2Data]: [string, SubcategoryData]) => {
-          const cleanSlug = l2Slug.replace(`${slug}-`, '').replace('-new', '');
-          subcatArray.push({
-            key: cleanSlug,
-            name: translateCategory(l2Data.name),
-            icon: getCategoryIcon(l2Data.name),
-            id: l2Data.id
-          });
-
-          if (l2Data.level3 && Array.isArray(l2Data.level3)) {
-            const level3Key = `${slug}-${cleanSlug}`;
-            specifics[level3Key] = l2Data.level3.map((l3: SpecificCategoryData) => ({
-              key: l3.slug.replace(`${slug}-`, ''),
-              name: translateCategory(l3.name),
-              icon: getCategoryIcon(l3.name),
-              id: l3.id
-            }));
-          }
-        });
-        subcategories[slug] = subcatArray;
-      }
-    });
-
-    const order = ['women', 'men', 'kids', 'unisex'];
-    const sortedCategories = [...categories].sort((a, b) => {
-      const aIndex = order.indexOf(a.key);
-      const bIndex = order.indexOf(b.key);
-      if (aIndex === -1 && bIndex === -1) return 0;
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return -1;
-      return aIndex - bIndex;
-    });
-
-    const hierarchy = {
-      categories: sortedCategories,
-      subcategories,
-      specifics
-    };
-
-    return hierarchy;
-  });
-
-  // Transform categoryHierarchy to MegaMenuCategories format
-  let megaMenuData = $derived.by(() => {
-    if (!categoryHierarchy.categories || categoryHierarchy.categories.length === 0) {
+  // L1 Categories for pills (Women/Men/Kids/Unisex)
+  let categoryPillsData = $derived.by(() => {
+    if (!data.categories || data.categories.length === 0) {
       return [];
     }
-
-    const categories = categoryHierarchy.categories.map(cat => {
-      const l1Category = {
-        id: cat.id,
-        name: cat.name,
-        slug: cat.key,
-        level: 1,
-        parent_id: null,
-        sort_order: 1,
-        is_active: true,
-        description: `${cat.name} fashion and accessories`,
-        image_url: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        product_count: 0,
-        children: []
-      };
-
-      // Get subcategories (level 2) for this main category
-      if (categoryHierarchy.subcategories[cat.key]) {
-        l1Category.children = categoryHierarchy.subcategories[cat.key].map(subcat => {
-          const l2Category = {
-            id: subcat.id,
-            name: subcat.name,
-            slug: subcat.key,
-            level: 2,
-            parent_id: cat.id,
-            sort_order: 1,
-            is_active: true,
-            description: `${cat.name} ${subcat.name}`,
-            image_url: null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            product_count: 0,
-            children: []
-          };
-
-          // Get specific items (level 3) for this subcategory
-          const level3Key = `${cat.key}-${subcat.key}`;
-          if (categoryHierarchy.specifics[level3Key]) {
-            l2Category.children = categoryHierarchy.specifics[level3Key].map(specific => ({
-              id: specific.id,
-              name: specific.name,
-              slug: specific.key,
-              level: 3,
-              parent_id: subcat.id,
-              sort_order: 1,
-              is_active: true,
-              description: `${cat.name} ${specific.name}`,
-              image_url: null,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              product_count: 0
-            }));
-          }
-
-          return l2Category;
-        });
-      }
-
-      return l1Category;
-    });
-
-    return categories;
+    
+    return data.categories.map(cat => ({
+      id: cat.id,
+      name: translateCategory(cat.name),
+      slug: cat.slug,
+      icon: getCategoryIcon(cat.name),
+      count: undefined // Could add product counts if needed
+    }));
   });
 
-  // Main categories for quick pills with real product counts
-  const mainCategories = $derived([
-    { key: 'women', label: i18n.category_women(), icon: '👗', product_count: data.categoryProductCounts?.['women'] || 0 },
-    { key: 'men', label: i18n.category_men(), icon: '👔', product_count: data.categoryProductCounts?.['men'] || 0 },
-    { key: 'kids', label: i18n.category_kids(), icon: '👶', product_count: data.categoryProductCounts?.['kids'] || 0 },
-    { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', product_count: data.categoryProductCounts?.['unisex'] || 0 }
-  ]);
+  // Resolve categoryHierarchy once for dynamic L2/L3 pills
+  type L3 = { id: string; name: string; slug: string };
+  type L2 = { id: string; name: string; level3?: L3[] };
+  type L1 = { id: string; name: string; slug: string; level2?: Record<string, L2> };
+  let categoryHierarchyData = $state<Record<string, L1>>({});
+
+  $effect(() => {
+    if (data.categoryHierarchy) {
+      Promise.resolve(data.categoryHierarchy).then((h: Record<string, L1>) => {
+        categoryHierarchyData = h || {};
+      });
+    }
+  });
+
+  // Compute which pills to show based on selected filters
+  type UIPill = { id: string; name: string; slug: string; count?: number };
+  const pillsMode: 'L1' | 'L2' | 'L3' = $derived.by(() => {
+    if (filters.category && !filters.subcategory && !filters.specific) return 'L2';
+    if (filters.category && filters.subcategory && !filters.specific) return 'L3';
+    return 'L1';
+  });
+
+  const currentPills: UIPill[] = $derived.by(() => {
+    if (pillsMode === 'L1') {
+      return categoryPillsData;
+    }
+    const l1Slug = filters.category as string | null;
+    if (!l1Slug) return categoryPillsData;
+    const l1Node = categoryHierarchyData[l1Slug];
+    if (!l1Node || !l1Node.level2) return categoryPillsData;
+
+    if (pillsMode === 'L2') {
+      const allowedL2 = new Set(['clothing', 'shoes', 'accessories', 'bags']);
+      return Object.entries(l1Node.level2)
+        .map(([l2Slug, l2Data]) => {
+          const cleanSlug = l2Slug.replace(`${l1Slug}-`, '').replace('-new', '');
+          return { id: l2Data.id, name: translateCategory(l2Data.name), slug: cleanSlug };
+        })
+        .filter((p) => allowedL2.has(p.slug));
+    }
+
+    // L3 mode
+    const subSlug = filters.subcategory as string | null;
+    let l2Match: L2 | undefined;
+    for (const [l2Slug, l2Data] of Object.entries(l1Node.level2)) {
+      const cleanSlug = l2Slug.replace(`${l1Slug}-`, '').replace('-new', '');
+      if (cleanSlug === subSlug) { l2Match = l2Data; break; }
+    }
+    if (!l2Match || !l2Match.level3) return [];
+    return (l2Match.level3 || []).map((l3) => ({
+      id: l3.id,
+      name: translateCategory(l3.name),
+      slug: l3.slug.replace(`${l1Slug}-`, '')
+    }));
+  });
+
+  const currentActiveSlug = $derived.by(() => {
+    if (pillsMode === 'L1') return filters.category;
+    if (pillsMode === 'L2') return filters.subcategory;
+    return filters.specific;
+  });
+
+  function handlePillSelect(slug: string | null) {
+    if (pillsMode === 'L1') {
+      if (slug === null) {
+        filterStore.updateMultipleFilters({ category: null, subcategory: null, specific: null });
+      } else {
+        filterStore.updateMultipleFilters({ category: slug, subcategory: null, specific: null });
+      }
+    } else if (pillsMode === 'L2') {
+      if (slug) filterStore.updateMultipleFilters({ subcategory: slug, specific: null });
+    } else if (pillsMode === 'L3') {
+      if (slug) filterStore.updateFilter('specific', slug);
+    }
+  }
+
+  
+  // Get all available brands from products
+  const availableBrands = $derived.by(() => {
+    const brands = new Set<string>();
+    filterStore.allProducts.forEach((p: any) => {
+      if (p.brand) brands.add(p.brand);
+    });
+    return Array.from(brands).sort();
+  });
+
+  // Get all available sizes from products
+  const availableSizes = $derived.by(() => {
+    const sizes = new Set<string>();
+    filterStore.allProducts.forEach((p: any) => {
+      if (p.size) sizes.add(p.size);
+    });
+    return Array.from(sizes);
+  });
   
   
   // Common sizes based on category
@@ -236,32 +190,67 @@
     kids: ['2T', '3T', '4T', '5-6', '7-8', '10-12'],
     default: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   };
-
-  // Popular brands
-  const popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gap', 'Levi\'s', 'North Face'];
-
-  // Available colors
-  const availableColors = [
-    'Black', 'White', 'Gray', 'Brown', 'Beige', 'Navy', 'Blue', 'Red',
-    'Pink', 'Purple', 'Green', 'Yellow', 'Orange', 'Gold', 'Silver', 'Multicolor'
-  ];
-
-  // Conditions
-  const conditions = [
-    { key: 'new', label: i18n.condition_new(), emoji: '✨' },
-    { key: 'like-new', label: i18n.condition_likeNew(), emoji: '💎' },
-    { key: 'good', label: i18n.condition_good(), emoji: '👍' },
-    { key: 'fair', label: i18n.condition_fair(), emoji: '👌' }
-  ];
   
+  // Get current sizes based on selected category, fallback to all available sizes
+  let currentSizes = $derived(
+    availableSizes.length > 0 
+      ? availableSizes 
+      : (commonSizes[filters.category as keyof typeof commonSizes] || commonSizes.default)
+  );
+  
+  // Get current brands
+  let currentBrands = $derived(availableBrands.length > 0 ? availableBrands : popularBrands);
+  
+  
+  // Define a minimal Product shape compatible with filter store
+  type ListProduct = {
+    id: string;
+    title?: string;
+    description?: string;
+    brand?: string;
+    price?: number;
+    size?: string;
+    condition?: string;
+    createdAt?: string;
+    main_category_name?: string;
+    subcategory_name?: string;
+    specific_category_name?: string;
+    images?: string[];
+    product_images?: { image_url: string }[];
+    seller_name?: string;
+    seller_rating?: number;
+    seller_avatar?: string;
+    seller_id?: string;
+    category_name?: string;
+  };
+
   // Initialize filters from server data - only needs to run once on mount
   let filtersInitialized = $state(false);
 
   $effect(() => {
-    if (!filtersInitialized && data.products) {
+  if (!filtersInitialized && data.products) {
       // Handle products array directly (no longer wrapped in Promise)
-      const products = Array.isArray(data.products) ? data.products : [];
-      filterStore.setProducts(products);
+      const products: ListProduct[] = (Array.isArray(data.products) ? data.products : []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description ?? '',
+        brand: p.brand ?? undefined,
+        price: typeof p.price === 'number' ? p.price : Number(p.price ?? 0),
+        size: p.size ?? undefined,
+        condition: p.condition ?? 'good',
+        createdAt: (p.created_at as string | null) ?? p.createdAt ?? new Date().toISOString(),
+        main_category_name: p.main_category_name || undefined,
+        subcategory_name: p.subcategory_name || undefined,
+        specific_category_name: p.specific_category_name || undefined,
+        // Ensure images are present in both formats expected by ProductCard/ProductImage
+        images: Array.isArray(p.images) && p.images.length
+          ? p.images
+          : (Array.isArray(p.product_images) ? p.product_images.map((img: any) => img.image_url) : []),
+        product_images: Array.isArray(p.product_images) && p.product_images.length
+          ? p.product_images
+          : (Array.isArray(p.images) ? p.images.map((url: string) => ({ image_url: url })) : [])
+      }));
+      filterStore.setProducts(products as any);
       filterStore.loadPersistedFilters();
 
       if (data.filters) {
@@ -303,14 +292,42 @@
   });
 
   
-  // Get current sizes based on selected category
-  let currentSizes = $derived(
-    commonSizes[filters.category as keyof typeof commonSizes] || commonSizes.default
+  // Get filtered products
+  let displayProducts: ListProduct[] = $derived(
+    filterStore.filteredProducts.map((p: any) => {
+      const images: string[] = Array.isArray(p.images) && p.images.length ? p.images : ['/placeholder-product.svg'];
+      const sellerName = p.seller?.username || p.seller_name || '';
+      return {
+        ...p,
+        // Ensure UI-required fields
+        images,
+        sellerName: sellerName === 'Unknown' ? '' : sellerName, // Don't show "Unknown"
+        sellerRating: typeof p.seller?.rating === 'number' ? p.seller.rating : (p.seller_rating ? Number(p.seller_rating) : 0),
+        sellerAvatar: p.seller?.avatar_url ?? p.seller_avatar ?? undefined,
+        sellerId: p.seller_id ?? p.sellerId ?? p.seller?.id ?? '',
+        createdAt: (p.created_at as string | null) ?? p.createdAt ?? new Date().toISOString(),
+        // Preserve category hierarchy for ProductCard
+        main_category_name: p.main_category_name ?? p.category_name ?? 'Uncategorized',
+        subcategory_name: p.subcategory_name ?? undefined,
+        specific_category_name: p.specific_category_name ?? undefined,
+        category_name: p.category_name ?? p.main_category_name ?? 'Uncategorized'
+    } as ListProduct;
+    })
   );
   
-  // Get current brands (using popular brands for now)
-  let currentBrands = $derived(popularBrands);
-  
+  // Map ensures fallback category name for cards - preserve all category fields
+  import type { Product as UIProduct } from '@repo/ui';
+  const displayProductsWithCategory: UIProduct[] = $derived(
+    (displayProducts.map(p => ({
+      ...p,
+      // Preserve full category hierarchy
+      main_category_name: p.main_category_name || p.category_name || 'Uncategorized',
+      subcategory_name: p.subcategory_name,
+      specific_category_name: p.specific_category_name,
+      category_name: p.category_name || p.main_category_name || 'Uncategorized'
+    })) as unknown) as UIProduct[]
+  );
+
   // Active filter count for badge (excluding search query)
   let activeFilterCount = $derived(
     [
@@ -324,50 +341,21 @@
       filters.sortBy !== 'relevance' ? 1 : 0
     ].reduce((sum, val) => sum + val, 0)
   );
-  
-  // Get filtered products
-  let displayProducts = $derived(
-    filterStore.filteredProducts.map(product => ({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: Number(product.price),
-      images: product.images?.length > 0 ? product.images : ['/placeholder-product.svg'],
-      product_images: product.product_images,
-      brand: product.brand,
-      size: product.size,
-      condition: product.condition as Product['condition'],
-      category: product.category?.name || 'Uncategorized',
-      main_category_name: product.main_category_name,
-      category_name: product.category_name || product.main_category_name,
-      subcategory_name: product.subcategory_name,
-      specific_category_name: product.specific_category_name,
-      sellerId: product.seller_id || product.seller?.id,
-      sellerName: product.seller?.username || 'Unknown',
-      sellerRating: product.seller?.rating ? Number(product.seller.rating) : null,
-      sellerAvatar: product.seller?.avatar_url,
-      sellerAccountType: product.sellerAccountType,
-      createdAt: product.created_at,
-      location: product.location || 'Unknown'
-    }))
-  );
-  
-  // Map ensures fallback category name for cards
-  const displayProductsWithCategory = $derived(
-    displayProducts.map(p => ({
-      ...p,
-      category_name: p.category_name || p.main_category_name || 'Uncategorized'
-    }))
-  );
 
   // Infinite scroll state
   let nextPage = $state((data.currentPage || 1) + 1);
   let hasMore = $state(!!data.hasMore);
   let loadingMore = $state(false);
+  let loadError = $state<string | null>(null);
+  let loadAbortController = $state<AbortController | null>(null);
 
   async function loadMore() {
     if (!browser || loadingMore || !hasMore) return;
+    // cancel any in-flight request
+    try { loadAbortController?.abort(); } catch {}
+    loadAbortController = new AbortController();
     loadingMore = true;
+    loadError = null;
     try {
       const params = new URLSearchParams();
       // Carry over filters
@@ -384,17 +372,25 @@
       params.set('page', String(nextPage));
       params.set('pageSize', String(data.pageSize || 50));
 
-      const res = await fetch(`/api/search?${params.toString()}`);
+      const res = await fetch(`/api/search?${params.toString()}` , { signal: loadAbortController.signal });
       if (res.ok) {
         const json = await res.json();
-        if (Array.isArray(json.products) && json.products.length > 0) {
-          filterStore.appendProducts(json.products);
+        // API returns { data, pagination } shape; support legacy { products }
+        const incoming = Array.isArray(json.products) ? json.products : Array.isArray(json.data) ? json.data : [];
+        if (incoming.length > 0) {
+          filterStore.appendProducts(incoming);
         }
-        hasMore = !!json.hasMore;
-        nextPage = (json.currentPage || nextPage) + 1;
+        // pagination flags from either shape
+        hasMore = json.hasMore ?? json.pagination?.hasMore ?? (incoming.length > 0);
+        nextPage = (json.currentPage || json.pagination?.page || nextPage) + 1;
+      } else if (res.status !== 499) {
+        loadError = 'Failed to load more products';
       }
     } catch (error) {
-      console.error('Failed to load more products:', error);
+      if ((error as any)?.name !== 'AbortError') {
+        console.error('Failed to load more products:', error);
+        loadError = 'Network error';
+      }
     }
     finally {
       loadingMore = false;
@@ -406,236 +402,39 @@
     filterStore.updateFilter('query', query);
   }, 300);
 
-
-  // Debounced search handler - moved to input event handler
+  // Search input handler
   function handleSearchInput(value: string) {
     searchQuery = value;
     handleSearchDebounced(value);
   }
-  
-  // Quick search for dropdown results
-  async function handleSearchPageQuickSearch(query: string): Promise<{ data: any[]; error: string | null }> {
-    if (!query?.trim() || !supabase) {
-      return { data: [], error: null };
-    }
 
-    try {
-      const { data: searchResults, error: searchError } = await supabase
-        .rpc('search_products_fast', {
-          query_text: query.trim(),
-          result_limit: 6
-        });
+  // L1 handler replaced by handlePillSelect (supports L1/L2/L3)
 
-      if (searchError) {
-        console.error('Quick search error:', searchError);
-        return { data: [], error: searchError.message };
-      }
-
-      // Transform data to match SearchDropdown expected format
-      const transformed = (searchResults || []).map((result: any) => ({
-        ...result,
-        images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
-      }));
-
-      return { data: transformed, error: null };
-    } catch (err) {
-      console.error('Quick search failed:', err);
-      return { data: [], error: 'Search failed' };
-    }
+  // Apply filters from drawer
+  function handleApplyFilters(newFilters: Record<string, any>) {
+    // Update all filters at once
+    const filterUpdate: any = {};
+    
+    if (newFilters.brand !== undefined) filterUpdate.brand = newFilters.brand || 'all';
+    if (newFilters.condition !== undefined) filterUpdate.condition = newFilters.condition || 'all';
+    if (newFilters.size !== undefined) filterUpdate.size = newFilters.size || 'all';
+    if (newFilters.minPrice !== undefined) filterUpdate.minPrice = newFilters.minPrice || '';
+    if (newFilters.maxPrice !== undefined) filterUpdate.maxPrice = newFilters.maxPrice || '';
+    if (newFilters.sortBy !== undefined) filterUpdate.sortBy = newFilters.sortBy || 'relevance';
+    
+    filterStore.updateMultipleFilters(filterUpdate);
+    showFilterDrawer = false;
   }
 
-  function handleCategorySelect(category: string | null) {
-    ariaLiveMessage = category ? `Selected category: ${category}` : 'Cleared category filter';
-    if (filters.category === category) {
-      // Deselect if same
-      filterStore.updateMultipleFilters({
-        category: null,
-        subcategory: null,
-        specific: null
-      });
-    } else {
-      // Select new category
-      filterStore.updateMultipleFilters({
-        category: category,
-        subcategory: null,
-        specific: null
-      });
-    }
-    // Reset loading state after a brief delay
-    setTimeout(() => {
-      ariaLiveMessage = '';
-    }, 300);
-  }
-
-  // Handle 3-level category selection from MegaMenuCategories
-  function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
-    showCategoryDropdown = false;
-
-    // Update filters based on the selected level and path
-    if (level === 1) {
-      // Level 1: Main category (women, men, kids, unisex)
-      filterStore.updateMultipleFilters({
-        category: categorySlug,
-        subcategory: null,
-        specific: null
-      });
-      ariaLiveMessage = `Selected category: ${categorySlug}`;
-    } else if (level === 2) {
-      // Level 2: Subcategory (clothing, shoes, accessories, etc.)
-      const mainCategory = path[0];
-      filterStore.updateMultipleFilters({
-        category: mainCategory,
-        subcategory: categorySlug,
-        specific: null
-      });
-      ariaLiveMessage = `Selected subcategory: ${categorySlug}`;
-    } else if (level === 3) {
-      // Level 3: Specific items (t-shirts, dresses, sneakers, etc.)
-      const mainCategory = path[0];
-      const subcategory = path[1];
-      filterStore.updateMultipleFilters({
-        category: mainCategory,
-        subcategory: subcategory,
-        specific: categorySlug
-      });
-      ariaLiveMessage = `Selected specific category: ${categorySlug}`;
-    }
-
-    // Reset loading state after a brief delay
-    setTimeout(() => {
-      ariaLiveMessage = '';
-    }, 300);
-  }
-
-
-  // Click outside handler - proper DOM side effect management
-  $effect(() => {
-    if (!showCategoryDropdown) return;
-
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.search-dropdown-container')) {
-        showCategoryDropdown = false;
-      }
-    };
-
-    // Use microtask to ensure dropdown is rendered before adding listener
-    queueMicrotask(() => {
-      document.addEventListener('click', handleClick);
-    });
-
-    return () => document.removeEventListener('click', handleClick);
-  });
-  
-  function handleQuickCondition(conditionKey: string) {
-    // Toggle off if already selected
-    if (filters.condition === conditionKey) {
-      filterStore.updateFilter('condition', 'all');
-    } else {
-      filterStore.updateFilter('condition', conditionKey);
-    }
-  }
-  
+  // Clear all filters
   function clearAllFilters() {
     filterStore.resetFilters();
     searchQuery = '';
   }
+
+  // Removed unused handleRemoveAppliedFilter (applied pills UI removed)
+
   
-  function handleSortChange(e: Event) {
-    const value = (e.target as HTMLSelectElement).value;
-    filterStore.updateFilter('sortBy', value);
-  }
-
-  // Sticky filter modal handlers
-  function handlePendingFilterChange(key: string, value: string | null) {
-    filterStore.updatePendingFilter(key, value);
-  }
-
-  function handleApplyFilters() {
-    filterStore.applyPendingFilters();
-    showStickyFilterModal = false;
-  }
-
-  function handleCancelFilters() {
-    filterStore.resetPendingFilters();
-    showStickyFilterModal = false;
-  }
-
-  function handleClearFilters() {
-    filterStore.resetFilters();
-    searchQuery = '';
-  }
-
-  function handleRemoveAppliedFilter(key: string) {
-    if (key === 'minPrice') {
-      filterStore.updateFilter('minPrice', '');
-    } else if (key === 'maxPrice') {
-      filterStore.updateFilter('maxPrice', '');
-    } else if (key === 'category') {
-      filterStore.updateMultipleFilters({
-        category: null,
-        subcategory: null,
-        specific: null
-      });
-    } else if (key === 'subcategory') {
-      filterStore.updateMultipleFilters({
-        subcategory: null,
-        specific: null
-      });
-    } else if (key === 'specific') {
-      filterStore.updateFilter('specific', null);
-    } else if (key === 'sortBy') {
-      filterStore.updateFilter('sortBy', 'relevance');
-    } else {
-      filterStore.updateFilter(key as keyof typeof filters, 'all');
-    }
-  }
-
-  // Handler for SearchPageSearchBar category selection
-  function handleSearchPageCategorySelect(categorySlug: string) {
-    ariaLiveMessage = categorySlug ? `Selected category: ${categorySlug}` : 'Cleared category filter';
-
-    // Use existing MegaMenu category selection logic
-    // Extract category path from the megaMenuData to determine level and path
-    let level = 1;
-    let path: string[] = [categorySlug];
-
-    // Find the category in megaMenuData to determine its level and path
-    for (const l1Cat of megaMenuData) {
-      if (l1Cat.slug === categorySlug) {
-        level = 1;
-        path = [categorySlug];
-        break;
-      }
-      for (const l2Cat of l1Cat.children || []) {
-        if (l2Cat.slug === categorySlug) {
-          level = 2;
-          path = [l1Cat.slug, categorySlug];
-          break;
-        }
-        for (const l3Cat of l2Cat.children || []) {
-          if (l3Cat.slug === categorySlug) {
-            level = 3;
-            path = [l1Cat.slug, l2Cat.slug, categorySlug];
-            break;
-          }
-        }
-      }
-    }
-
-    handleMegaMenuCategorySelect(categorySlug, level, path);
-  }
-
-  // Handler for SearchPageSearchBar filter changes
-  function handleSearchPageFilterChange(key: string, value: string | null) {
-    if (key === 'category') {
-      handleCategorySelect(value);
-    } else if (key === 'condition') {
-      handleQuickCondition(value);
-    } else {
-      filterStore.updateFilter(key as keyof typeof filters, value);
-    }
-  }
 
   
   
@@ -659,253 +458,156 @@
   <title>Search - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
+<div class="search-page min-h-screen pb-20 sm:pb-0">
   
   <!-- ARIA Live Region for announcements -->
   <div aria-live="polite" aria-atomic="true" class="sr-only">
     {ariaLiveMessage}
   </div>
 
-  <!-- Search Page Search Bar with Category Hierarchy Dropdown -->
-  <SearchPageSearchBar
-    mode="full"
-    bind:searchValue={searchQuery}
-    megaMenuData={megaMenuData}
-    mainCategories={mainCategories}
-    conditionFilters={conditions}
-    appliedFilters={filters}
-    availableSizes={currentSizes}
-    availableColors={availableColors}
-    availableBrands={popularBrands}
-    currentResultCount={displayProducts.length}
-    totalResultCount={filterStore.allProducts.length}
-    {i18n}
-    onSearch={handleSearchInput}
-    onQuickSearch={handleSearchPageQuickSearch}
-    enableQuickResults={true}
-    onCategorySelect={handleSearchPageCategorySelect}
-    onFilterChange={handleSearchPageFilterChange}
-    onFilterRemove={handleRemoveAppliedFilter}
-    onClearAllFilters={handleClearFilters}
-  />
-  
-  <!-- Clean Filter Bar Above Products -->
-  <div class="bg-white/95 backdrop-blur-sm border-b border-gray-100">
-    <div class="px-2 sm:px-4 lg:px-6 py-3">
-      
-      <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->
-      <div class="sm:hidden mb-3 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-900">
-            {displayProducts.length} items
-          </span>
-          <!-- Applied Filter Pills (mobile - inline) -->
-          {#if activeFilterCount > 0}
-            <AppliedFilterPills
-              filters={filters}
-              categoryLabels={{
-                women: i18n.category_women(),
-                men: i18n.category_men(),
-                kids: i18n.category_kids(),
-                unisex: i18n.category_unisex()
-              }}
-              onRemoveFilter={handleRemoveAppliedFilter}
-              onClearAll={handleClearFilters}
-              clearAllLabel={i18n.search_clearAllFilters()}
-              class="justify-start"
-              maxDisplay={3}
-              showMore={false}
-            />
-          {/if}
+  <!-- Sticky Search Container -->
+  <div class="sticky-header sticky top-[var(--app-header-offset)] z-40">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-[var(--gutter-xxs)] sm:py-[var(--gutter-xs)]">
+
+      <!-- Search Bar with Dropdown -->
+      <div class="py-0 flex items-center gap-2">
+        <!-- Filter button (left) -->
+        <button
+          type="button"
+          class="search-filter-btn inline-flex items-center justify-center h-11 w-11 shrink-0 rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] hover:bg-[color:var(--surface-muted)] hover:border-[color:var(--border-emphasis)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-primary)] transition-all active:scale-95"
+          aria-label="Open filters"
+          onclick={() => (showFilterDrawer = true)}
+        >
+          <svg class="w-5 h-5 text-[color:var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h18M6 12h12M10 19h4" />
+          </svg>
+        </button>
+
+        <!-- Search with dropdown -->
+        <div class="flex-1">
+          <SearchDropdownInput
+            bind:searchValue={searchQuery}
+            onInput={handleSearchInput}
+            onSearch={(query) => handleSearchInput(query)}
+            placeholder={i18n.search_placeholder ? i18n.search_placeholder() : 'Search for clothes, brands...'}
+            searchId="search-page-input"
+          />
         </div>
-        <!-- Mobile Sticky Filter Modal -->
-        <StickyFilterModal 
-            bind:open={showStickyFilterModal}
-            sections={[
-              {
-                key: 'size',
-                label: i18n.filter_size(),
-                type: 'pills',
-                value: pendingFilters.size,
-                options: currentSizes.map(size => ({ value: size, label: size }))
-              },
-              {
-                key: 'condition', 
-                label: i18n.filter_condition(),
-                type: 'pills',
-                value: pendingFilters.condition,
-                options: conditions.map(c => ({ value: c.key, label: c.label, icon: c.emoji }))
-              },
-              {
-                key: 'brand',
-                label: i18n.filter_brand(),
-                type: 'pills',
-                value: pendingFilters.brand,
-                options: currentBrands.map(brand => ({ value: brand, label: brand }))
-              },
-              {
-                key: 'color',
-                label: i18n.filter_color ? i18n.filter_color() : 'Color',
-                type: 'pills',
-                value: pendingFilters.color,
-                options: availableColors.map(color => ({ value: color.toLowerCase(), label: color, color: color.toLowerCase() }))
-              },
-              {
-                key: 'price',
-                label: i18n.filter_priceRange(),
-                type: 'range',
-                minValue: pendingFilters.minPrice,
-                maxValue: pendingFilters.maxPrice,
-                placeholder: { min: i18n.search_min(), max: i18n.search_max() }
-              },
-              {
-                key: 'sortBy',
-                label: i18n.filter_sortBy(),
-                type: 'pills', 
-                value: pendingFilters.sortBy,
-                options: [
-                  { value: 'relevance', label: i18n.search_relevance() },
-                  { value: 'newest', label: i18n.filter_newest() },
-                  { value: 'price-low', label: i18n.filter_priceLowToHigh() },
-                  { value: 'price-high', label: i18n.filter_priceHighToLow() }
-                ]
-              }
-            ]}
-            appliedFilters={filters}
-            pendingFilters={pendingFilters}
-            previewResultCount={previewFilteredProducts.length}
-            totalResultCount={filterStore.allProducts.length}
-            title={i18n.search_filters()}
-            applyLabel={i18n.filter_apply()}
-            cancelLabel={i18n.common_cancel()}
-            clearLabel={i18n.filter_reset()}
-            closeLabel={i18n.common_close()}
-            minPriceLabel={i18n.search_min()}
-            maxPriceLabel={i18n.search_max()}
-            onPendingFilterChange={handlePendingFilterChange}
-            onApply={handleApplyFilters}
-            onCancel={handleCancelFilters}
-            onClear={handleClearFilters}
-            announceChanges={true}
-          >
-            {#snippet trigger()}
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-{i18n.search_filters()}
-            {/snippet}
-          </StickyFilterModal>
       </div>
-      
-      <!-- Applied Filter Pills (desktop only) -->
-      <div class="hidden sm:block">
-        {#if activeFilterCount > 0}
-          <div class="flex items-center gap-2 flex-wrap px-1">
-            <AppliedFilterPills
-              filters={filters}
-              categoryLabels={{
-                women: i18n.category_women(),
-                men: i18n.category_men(),
-                kids: i18n.category_kids(),
-                unisex: i18n.category_unisex()
-              }}
-              onRemoveFilter={handleRemoveAppliedFilter}
-              onClearAll={handleClearFilters}
-              clearAllLabel={i18n.search_clearAllFilters()}
-              class="justify-center"
-              maxDisplay={8}
-              showMore={false}
-            />
-          </div>
-        {/if}
-      </div>
-      
-      <!-- Desktop Layout -->
-      <div class="hidden sm:flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-900">
-          {displayProducts.length} items found
-        </span>
-        
-        <!-- Desktop Filter Controls -->
-        <div class="flex items-center gap-3">
-          <!-- Sort -->
-          <select 
-            value={filters.sortBy}
-            onchange={handleSortChange}
-            class="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            <option value="relevance">{i18n.search_relevance()}</option>
-            <option value="newest">{i18n.filter_newest()}</option>
-            <option value="price-low">{i18n.filter_priceLowToHigh()}</option>
-            <option value="price-high">{i18n.filter_priceHighToLow()}</option>
-          </select>
-          
-          <!-- Desktop Filter Modal Trigger -->
-          <button
-            onclick={() => showStickyFilterModal = true}
-            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              {activeFilterCount > 0 
-                ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)]' 
-                : 'bg-gray-50 text-gray-700 hover:bg-gray-100'}"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-{i18n.search_filters()}
-            {#if activeFilterCount > 0}
-              <span class="bg-white text-[color:var(--primary)] text-xs px-1.5 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
-            {/if}
-          </button>
-        </div>
+
+  <!-- Category Pills (unified) - inside same container -->
+  <div class="pt-[var(--gutter-xxs)] pb-[var(--gutter-xxs)]">
+        <CategoryPills
+          categories={currentPills}
+          activeCategory={currentActiveSlug as unknown as string | null}
+          onCategorySelect={handlePillSelect}
+          showAllButton={pillsMode === 'L1'}
+        />
       </div>
     </div>
   </div>
+
+  
   
   <!-- Products Grid (window scroll + infinite load) -->
-  <div class="px-2 sm:px-4 lg:px-6 py-3" data-testid="search-results-container">
+  <div 
+    class="max-w-7xl mx-auto pt-[var(--space-2)] pb-[var(--space-6)] px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]" 
+    data-testid="search-results-container"
+    style="
+      padding-left: max(var(--space-3), env(safe-area-inset-left));
+      padding-right: max(var(--space-3), env(safe-area-inset-right));
+    "
+  >
+    <!-- Compact results count -->
+    <div class="mb-[var(--space-2)]">
+      <p class="text-[11px] tertiary">
+        {displayProducts.length.toLocaleString()} {displayProducts.length === 1 ? 'item' : 'items'}
+        {#if searchQuery}
+          <span> for "{searchQuery}"</span>
+        {/if}
+      </p>
+    </div>
     {#if displayProductsWithCategory.length > 0}
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each displayProductsWithCategory as product (product.id)}
-          <ProductCard
-            {product}
-            onclick={() => goto(getProductUrl(product))}
-            translations={{
-              size: i18n.product_size(),
-              newSeller: i18n.trending_newSeller(),
-              unknownSeller: i18n.seller_unknown(),
-              currency: i18n.common_currency(),
-              addToFavorites: i18n.product_addToFavorites(),
-              brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
-              newWithoutTags: i18n.sell_condition_newWithoutTags(),
-              new: i18n.condition_new(),
-              likeNew: i18n.condition_likeNew(),
-              good: i18n.condition_good(),
-              worn: i18n.sell_condition_worn(),
-              fair: i18n.condition_fair(),
-              formatPrice: (price: number) => formatPrice(price),
-              categoryTranslation: getCategoryTranslation
-            }}
-            data-testid="product-card"
-          />
+      <!-- Responsive grid matching main page: 2-col mobile, 3-col tablet, 4-col desktop, 5-col xl -->
+      <div 
+        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[var(--space-2)] sm:gap-[var(--space-3)]"
+        role="list"
+        aria-label="Product results with {displayProductsWithCategory.length} items"
+      >
+        {#each displayProductsWithCategory as product, index (product.id)}
+          <article
+            role="listitem"
+            aria-setsize={displayProductsWithCategory.length}
+            aria-posinset={index + 1}
+          >
+            <ProductCard
+              {product}
+              onclick={() => goto(getProductUrl(product))}
+              translations={{
+                size: i18n.product_size(),
+                currency: i18n.common_currency(),
+                addToFavorites: i18n.product_addToFavorites(),
+                brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+                newWithoutTags: i18n.sell_condition_newWithoutTags(),
+                new: i18n.condition_new(),
+                likeNew: i18n.condition_likeNew(),
+                good: i18n.condition_good(),
+                worn: i18n.sell_condition_worn(),
+                fair: i18n.condition_fair(),
+                formatPrice: (price: number) => formatPrice(price),
+                categoryTranslation: getCategoryTranslation
+              }}
+            />
+          </article>
         {/each}
+        
+        {#if loadingMore}
+          {#each Array(5) as _}
+            <ProductCardSkeleton />
+          {/each}
+        {/if}
       </div>
-      <!-- Infinite scroll sentinel -->
+      
+      <!-- Infinite scroll sentinel with better touch target -->
       {#if hasMore}
-        <div class="flex justify-center py-6">
-          <div class="text-xs text-gray-500">{loadingMore ? 'Loading more…' : 'Scroll to load more'}</div>
+        <div class="flex flex-col items-center gap-3 py-8">
+          {#if loadError}
+            <div class="text-sm load-error font-medium">{loadError}</div>
+          {/if}
+          <button 
+            class="btn-secondary min-h-[48px] min-w-[140px] active:scale-95"
+            disabled={loadingMore}
+            onclick={loadMore}
+          >
+            {#if loadingMore}
+              <span class="inline-flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading...
+              </span>
+            {:else}
+              Load More Products
+            {/if}
+          </button>
+          <p class="text-xs tertiary">or scroll to auto-load</p>
         </div>
         <div bind:this={loadMoreTrigger} class="h-1"></div>
       {/if}
       
     {:else}
+      <!-- Empty State -->
       <div class="text-center py-16">
-        <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 mx-auto mb-4 empty-icon rounded-full flex items-center justify-center">
+          <svg class="w-10 h-10 empty-icon-stroke" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h3 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-1">{i18n.search_noItemsFound()}</h3>
-        <p class="text-gray-600 text-sm">{i18n.search_adjustFilters()}</p>
+        <h3 class="heading-lg font-semibold text-primary mb-1">
+          {i18n.search_noItemsFound()}
+        </h3>
+        <p class="text-secondary text-sm">{i18n.search_adjustFilters()}</p>
         {#if activeFilterCount > 0}
           <Button onclick={clearAllFilters} variant="outline" size="sm" class="mt-4">
             {i18n.search_clearAllFilters()}
@@ -916,23 +618,70 @@
   </div>
 </div>
 
-
-<BottomNav 
-  currentPath={page.url.pathname}
-  isNavigating={!!navigating}
-  navigatingTo={navigating?.to?.url.pathname}
-  unreadMessageCount={unreadCount}
-  profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
-  isAuthenticated={!!data.user}
-  labels={{
-    home: i18n.nav_home(),
-    search: i18n.nav_search(),
-    sell: i18n.nav_sell(),
-    messages: i18n.nav_messages(),
-    profile: i18n.nav_profile()
+<!-- Filter Drawer (Mobile Bottom Sheet) -->
+<FilterDrawer
+  isOpen={showFilterDrawer}
+  onClose={() => showFilterDrawer = false}
+  onApply={handleApplyFilters}
+  onClear={clearAllFilters}
+  currentFilters={{
+    brand: filters.brand === 'all' ? null : filters.brand,
+    condition: filters.condition === 'all' ? null : filters.condition,
+    size: filters.size === 'all' ? null : filters.size,
+    minPrice: filters.minPrice || null,
+    maxPrice: filters.maxPrice || null,
+    sortBy: filters.sortBy || 'relevance'
   }}
+  previewCount={previewFilteredProducts.length}
+  brands={currentBrands}
+  sizes={currentSizes}
 />
 
+<!-- Bottom Navigation - Hidden when filter drawer is open -->
+{#if !showFilterDrawer}
+  <BottomNav 
+    currentPath={page.url.pathname}
+    unreadMessageCount={unreadCount}
+    profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
+    isAuthenticated={!!data.user}
+    labels={{
+      home: i18n.nav_home(),
+      search: i18n.nav_search(),
+      sell: i18n.nav_sell(),
+      messages: i18n.nav_messages(),
+      profile: i18n.nav_profile()
+    }}
+  />
+{/if}
+
 <style>
-  /* Styles removed - scrollbar-hide classes were unused */
+  /* Page background and common surfaces using tokens */
+  .search-page {
+    background-color: var(--surface-subtle);
+  }
+
+  /* heading token helper */
+  .heading-lg { font-size: var(--text-lg); line-height: 1.3; }
+
+  .sticky-header {
+    background-color: var(--surface-base);
+    /* Match main page subtle divider; no heavy shadow */
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: none;
+  }
+
+  /* Search filter button */
+  .search-filter-btn {
+    transition: all 150ms ease;
+  }
+
+  .text-primary { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .tertiary { color: var(--color-text-tertiary); }
+
+
+  .load-error { color: var(--status-error-text, oklch(0.6 0.22 25)); }
+
+  .empty-icon { background-color: var(--surface-muted); }
+  .empty-icon-stroke { color: var(--color-text-tertiary); }
 </style>

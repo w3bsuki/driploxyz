@@ -1,9 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { page } from '$app/stores';
-  import { localizeHref, setLocale, type Locale } from '@repo/i18n';
-  import * as m from '@repo/i18n/messages';
-  import { X } from 'lucide-svelte';
+  import { setLocale, type Locale } from '@repo/i18n';
 
   interface Props {
     detectedCountry: string;
@@ -65,19 +62,15 @@
           <span class="text-2xl" aria-hidden="true">🌍</span>
           <div class="flex-1">
             <p class="text-sm sm:text-base font-medium">
-              {m.localeSuggestionDetected({ 
-                country: countryNames[detectedCountry] || detectedCountry 
-              })}
+              {detectedCountry && suggestedLocale ? `We detected you're in ${countryNames[detectedCountry] || detectedCountry}.` : ''}
             </p>
             <p class="text-xs sm:text-sm text-white/80 mt-0.5">
-              {m.localeSuggestionPrompt({ 
-                locale: localeNames[suggestedLocale] 
-              })}
+              {suggestedLocale ? `Switch to ${localeNames[suggestedLocale]}?` : ''}
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+  <div class="flex items-center gap-2">
           <button
             type="button"
             onclick={handleSwitchLocale}
@@ -91,7 +84,7 @@
               whitespace-nowrap
             "
           >
-            {m.localeSwitchAction({ locale: localeNames[suggestedLocale] })}
+            {suggestedLocale ? `Use ${localeNames[suggestedLocale]}` : 'Switch'}
           </button>
 
           <button
@@ -104,9 +97,9 @@
               focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-brand-primary
               transition-colors
             "
-            aria-label={m.dismiss()}
+        aria-label={"Dismiss"}
           >
-            <X class="w-5 h-5" />
+        <span class="w-5 h-5 inline-block" aria-hidden="true">×</span>
           </button>
         </div>
       </div>

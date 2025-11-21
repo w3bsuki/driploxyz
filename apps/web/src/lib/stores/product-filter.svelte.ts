@@ -26,6 +26,7 @@ export interface FilterState extends Record<string, string | null> {
   // Product attributes
   size: string;
   brand: string;
+  color: string;
   condition: string;
   minPrice: string;
   maxPrice: string;
@@ -106,6 +107,7 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
     specific: null,
     size: 'all',
     brand: 'all',
+    color: 'all',
     condition: 'all',
     minPrice: '',
     maxPrice: '',
@@ -122,6 +124,10 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
   // Helper function to apply filters to products
   function applyFiltersToProducts(products: Product[], filterState: FilterState): Product[] {
     let result = [...products];
+
+    // Normalizers to make client/server keys compatible
+    const normalize = (v?: string | null) => (v ?? '').toLowerCase().trim();
+    const normalizeKey = (v?: string | null) => normalize(v).replace(/\s+/g, '_').replace(/-/g, '_');
     
     // Apply search query
     if (filterState.query && filterState.query.trim()) {
@@ -138,13 +144,13 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
       result = result.filter(product => {
         // Check category hierarchy
         if (filterState.specific && product.specific_category_name) {
-          return product.specific_category_name.toLowerCase() === filterState.specific.toLowerCase();
+          return normalize(product.specific_category_name) === normalize(filterState.specific);
         }
         if (filterState.subcategory && product.subcategory_name) {
-          return product.subcategory_name.toLowerCase() === filterState.subcategory.toLowerCase();
+          return normalize(product.subcategory_name) === normalize(filterState.subcategory);
         }
         if (filterState.category && product.main_category_name) {
-          return product.main_category_name.toLowerCase() === filterState.category.toLowerCase();
+          return normalize(product.main_category_name) === normalize(filterState.category);
         }
         return true;
       });
@@ -158,13 +164,15 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
     // Apply brand filter
     if (filterState.brand && filterState.brand !== 'all') {
       result = result.filter(product => 
-        product.brand?.toLowerCase() === filterState.brand.toLowerCase()
+        normalize(product.brand) === normalize(filterState.brand)
       );
     }
     
     // Apply condition filter
     if (filterState.condition && filterState.condition !== 'all') {
-      result = result.filter(product => product.condition === filterState.condition);
+      // Normalize both hyphens and underscores
+      const desired = normalizeKey(filterState.condition);
+      result = result.filter(product => normalizeKey(product.condition) === desired);
     }
     
     // Apply price range filter
@@ -396,6 +404,7 @@ export function syncFiltersToUrl(filters: FilterState, replaceStateMode = true) 
   if (filters.specific) params.set('specific', filters.specific);
   if (filters.size && filters.size !== 'all') params.set('size', filters.size);
   if (filters.brand && filters.brand !== 'all') params.set('brand', filters.brand);
+  if (filters.color && filters.color !== 'all') params.set('color', filters.color);
   if (filters.condition && filters.condition !== 'all') params.set('condition', filters.condition);
   if (filters.minPrice) params.set('min_price', filters.minPrice);
   if (filters.maxPrice) params.set('max_price', filters.maxPrice);
@@ -403,11 +412,25 @@ export function syncFiltersToUrl(filters: FilterState, replaceStateMode = true) 
   
   // Update URL without navigation using SvelteKit utilities
   const newUrl = currentPage.url.pathname + (params.toString() ? '?' + params.toString() : '');
-
-  if (replaceStateMode) {
-    replaceState(newUrl, {});
-  } else {
-    pushState(newUrl, {});
+  
+  // Safely update URL: prefer SvelteKit navigation, but fall back to History API if router isn't ready
+  try {
+    if (replaceStateMode) {
+      replaceState(newUrl, {});
+    } else {
+      pushState(newUrl, {});
+    }
+  } catch (_err) {
+    // Fallback to native history to avoid "router is not initialized" errors during hydration
+    try {
+      if (replaceStateMode) {
+        window.history.replaceState({}, '', newUrl);
+      } else {
+        window.history.pushState({}, '', newUrl);
+      }
+    } catch {
+      // As a last resort, do nothing - URL sync isn't critical
+    }
   }
 }
 
@@ -424,6 +447,7 @@ export function getFiltersFromUrl(): Partial<FilterState> {
     specific: params.get('specific') || params.get('level3') || null,
     size: params.get('size') || 'all',
     brand: params.get('brand') || 'all',
+    color: params.get('color') || 'all',
     condition: params.get('condition') || 'all',
     minPrice: params.get('min_price') || '',
     maxPrice: params.get('max_price') || '',

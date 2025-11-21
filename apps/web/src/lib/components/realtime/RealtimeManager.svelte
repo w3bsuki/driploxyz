@@ -64,7 +64,7 @@
       toast.error(errorDetails.userMessage, {
         action: {
           label: 'Retry',
-          onClick: () => handleReconnect()
+          onclick: () => handleReconnect()
         }
       });
     }
@@ -129,11 +129,16 @@
         
         // Mark as delivered asynchronously - don't block UI
         if (newMessage.receiver_id === user.id && newMessage.sender_id !== user.id) {
-          supabase.rpc('mark_message_delivered', {
-            p_message_id: newMessage.id
-          }).catch(() => {
-            // Message delivery marking failed (non-critical)
-          });
+          // Fire-and-forget; ignore returned data shape
+          (async () => {
+            try {
+              await supabase.rpc('mark_message_delivered', {
+                p_message_id: newMessage.id
+              });
+            } catch {
+              // Message delivery marking failed (non-critical)
+            }
+          })();
         }
       } 
       else if (payload.eventType === 'UPDATE') {
@@ -179,26 +184,24 @@
         }
       })
       // Listen to messages where user is the receiver
-      .on(
-        'postgres_changes',
+      .on('postgres_changes' as any,
         {
           event: '*',
           schema: 'public', 
           table: 'messages',
           filter: `receiver_id=eq.${user.id}`
-        },
-        handleMessageChange
+        } as any,
+        handleMessageChange as any
       )
       // Listen to messages where user is the sender
-      .on(
-        'postgres_changes',
+      .on('postgres_changes' as any,
         {
           event: '*',
           schema: 'public',
           table: 'messages', 
           filter: `sender_id=eq.${user.id}`
-        },
-        handleMessageChange
+        } as any,
+        handleMessageChange as any
       )
       .subscribe((status, err) => {
         const connectionStatus = status === 'SUBSCRIBED' ? 'connected' : 
@@ -242,7 +245,7 @@
         }
       })
       .on('presence', { event: 'sync' }, () => {
-        const state = presenceChannel?.presenceState();
+  const state = presenceChannel?.presenceState() as Record<string, Array<{ presence_ref: string; user_id?: string; username?: string; typing_in?: string }>> | undefined;
         if (!state) return;
         
         const onlineUserIds = new Set<string>();
@@ -250,10 +253,11 @@
         
         // Efficient presence processing
         for (const [, presences] of Object.entries(state)) {
-          const presence = Array.isArray(presences) ? presences[0] : presences;
+          const presenceArr = Array.isArray(presences) ? presences : [];
+          const presence = presenceArr[0];
           if (presence && presence.user_id) {
             onlineUserIds.add(presence.user_id);
-            
+
             if (presence.typing_in) {
               typingUsers.set(presence.user_id, {
                 username: presence.username || 'User',
@@ -276,9 +280,10 @@
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
+          const usernameFallback = (user as any).username || (user as any).email?.split?.('@')?.[0] || 'User';
           const trackData = {
             user_id: user.id,
-            username: user.username || user.email?.split('@')[0] || 'User',
+            username: usernameFallback,
             online_at: new Date().toISOString()
           };
           
@@ -348,14 +353,14 @@
     
     // Cleaning up subscriptions
     
-    let cleanupPromises: Promise<void>[] = [];
+  let cleanupPromises: Promise<void>[] = [];
 
     if (messageChannel) {
       const channelToCleanup = messageChannel;
       messageChannel = null; // Clear reference before cleanup
 
       cleanupPromises = [...cleanupPromises,
-        supabase.removeChannel(channelToCleanup).catch((error) => {
+        supabase.removeChannel(channelToCleanup).then(() => {}).catch((error) => {
           logError('Message channel cleanup error:', error);
         })
       ];
@@ -368,7 +373,7 @@
       cleanupPromises = [...cleanupPromises,
         channelToCleanup.untrack().then(() =>
           supabase.removeChannel(channelToCleanup)
-        ).catch((error) => {
+        ).then(() => {}).catch((error) => {
           logError('Presence channel cleanup error:', error);
         })
       ];

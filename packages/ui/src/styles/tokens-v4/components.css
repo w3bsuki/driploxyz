@@ -30,9 +30,9 @@
 
   /* Luxury Button Color Variants */
   --btn-primary-bg: var(--brand-primary-strong);
-  --btn-primary-hover: var(--color-indigo-600);
+  --btn-primary-hover: var(--color-zinc-800);
   --btn-primary-text: var(--text-inverse);
-  --btn-primary-border: var(--color-indigo-500);
+  --btn-primary-border: var(--color-zinc-900);
 
   --btn-secondary-bg: var(--surface-base);
   --btn-secondary-hover: var(--state-hover);
@@ -75,6 +75,24 @@
   --input-focus-border: var(--state-focus);
   --input-focus-ring: oklch(0.15 0.015 270 / 0.2);
 
+  /* Search Bar System */
+  --search-bar-height: var(--touch-primary);
+  --search-bar-radius: var(--radius-sm);
+  --search-bar-padding-x: var(--space-3);
+  --search-bar-bg: var(--color-surface-subtle);
+  --search-bar-bg-hover: var(--color-surface-muted);
+  --search-bar-bg-active: var(--color-surface-emphasis);
+  --search-bar-border: var(--color-border-subtle);
+  --search-bar-border-hover: var(--color-border-default);
+  --search-bar-border-focus: var(--color-border-emphasis);
+  --search-bar-shadow: var(--shadow-xs);
+  --search-bar-shadow-hover: var(--shadow-sm);
+  --search-bar-shadow-focus: var(--shadow-sm);
+  --search-bar-dropdown-shadow: var(--shadow-lg);
+  --search-bar-focus-ring: 0 0 0 0 transparent;
+  --search-bar-input-color: var(--color-text-primary);
+  --search-bar-placeholder: var(--color-text-tertiary);
+
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    LUXURY FASHION CARD SYSTEM
    Premium card components for high-end product presentation
@@ -110,9 +128,47 @@
 
   /* Product Card Specific */
   --product-card-aspect: 4 / 5;              /* Fashion product aspect ratio */
-  --product-card-radius: var(--radius-lg);   /* 8px radius */
+  --product-card-radius: var(--radius-sm);   /* 4px radius - matches hardcoded values */
   --product-card-shadow: var(--shadow-sm);   /* Subtle elevation */
   --product-card-shadow-hover: var(--shadow-xl); /* Hover elevation */
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    PRODUCT CARD SPACING & TYPOGRAPHY
+    Consolidated from product-card-theme.css
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --product-card-image-gap: calc(var(--spacing) * 2);       /* 8px below image */
+  --product-card-badge-gap: calc(var(--spacing) * 1);       /* 4px below badge */
+  /* Tighter vertical rhythm between eyebrow, title, details, and price */
+  --product-card-title-gap: 0;       /* 0px below top-category */
+  --product-card-details-gap: 0;     /* 0px below title/details */
+  --product-card-content-gap: 0;                            /* No gap between content items */
+
+  /* Top category (eyebrow) should be smaller and lighter than the title */
+  --product-card-top-category-size: var(--text-xs);         /* 12px */
+  --product-card-top-category-weight: var(--font-medium);   /* 500 */
+
+  /* Title should be more prominent than category */
+  --product-card-title-size: var(--text-base);              /* 16px */
+  --product-card-title-weight: var(--font-semibold);        /* 600 */
+  --product-card-title-color: var(--color-charcoal-900);
+  --product-card-title-leading: 1.2; /* tighter */
+
+  --product-card-details-size: var(--text-sm);              /* 14px for readability */
+  --product-card-details-weight: var(--font-normal);        /* 400 */
+  --product-card-details-color: var(--color-charcoal-600);
+  --product-card-details-leading: 1.2;     /* tighter */
+
+  --product-card-price-size: var(--text-base);              /* 16px */
+  --product-card-price-weight: var(--font-bold);            /* 700 */
+  --product-card-price-color: var(--color-charcoal-900);
+
+  --product-card-badge-size: var(--text-xs);                /* 12px */
+  --product-card-badge-weight: var(--font-medium);          /* 500 */
+
+  /* Visual */
+  --product-card-image-bg: var(--color-charcoal-50);
+  --product-card-boost-bg: var(--color-charcoal-900);
+  --product-card-boost-text: var(--color-white);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    NAVIGATION SYSTEM
@@ -124,11 +180,41 @@
   --nav-border: var(--border-subtle);
   --nav-shadow: var(--shadow-sm);
 
+  /* Header Layout Tokens */
+  --header-padding-x-sm: var(--space-3);      /* 12px */
+  --header-padding-x-md: var(--space-4);      /* 16px */
+  --header-padding-x-lg: var(--space-6);      /* 24px */
+  --header-gap: var(--space-2);               /* 8px between items */
+  --header-link-padding-x: var(--space-3);    /* 12px */
+  --header-link-padding-y: calc(var(--spacing) * 1.5); /* 6px */
+
+  /* Icon Sizes */
+  --icon-xs: var(--space-4);  /* 16px */
+  --icon-sm: var(--space-5);  /* 20px */
+  --icon-md: var(--space-6);  /* 24px */
+  --icon-lg: var(--space-8);  /* 32px */
+
   /* Bottom Navigation (Mobile) */
   --bottom-nav-height: var(--space-16);       /* 64px */
   --bottom-nav-bg: var(--surface-base);
   --bottom-nav-border: var(--border-subtle);
   --bottom-nav-shadow: 0 -1px 3px 0 rgb(0 0 0 / 0.1);
+
+  /* Mobile Menu System */
+  --mobile-menu-bg: var(--surface-base);
+  --mobile-menu-overlay: oklch(0 0 0 / 0.5);
+  --mobile-menu-width: 90%;
+  --mobile-menu-max-width: 400px;
+  --mobile-menu-padding: var(--space-6);
+  --mobile-menu-shadow: var(--shadow-2xl);
+  
+  --mobile-menu-item-height: var(--touch-primary); /* 44px touch target */
+  --mobile-menu-item-padding: var(--space-3) var(--space-4);
+  --mobile-menu-item-bg-hover: var(--state-hover); /* Neutral hover */
+  --mobile-menu-item-bg-active: var(--state-active); /* Neutral active */
+  --mobile-menu-item-text: var(--text-primary);
+  --mobile-menu-item-text-hover: var(--text-primary);
+  --mobile-menu-item-radius: var(--radius-sm);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    BADGE & PILL SYSTEM
@@ -153,6 +239,39 @@
   --pill-text-active: var(--text-inverse);
   --pill-border: var(--border-default);
   --pill-border-active: var(--brand-primary-strong);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     CONDITION BADGE COLORS - Solid OKLCH with White Text
+     High visibility badges with proper contrast
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  --condition-badge-radius: var(--product-card-radius); /* Match product card corner geometry */
+  --condition-badge-font-size: clamp(0.625rem, 0.58rem + 0.2vw, 0.7rem);
+  --condition-badge-letter-spacing: 0.05em;
+  --condition-badge-padding-y: calc(var(--space-1) * 0.85);
+  --condition-badge-padding-x: calc(var(--space-2) * 0.9);
+  /* New with Tags - Vibrant Green */
+  --condition-new-bg: oklch(0.65 0.20 155);     /* Rich emerald green */
+  --condition-new-text: oklch(1.0 0 0);         /* Pure white */
+
+  /* New without Tags - Fresh Blue */
+  --condition-newwithout-bg: oklch(0.60 0.18 245); /* Premium blue */
+  --condition-newwithout-text: oklch(1.0 0 0);     /* Pure white */
+
+  /* Like New - Deep Blue */
+  --condition-likenew-bg: var(--color-blue-600);    /* Blue */
+  --condition-likenew-text: oklch(1.0 0 0);        /* Pure white */
+
+  /* Good - Warm Orange */
+  --condition-good-bg: oklch(0.62 0.18 65);        /* Warm orange */
+  --condition-good-text: oklch(1.0 0 0);           /* Pure white */
+
+  /* Worn - Bold Red */
+  --condition-worn-bg: oklch(0.55 0.20 25);        /* Deep red */
+  --condition-worn-text: oklch(1.0 0 0);           /* Pure white */
+
+  /* Fair - Neutral Gray */
+  --condition-fair-bg: oklch(0.50 0.02 280);       /* Cool gray */
+  --condition-fair-text: oklch(1.0 0 0);           /* Pure white */
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    MODAL & DIALOG SYSTEM
@@ -197,3 +316,275 @@
   --divider-spacing-md: var(--space-6);
   --divider-spacing-lg: var(--space-8);
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TAILWIND V4 UTILITY PATTERNS
+   Official v4 pattern for reusable component styles
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Base Button Utility */
+@utility btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--btn-height-lg);
+  padding: 0 var(--btn-padding-md);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font-md);
+  font-weight: var(--btn-font-weight);
+  transition: all 150ms ease;
+  cursor: pointer;
+  user-select: none;
+  
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Primary Button - Brand Color */
+@utility btn-primary {
+  @apply btn-base;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-border);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--btn-primary-hover);
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--btn-focus-ring);
+  }
+}
+
+/* Secondary Button - Neutral */
+@utility btn-secondary {
+  @apply btn-base;
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--btn-secondary-hover);
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--btn-focus-ring);
+  }
+}
+
+/* Ghost Button - Transparent */
+@utility btn-ghost {
+  @apply btn-base;
+  background-color: var(--btn-ghost-bg);
+  color: var(--btn-ghost-text);
+  border: 1px solid var(--btn-ghost-border);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--btn-ghost-hover);
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--btn-focus-ring);
+  }
+}
+
+/* Mobile Menu Item Utility */
+@utility mobile-menu-item {
+  display: flex;
+  align-items: center;
+  min-height: var(--mobile-menu-item-height);
+  padding: var(--mobile-menu-item-padding);
+  color: var(--mobile-menu-item-text);
+  border-radius: var(--mobile-menu-item-radius);
+  transition: background-color 150ms ease;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: var(--mobile-menu-item-bg-hover);
+    color: var(--mobile-menu-item-text-hover);
+  }
+  
+  &:active {
+    background-color: var(--mobile-menu-item-bg-active);
+  }
+}
+
+/* Card Base Utility */
+@utility card-base {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding-md);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 200ms ease;
+  
+  &:hover {
+    box-shadow: var(--card-shadow-lg);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PHASE 3 ADDITIONS — New Utility Patterns
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Card Interactive - For clickable cards */
+@utility card-interactive {
+  background-color: var(--surface-card);
+  border-radius: var(--card-radius-lg);
+  padding: var(--card-padding-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+  
+  &:hover {
+    @media (hover: hover) {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Input Base - Standard form inputs */
+@utility input-base {
+  border-radius: var(--radius);
+  border: 1px solid var(--border-input);
+  background-color: var(--surface-input);
+  padding-inline: var(--space-3);
+  padding-block: var(--space-2);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--border-focus-ring);
+  }
+  
+  &::placeholder {
+    color: var(--text-placeholder);
+  }
+  
+  &:disabled {
+    background-color: var(--state-disabled-bg);
+    color: var(--state-disabled-text);
+    cursor: not-allowed;
+  }
+}
+
+/* Input Error State */
+@utility input-error {
+  border-color: var(--status-error-solid);
+  
+  &:focus {
+    border-color: var(--status-error-solid);
+    box-shadow: 0 0 0 3px var(--status-error-ring);
+  }
+}
+
+/* Input Success State */
+@utility input-success {
+  border-color: var(--status-success-solid);
+  
+  &:focus {
+    border-color: var(--status-success-solid);
+    box-shadow: 0 0 0 3px var(--status-success-ring);
+  }
+}
+
+/* Icon Button - Touch-optimized circular buttons */
+@utility icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-primary);
+  min-height: var(--touch-primary);
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text-secondary);
+  transition: all 150ms ease;
+  cursor: pointer;
+  user-select: none;
+  
+  &:hover:not(:disabled) {
+    @media (hover: hover) {
+      background-color: var(--state-hover-subtle);
+      color: var(--text-primary);
+    }
+  }
+  
+  &:active:not(:disabled) {
+    background-color: var(--state-active);
+  }
+  
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--border-focus);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Icon Button Small - 36px for desktop contexts */
+@utility icon-btn-sm {
+  @apply icon-btn;
+  min-width: var(--touch-standard);
+  min-height: var(--touch-standard);
+}
+
+/* Pill Button - Rounded pill navigation */
+@utility pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--pill-height);
+  padding: var(--pill-padding);
+  border-radius: var(--pill-radius);
+  font-size: var(--pill-font);
+  font-weight: var(--pill-font-weight);
+  background-color: var(--pill-bg);
+  color: var(--pill-text);
+  border: 1px solid var(--pill-border);
+  transition: all 150ms ease;
+  cursor: pointer;
+  user-select: none;
+  
+  &:hover:not(:disabled) {
+    @media (hover: hover) {
+      background-color: var(--pill-bg-hover);
+    }
+  }
+  
+  &[data-active="true"] {
+    background-color: var(--pill-bg-active);
+    color: var(--pill-text-active);
+    border-color: var(--pill-border-active);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+

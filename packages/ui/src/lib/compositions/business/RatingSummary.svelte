@@ -128,7 +128,7 @@
 							<!-- Progress bar -->
 							<div class="flex-1 h-2 bg-[color:var(--surface-subtle)] rounded-full overflow-hidden">
 								<div
-									class="h-full bg-yellow-500 rounded-full transition-all duration-300"
+									class="h-full bg-[var(--status-warning-solid)] rounded-full transition-all duration-300"
 									style="width: {distributionPercentages()[rating] || 0}%"
 								></div>
 							</div>

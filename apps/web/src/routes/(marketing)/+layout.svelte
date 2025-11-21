@@ -9,8 +9,3 @@
   <!-- Marketing-focused footer -->
 </div>
 
-<style>
-  .marketing-layout {
-    /* Marketing-specific styles */
-  }
-</style>

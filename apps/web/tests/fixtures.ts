@@ -59,6 +59,7 @@ const createMockMessage = (overrides = {}) => ({
 type CustomFixtures = {
   authenticatedPage: Page;
   adminPage: Page;
+  sellerPage: Page;
   makeAxeBuilder: () => AxeBuilder;
 };
 
@@ -149,6 +150,21 @@ export const test = base.extend<CustomFixtures>({
         username: 'admin',
         role: 'admin',
         app_metadata: { role: 'admin' }
+      }));
+    });
+    await use(page);
+  },
+
+  // Seller page fixture
+  sellerPage: async ({ page }, use) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('supabase.auth.token', 'seller-auth-token');
+      localStorage.setItem('supabase.auth.user', JSON.stringify({
+        id: 'seller-user-id',
+        email: 'seller@example.com',
+        username: 'seller',
+        role: 'authenticated',
+        user_metadata: { is_seller: true }
       }));
     });
     await use(page);

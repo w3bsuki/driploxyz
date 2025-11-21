@@ -19,13 +19,13 @@
   }: Props = $props();
 </script>
 
-<nav class="hidden sm:flex items-center space-x-6 {className}">
-  <a href="/search" class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium">{translations.browse}</a>
+<nav class="hidden sm:flex items-center gap-[length:var(--space-6)] {className}">
+  <a href="/search" class="text-text-secondary hover:text-text-primary font-medium">{translations.browse}</a>
   {#if isLoggedIn}
     {#if canSell}
-      <a href="/sell" class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium">{translations.sell}</a>
+      <a href="/sell" class="text-text-secondary hover:text-text-primary font-medium">{translations.sell}</a>
     {/if}
-    <a href="/messages" class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium">{translations.messages}</a>
-    <a href="/dashboard" class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium">{translations.dashboard}</a>
+    <a href="/messages" class="text-text-secondary hover:text-text-primary font-medium">{translations.messages}</a>
+    <a href="/dashboard" class="text-text-secondary hover:text-text-primary font-medium">{translations.dashboard}</a>
   {/if}
 </nav>

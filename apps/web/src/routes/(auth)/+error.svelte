@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '@repo/ui';
-	import type { App } from '@sveltejs/kit';
 
 	const error = $derived(page.error as App.Error);
 	const status = $derived(page.status);
@@ -38,7 +37,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 to-indigo-100">
+<div class="min-h-screen flex items-center justify-center px-4 bg-zinc-50">
 	<div class="max-w-md w-full">
 		<div class="bg-white rounded-lg shadow-lg p-8 text-center">
 			<div class="mb-6">
@@ -51,7 +50,7 @@
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
 				{:else}
-					<svg class="w-16 h-16 mx-auto mb-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="w-16 h-16 mx-auto mb-4 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
 					</svg>
 				{/if}

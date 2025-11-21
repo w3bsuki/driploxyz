@@ -228,7 +228,7 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 md:backdrop-blur-xs">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--modal-overlay-bg)] md:backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-lg shadow-sm md:shadow-lg border border-gray-200 p-5">
       <!-- Header -->
       <div class="text-center mb-4">
@@ -264,7 +264,7 @@
           placeholder="Enter discount code (e.g. INDECISIVE)"
           bind:value={discountCode}
           disabled={loading}
-          class="w-full p-2.5 border border-gray-200 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-white disabled:cursor-not-allowed"
+          class="w-full p-2.5 border border-gray-200 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-[var(--state-focus)] disabled:bg-white disabled:cursor-not-allowed"
         />
         {#if discountError}
           <p class="mt-1 text-xs text-red-600">{discountError}</p>
@@ -302,11 +302,11 @@
         <button
           onclick={handlePayment}
           disabled={loading || !stripe}
-          class="flex-1 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-sm hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 px-3 py-1.5 text-sm text-[var(--text-inverse)] bg-[var(--btn-primary-bg)] rounded-sm hover:bg-[var(--btn-primary-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {#if loading}
             <div class="flex items-center justify-center gap-1">
-              <div class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+              <div class="w-3 h-3 border border-[var(--text-inverse)] border-t-transparent rounded-full animate-spin"></div>
               Processing...
             </div>
           {:else}

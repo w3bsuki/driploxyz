@@ -235,6 +235,25 @@ export function needsOnboardingRedirect(
   return !hasCompletedOnboarding(profile);
 }
 
+interface PayoutMethod {
+  type: string;
+  details: string;
+  name: string;
+}
+
+function isPayoutMethod(value: unknown): value is PayoutMethod {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const obj = value as Record<string, unknown>;
+  return (
+    typeof obj.type === 'string' &&
+    typeof obj.details === 'string' &&
+    typeof obj.name === 'string'
+  );
+}
+
 /**
  * Check if user can perform seller actions
  */
@@ -246,8 +265,64 @@ export function canSell(profile: Profile | null): boolean {
   return !!(
     profile.username &&
     profile.full_name &&
-    profile.payout_method
+    profile.payout_method &&
+    isPayoutMethod(profile.payout_method)
   );
+}
+
+/**
+ * Gets the reason why user cannot sell (for user feedback)
+ */
+export function getCannotSellReason(profile: Profile | null): string | null {
+  if (!profile) return 'Please create an account to start selling.';
+  
+  if (!hasCompletedOnboarding(profile)) {
+    return 'Please complete your account setup to start selling.';
+  }
+  
+  // Check specific missing fields
+  const missingFields = [];
+  if (!profile.username) missingFields.push('username');
+  if (!profile.full_name) missingFields.push('full name');
+  
+  // Check payout method
+  if (!profile.payout_method || !isPayoutMethod(profile.payout_method)) {
+    missingFields.push('payout method');
+  }
+  
+  if (missingFields.length > 0) {
+    return `Please add your ${missingFields.join(', ')} to start selling.`;
+  }
+  
+  return null; // User can sell
+}
+
+/**
+ * Checks if profile is complete enough for selling (includes bio and location)
+ */
+export function isProfileCompleteForSelling(profile: Profile | null): boolean {
+  if (!profile) return false;
+  
+  return !!(
+    profile.full_name &&
+    profile.username &&
+    profile.location &&
+    profile.bio
+  );
+}
+
+/**
+ * Checks if user has specific role
+ */
+export function hasRole(profile: Profile | null, role: 'seller' | 'admin'): boolean {
+  return profile?.role === role || profile?.role === 'admin';
+}
+
+/**
+ * All authenticated users are regular users who can buy and sell
+ */
+export function isUser(profile: Profile | null): boolean {
+  return !!profile && profile.role !== 'admin';
 }
 
 /**

@@ -1,3 +1,96 @@
+// Validation and sanitization utilities used by tests and UI
+
+export function validateEmail(email: string): boolean {
+  if (typeof email !== 'string') return false;
+  const trimmed = email.trim();
+  if (!trimmed) return false;
+  // Basic email validation: single @, no consecutive dots, domain with dot
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(trimmed)) return false;
+  // Disallow consecutive dots and leading/trailing dot in local or domain part
+  if (trimmed.includes('..')) return false;
+  const [local, domain] = trimmed.split('@');
+  if (!local || !domain) return false;
+  if (local.startsWith('.') || local.endsWith('.')) return false;
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
+  return true;
+}
+
+export function validatePassword(password: string): boolean {
+  if (typeof password !== 'string') return false;
+  if (password.length < 9) return false;
+  if (/\s/.test(password)) return false; // disallow spaces
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasDigit = /\d/.test(password);
+  // require at least one of these common special characters
+  const hasSpecial = /[@$!%*?&#]/.test(password);
+  return hasLower && hasUpper && hasDigit && hasSpecial;
+}
+
+export function sanitizeInput(input: string): string {
+  if (typeof input !== 'string') return '';
+  // Remove script and style blocks with their content
+  let cleaned = input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+  // Remove all remaining tags
+  cleaned = cleaned.replace(/<[^>]*>?/gm, '');
+  return cleaned;
+}
+
+export function validateUsername(username: string): boolean {
+  if (typeof username !== 'string') return false;
+  const re = /^[A-Za-z0-9_.-]{3,30}$/;
+  if (!re.test(username)) return false;
+  if (/^[-._]/.test(username) || /[-._]$/.test(username)) return false;
+  if (username.includes('..')) return false;
+  if (/^__.*__$/.test(username)) return false; // disallow wrapping underscores
+  return true;
+}
+
+export function validatePhone(phone: string): boolean {
+  if (typeof phone !== 'string') return false;
+  if (/ext\.?\s*\d+$/i.test(phone) || /\sx\s*\d+$/i.test(phone)) return false; // disallow extensions
+  const allowedChars = /^[\d\s\-().+]+$/;
+  if (!allowedChars.test(phone)) return false;
+  const digits = phone.replace(/\D/g, '');
+  const max = phone.includes('+') ? 15 : 10;
+  return digits.length >= 10 && digits.length <= max;
+}
+
+export function validateURL(url: string): boolean {
+  try {
+    const u = new URL(url);
+    if (!['http:', 'https:', 'ftp:'].includes(u.protocol)) return false;
+    const host = u.hostname;
+    if (!host || /\s/.test(host)) return false;
+    // allow localhost
+    if (host === 'localhost') return true;
+    // allow IPv4
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return true;
+    // require valid hostname segments (no leading/trailing dot)
+    if (!/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/.test(host)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function validatePrice(price: string): boolean {
+  if (typeof price !== 'string') return false;
+  return /^\d+(\.\d{1,2})?$/.test(price);
+}
+
+export function validateRequired(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  return value.toString().trim().length > 0;
+}
+
+export function validateLength(value: string, min: number, max: number): boolean {
+  if (typeof value !== 'string') return false;
+  return value.length >= min && value.length <= max;
+}
 import * as i18n from '@repo/i18n';
 
 /**

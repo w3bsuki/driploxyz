@@ -184,7 +184,7 @@
         <button
           type="button"
           onclick={handleDiscountCodeChange}
-          class="px-4 py-2 min-h-[var(--touch-standard)] bg-black text-white rounded-lg hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+          class="px-4 py-2 min-h-[var(--touch-standard)] bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] rounded-lg hover:bg-[var(--btn-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--ring-focus)]"
         >
           Apply
         </button>

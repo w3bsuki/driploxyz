@@ -104,19 +104,19 @@
 		</p>
 
 		<!-- Error Details for Admins -->
-		{#if error?.id}
+				{#if false}
 			<div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-8">
 				<h3 class="font-medium text-gray-900 mb-2">Error Details</h3>
 				<div class="text-sm text-gray-600 space-y-1">
 					<div class="flex items-center gap-2">
 						<span class="font-medium">ID:</span>
-						<code class="bg-white px-2 py-1 rounded text-xs font-mono border">{error.id}</code>
+								<code class="bg-white px-2 py-1 rounded text-xs font-mono border"></code>
 						<button
 							type="button"
-							class="text-blue-600 hover:text-blue-800 text-xs"
+							class="text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] text-xs"
 							onclick={() => {
 								if (browser) {
-									navigator.clipboard?.writeText(error.id || '');
+											navigator.clipboard?.writeText('');
 								}
 							}}
 						>
@@ -198,16 +198,16 @@
 				Administrator Support
 			</p>
 			<div class="flex justify-center gap-6 text-sm">
-				<a
-					href="mailto:admin@driplo.com?subject=Admin Error {status}&body=Error ID: {error?.id || 'N/A'}"
-					class="text-blue-600 hover:text-blue-800 font-medium"
+						<a
+							href="mailto:admin@driplo.com?subject=Admin Error {status}"
+					class="text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] font-medium"
 				>
 					Contact Technical Support
 				</a>
 				<span class="text-gray-300">•</span>
 				<a
 					href="/admin/logs"
-					class="text-blue-600 hover:text-blue-800 font-medium"
+					class="text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] font-medium"
 				>
 					View System Logs
 				</a>

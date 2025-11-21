@@ -31,7 +31,7 @@
     steps: FormStep[];
     initialValues: Record<string, unknown>;
     action?: string;
-    method?: string;
+  method?: 'get' | 'post' | 'GET' | 'POST' | 'dialog' | 'DIALOG';
     onStepChange?: (currentStep: number, totalSteps: number) => void;
     onComplete?: (values: Record<string, unknown>) => Promise<void> | void;
     onSuccess?: (result: ActionResult | Record<string, unknown>) => void;
@@ -155,7 +155,7 @@
         await onComplete(allValues);
         onSuccess?.(allValues);
       } catch (error) {
-        onError?.(error);
+        onError?.((error instanceof Error ? error : new Error('Unknown error')));
       } finally {
         isSubmitting = false;
       }
@@ -207,7 +207,7 @@
 
         await update();
       } catch (error) {
-        onError?.(error);
+        onError?.((error instanceof Error ? error : new Error('Unknown error')));
       }
     };
   };
@@ -225,6 +225,16 @@
     goToStep,
     handleSubmit: handleFormSubmit
   });
+
+  // Normalize method to the exact set supported by the form element
+  type MethodAttr = 'GET' | 'POST' | 'dialog' | 'get' | 'post' | 'DIALOG';
+  function normalizeFormMethod(m?: string): MethodAttr {
+    const v = m ?? 'POST';
+    if (v === 'dialog' || v === 'DIALOG') return v as MethodAttr;
+    const upper = v.toUpperCase();
+    return (upper === 'GET' || upper === 'POST') ? (upper as MethodAttr) : 'POST';
+  }
+  const methodAttr: MethodAttr = $derived(normalizeFormMethod(method));
 </script>
 
 <div class="multi-step-form {className}">
@@ -254,7 +264,7 @@
 
       <!-- Step indicators -->
       <div class="flex justify-between mt-4">
-        {#each steps as step, index}
+        {#each steps as step, index (step.id)}
           <div class="flex flex-col items-center">
             <button
               type="button"
@@ -291,7 +301,7 @@
   <!-- Current Step Content -->
   <form
     {action}
-    {method}
+    method={methodAttr}
     novalidate
     use:enhance={action ? enhanceSubmit : undefined}
     onsubmit={!action ? (e) => { e.preventDefault(); handleFormSubmit(); } : undefined}
@@ -311,10 +321,20 @@
 
         <!-- Render step component -->
         {#if currentStep.component}
-          <currentStep.component
-            {formContext}
-            bind:validator={stepValidators[currentStepIndex]}
-          />
+          {#key currentStep.id}
+            <!-- Bind to a stable identifier to satisfy Svelte binding rules -->
+            {#if stepValidators[currentStepIndex]}
+              <currentStep.component
+                {formContext}
+                bind:validator={stepValidators[currentStepIndex]!}
+              />
+            {:else}
+              <currentStep.component
+                {formContext}
+                bind:validator={stepValidators[0]!}
+              />
+            {/if}
+          {/key}
         {/if}
       {/if}
 

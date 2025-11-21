@@ -17,8 +17,3 @@
   <!-- Shop footer could go here -->
 </div>
 
-<style>
-  .shop-layout {
-    /* Shop-specific styles */
-  }
-</style>

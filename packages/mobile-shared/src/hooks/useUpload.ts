@@ -1,4 +1,4 @@
-iimport { useState } from 'react';
+import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../lib/supabase';
 
@@ -10,8 +10,7 @@ export function useUpload() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
-      quality: 0.8,
-      maxImages: 10,
+      quality: 0.8
     });
 
     return result.canceled ? [] : result.assets;

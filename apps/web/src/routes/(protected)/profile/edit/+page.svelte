@@ -19,7 +19,15 @@
   let bio = $state(data.profile?.bio || '');
   let location = $state(data.profile?.location || '');
   let avatarUrl = $state(data.profile?.avatar_url || '');
-  let socialLinks = $state(data.profile?.social_links || []);
+  type SocialLink = { type: 'instagram' | 'tiktok' | 'website'; url: string };
+  function normalizeSocialLinks(value: unknown): SocialLink[] {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value.filter((v): v is SocialLink => typeof v === 'object' && v !== null && typeof (v as any).url === 'string' && typeof (v as any).type === 'string') as SocialLink[];
+    }
+    return [];
+  }
+  let socialLinks = $state<SocialLink[]>(normalizeSocialLinks((data.profile as any)?.social_links));
   let saving = $state(false);
 
   const avatars = [
@@ -65,7 +73,7 @@
         bio,
         location,
         avatar_url: avatarUrl,
-        social_links: socialLinks.filter(link => link.url.trim())
+  social_links: socialLinks.filter((link) => link.url.trim())
       })
       .eq('id', data.user.id);
 

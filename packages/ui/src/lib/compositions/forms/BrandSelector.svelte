@@ -112,9 +112,9 @@
         oninput={handleCustomInput}
         {placeholder}
         {disabled}
-        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500
+        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--state-focus)] focus:border-[var(--border-focus)]
           {error 
-            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+            ? 'border-[var(--status-error-solid)] focus:ring-[var(--status-error-solid)] focus:border-[var(--status-error-solid)]' 
             : 'border-gray-300'}"
         aria-label="Custom brand name"
       />

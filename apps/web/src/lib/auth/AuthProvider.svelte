@@ -10,7 +10,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { authStore } from './store.svelte';
-  import { createBrowserSupabase } from './index';
   import type { AuthUser, AuthSession, Profile } from './index';
 
   interface Props {

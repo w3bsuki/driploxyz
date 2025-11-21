@@ -17,11 +17,19 @@
 
   // OAuth state
   let oauthSubmitting = $state<string | null>(null);
-  const oauthProviders = $derived(getOAuthProviders());
-  const hasOauth = $derived(hasOAuthProviders());
+  const oauthProviders: OAuthProvider[] = $derived(getOAuthProviders());
+  const hasOauth: boolean = $derived(hasOAuthProviders());
 
   // Initialize form validator with proper schema
-  const initialValues = {
+  type FormValues = {
+    fullName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    terms: boolean;
+  };
+
+  const initialValues: FormValues = {
     fullName: form?.values?.fullName || '',
     email: form?.values?.email || '',
     password: form?.values?.password || '',
@@ -29,7 +37,7 @@
     terms: false
   };
 
-  const validator = createFormValidator(initialValues, SignupSchema, {
+  const validator = createFormValidator<FormValues>(initialValues, SignupSchema, {
     validateOnChange: true,
     validateOnBlur: true,
     debounceMs: 300
@@ -43,25 +51,27 @@
   // Handle success and error messages - prevent infinite loops
   $effect(() => {
     // Create a unique key from current form state to detect actual changes
+    const fe = form?.errors as Record<string, string> | { _form: string } | { email: string } | { password: string } | { fullName: string } | { terms: string } | undefined;
     const currentFormKey = JSON.stringify({
       success: form?.success,
       message: form?.message,
       email: form?.email,
-      errors: form?.errors ? {
-        _form: form.errors._form,
-        email: form.errors.email,
-        password: form.errors.password,
-        fullName: form.errors.fullName,
-        terms: form.errors.terms
-      } : null
+      errors: fe
+        ? {
+            _form: '_form' in fe ? (fe as any)._form : undefined,
+            email: 'email' in fe ? (fe as any).email : undefined,
+            password: 'password' in fe ? (fe as any).password : undefined,
+            fullName: 'fullName' in fe ? (fe as any).fullName : undefined,
+            terms: 'terms' in fe ? (fe as any).terms : undefined
+          }
+        : null
     });
 
     // Only process if form state actually changed
     if (currentFormKey !== prevFormKey) {
       if (form?.success && form?.message) {
         toasts.success(form.message, {
-          duration: 8000, // Show for 8 seconds
-          important: true
+          duration: 8000
         });
         announceToScreenReader(`Success: ${form.message}`, 'assertive');
         // Store email before clearing form
@@ -77,12 +87,11 @@
           }
         });
 
-        // Show error toasts for form-level errors
-        if (form.errors._form) {
-          toasts.error(form.errors._form, {
-            duration: 6000
-          });
-          announceToScreenReader(`Form error: ${form.errors._form}`, 'assertive');
+        // Show error toasts for form-level errors (narrow union with in-guard)
+        const fe = form.errors as Record<string, string> | { _form: string; } | { email: string } | { password: string } | { fullName: string } | { terms: string };
+        if ('_form' in fe && typeof fe._form === 'string') {
+          toasts.error(fe._form, { duration: 6000 });
+          announceToScreenReader(`Form error: ${fe._form}`, 'assertive');
         }
 
         // Focus first field with error
@@ -165,7 +174,7 @@
         {#each oauthProviders as provider}
           <button
             type="button"
-            class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--state-focus)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onclick={() => handleOAuthSignIn(provider)}
             disabled={oauthSubmitting === provider.id}
           >
@@ -258,7 +267,7 @@
           oninput={(e) => passwordField.setValue((e.target as HTMLInputElement).value)}
           onblur={() => passwordField.onBlur()}
         />
-        {#if passwordField.value && passwordField.value.length > 0 && passwordField.value.length < 8}
+        {#if typeof passwordField.value === 'string' && passwordField.value.length > 0 && passwordField.value.length < 8}
           <p class="text-sm text-gray-600 mt-1">Password must be at least 8 characters long</p>
         {/if}
       </div>
@@ -286,7 +295,7 @@
           name="terms"
           type="checkbox"
           value="true"
-          checked={termsField.value}
+          checked={!!termsField.value}
           onchange={(e) => termsField.setValue((e.target as HTMLInputElement).checked)}
           onblur={() => termsField.onBlur()}
           class="h-4 w-4 text-[color:var(--primary)] focus:ring-[color:var(--state-focus)] border-[color:var(--border-default)] rounded-sm"

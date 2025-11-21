@@ -511,6 +511,107 @@ export function mapProfile(row: Record<string, any>): ProfileUI {
   };
 }
 
+export interface CategoryUI {
+  id: string;
+  name: string;
+  slug: string;
+  created_at: string | null; // Required field for CategoryWithCount compatibility
+  description: string | null;
+  image_url: string | null;
+  product_count?: number; // Optional as this is added by CategoryWithCount
+  parent_id: string | null;
+  sort_order: number | null;
+  // Fields matching database Category Row type exactly
+  is_active: boolean | null;
+  level: number | null;
+  updated_at: string | null;
+}
+
+export function mapCategory(row: Record<string, any>): CategoryUI {
+  return {
+    id: ensureId(row.id ?? row.category_id ?? row.slug ?? row.slug_id, String(row.id ?? row.category_id ?? row.slug ?? '')),
+    name: coerceString(row.name ?? row.category_name ?? row.title ?? ''),
+    slug: coerceString(row.slug ?? row.category_slug ?? slugify(row.name ?? row.title ?? '')),
+    created_at: coerceStringOrNull(row.created_at ?? row.createdAt ?? null),
+    description: coerceStringOrNull(row.description ?? null),
+    image_url: coerceStringOrNull(row.image_url ?? row.imageUrl ?? null),
+    product_count: coerceNumber(row.product_count ?? row.productCount ?? 0),
+    parent_id: coerceStringOrNull(row.parent_id ?? row.parentId ?? null),
+    sort_order: coerceNumberOrNull(row.sort_order ?? row.sortOrder ?? null),
+    // Fields matching database Category Row type exactly
+    is_active: typeof row.is_active === 'boolean' ? row.is_active : (row.isActive === true || row.isActive === false ? row.isActive : null),
+    level: coerceNumberOrNull(row.level ?? null),
+    updated_at: coerceStringOrNull(row.updated_at ?? row.updatedAt ?? null)
+  };
+}
+
+export interface TopSellerUI {
+  id: string;
+  username: string;
+  display_name?: string | null;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  name?: string | null;
+  avatar?: string | null;
+  verified?: boolean;
+  items?: number;
+  product_count?: number;
+  rating?: number; // Changed from number | null to match UI component expectations
+}
+
+// Brand type with required trending property
+export interface TopBrandUI {
+  id: string;
+  name: string;
+  avatar?: string | null;
+  verified?: boolean;
+  trending: string;
+  items: number;
+}
+
+export function mapBrand(row: Record<string, any>): TopBrandUI {
+  const name = coerceString(row.name ?? row.full_name ?? row.username ?? row.display_name ?? 'Unknown Brand');
+  const avatar = coerceStringOrNull(row.avatar_url ?? row.avatar ?? row.profile_image ?? null);
+  const items = coerceNumber(row.items ?? row.total_items ?? row.total_sales ?? row.product_count ?? 0);
+  // Trending can be 'up', 'down', or 'stable' - default to 'stable' if not provided
+  const trendingValue = row.trending ?? row.trend ?? null;
+  const trending = typeof trendingValue === 'string' && ['up', 'down', 'stable'].includes(trendingValue) 
+    ? trendingValue 
+    : 'stable';
+  
+  return {
+    id: ensureId(row.id ?? row.seller_id ?? row.user_id ?? name, slugify(name) || 'unknown-brand'),
+    name: name,
+    avatar: avatar,
+    verified: Boolean(row.verified ?? row.is_verified ?? false),
+    trending: trending,
+    items: items
+  };
+}
+
+export function mapSeller(row: Record<string, any>): TopSellerUI {
+  const username = coerceString(row.username ?? row.user_name ?? row.handle ?? row.display_name ?? '');
+  const fullName = coerceStringOrNull(row.full_name ?? row.name ?? null);
+  const avatar = coerceStringOrNull(row.avatar_url ?? row.avatar ?? row.profile_image ?? null);
+  // Properly narrow rating from number | null to number using TypeScript control flow
+  const ratingValue = row.rating ?? row.avg_rating ?? null;
+  const rating = typeof ratingValue === 'number' ? ratingValue : 0;
+  
+  return {
+    id: ensureId(row.id ?? row.seller_id ?? row.user_id ?? username, username || 'unknown'),
+    username: username || (fullName ? slugify(fullName) : 'user'),
+    display_name: coerceStringOrNull(row.display_name ?? null),
+    full_name: fullName,
+    avatar_url: avatar,
+    name: fullName ?? username,
+    avatar: avatar,
+    verified: Boolean(row.verified ?? row.is_verified ?? false),
+    items: coerceNumber(row.items ?? row.total_items ?? row.total_sales ?? 0),
+    product_count: coerceNumber(row.product_count ?? row.products_count ?? 0),
+    rating: rating // Now properly typed as number
+  };
+}
+
 export interface OrderItemUI extends Record<string, unknown> {
   id: string;
   product_id: string;

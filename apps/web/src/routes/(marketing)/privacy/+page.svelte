@@ -13,8 +13,8 @@
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
 		
 		<div class="bg-white shadow-sm rounded-lg p-6 prose prose-gray max-w-none">
-			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-				<p class="text-sm text-blue-800">
+			<div class="bg-[var(--surface-brand-strong)]/5 border border-[var(--surface-brand-strong)]/20 rounded-lg p-4">
+				<p class="text-sm text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)]">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
 				</p>
 			</div>

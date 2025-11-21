@@ -1,19 +1,9 @@
 import { test, expect } from './fixtures';
-import { devices } from '@playwright/test';
 
 test.describe('Cross-Browser Compatibility', () => {
-  // Test configurations for different browsers
-  const browsers = [
-    { name: 'Chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'Firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'WebKit', use: { ...devices['Desktop Safari'] } }
-  ];
+  // Browser compatibility tests - run across all configured projects
 
-  browsers.forEach(browser => {
-    test.describe(`${browser.name} Compatibility`, () => {
-      test.use(browser.use);
-
-      test('should load homepage correctly', async ({ page }) => {
+  test('should load homepage correctly', async ({ page }) => {
         await page.goto('/');
         await page.waitForLoadState('networkidle');
         
@@ -256,12 +246,10 @@ test.describe('Cross-Browser Compatibility', () => {
         
   expect(modernJSWorks.arrowFunction).toBe('arrow result');
   expect(modernJSWorks.templateLiteral).toBe('template result');
-  expect(modernJSWorks.destructuring).toBe(true);
-  expect(modernJSWorks.objectDestructuring).toBe(true);
-        expect(modernJSWorks.classWorks).toBe('class result');
-  expect(modernJSWorks.promiseWorks).toBe(true);
-      });
-    });
+    expect(modernJSWorks.destructuring).toBe(true);
+    expect(modernJSWorks.objectDestructuring).toBe(true);
+    expect(modernJSWorks.classWorks).toBe('class result');
+    expect(modernJSWorks.promiseWorks).toBe(true);
   });
 
   test.describe('Browser-Specific Features', () => {

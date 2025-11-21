@@ -33,7 +33,7 @@
 </script>
 
 <div class="grid grid-cols-4 gap-2">
-  {#each categories as category}
+  {#each categories as category (category.key)}
     <a
       href="/category/{category.key}"
       class="{buttonClasses} rounded-lg p-2 transition-colors min-h-11 flex flex-col items-center justify-center border"

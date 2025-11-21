@@ -22,17 +22,23 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver for virtualization tests
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  observe() {}
-  disconnect() {}
-  unobserve() {}
-};
+class MockIntersectionObserver {
+  readonly root = null;
+  readonly rootMargin = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  constructor(_callback: any, _options?: any) {}
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): any[] { return []; }
+}
+(globalThis as any).IntersectionObserver = MockIntersectionObserver;
 
 // Mock ResizeObserver for responsive components
-global.ResizeObserver = class ResizeObserver {
-  constructor() {}
-  observe() {}
-  disconnect() {}
-  unobserve() {}
-};
+class MockResizeObserver implements ResizeObserver {
+  constructor(_callback: ResizeObserverCallback) {}
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+(globalThis as any).ResizeObserver = MockResizeObserver as any;

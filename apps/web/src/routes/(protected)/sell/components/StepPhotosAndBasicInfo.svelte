@@ -20,8 +20,8 @@
     uploadedImages: UploadedImage[];
     categories: Category[];
     isUploadingImages: boolean;
-    onImageUpload: (images: UploadedImage[]) => void;
-    onImageDelete: (index: number) => Promise<void>;
+  onImageUpload: (files: File[]) => Promise<UploadedImage[]>;
+  onImageDelete: (path: string) => Promise<boolean>;
     onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
   }
   
@@ -105,7 +105,7 @@
         bind:value={formData.description}
         placeholder={i18n.sell_descriptionPlaceholder()}
         rows="3"
-        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md resize-none"
+        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-[var(--state-focus)] rounded-md resize-none"
       ></textarea>
       <div class="text-xs text-gray-500 mt-1 text-right">
         {formData.description.length}/500

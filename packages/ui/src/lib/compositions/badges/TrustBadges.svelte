@@ -65,7 +65,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6" role="list">
       {#each badges.filter(badge => badge.show) as badge}
         <div class="flex flex-col items-center text-center p-4 rounded-lg border border-gray-200 bg-gray-50" role="listitem">
-          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 mb-3">
+          <div class="w-12 h-12 flex items-center justify-center rounded-full bg-[var(--surface-brand-strong)]/10 text-[var(--brand-primary-strong)] mb-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{badge.icon}" />
             </svg>
@@ -79,7 +79,7 @@
     <div class="flex flex-wrap items-center justify-center gap-6 py-4" role="list">
       {#each badges.filter(badge => badge.show) as badge}
         <div class="flex flex-col items-center text-center group" role="listitem">
-          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors mb-2">
+          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors mb-2 badge-icon">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{badge.icon}" />
             </svg>
@@ -97,11 +97,8 @@
   }
   
   /* Enhanced hover effects for default variant */
-  .trust-badges .group:hover .group-hover\:bg-blue-100 {
+  .trust-badges .group:hover .badge-icon {
     background-color: oklch(0.94 0.04 240);
-  }
-  
-  .trust-badges .group:hover .group-hover\:text-blue-600 {
     color: oklch(0.52 0.15 240);
   }
   
@@ -134,11 +131,5 @@
     border-color: oklch(0.95 0.005 270);
   }
   
-  .text-blue-600 {
-    color: oklch(0.52 0.15 240);
-  }
-  
-  .bg-blue-100 {
-    background-color: oklch(0.94 0.04 240);
-  }
+  /* Removed invalid class-like selectors that included brackets and slashes */
 </style>

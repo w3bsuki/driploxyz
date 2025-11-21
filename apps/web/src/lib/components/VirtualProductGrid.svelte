@@ -65,10 +65,10 @@
   const endRow = $derived(Math.min(totalRows, startRow + Math.ceil(containerHeight / itemHeight) + overscan * 2));
 
   // Get visible products
-  const visibleProducts = $derived(() => {
+  const visibleProducts = $derived.by(() => {
     const startIndex = startRow * itemsPerRow;
     const endIndex = Math.min(products.length, endRow * itemsPerRow);
-    return products.slice(startIndex, endIndex);
+    return products.slice(startIndex, endIndex) as Product[];
   });
 
   // Calculate offsets for positioning
@@ -78,13 +78,13 @@
   let intersectionObserver: IntersectionObserver | null = null;
 
   // Scroll handler with throttling
-  let scrollTimeout: number;
+  let scrollTimeout: number | undefined;
   const handleScroll = (event: Event) => {
     if (scrollTimeout) {
       clearTimeout(scrollTimeout);
     }
 
-    scrollTimeout = setTimeout(() => {
+    scrollTimeout = (setTimeout(() => {
       const target = event.target as HTMLElement;
       scrollTop = target.scrollTop;
 
@@ -95,7 +95,7 @@
           onLoadMore();
         }
       }
-    }, 16); // ~60fps
+  }, 16) as unknown) as number; // ~60fps
   };
 
   // Setup intersection observer for visibility tracking
@@ -174,7 +174,8 @@
         class="product-grid"
         style="display: grid; grid-template-columns: repeat({gridColumns}, 1fr); gap: 1rem;"
       >
-        {#each visibleProducts as product (product.id)}
+  {#each visibleProducts as product_ (product_.id)}
+    {@const product = product_ as Product}
           <div
             class="product-card"
             style="height: {itemHeight - 16}px;"
@@ -259,21 +260,21 @@
   }
 
   .product-card {
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    background: var(--surface-base);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     transition: all 0.2s ease;
     cursor: pointer;
   }
 
   .product-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     transform: translateY(-1px);
   }
 
   .product-card:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid var(--state-focus);
     outline-offset: 2px;
   }
 
@@ -286,8 +287,8 @@
 
   .product-image {
     position: relative;
-    height: 12rem;
-    background-color: #f3f4f6;
+    height: var(--space-48);
+    background-color: var(--surface-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,44 +300,44 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    background-color: #f9fafb;
-    border-radius: 0.5rem;
+    background-color: var(--surface-subtle);
+    border-radius: var(--radius-lg);
   }
 
   .product-info {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .product-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0 0 0.5rem 0;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2) 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .product-price {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #059669;
-    margin: 0 0 0.25rem 0;
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-1) 0;
   }
 
   .product-condition {
-    font-size: 0.75rem;
-    color: #6b7280;
-    background-color: #f3f4f6;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.25rem;
+    font-size: var(--text-xs);
+    color: var(--text-subtle);
+    background-color: var(--surface-subtle);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
     display: inline-block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-1);
   }
 
   .product-seller {
-    font-size: 0.75rem;
-    color: #6b7280;
+    font-size: var(--text-xs);
+    color: var(--text-subtle);
     margin: 0;
   }
 
@@ -345,15 +346,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    color: #6b7280;
+    padding: var(--space-8);
+    color: var(--text-subtle);
   }
 
   .loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
+    width: var(--space-8);
+    height: var(--space-8);
+    border: 2px solid var(--border-subtle);
+    border-top: 2px solid var(--state-focus);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 0.5rem;
@@ -363,9 +364,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    color: #6b7280;
-    font-size: 0.875rem;
+    padding: var(--space-8);
+    color: var(--text-subtle);
+    font-size: var(--text-sm);
   }
 
   @keyframes spin {

@@ -163,7 +163,7 @@
           onclick={() => selectGender(category.id)}
           class="px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors {
             gender === category.id 
-              ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
+              ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] ring-2 ring-[var(--state-focus)] ring-opacity-50' 
               : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
           }"
           aria-pressed={gender === category.id}
@@ -193,7 +193,7 @@
               onclick={() => selectType(category.id)}
               class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 type === category.id 
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
+                  ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] ring-2 ring-[var(--state-focus)] ring-opacity-50' 
                   : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
               }"
               aria-pressed={type === category.id}
@@ -206,7 +206,7 @@
                 <span class="flex-1">{translateCategory(category.name)}</span>
               {/if}
               {#if type === category.id}
-                <svg class="w-4 h-4 text-blue-600 shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4 text-[var(--brand-primary-strong)] shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
               {/if}
@@ -238,7 +238,7 @@
           onclick={() => selectSpecific('')}
           class="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
             specific === '' 
-              ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
+              ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] ring-2 ring-[var(--state-focus)] ring-opacity-50' 
               : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
           }"
           aria-pressed={specific === ''}
@@ -247,7 +247,7 @@
           <span class="text-base shrink-0">⏭️</span>
           <span class="flex-1">Skip - I'll stay with {translateCategory(typeCategories.find(c => c.id === type)?.name || '')}</span>
           {#if specific === ''}
-            <svg class="w-4 h-4 text-blue-600 shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4 text-[var(--brand-primary-strong)] shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
           {/if}
@@ -263,7 +263,7 @@
               onclick={() => selectSpecific(category.id)}
               class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 specific === category.id 
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
+                  ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] ring-2 ring-[var(--state-focus)] ring-opacity-50' 
                   : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
               }"
               aria-pressed={specific === category.id}
@@ -271,7 +271,7 @@
             >
               <span class="flex-1">{translateCategory(category.name)}</span>
               {#if specific === category.id}
-                <svg class="w-4 h-4 text-blue-600 shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4 text-[var(--brand-primary-strong)] shrink-0 ml-auto" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
               {/if}

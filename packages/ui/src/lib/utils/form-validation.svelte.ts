@@ -308,7 +308,7 @@ export interface FormInputProps {
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
-  autocomplete?: string;
+  autocomplete?: import('svelte/elements').FullAutoFill | null;
   'aria-describedby'?: string;
   'aria-invalid'?: boolean;
   'aria-label'?: string;

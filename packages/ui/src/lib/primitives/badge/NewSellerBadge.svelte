@@ -18,6 +18,6 @@
   };
 </script>
 
-<span class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-full shadow-sm {sizeClasses[size]} {className}">
+<span class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-green-600 text-[var(--text-inverse)] font-bold rounded-full shadow-sm {sizeClasses[size]} {className}">
   {i18n.badge_new()}
 </span>

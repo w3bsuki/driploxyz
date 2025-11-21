@@ -4,6 +4,7 @@ import { createServices } from '@repo/core/services';
 import { stripe } from '@repo/core/stripe/server';
 import { enforceRateLimit } from '$lib/server/security/rate-limiter';
 import { paymentLogger } from '$lib/utils/log';
+import { COUNTRY_CONFIGS, type CountryCode } from '$lib/country/constants';
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
   // Critical rate limiting for checkout operations
@@ -129,9 +130,12 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       // Create payment intent for single product
       paymentLogger.info('Creating payment intent for single product', { productId });
       
+      const countryCode = (locals.country || 'BG') as CountryCode;
+      const currency = COUNTRY_CONFIGS[countryCode]?.currency.toLowerCase() || 'bgn';
+
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
         amount: totalAmount,
-        currency: 'bgn',
+        currency,
         productId,
         sellerId: product.seller_id,
         buyerId: user.id,
@@ -210,9 +214,12 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       }
 
       // Create payment intent for bundle
+      const countryCode = (locals.country || 'BG') as CountryCode;
+      const currency = COUNTRY_CONFIGS[countryCode]?.currency.toLowerCase() || 'bgn';
+
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
         amount: totalAmount,
-        currency: 'bgn',
+        currency,
         productId: bundleItems[0].id, // Primary item
         sellerId: bundleItems[0].seller_id,
         buyerId: user.id,

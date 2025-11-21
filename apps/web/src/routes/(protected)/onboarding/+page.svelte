@@ -18,7 +18,6 @@
   import { createLogger } from '$lib/utils/log';
 
   const log = createLogger('onboarding-client');
-  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { focusWithAnnouncement } from '$lib/utils/navigation';
   import type { PageData } from './$types';
 
@@ -28,8 +27,7 @@
 
   let { data }: Props = $props();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const supabase = createBrowserSupabaseClient();
+  // Removed unused Supabase client to satisfy lints
 
   let step = $state(1);
   let showSuccessModal = $state(false);
@@ -225,14 +223,14 @@
   }
 
   function handleAccountTypeSelect(type: 'personal' | 'pro' | 'brand') {
-    log.debug('Account type selected', { type });
+  log.debug('Account type selected', { type });
     accountType = type;
     // Don't show payment modal immediately - wait for user to click continue
     if (type === 'personal') {
       // Reset payment status for personal accounts
       brandPaid = false;
     }
-    log.debug('Account type state updated', { accountType, canProceed: canProceed });
+  log.debug('Account type state updated', { accountType, canProceed: String(canProceed) });
   }
   
   function handleDiscountCodeChange(code: string) {
@@ -341,8 +339,8 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
-          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {#each Array(totalSteps) as _stepItem, i (i)}
+          <div class="h-2 rounded-full transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -413,8 +411,8 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
-          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {#each Array(totalSteps) as _stepItem, i (i)}
+          <div class="h-2 rounded-full transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -454,11 +452,6 @@
         <AvatarSelector
           selected={avatarUrl}
           onSelect={handleAvatarSelect}
-          translations={{
-            chooseAvatar: m.onboarding_chooseAvatar(),
-            uploadCustom: m.onboarding_uploadCustom(),
-            generateNew: m.onboarding_generateNew()
-          }}
         />
       </div>
     {/snippet}
@@ -494,8 +487,8 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
-          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {#each Array(totalSteps) as _stepItem, i (i)}
+          <div class="h-2 rounded-full transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -538,8 +531,8 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
-          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {#each Array(totalSteps) as _stepItem, i (i)}
+          <div class="h-2 rounded-full transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -556,10 +549,11 @@
             submitting = false;
             
             if (result.type === 'success') {
-              log.debug('Completion successful', result.data);
+              log.debug('Completion successful', { status: 'success' });
               
               // Check if we got a verified profile back
-              if (result.data?.profile?.onboarding_completed === true) {
+              const profileNode = (result as any).data?.profile as { onboarding_completed?: boolean } | undefined;
+              if (profileNode?.onboarding_completed === true) {
                 log.debug('Profile verified as complete');
                 
                 // Show success modal briefly
@@ -575,13 +569,14 @@
                   }
                 }, 2000);
               } else {
-                log.error('Profile not properly completed', undefined, { profile: result.data?.profile });
+                log.error('Profile not properly completed', undefined, { profile: JSON.stringify((result as any).data?.profile ?? {}) });
                 toasts.error('Profile update may have failed. Please try again.');
               }
               
             } else if (result.type === 'failure') {
-              log.error('Completion failed', undefined, result.data);
-              toasts.error(result.data?.error || 'Failed to complete onboarding');
+              const errMsg = String((result as any).data?.error ?? 'unknown');
+              log.error('Completion failed', undefined, { error: errMsg });
+              toasts.error((result as any).data?.error || 'Failed to complete onboarding');
             } else {
               log.error('Unexpected result type', undefined, { resultType: result.type });
               toasts.error('An unexpected error occurred. Please try again.');
@@ -641,7 +636,7 @@
 {#if successModalLoaded && OnboardingSuccessModal}
   <OnboardingSuccessModal
     show={showSuccessModal}
-    accountType={accountType}
+    accountType={accountType === 'brand' ? 'brand' : accountType === 'personal' ? 'personal' : undefined}
     onClose={handleSuccessComplete}
     translations={{
       welcomeBrand: m.onboarding_welcomeBrand(),
@@ -662,7 +657,7 @@
 {#if brandPaymentModalLoaded && BrandPaymentModal}
   <BrandPaymentModal
     show={showBrandPayment}
-    accountType={accountType}
+    accountType={accountType === 'brand' ? 'brand' : accountType === 'pro' ? 'pro' : undefined}
     initialDiscountCode={discountCode}
     stripePublishableKey={publicEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''}
     onSuccess={handleBrandPaymentSuccess}

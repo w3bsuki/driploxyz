@@ -35,9 +35,9 @@
   <title>Admin Dashboard - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+<div class="min-h-screen bg-gray-50">
   <!-- Admin Header -->
-  <header class="backdrop-blur-xl bg-white/70 shadow-sm">
+  <header class="bg-white border-b border-zinc-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center space-x-4">
@@ -55,10 +55,10 @@
             </svg>
           </button>
           
-          <h1 class="text-lg sm:text-xl font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+          <h1 class="text-lg sm:text-xl font-semibold text-zinc-900">
             {i18n.admin_driploAdmin()}
           </h1>
-          <span class="hidden sm:inline-block px-3 py-1 bg-gradient-to-r from-red-500/10 to-pink-500/10 text-red-600 text-xs font-medium rounded-full backdrop-blur-sm">
+          <span class="hidden sm:inline-block px-3 py-1 bg-red-50 text-red-600 text-xs font-medium rounded-full">
             ADMIN
           </span>
         </div>
@@ -78,7 +78,7 @@
 
   <!-- Mobile Navigation Dropdown -->
   {#if mobileMenuOpen}
-    <div class="lg:hidden backdrop-blur-xl bg-white/80 shadow-lg">
+    <div class="lg:hidden bg-white border-b border-zinc-200">
       <nav class="px-4 py-3 space-y-1">
         {#each navItems as item}
           <a
@@ -86,7 +86,7 @@
             onclick={() => mobileMenuOpen = false}
             class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                    {page.url.pathname === item.href 
-                     ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' 
+                     ? 'bg-zinc-900 text-white shadow-md'  
                      : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50'}"
           >
             <span class="text-lg">{item.icon}</span>
@@ -101,14 +101,14 @@
     <div class="lg:flex lg:gap-8">
       <!-- Desktop Sidebar Navigation -->
       <aside class="hidden lg:block w-64 shrink-0">
-        <div class="backdrop-blur-xl bg-white/60 rounded-2xl p-4 shadow-lg">
+        <div class="bg-white rounded-2xl p-4 border border-zinc-200">
           <nav class="space-y-2">
             {#each navItems as item}
               <a
                 href={item.href}
                 class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                        {page.url.pathname === item.href 
-                         ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md transform scale-105' 
+                         ? 'bg-zinc-900 text-white shadow-md transform scale-105'  
                          : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50 hover:scale-102'}"
               >
                 <span class="text-lg">{item.icon}</span>

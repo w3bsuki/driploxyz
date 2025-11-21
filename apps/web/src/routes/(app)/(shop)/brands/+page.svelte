@@ -87,7 +87,7 @@
             placeholder="Search brands..."
             bind:value={searchQuery}
             onkeydown={(e) => e.key === 'Enter' && handleSearch()}
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-zinc-500"
           />
         </div>
         
@@ -114,9 +114,9 @@
         <div class="flex justify-center items-center gap-2 mt-4">
           <span class="text-sm text-gray-500">Active filters:</span>
           {#if searchQuery}
-            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] rounded-full">
               "{searchQuery}"
-              <button onclick={() => { searchQuery = ''; handleSearch(); }} class="hover:bg-blue-200 rounded-full p-0.5" aria-label="Clear search query">
+              <button onclick={() => { searchQuery = ''; handleSearch(); }} class="hover:bg-[var(--surface-brand-strong)]/20 rounded-full p-0.5" aria-label="Clear search query">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>
@@ -130,7 +130,7 @@
 
   <!-- Featured Brands Hero -->
   {#if data.featuredBrands.length > 0 && !searchQuery && data.currentPage === 1}
-    <div class="bg-gradient-to-br from-purple-50 to-pink-50 border-b border-gray-200">
+    <div class="bg-zinc-50 border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8">
         <div class="text-center mb-6">
           <h2 class="text-lg font-semibold text-gray-900">Featured Brands</h2>
@@ -139,7 +139,7 @@
         
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {#each data.featuredBrands as brand}
-            <button type="button" class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow text-left w-full" onclick={() => handleBrandClick(brand)} aria-label={`View ${brand.full_name || brand.username || 'brand'}`}>
+            <button type="button" class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow text-left w-full" onclick={() => handleBrandClick({ id: brand.id, username: brand.username ?? undefined })} aria-label={`View ${brand.full_name || brand.username || 'brand'}`}>
               <div class="flex flex-col items-center text-center">
                 <Avatar
                   src={brand.avatar_url ?? undefined}
@@ -155,21 +155,21 @@
                 
                 {#if brand.verified}
                   <div class="flex items-center gap-1 mt-1">
-                    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 text-[var(--brand-primary-strong)]" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
-                    <span class="text-xs text-blue-600">Verified</span>
+                    <span class="text-xs text-[var(--brand-primary-strong)]">Verified</span>
                   </div>
                 {/if}
                 
                 <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
                   <span>{brand.total_sales} sales</span>
-                  {#if brand.rating > 0}
+                  {#if (brand.rating ?? 0) > 0}
                     <span class="flex items-center gap-0.5">
                       <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
-                      {brand.rating.toFixed(1)}
+                      {(brand.rating ?? 0).toFixed(1)}
                     </span>
                   {/if}
                 </div>
@@ -212,7 +212,7 @@
                       {brand.full_name || brand.username}
                     </h3>
                     {#if brand.verified}
-                      <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg class="w-4 h-4 text-[var(--brand-primary-strong)] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                       </svg>
                     {/if}
@@ -263,7 +263,7 @@
                   <Button
                     size="sm"
                     variant="outline"
-                    onclick={() => handleBrandClick(brand)}
+                    onclick={() => handleBrandClick({ id: brand.id, username: brand.username ?? undefined })}
                     class="w-full"
                   >
                     View Brand
@@ -325,6 +325,7 @@
 <style>
   .line-clamp-2 {
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;

@@ -114,12 +114,12 @@
           <button
             type="button"
             onclick={() => setRating(star)}
-            class="min-w-[44px] min-h-[44px] w-10 h-10 rounded-lg border-2 transition-colors {rating >= star ? 'bg-yellow-400 border-yellow-500' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
+            class="min-w-[44px] min-h-[44px] w-10 h-10 rounded-lg border-2 transition-colors {rating >= star ? 'bg-[var(--status-warning-solid)] border-[var(--status-warning-solid)]' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
             aria-label="{star} stars overall rating"
             role="radio"
             aria-checked={rating === star}
           >
-            <svg class="w-6 h-6 mx-auto {rating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-6 h-6 mx-auto {rating >= star ? 'text-[var(--text-inverse)]' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
           </button>
@@ -139,12 +139,12 @@
             <button
               type="button"
               onclick={() => setCommunicationRating(star)}
-              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {communicationRating >= star ? 'bg-blue-400 border-blue-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {communicationRating >= star ? 'bg-[var(--surface-brand-strong)]/40 border-[var(--brand-primary)]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for communication"
               role="radio"
               aria-checked={communicationRating === star}
             >
-              <svg class="w-4 h-4 mx-auto {communicationRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 mx-auto {communicationRating >= star ? 'text-[var(--text-inverse)]' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </button>
@@ -162,12 +162,12 @@
             <button
               type="button"
               onclick={() => setShippingRating(star)}
-              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {shippingRating >= star ? 'bg-green-400 border-green-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {shippingRating >= star ? 'bg-[var(--status-success-solid)] border-[var(--status-success-solid)]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for shipping"
               role="radio"
               aria-checked={shippingRating === star}
             >
-              <svg class="w-4 h-4 mx-auto {shippingRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 mx-auto {shippingRating >= star ? 'text-[var(--text-inverse)]' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </button>
@@ -190,7 +190,7 @@
               role="radio"
               aria-checked={productQualityRating === star}
             >
-              <svg class="w-4 h-4 mx-auto {productQualityRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 mx-auto {productQualityRating >= star ? 'text-[var(--text-inverse)]' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </button>
@@ -208,7 +208,7 @@
         id="{commentId}"
         bind:value={comment}
         rows="3"
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-[var(--border-focus)]"
         placeholder="Share your experience with other buyers..."
       ></textarea>
     </div>

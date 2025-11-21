@@ -10,6 +10,16 @@ const config = {
   compilerOptions: {
     // CRITICAL: Lock compiler to Svelte 5 runes mode
     runes: true
+  },
+  
+  // Allow legacy syntax in Storybook addons
+  vitePlugin: {
+    dynamicCompileOptions({ filename }) {
+      // Allow legacy syntax in node_modules (for Storybook addons)
+      if (filename.includes('node_modules')) {
+        return { runes: undefined };
+      }
+    }
   }
 };
 

@@ -2,12 +2,12 @@
   import Avatar from '../../primitives/avatar/Avatar.svelte';
   import ProBadge from '../../primitives/badge/ProBadge.svelte';
   import BrandBadge from '../../primitives/badge/BrandBadge.svelte';
-  import type { Seller } from '../../types/index';
+  import type { Seller, SellerLike } from '../../types/index';
   import type { Product } from '../../types/product';
   import * as i18n from '@repo/i18n';
 
   interface Props {
-    seller: Seller;
+    seller: Seller | SellerLike;
     productPreviews?: Product[];
     onclick?: () => void;
     class?: string;
@@ -41,7 +41,7 @@
          hover:border-gray-300 hover:bg-gray-50
          transition-all duration-200
          touch-manipulation focus-visible:outline-none focus-visible:ring-2
-         focus-visible:ring-blue-500 focus-visible:ring-offset-2 {className}"
+         focus-visible:ring-[var(--state-focus)] focus-visible:ring-offset-2 {className}"
   onclick={onclick}
   type="button"
 >
@@ -80,7 +80,7 @@
       {#if seller.account_type || hasVerifiedBadge}
         {#if seller.account_type === 'admin'}
           <!-- Keep admin text badge for authority -->
-          <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-red-600 text-white">
+          <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-[var(--status-error-solid)] text-[var(--text-inverse)]">
             ADMIN
           </span>
         {:else if seller.account_type === 'brand'}

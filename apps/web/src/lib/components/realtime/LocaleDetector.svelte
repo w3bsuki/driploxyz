@@ -18,7 +18,9 @@
   let currentLocale = $state<LanguageTag>(getLocale());
   
   // Detect and handle locale on component mount
-  $effect(async () => {
+  // Note: $effect must not be async; wrap async work in an IIFE
+  $effect(() => {
+    (async () => {
     // Skip if user is authenticated and has a stored preference in their profile
     const session = page.data.session;
     const user = page.data.user;
@@ -52,6 +54,7 @@
     if (detection.detectedLocale !== currentLocale && detection.confidence !== 'low') {
       showBanner = true;
     }
+    })();
   });
   
   function handleAcceptLocale() {

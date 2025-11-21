@@ -12,6 +12,7 @@
     status?: 'sending' | 'sent' | 'delivered' | 'read';
     is_read?: boolean;
     delivered_at?: string;
+    message_type?: 'system' | 'order_update' | 'user';
   }
   
   interface Conversation {
@@ -41,7 +42,7 @@
     conversation: Conversation | null;
     currentUserId: string;
     onlineUsers: Set<string>;
-    typingUsers: Map<string, unknown>;
+  typingUsers: Map<string, { conversationId?: string; username?: string }>;
     onBackToList: () => void;
     messagesContainer?: HTMLDivElement | null;
     isLoadingOlder?: boolean;
@@ -66,7 +67,7 @@
     return i18n.messages_now();
   };
   
-  const getActiveStatus = (userId: string | null, lastActiveAt: string | null) => {
+  const getActiveStatus = (userId: string | undefined | null, lastActiveAt: string | undefined | null) => {
     if (!userId) return '';
     
     if (onlineUsers.has(userId)) {
@@ -85,20 +86,21 @@
     return 'Offline';
   };
 
+  type OrderStatusKey = 'pending' | 'paid' | 'shipped' | 'delivered' | 'completed' | 'cancelled' | 'disputed';
   const getOrderStatusInfo = (status?: string) => {
     if (!status) return { text: 'Unknown', color: 'gray', icon: '' };
     
-    const statusMap = {
-      'pending': { text: 'Pending Payment', color: 'yellow', icon: '⏳' },
-      'paid': { text: 'Paid - Ready to Ship', color: 'blue', icon: '💳' },
-      'shipped': { text: 'Shipped', color: 'purple', icon: '📦' },
+    const statusMap: Record<OrderStatusKey, { text: string; color: string; icon: string }> = {
+      'pending': { text: 'Pending Payment', color: 'zinc', icon: '⏳' },
+      'paid': { text: 'Paid - Ready to Ship', color: 'zinc', icon: '💳' },
+      'shipped': { text: 'Shipped', color: 'zinc', icon: '📦' },
       'delivered': { text: 'Delivered', color: 'green', icon: '✅' },
       'completed': { text: 'Completed', color: 'green', icon: '🎉' },
       'cancelled': { text: 'Cancelled', color: 'red', icon: '❌' },
       'disputed': { text: 'Disputed', color: 'red', icon: '⚠️' }
     };
-    
-    return statusMap[status] || { text: status, color: 'gray', icon: '' };
+    const key = status as OrderStatusKey;
+    return statusMap[key] ?? { text: status, color: 'gray', icon: '' };
   };
   
   // Fixed: $derived doesn't take a function, just the expression
@@ -110,9 +112,9 @@
   
   // Fixed: $derived doesn't take a function
   const typingUser = $derived(
-    Array.from(typingUsers.values()).find(u => 
-      u.conversationId === conversation?.id
-    )
+    Array.from(typingUsers.values()).find((u) => 
+      (u as any).conversationId === conversation?.id
+    ) as { conversationId?: string; username?: string } | undefined
   );
 </script>
 
@@ -155,9 +157,9 @@
     {#if conversation.isOrderConversation && conversation.orderId}
       {@const statusInfo = getOrderStatusInfo(conversation.orderStatus)}
       <!-- Order Context Display -->
-      <div class="mt-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200">
+      <div class="mt-3 bg-zinc-50 rounded-xl p-3 border border-zinc-200">
         <div class="flex items-center space-x-2 mb-3">
-          <span class="text-xs font-semibold text-green-900 uppercase tracking-wide">Order Conversation</span>
+          <span class="text-xs font-semibold text-zinc-900 uppercase tracking-wide">Order Conversation</span>
           <span class="text-xs px-2 py-0.5 rounded-sm font-medium bg-{statusInfo.color}-100 text-{statusInfo.color}-700">
             {statusInfo.icon} {statusInfo.text}
           </span>
@@ -182,7 +184,7 @@
         <!-- Order Actions -->
         {#if conversation.orderStatus === 'paid'}
           <div class="flex space-x-2">
-            <button class="flex-1 text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500">
+            <button class="flex-1 text-xs bg-zinc-900 text-white px-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-500">
               📦 Mark as Shipped
             </button>
             <button class="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-500">
@@ -191,7 +193,7 @@
           </div>
         {:else if conversation.orderStatus === 'shipped'}
           <div class="flex space-x-2">
-            <button class="flex-1 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+            <button class="flex-1 text-xs bg-zinc-900 text-white px-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--state-focus)]">
               ✅ Confirm Delivery
             </button>
             <button class="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-500">
@@ -201,20 +203,25 @@
         {/if}
       </div>
     {:else if conversation.isOffer}
-      <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+      <div class="mt-3 bg-zinc-50 rounded-xl p-3 border border-[var(--surface-brand-strong)]/20">
         <div class="flex justify-between items-start mb-2">
           <div>
-            <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
-            <p class="text-xs text-blue-700">{conversation.bundleItems?.length} items • Save ${(conversation.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0) - conversation.offerPrice}</p>
+            <p class="text-xs font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)] uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
+            {#key conversation.id}
+              {@const items = (conversation.bundleItems as Array<{ price: number }> | undefined) ?? []}
+              {@const total = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0)}
+              {@const offer = Number(conversation.offerPrice ?? 0)}
+              <p class="text-xs text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]">{items.length} items • Save ${total - offer}</p>
+            {/key}
           </div>
-          <p class="text-lg font-bold text-blue-900">${conversation.offerPrice}</p>
+          <p class="text-lg font-bold text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]">${Number(conversation.offerPrice ?? 0)}</p>
         </div>
       </div>
     {:else if conversation.isProductConversation && conversation.productTitle}
-      <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+      <div class="mt-3 bg-zinc-50 rounded-xl p-3 border border-[var(--surface-brand-strong)]/20">
         <div class="flex items-center space-x-2 mb-2">
-          <span class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Product Conversation</span>
-          <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-sm font-medium">Active</span>
+          <span class="text-xs font-semibold text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)] uppercase tracking-wide">Product Conversation</span>
+          <span class="text-xs bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] px-2 py-0.5 rounded-sm font-medium">Active</span>
         </div>
         <a href={getProductUrl({ id: conversation.productId!, slug: conversation.productSlug })} class="flex items-center space-x-3 p-2 min-h-[var(--touch-standard)] bg-white rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary">
           <img src={conversation.productImage} alt={conversation.productTitle} class="w-12 h-12 rounded-lg object-cover shadow-xs" />
@@ -272,10 +279,10 @@
         <!-- System/Order Update Messages -->
         <div class="flex justify-center px-1">
           <div class="max-w-[90%] text-center">
-            <div class="bg-blue-50 text-blue-800 border border-blue-200 rounded-lg px-3 py-2">
+            <div class="bg-[var(--surface-brand-strong)]/5 text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] border border-[var(--surface-brand-strong)]/20 rounded-lg px-3 py-2">
               <p class="text-xs leading-relaxed font-medium">{message.content}</p>
             </div>
-            <p class="text-xs text-gray-400 mt-1">{timeAgo(message.created_at)}</p>
+            <p class="text-xs text-gray-400 mt-1">{timeAgo()}</p>
           </div>
         </div>
       {:else}
@@ -287,7 +294,7 @@
             </div>
             <div class="flex items-center justify-between mt-1.5 px-2">
               <p class="text-xs text-gray-500 {message.sender_id === currentUserId ? 'order-2' : ''}">
-                {timeAgo(message.created_at)}
+                {timeAgo()}
               </p>
               
               <!-- Message Status for sent messages -->
@@ -308,11 +315,11 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>Delivered</span>
-                  {:else if message.status === 'read' || message.is_read}
-                    <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {:else if conversation.status === 'read' || message.is_read}
+                    <svg class="w-3 h-3 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span class="text-blue-500">Read</span>
+                    <span class="text-zinc-900">Read</span>
                   {/if}
                 </div>
               {/if}

@@ -29,12 +29,32 @@
     }
     return '/placeholder-product.svg';
   });
+
+  // Generate srcset for responsive loading
+  const srcset = $derived(() => {
+    const url = imageUrl();
+    if (!url || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('/')) return undefined;
+    
+    // Check if it's a Supabase URL
+    if (url.includes('supabase.co/storage/v1/object/public')) {
+      // Generate widths: 320w, 640w, 800w (max)
+      // We don't go above 800 because the source is 800x800
+      return `
+        ${url}?width=320&format=webp 320w,
+        ${url}?width=640&format=webp 640w,
+        ${url}?width=800&format=webp 800w
+      `;
+    }
+    
+    return undefined;
+  });
 </script>
 
-<div class="relative aspect-square bg-[color:var(--surface-subtle)] overflow-hidden rounded-[var(--card-radius)] {className}">
+<div class="relative w-full h-full bg-(--surface-subtle) overflow-hidden {className}">
   <!-- Images are already WebP optimized during upload - no runtime transformations needed -->
   <img
     src={imageUrl()}
+    srcset={srcset()}
     {alt}
     loading={priority ? "eager" : "lazy"}
     fetchpriority={priority ? "high" : "auto"}

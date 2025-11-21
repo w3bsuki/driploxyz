@@ -34,7 +34,7 @@
   }: Props = $props();
 
   let searchValue = $state('');
-  let inputElement: HTMLInputElement;
+  let inputElement: HTMLInputElement = $state()!;
   let isSearching = $state(false);
   let quickResults = $state<ProductWithImages[]>([]);
   let showResults = $derived(searchValue.trim().length > 0 && quickResults.length > 0);
@@ -228,7 +228,7 @@
       <div class="p-3 border-t border-gray-100">
         <button
           onclick={executeSearch}
-          class="w-full px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation"
+          class="w-full px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-sm font-medium rounded-lg hover:bg-[var(--btn-primary-hover)] active:bg-[var(--btn-primary-active)] transition-colors touch-manipulation"
         >
           View all results for "{searchValue}"
         </button>

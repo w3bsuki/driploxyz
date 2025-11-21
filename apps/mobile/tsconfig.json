@@ -2,8 +2,8 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+    // TS 5.x supports "5.0" as the highest compatible value here
+    "ignoreDeprecations": "5.0",
     "paths": {
       "@/*": [
         "./*"

@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { AvatarSize, AvatarVariant } from '../../types';
-  import type { HTMLButtonAttributes, HTMLDivAttributes } from 'svelte/elements';
-
-  interface Props extends Omit<HTMLButtonAttributes, 'class' | 'children' | 'onclick'>, Omit<HTMLDivAttributes, 'class' | 'children' | 'onclick'> {
+  import type { HTMLButtonAttributes, HTMLAttributes } from 'svelte/elements';
+  type ButtonRest = Omit<HTMLButtonAttributes, 'class' | 'children' | 'onclick' | 'type'>;
+  type DivRest = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children' | 'onclick'>;
+  interface Common {
     src?: string | null | undefined;
     alt?: string;
     name?: string | null | undefined;
@@ -14,6 +15,7 @@
     class?: string;
     [attr: string]: unknown;
   }
+  type Props = (Common & { onclick: () => void } & ButtonRest) | (Common & { onclick?: undefined } & DivRest);
 
   let { 
     src,
@@ -91,7 +93,7 @@
   type="button"
   onclick={onclick}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
-  {...rest}
+  {...(rest as ButtonRest)}
 >
   {#if src && !imageError}
     <img
@@ -111,7 +113,7 @@
 {:else}
 <div
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"
-  {...rest}
+  {...(rest as DivRest)}
 >
   {#if src && !imageError}
     <img

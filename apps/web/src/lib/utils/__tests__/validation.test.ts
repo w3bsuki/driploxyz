@@ -1,4 +1,14 @@
 import { describe, it, expect } from 'vitest';
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+  validatePhone,
+  validateURL,
+  validatePrice,
+  validateLength,
+  sanitizeInput
+} from '../../utils/validation';
 
 describe('Validation Utilities', () => {
   describe('validateEmail', () => {
@@ -13,8 +23,7 @@ describe('Validation Utilities', () => {
       ];
 
       validEmails.forEach(email => {
-        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        expect(isValid).toBe(true);
+        expect(validateEmail(email)).toBe(true);
       });
     });
 
@@ -32,8 +41,7 @@ describe('Validation Utilities', () => {
       ];
 
       invalidEmails.forEach(email => {
-        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        expect(isValid).toBe(false);
+        expect(validateEmail(email)).toBe(false);
       });
     });
   });
@@ -50,9 +58,7 @@ describe('Validation Utilities', () => {
       ];
 
       strongPasswords.forEach(password => {
-        // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
-        const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-        expect(isValid).toBe(true);
+        expect(validatePassword(password)).toBe(true);
       });
     });
 
@@ -80,8 +86,7 @@ describe('Validation Utilities', () => {
       ];
 
       weakPasswords.forEach(password => {
-        const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-        expect(isValid).toBe(false);
+        expect(validatePassword(password)).toBe(false);
       });
     });
   });
@@ -100,9 +105,7 @@ describe('Validation Utilities', () => {
       ];
 
       validUsernames.forEach(username => {
-        // Alphanumeric, underscores, dots, hyphens, 3-30 characters
-        const isValid = /^[a-zA-Z0-9_.-]{3,30}$/.test(username);
-        expect(isValid).toBe(true);
+        expect(validateUsername(username)).toBe(true);
       });
     });
 
@@ -123,8 +126,7 @@ describe('Validation Utilities', () => {
       ];
 
       invalidUsernames.forEach(username => {
-        const isValid = /^[a-zA-Z0-9_.-]{3,30}$/.test(username);
-        expect(isValid).toBe(false);
+        expect(validateUsername(username)).toBe(false);
       });
     });
   });
@@ -143,10 +145,7 @@ describe('Validation Utilities', () => {
       ];
 
       validPhones.forEach(phone => {
-        // Basic phone validation - allows digits, spaces, dashes, parentheses, plus
-        const phoneRegex = new RegExp('^[\\d\\s\\-\\(\\)\\+]+$');
-        const isValid = phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
-        expect(isValid).toBe(true);
+        expect(validatePhone(phone)).toBe(true);
       });
     });
 
@@ -162,9 +161,7 @@ describe('Validation Utilities', () => {
       ];
 
       invalidPhones.forEach(phone => {
-        const phoneRegex = new RegExp('^[\\d\\s\\-\\(\\)\\+]+$');
-        const isValid = phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
-        expect(isValid).toBe(false);
+        expect(validatePhone(phone)).toBe(false);
       });
     });
   });
@@ -184,12 +181,7 @@ describe('Validation Utilities', () => {
       ];
 
       validURLs.forEach(url => {
-        try {
-          new URL(url);
-          expect(true).toBe(true);
-        } catch {
-          expect(false).toBe(true);
-        }
+        expect(validateURL(url)).toBe(true);
       });
     });
 
@@ -207,12 +199,7 @@ describe('Validation Utilities', () => {
       ];
 
       invalidURLs.forEach(url => {
-        try {
-          new URL(url);
-          expect(false).toBe(true);
-        } catch {
-          expect(true).toBe(true);
-        }
+        expect(validateURL(url)).toBe(false);
       });
     });
   });
@@ -232,8 +219,7 @@ describe('Validation Utilities', () => {
       ];
 
       validPrices.forEach(price => {
-        const isValid = /^\d+(\.\d{1,2})?$/.test(price);
-        expect(isValid).toBe(true);
+        expect(validatePrice(price)).toBe(true);
       });
     });
 
@@ -253,8 +239,7 @@ describe('Validation Utilities', () => {
       ];
 
       invalidPrices.forEach(price => {
-        const isValid = /^\d+(\.\d{1,2})?$/.test(price);
-        expect(isValid).toBe(false);
+        expect(validatePrice(price)).toBe(false);
       });
     });
   });
@@ -278,15 +263,14 @@ describe('Validation Utilities', () => {
       ];
 
       inputs.forEach((input, index) => {
-        const sanitized = input.replace(/<[^>]*>?/gm, '');
-        expect(sanitized).toBe(expected[index]);
+        expect(sanitizeInput(input)).toBe(expected[index]);
       });
     });
 
     it('should handle empty and null inputs', () => {
-      expect(''.replace(/<[^>]*>?/gm, '')).toBe('');
-      expect(null).toBe(null);
-      expect(undefined).toBe(undefined);
+  expect(sanitizeInput('')).toBe('');
+  expect(null).toBe(null);
+  expect(undefined).toBe(undefined);
     });
   });
 
@@ -328,14 +312,13 @@ describe('Validation Utilities', () => {
       const testCases = [
         { value: 'hello', min: 3, max: 10, expected: true },
         { value: 'hi', min: 3, max: 10, expected: false },
-        { value: 'this is too long', min: 3, max: 10, expected: false },
-        { value: 'exactly10', min: 10, max: 10, expected: true },
+  { value: 'this is too long', min: 3, max: 10, expected: false },
+  { value: 'exactly10', min: 9, max: 10, expected: true },
         { value: '', min: 0, max: 10, expected: true }
       ];
 
       testCases.forEach(({ value, min, max, expected }) => {
-        const isValid = value.length >= min && value.length <= max;
-        expect(isValid).toBe(expected);
+        expect(validateLength(value, min, max)).toBe(expected);
       });
     });
   });

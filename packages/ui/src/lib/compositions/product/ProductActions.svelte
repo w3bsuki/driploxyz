@@ -70,7 +70,7 @@
 </script>
 
 <!-- Compact bottom sheet with seller info and action buttons -->
-<div class="{className}" class:opacity-75={isLoading}>
+<div class={[className, { 'opacity-75': isLoading }]}>
 {#if showSellerInfo && (seller || productTitle)}
     <!-- Seller Info Section -->
     <div class="bg-white/95 backdrop-blur-sm border-b border-[color:var(--gray-200)] p-4 mb-4">
@@ -128,7 +128,7 @@
   <div class="px-4 pb-4">
     {#if isSold}
       <!-- Sold State -->
-      <div class="flex items-center justify-center gap-2.5 w-full h-10 px-4 
+      <div class="flex items-center justify-center gap-2.5 w-full h-11 px-4 
                   bg-[color:var(--status-success-bg)] 
                   border border-[color:var(--status-success-border)] 
                   text-[color:var(--status-success-text)] 
@@ -142,7 +142,7 @@
       </div>
     {:else if isOwner}
       <!-- Owner State -->
-      <div class="flex items-center justify-center gap-2.5 w-full h-10 px-4 
+      <div class="flex items-center justify-center gap-2.5 w-full h-11 px-4 
                   bg-[color:var(--surface-subtle)] 
                   border border-[color:var(--border-default)] 
                   text-[color:var(--text-secondary)] 
@@ -160,7 +160,7 @@
         <!-- Message Button -->
         <button 
           type="button" 
-          class="group relative flex items-center justify-center gap-2.5 h-10 px-5 
+          class="group relative flex items-center justify-center gap-2.5 h-11 px-5 
                  bg-[color:var(--surface-base)] 
                  border border-[color:var(--border-default)] 
                  text-[color:var(--text-secondary)] 
@@ -188,7 +188,7 @@
         <!-- Buy Button -->
         <button 
           type="button" 
-          class="group relative flex-1 flex items-center justify-center gap-2.5 h-10 px-6
+          class="group relative flex-1 flex items-center justify-center gap-2.5 h-11 px-6
                  bg-[color:var(--primary)] 
                  text-[color:var(--primary-fg)] 
                  rounded-lg font-semibold

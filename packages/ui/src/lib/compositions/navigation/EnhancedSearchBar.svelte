@@ -34,7 +34,7 @@
 
   let inputElement: HTMLInputElement;
   let focused = $state(false);
-  let dropdownVisible = $derived(focused && showDropdown && searchValue !== undefined);
+  let dropdownVisible = $derived.by(() => !!(focused && showDropdown && (searchValue || '').trim().length > 0));
 
   function handleInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;

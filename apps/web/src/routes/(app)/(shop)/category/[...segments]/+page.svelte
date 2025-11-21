@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, FilterPill, type Product } from '@repo/ui';
+  import { browser } from '$app/environment';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, CategoryPills, ProductCardSkeleton, type Product } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
@@ -10,7 +11,36 @@
   import { getProductUrl } from '$lib/utils/seo-urls';
   // import { CategoryService } from '@repo/core/services/categories';
   // import { ProfileService } from '@repo/core/services/profiles';
-  import { browser } from '$app/environment';
+  
+  // Local lightweight types to avoid 'never' issues and clarify intent
+  interface CategoryPill { slug: string; name: string; productCount?: number }
+  interface LevelCategory { slug: string; name: string }
+  // Raw product shape coming from server for this page (only the fields we read)
+  interface RawProduct {
+    id: string;
+    title: string;
+    description?: string | null;
+    price: number;
+    product_images?: { image_url: string; display_order?: number }[];
+    brand?: string | null;
+    size?: string | null;
+    condition: string;
+    categories?: { name?: string | null } | null;
+    seller_id: string;
+    profiles?: { username?: string | null; avatar_url?: string | null; location?: string | null } | null;
+    created_at: string;
+    location?: string | null;
+  }
+  interface Resolution {
+    level: 0 | 1 | 2 | 3;
+    isVirtual: boolean;
+    l1: LevelCategory | null;
+    l2: LevelCategory | null;
+    l3: LevelCategory | null;
+    virtualCategory?: LevelCategory | null;
+    canonicalPath?: string | null;
+    categoryIds?: string[];
+  }
   
   interface Props {
     data: PageData;
@@ -20,12 +50,91 @@
 
   // Use real category data from server with level-aware navigation
   const category = data.category || { name: 'Categories', slug: 'categories', description: 'Browse all categories' };
-  const resolution = data.resolution;
-  const pillCategories = data.pillCategories || [];        // Level-appropriate categories for pills
-  const dropdownCategories = data.dropdownCategories || []; // Level-appropriate categories for dropdown
-  const products = data.products || [];
-  const sellers = data.sellers || [];
-  const breadcrumbs = data.breadcrumbs || [];
+  const resolution: Resolution = (data.resolution as any) || {
+    level: 0,
+    isVirtual: false,
+    l1: null,
+    l2: null,
+    l3: null,
+    virtualCategory: null,
+    canonicalPath: null,
+    categoryIds: []
+  };
+  const pillCategories: CategoryPill[] = (data.pillCategories as unknown as CategoryPill[]) || [];
+  const dropdownCategories: CategoryPill[] = (data.dropdownCategories as unknown as CategoryPill[]) || [];
+  // const products: RawProduct[] = (data.products as unknown as RawProduct[]) || [];
+  let products = $state<RawProduct[]>((data.products as unknown as RawProduct[]) || []);
+  
+  // Infinite scroll state
+  let currentPage = $state(data.pagination.page);
+  let hasMore = $state(data.pagination.hasNextPage);
+  let loadingMore = $state(false);
+  let loadMoreTrigger = $state<HTMLDivElement | null>(null);
+  let intersectionObserver = $state<IntersectionObserver | null>(null);
+
+  $effect(() => {
+    products = (data.products as unknown as RawProduct[]) || [];
+    currentPage = data.pagination.page;
+    hasMore = data.pagination.hasNextPage;
+  });
+
+  $effect(() => {
+    if (!browser || !loadMoreTrigger || loadingMore || !hasMore) {
+      intersectionObserver?.disconnect();
+      return;
+    }
+
+    intersectionObserver = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        loadMore();
+      }
+    }, { rootMargin: '400px' });
+
+    intersectionObserver.observe(loadMoreTrigger);
+
+    return () => intersectionObserver?.disconnect();
+  });
+
+  async function loadMore() {
+    if (loadingMore || !hasMore) return;
+    loadingMore = true;
+
+    try {
+      const nextPage = currentPage + 1;
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', String(nextPage));
+      
+      if (resolution.l1) params.set('category', resolution.l1.slug);
+      if (resolution.l2) params.set('subcategory', resolution.l2.slug);
+      if (resolution.l3) params.set('specific', resolution.l3.slug);
+      
+      if (selectedSizes.length) selectedSizes.forEach(s => params.append('size', s));
+      if (selectedBrands.length) selectedBrands.forEach(b => params.append('brand', b));
+      if (selectedConditions.length) selectedConditions.forEach(c => params.append('condition', c));
+      if (priceRange.min > 0) params.set('min_price', String(priceRange.min));
+      if (priceRange.max < 500) params.set('max_price', String(priceRange.max));
+      
+      const res = await fetch(`/api/search?${params.toString()}`);
+      if (res.ok) {
+        const json = await res.json();
+        const newProducts = json.data || [];
+        if (newProducts.length > 0) {
+           products = [...products, ...newProducts];
+        }
+        hasMore = json.pagination.hasMore;
+        currentPage = nextPage;
+      }
+    } catch (e) {
+      console.error('Failed to load more products', e);
+    } finally {
+      loadingMore = false;
+    }
+  }
+
+  type UISeller = { id?: string; username: string; avatar_url: string; itemCount: number };
+  const sellers: UISeller[] = (data.sellers as unknown as UISeller[]) || [];
+  interface Crumb { name: string; href: string }
+  const breadcrumbs: Crumb[] = (data.breadcrumbs as unknown as Crumb[]) || [];
 
   // Track current segments to detect changes
   let currentSegments = $state(page.params.segments || '');
@@ -160,16 +269,16 @@
   
   // Initialize displayProducts on component mount and data changes
   $effect(() => {
-    rawDisplayProducts = products.map(p => ({
-      id: p.id,
-      title: p.title,
-      description: p.description || '',
-      price: p.price,
-      images: p.product_images?.sort((a: { display_order?: number }, b: { display_order?: number }) => (a.display_order || 0) - (b.display_order || 0)).map((img: { image_url: string }) => img.image_url) || [],
-      brand: p.brand,
-      size: p.size,
-      condition: p.condition,
-      category: p.categories?.name || category.name,
+    rawDisplayProducts = products.map((p) => ({
+      // spread DB fields if present
+      ...(p as any),
+      // UI fields / overrides
+      images:
+        p.product_images?.
+          sort((a, b) => (a?.display_order || 0) - (b?.display_order || 0)).
+          map((img) => img.image_url) || [],
+      brand: p.brand ?? undefined,
+      size: p.size ?? undefined,
       main_category_name: resolution.l1?.name || category.name,
       subcategory_name: resolution.l2?.name || null,
       specific_category_name: resolution.l3?.name || null,
@@ -179,7 +288,7 @@
       sellerRating: 0, // Default rating
       createdAt: p.created_at,
       location: p.location || p.profiles?.location || ''
-    }));
+    })) as unknown as Product[];
   });
   
   let displayProducts = $derived(rawDisplayProducts);
@@ -195,13 +304,16 @@
   let activeDropdownTab = $state('categories');
 
   // Search dropdown data
-  let searchDropdownSellers = $state<unknown[]>([]);
+  type DropdownSeller = { username: string; avatar_url?: string | null; is_verified?: boolean; total_products?: number; rating?: number };
+  let searchDropdownSellers = $state<DropdownSeller[]>([]);
   
   // Seller quick view modal state
-  let selectedSeller = $state<unknown>(null);
+  // Match @repo/ui SellerQuickView minimal requirements
+  interface SellerData { id: string; username: string; avatar_url: string; itemCount: number; created_at?: string }
+  let selectedSeller = $state<SellerData | null>(null);
   let showSellerModal = $state(false);
   
-  function openSellerModal(seller: unknown) {
+  function openSellerModal(seller: SellerData) {
     selectedSeller = seller;
     showSellerModal = true;
   }
@@ -243,8 +355,10 @@
       }
       
       // Additional filters (when filters panel is used)
-      if (selectedSizes.length && !selectedSizes.includes(p.size)) return false;
-      if (selectedBrands.length && !selectedBrands.includes(p.brand || '')) return false;
+  const size = p.size ?? '';
+  if (selectedSizes.length && !selectedSizes.includes(size)) return false;
+      const brand = p.brand ?? '';
+      if (selectedBrands.length && !selectedBrands.includes(brand)) return false;
       if (selectedConditions.length && !selectedConditions.includes(p.condition)) return false;
       if (p.price < priceRange.min || p.price > priceRange.max) return false;
       return true;
@@ -362,9 +476,7 @@
 <svelte:head>
   <title>{pageTitle}</title>
   <meta name="description" content={pageDescription} />
-  {#if data.meta?.canonical}
-    <link rel="canonical" href={data.meta.canonical} />
-  {/if}
+  
   
   <!-- JSON-LD Breadcrumbs -->
   {#if data.breadcrumbsJsonLd}
@@ -375,16 +487,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <!-- Loading overlay when navigating -->
-  {#if navigating}
-    <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-black mx-auto mb-2"></div>
-        <p class="text-sm text-gray-600 font-medium">Loading...</p>
-      </div>
-    </div>
-  {/if}
-
   <!-- Breadcrumb -->
   <div class="bg-white">
     <div class="px-2 sm:px-4 lg:px-6 py-3">
@@ -402,7 +504,7 @@
         <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbarhide pb-6">
           {#each sellers as seller}
             <button
-              onclick={() => openSellerModal(seller)}
+              onclick={() => openSellerModal({ id: String(seller.id), username: seller.username ?? String(seller.id), avatar_url: seller.avatar_url || '', itemCount: seller.itemCount })}
               class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"
               title="{seller.username} - {seller.itemCount} {i18n.category_itemsCount()}"
             >
@@ -413,7 +515,7 @@
                   class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-gray-300 shadow-sm transition-colors" 
                 />
                 {#if seller.itemCount === 1}
-                  <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">{i18n.condition_new().toUpperCase()}</span>
+                  <span class="absolute -bottom-1 -right-1 bg-zinc-900 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">{i18n.condition_new().toUpperCase()}</span>
                 {/if}
               </div>
               <span class="text-xs mt-1 font-medium text-gray-700 group-hover:text-gray-900">{seller.username}</span>
@@ -464,13 +566,13 @@
                         <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
                           <button
                             onclick={() => activeDropdownTab = 'categories'}
-                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-zinc-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                           >
                             {i18n.search_categories ? i18n.search_categories() : 'Categories'}
                           </button>
                           <button
                             onclick={() => activeDropdownTab = 'sellers'}
-                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-zinc-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                           >
                             {i18n.search_topSellers()}
                           </button>
@@ -487,7 +589,7 @@
                                 class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                               >
                                 <div class="flex-1 min-w-0">
-                                  <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate block">{translateSubcategoryName(cat.name)}</span>
+                                  <span class="font-medium text-gray-900 group-hover:text-zinc-900 truncate block">{translateSubcategoryName(cat.name)}</span>
                                   {#if cat.productCount}
                                     <span class="text-xs text-gray-500">({cat.productCount})</span>
                                   {/if}
@@ -512,15 +614,15 @@
                                     class="w-10 h-10 rounded-full object-cover flex-shrink-0"
                                   />
                                 {:else}
-                                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center flex-shrink-0">
                                     <span class="text-white font-semibold text-sm">{seller.username.charAt(0).toUpperCase()}</span>
                                   </div>
                                 {/if}
                                 <div class="flex-1 min-w-0">
                                   <div class="flex items-center gap-2">
-                                    <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate">{seller.username}</span>
+                                    <span class="font-medium text-gray-900 group-hover:text-zinc-900 truncate">{seller.username}</span>
                                     {#if seller.is_verified}
-                                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                      <svg class="w-4 h-4 text-zinc-900" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                       </svg>
                                     {/if}
@@ -530,7 +632,7 @@
                                     {#if seller.rating}
                                       <span>•</span>
                                       <div class="flex items-center gap-1">
-                                        <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-3 h-3 text-zinc-900" fill="currentColor" viewBox="0 0 20 20">
                                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                         <span>{seller.rating.toFixed(1)}</span>
@@ -598,40 +700,27 @@
         </div>
       </div>
 
-      <!-- Level-Aware Category Navigation Pills -->
+      <!-- Level-Aware Category Navigation Pills (Unified) -->
       {#if pillCategories.length > 0}
-        <div class="space-y-3">
-          <div class="flex justify-center">
-            <div class="flex overflow-x-auto scrollbarhide gap-2 px-4">
-              {#each pillCategories.filter(cat => cat.productCount > 0).slice(0, 12) as cat}
-                <FilterPill 
-                  variant="primary" 
-                  onClick={() => {
-                    let targetUrl = '';
-                    
-                    if (resolution.isVirtual) {
-                      // Virtual category pills → Navigate to /category/{gender}/{virtual_category}
-                      // Example: /category/clothing + click "Women" → /category/women/clothing
-                      targetUrl = `/category/${cat.slug}/${resolution.virtualCategory?.slug || ''}`;
-                    } else if (resolution.level === 1) {
-                      // L1 page → L2 pills → Navigate to /category/{l1}/{l2}
-                      targetUrl = getCategoryUrl(resolution.l1?.slug || '', cat.slug);
-                    } else if (resolution.level === 2) {
-                      // L2 page → L3 pills → Navigate to /category/{l1}/{l2}/{l3}
-                      targetUrl = getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', cat.slug);
-                    }
-                    
-                    if (targetUrl) goto(targetUrl);
-                  }}
-                >
-                  {#snippet children()}
-                    {translateSubcategoryName(cat.name)}
-                    <span class="text-xs opacity-75">({cat.productCount})</span>
-                  {/snippet}
-                </FilterPill>
-              {/each}
-            </div>
-          </div>
+        <div class="px-4 flex justify-center">
+          <CategoryPills
+            categories={pillCategories.map((c) => ({ id: c.slug, name: translateSubcategoryName(c.name), slug: c.slug, count: c.productCount }))}
+            activeCategory={null}
+            showAllButton={false}
+            size="md"
+            onCategorySelect={(slug) => {
+              if (!slug) return;
+              let targetUrl = '';
+              if (resolution.isVirtual) {
+                targetUrl = `/category/${slug}/${resolution.virtualCategory?.slug || ''}`;
+              } else if (resolution.level === 1) {
+                targetUrl = getCategoryUrl(resolution.l1?.slug || '', slug);
+              } else if (resolution.level === 2) {
+                targetUrl = getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', slug);
+              }
+              if (targetUrl) goto(targetUrl);
+            }}
+          />
         </div>
       {/if}
     </div>
@@ -666,7 +755,7 @@
           <span class="hidden sm:inline">{i18n.category_filters()}</span>
           <span class="sm:hidden">{i18n.category_filters()}</span>
           {#if selectedSizes.length > 0 || selectedBrands.length > 0 || selectedConditions.length > 0}
-            <span class="ml-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span class="ml-1 bg-zinc-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {selectedSizes.length + selectedBrands.length + selectedConditions.length}
             </span>
           {/if}
@@ -714,7 +803,7 @@
                       type="checkbox" 
                       checked={selectedConditions.includes(condition.value)}
                       onchange={() => toggleCondition(condition.value)}
-                      class="mr-2 rounded-sm text-blue-600"
+                      class="mr-2 rounded-sm text-zinc-900"
                     />
                     <span class="text-sm text-gray-700">{condition.label}</span>
                   </label>
@@ -748,29 +837,35 @@
       <!-- Products Grid -->
       <div class="flex-1">
         <div class="grid grid-cols-2 sm:grid-cols-3 {showFilters ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4">
-          {#each filteredProducts as product}
-            <ProductCard 
-              {product}
-              onclick={() => goto(getProductUrl(product))}
-              translations={{
-                size: i18n.product_size(),
-                newSeller: i18n.trending_newSeller(),
-                unknownSeller: i18n.seller_unknown(),
-                currency: i18n.common_currency(),
-                addToFavorites: i18n.product_addToFavorites(),
-                new: i18n.condition_new(),
-                likeNew: i18n.condition_likeNew(),
-                good: i18n.condition_good(),
-                fair: i18n.condition_fair(),
-                formatPrice: (price: number) => formatPrice(price),
-                categoryTranslation: translateSubcategoryName
-              }}
-            />
-          {/each}
+          {#if navigating && navigating.to?.route?.id === page.route.id}
+            {#each Array(12) as _}
+              <ProductCardSkeleton />
+            {/each}
+          {:else}
+            {#each filteredProducts as product}
+              <ProductCard 
+                {product}
+                onclick={() => goto(getProductUrl(product))}
+                translations={{
+                  size: i18n.product_size(),
+                  currency: i18n.common_currency(),
+                  addToFavorites: i18n.product_addToFavorites(),
+                  brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+                  newWithoutTags: i18n.sell_condition_newWithoutTags(),
+                  new: i18n.condition_new(),
+                  likeNew: i18n.condition_likeNew(),
+                  good: i18n.condition_good(),
+                  fair: i18n.condition_fair(),
+                  formatPrice: (price: number) => formatPrice(price),
+                  categoryTranslation: translateSubcategoryName
+                }}
+              />
+            {/each}
+          {/if}
         </div>
         
         <!-- No products message -->
-        {#if filteredProducts.length === 0}
+        {#if !navigating && filteredProducts.length === 0}
           <div class="text-center py-12">
             <p class="text-gray-500 text-lg mb-4">No items found in this category</p>
             <Button onclick={clearAllFilters}>Clear Filters</Button>
@@ -779,24 +874,17 @@
       </div>
     </div>
 
-    <!-- Pagination -->
-    {#if data.pagination.totalPages > 1}
-      <div class="flex justify-center mt-8 space-x-2">
-        {#if data.pagination.hasPrevPage}
-          <Button variant="outline" onclick={() => goto(`${page.url.pathname}?page=${data.pagination.page - 1}`)}>
-            Previous
-          </Button>
+    <!-- Infinite Scroll Sentinel -->
+    {#if hasMore}
+      <div class="py-8 w-full">
+        {#if loadingMore}
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+             {#each Array(4) as _}
+                <ProductCardSkeleton />
+             {/each}
+          </div>
         {/if}
-        
-        <span class="flex items-center px-4 text-sm text-gray-600">
-          Page {data.pagination.page} of {data.pagination.totalPages}
-        </span>
-        
-        {#if data.pagination.hasNextPage}
-          <Button variant="outline" onclick={() => goto(`${page.url.pathname}?page=${data.pagination.page + 1}`)}>
-            Next
-          </Button>
-        {/if}
+        <div bind:this={loadMoreTrigger} class="h-1 w-full"></div>
       </div>
     {/if}
   </div>
@@ -895,18 +983,20 @@
 <!-- Seller Quick View Modal -->
 {#if selectedSeller}
   <SellerQuickView
-    seller={selectedSeller}
+    seller={{
+      ...selectedSeller,
+      username: selectedSeller.username ?? '',
+      avatar_url: selectedSeller.avatar_url ?? '',
+      itemCount: selectedSeller.itemCount ?? 0
+    } as any}
     bind:isOpen={showSellerModal}
     onClose={closeSellerModal}
-    onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
   />
 {/if}
 
 <!-- Bottom Navigation -->
 <BottomNav 
   currentPath={page.url.pathname}
-  isNavigating={!!navigating}
-  navigatingTo={navigating?.to?.url.pathname}
   unreadMessageCount={unreadMessageCount()}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{

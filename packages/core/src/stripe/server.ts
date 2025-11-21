@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 // Framework-agnostic environment access
 
-let stripeInstance: Stripe | null = null;
+const stripeInstance: Stripe | null = null;
 
 export const stripe = stripeInstance;
 

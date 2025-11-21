@@ -144,7 +144,7 @@
 					
 					<a
 						href="/login"
-						class="text-center text-sm text-indigo-600 hover:text-indigo-500"
+						class="text-center text-sm text-zinc-900 hover:text-zinc-700"
 					>
 						Back to login
 					</a>

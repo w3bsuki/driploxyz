@@ -10,8 +10,9 @@
 -->
 <script lang="ts">
 	// No lifecycle imports needed - using $effect
-	import ToastProvider from '../../primitives/toast/ToastProvider.svelte';
-	import { setToastProvider } from '../../primitives/toast/store';
+	import ToastProvider from '../primitives/toast/ToastProvider.svelte';
+	import { setToastProvider } from '../primitives/toast/store';
+	import type { ToastProviderHandle, ToastInput } from '../primitives/toast/types';
 
 	interface Toast {
 		id: string;
@@ -22,21 +23,17 @@
 
 	let toasts = $state<Toast[]>([]);
 	// The underlying modern toast provider instance exposes add/remove helpers
-	interface InternalToastProvider {
-		addToastData?: (data: { id: string; type: string; description: string; duration: number }) => string | void;
-		removeToastData?: (id: string) => void;
-	}
-	let toastProvider: InternalToastProvider | null = null;
+	let toastProvider: ToastProviderHandle | null = null;
 
 	// Global toast function that other components can call (legacy support)
-	function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
+	function addToast(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', duration = 3000): string {
 		const id = Math.random().toString(36).substring(2, 9);
 		
 		// Use ONLY the modern toast provider - no local toasts to prevent duplicates
 		if (toastProvider?.addToastData) {
 			return toastProvider.addToastData({
 				id,
-				type: type || 'info',
+				type,
 				description: message,
 				duration
 			});
@@ -63,28 +60,28 @@
 	}
 
 	// Expose the addToast function globally for other components (legacy support)
-	$effect(() => {
-		// Set up connection to modern toast system
-		if (toastProvider) {
-			setToastProvider(toastProvider);
-		}
+		$effect(() => {
+			// Set up connection to modern toast system
+				if (toastProvider) {
+					setToastProvider(toastProvider);
+			}
 
-		// Only set window.showToast if not already set by modern store
-		if (typeof window !== 'undefined' && !(window as unknown).showToast) {
-			(window as unknown).showToast = addToast;
-		}
-	});
+			// Only set window.showToast if not already set by modern store
+				if (typeof window !== 'undefined' && !(window as unknown as { showToast?: typeof addToast }).showToast) {
+					(window as unknown as { showToast?: typeof addToast }).showToast = addToast;
+			}
+		});
 
 	function getToastStyles(type?: Toast['type']) {
 		switch (type) {
 			case 'success':
-				return 'bg-green-500 text-white';
+				return 'bg-[var(--status-success-solid)] text-[var(--text-inverse)]';
 			case 'error':
-				return 'bg-red-500 text-white';
+				return 'bg-[var(--status-error-solid)] text-[var(--text-inverse)]';
 			case 'warning':
-				return 'bg-yellow-500 text-white';
+				return 'bg-[var(--status-warning-solid)] text-[var(--text-inverse)]';
 			default:
-				return 'bg-gray-800 text-white';
+				return 'bg-[var(--surface-inverse)] text-[var(--text-inverse)]';
 		}
 	}
 </script>
@@ -109,7 +106,7 @@
 				<p class="text-sm font-medium">{toast.message}</p>
 				<button
 					onclick={() => removeToast(toast.id)}
-					class="ml-4 text-white/80 hover:text-white focus:outline-none min-h-[36px] min-w-[36px] flex items-center justify-center"
+					class="ml-4 text-[var(--text-inverse)]/80 hover:text-[var(--text-inverse)] focus:outline-none min-h-[36px] min-w-[36px] flex items-center justify-center"
 					aria-label="Close notification"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

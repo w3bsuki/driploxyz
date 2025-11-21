@@ -1,6 +1,8 @@
 <script lang="ts">
   import { IntegratedSearchBar } from '@repo/ui';
-  import { goto, preloadCode, preloadData } from '$app/navigation';
+  const goto = (url: string) => { if (typeof window !== 'undefined') window.location.assign(url); };
+  const preloadCode = async (_path: string) => {};
+  const preloadData = async (_path: string) => {};
 
   interface Category {
     id: string;
@@ -61,8 +63,8 @@
         break;
     }
     
-    const buttons = document.querySelectorAll('[role="group"] button');
-    buttons[selectedCategoryIndex + 1]?.focus();
+    const buttons = document.querySelectorAll('[role="group"] button') as NodeListOf<HTMLElement>;
+    buttons[selectedCategoryIndex + 1]?.focus?.();
   }
 </script>
 
@@ -106,12 +108,12 @@
         ontouchstart={() => preloadCode('/search')}
         onclick={() => goto('/search')}
         onkeydown={(e: KeyboardEvent) => handleKeyNavigation(e, -1)}
-        class="category-nav-pill shrink-0 min-h-[--touch-standard] px-4 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+        class="category-nav-pill shrink-0 min-h-[--touch-standard] px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] rounded-full text-sm font-medium hover:bg-[var(--btn-primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--ring-focus)]"
         aria-label="View all categories"
       >
         View all
       </button>
-      {#each categories as category, i}
+      {#each categories as category, i (category.slug || category.id)}
         <button 
           onmouseenter={() => prefetchCategory(category.slug)}
           ontouchstart={() => prefetchCategory(category.slug)}

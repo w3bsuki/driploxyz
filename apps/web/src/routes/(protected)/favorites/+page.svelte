@@ -162,7 +162,7 @@
         <h2 class="text-lg font-semibold">Collections</h2>
         <button 
           onclick={() => showCreateCollection = true}
-          class="text-sm text-blue-600 hover:text-blue-800"
+          class="text-sm text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)]"
         >
           + New Collection
         </button>
@@ -193,7 +193,7 @@
       <Banner variant="info" class="mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             <div>
@@ -225,7 +225,7 @@
             <ProductCard 
               {product}
               favorited={true}
-              onFavorite={(p) => toggleFavorite(p.id)}
+              onFavorite={(productId) => toggleFavorite(productId)}
               onclick={() => !isSelecting && goto(getProductUrl(product))}
               class={isSelecting && selectedItems.has(product.id) ? 'ring-2 ring-black' : ''}
             />
@@ -234,20 +234,20 @@
             <div class="absolute top-2 right-2 flex flex-col space-y-1">
               <button
                 onclick={(e: MouseEvent) => { e.stopPropagation(); toggleFavorite(product.id); }}
-                class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
+                class="p-2 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Remove from favorites"
               >
-                <svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 20 20">
                   <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                 </svg>
               </button>
               {#if !priceAlerts.find(a => a.productId === product.id)}
                 <button
                   onclick={(e: MouseEvent) => { e.stopPropagation(); setPriceAlert(product.id); }}
-                  class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
+                  class="p-2 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label="Set price alert"
                 >
-                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </button>

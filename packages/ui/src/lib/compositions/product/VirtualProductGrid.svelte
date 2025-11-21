@@ -5,18 +5,9 @@
 
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { browser } from '$app/environment';
+  import { isBrowser } from '../../utils/runtime';
 
-  interface Product {
-    id: string;
-    title: string;
-    price: number;
-    images: string[];
-    seller_username?: string;
-    slug?: string;
-    condition?: string;
-    [key: string]: unknown;
-  }
+  import type { Product } from '../../types/product';
 
   // interface VirtualScrollOptions {
   //   itemHeight: number;
@@ -27,7 +18,8 @@
 
   // Props
   interface Props {
-    products: Product[];
+    products?: Product[];
+    items?: Product[]; // alias for backwards compatibility
     itemHeight?: number;
     containerHeight?: number;
     overscan?: number;
@@ -41,6 +33,7 @@
 
   let {
     products = [],
+    items,
     itemHeight = 320, // Height of each product card
     containerHeight = 600,
     overscan = 5,
@@ -50,6 +43,9 @@
     hasMore = false,
     loading = false
   }: Props = $props();
+
+  // normalize alias
+  products = items ?? products;
 
   // Reactive state using Svelte 5 runes
   let containerElement = $state<HTMLElement>();
@@ -78,7 +74,7 @@
   let intersectionObserver: IntersectionObserver | null = null;
 
   // Scroll handler with throttling
-  let scrollTimeout: number;
+  let scrollTimeout: ReturnType<typeof setTimeout> | undefined;
   const handleScroll = (event: Event) => {
     if (scrollTimeout) {
       clearTimeout(scrollTimeout);
@@ -100,7 +96,7 @@
 
   // Setup intersection observer for visibility tracking
   const setupIntersectionObserver = () => {
-    if (!browser || !('IntersectionObserver' in window)) return;
+  if (!isBrowser || !('IntersectionObserver' in window)) return;
 
     intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -126,8 +122,8 @@
 
   // Generate product URL
   const getProductUrl = (product: Product) => {
-    if (product.seller_username && product.slug) {
-      return `/product/${product.seller_username}/${product.slug}`;
+    if (product.sellerName && product.slug) {
+      return `/product/${product.sellerName}/${product.slug}`;
     }
     return `/product/${product.id}`;
   };
@@ -149,9 +145,7 @@
     if (intersectionObserver) {
       intersectionObserver.disconnect();
     }
-    if (scrollTimeout) {
-      clearTimeout(scrollTimeout);
-    }
+    if (scrollTimeout) clearTimeout(scrollTimeout);
   });
 </script>
 
@@ -221,8 +215,8 @@
                   <span class="product-condition">{product.condition}</span>
                 {/if}
 
-                {#if product.seller_username}
-                  <p class="product-seller">by {product.seller_username}</p>
+                {#if product.sellerName}
+                  <p class="product-seller">by {product.sellerName}</p>
                 {/if}
               </div>
             </a>

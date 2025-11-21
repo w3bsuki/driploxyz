@@ -121,9 +121,9 @@ function generateSitemap({
 	
 	// Add product pages with canonical URLs
 	products.forEach(product => {
-		const productUrl = product.category_slug 
-			? `/products/${product.seller_username}/${product.category_slug}/${product.slug}`
-			: `/products/${product.seller_username}/${product.slug}`;
+		// Canonical URL format: /product/:seller_username/:slug
+		// We use singular /product/ and omit category to match the canonical route
+		const productUrl = `/product/${product.seller_username}/${product.slug}`;
 			
 		urls.push(`
 		<url>

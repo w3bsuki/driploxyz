@@ -146,19 +146,19 @@
       value: 'like_new' as const,
       label: i18n.sell_condition_likeNew(),
       description: i18n.sell_condition_likeNew_desc(),
-      color: 'blue'
+      color: 'zinc'
     },
     {
       value: 'good' as const,
       label: i18n.sell_condition_good(),
       description: i18n.sell_condition_good_desc(),
-      color: 'indigo'
+      color: 'zinc'
     },
     {
       value: 'worn' as const,
       label: i18n.sell_condition_worn(),
       description: i18n.sell_condition_worn_desc(),
-      color: 'purple'
+      color: 'zinc'
     },
     {
       value: 'fair' as const,
@@ -171,28 +171,28 @@
 
 <!-- AI Suggestions Banner - Above all content -->
 {#if showSuggestions && suggestions && suggestions.confidence > 0}
-  <div class="bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 animate-in fade-in slide-in-from-top duration-200 mb-4">
+  <div class="bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 animate-in fade-in slide-in-from-top duration-200 mb-4">
     <div class="flex items-center justify-between gap-2">
       <!-- Left side: Icon and suggested categories -->
       <div class="flex items-center gap-2 flex-1 min-w-0">
-        <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-zinc-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
 
         <div class="flex items-center gap-1.5 overflow-x-auto">
           <span class="text-xs text-gray-600 flex-shrink-0">AI suggests:</span>
           {#if suggestions.gender}
-            <span class="px-2 py-0.5 bg-white border border-purple-300 rounded text-xs font-medium text-purple-900 flex-shrink-0">
+            <span class="px-2 py-0.5 bg-white border border-zinc-300 rounded-lg text-xs font-medium text-zinc-900 flex-shrink-0">
               {suggestions.gender}
             </span>
           {/if}
           {#if suggestions.type}
-            <span class="px-2 py-0.5 bg-white border border-purple-300 rounded text-xs font-medium text-purple-900 flex-shrink-0">
+            <span class="px-2 py-0.5 bg-white border border-zinc-300 rounded-lg text-xs font-medium text-zinc-900 flex-shrink-0">
               {suggestions.type}
             </span>
           {/if}
           {#if suggestions.specific}
-            <span class="px-2 py-0.5 bg-white border border-purple-300 rounded text-xs font-medium text-purple-900 flex-shrink-0">
+            <span class="px-2 py-0.5 bg-white border border-zinc-300 rounded-lg text-xs font-medium text-zinc-900 flex-shrink-0">
               {suggestions.specific}
             </span>
           {/if}
@@ -204,14 +204,14 @@
         <button
           type="button"
           onclick={onApplySuggestions}
-          class="px-2.5 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
+          class="px-2.5 py-1 bg-zinc-900 text-white text-xs font-medium rounded-lg hover:bg-zinc-800 transition-colors"
         >
           Apply
         </button>
         <button
           type="button"
           onclick={onDismissSuggestions}
-          class="p-1 hover:bg-purple-100 rounded transition-colors"
+          class="p-1 hover:bg-zinc-100 rounded-lg transition-colors"
           aria-label="{i18n.sell_dismissSuggestions()}"
         >
           <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,8 +226,8 @@
 <!-- Sub-step Progress Indicator -->
 <div class="flex justify-center items-center gap-1 mb-4">
   {#each Array.from({ length: totalSubSteps }, (_, i) => i) as stepIndex}
-    {@const step = stepIndex + 1}
-    {@const isAccessible = subStepAccessible[step]}
+  {@const step = (stepIndex + 1) as 1 | 2 | 3 | 4}
+  {@const isAccessible = subStepAccessible[step]}
     {@const isActive = currentSubStep === step}
     {@const isCompleted =
       (step === 1 && canAdvanceFromStep1) ||
@@ -244,7 +244,7 @@
         isActive
           ? 'bg-black w-6'
           : isCompleted
-          ? 'bg-green-500'
+          ? 'bg-zinc-600'
           : isAccessible
           ? 'bg-gray-300 hover:bg-gray-400'
           : 'bg-gray-200'

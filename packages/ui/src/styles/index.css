@@ -3,10 +3,7 @@
   Import once from @repo/ui/styles.css inside app entry CSS.
 */
 
-@import './tokens/foundations.css';
-@import './tokens/semantic.css';
-@import './tokens/components.css';
-@import './tokens/alias.css';
+@import './tokens-v4/tokens.css';
 @import './animations.css';
 @import './base.css';
 @import './components.css';

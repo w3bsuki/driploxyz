@@ -1,0 +1,177 @@
+/* 
+ * PRODUCT CARD STYLING COMPARISON
+ * Before vs After - Visual Reference
+ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   BEFORE - Amateur, Cluttered Design
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.product-card-BEFORE {
+  /* Excessive padding - card felt bloated */
+  padding: calc(var(--space-2) * 0.7); /* ~5.6px all around */
+  
+  /* Title - Too bold, awkward spacing */
+  .title {
+    font-size: var(--text-sm);
+    font-weight: 600; /* semibold - too heavy */
+    line-clamp: 1; /* only 1 line - cuts off too much */
+    color: var(--text-primary);
+  }
+  
+  /* Price - Too timid, not prominent enough */
+  .price {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: calc(var(--space-1) / 4); /* ~1px - awkward */
+  }
+  
+  /* Category - Difficult to read */
+  .category {
+    font-size: var(--text-2xs); /* Too small */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+  }
+  
+  /* Condition Badge - AMATEUR bright colors */
+  .badge-new {
+    background: var(--surface-subtle);
+    border: 1px solid var(--status-success-border); /* Bright green border */
+    color: var(--status-success-solid); /* Bright green text */
+    padding: calc(var(--space-1) * 0.75) calc(var(--space-1) / 4);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: var(--radius-sm);
+  }
+  
+  .badge-worn {
+    /* Harsh red colors - looks alarming */
+    border-color: var(--status-error-border);
+    color: var(--status-error-solid);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AFTER - Professional, Vinted-Inspired Design
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.product-card-AFTER {
+  /* Minimal padding - tight like Vinted */
+  padding-top: 0.5rem;    /* 8px top */
+  padding-bottom: 0.25rem; /* 4px bottom */
+  /* NO horizontal padding - content breathes naturally */
+  
+  /* Title - Normal weight, readable, 2 lines */
+  .title {
+    font-size: 0.875rem; /* text-sm: 14px */
+    font-weight: 400; /* normal - professional */
+    line-clamp: 2; /* 2 lines - shows more info */
+    min-height: 2.5rem; /* consistent height alignment */
+    line-height: 1.25; /* tight leading */
+    color: oklch(0.15 0.012 280); /* charcoal-900 */
+  }
+  
+  /* Price - BOLD and prominent (Vinted style!) */
+  .price {
+    font-size: 1rem; /* text-base: 16px - BIGGER */
+    font-weight: 700; /* bold - stands out */
+    line-height: 1; /* tight */
+    color: oklch(0.15 0.012 280); /* charcoal-900 */
+    margin-top: 0.125rem; /* 2px - minimal */
+  }
+  
+  /* Category - Clean and readable */
+  .category {
+    font-size: 11px; /* Readable size */
+    font-weight: 500; /* medium */
+    line-height: 1.25; /* tight */
+    color: oklch(0.55 0.015 280); /* charcoal-500 - subtle */
+    /* NO uppercase - more professional */
+  }
+  
+  /* Details - Clear hierarchy */
+  .details {
+    font-size: 0.75rem; /* text-xs: 12px */
+    line-height: 1.25; /* tight */
+    color: oklch(0.40 0.016 280); /* charcoal-600 */
+  }
+  
+  /* Condition Badge - PROFESSIONAL subtle colors */
+  .badge-new {
+    background: oklch(0.98 0.02 155); /* emerald-50 - subtle green */
+    border: 1px solid oklch(0.90 0.06 155); /* emerald-200 - soft border */
+    color: oklch(0.38 0.14 155); /* emerald-700 - readable green */
+    padding: 0.125rem 0.375rem; /* 2px 6px - compact */
+    font-size: 10px; /* Small but readable */
+    font-weight: 500; /* medium */
+    text-transform: uppercase;
+    letter-spacing: 0.025em; /* tracking-wide */
+    border-radius: 0.25rem; /* rounded */
+  }
+  
+  .badge-good {
+    /* Subtle amber - not alarming */
+    background: oklch(0.98 0.02 85); /* gold-50 */
+    border: 1px solid oklch(0.90 0.05 85); /* gold-200 */
+    color: oklch(0.32 0.12 85); /* gold-800 */
+  }
+  
+  .badge-worn {
+    /* Neutral gray - professional */
+    background: oklch(0.95 0.008 280); /* charcoal-100 */
+    border: 1px solid oklch(0.82 0.012 280); /* charcoal-300 */
+    color: oklch(0.30 0.014 280); /* charcoal-700 */
+  }
+  
+  /* Image Container - Consistent ratio */
+  .image-container {
+    aspect-ratio: 3 / 4; /* Consistent portrait orientation */
+    background: oklch(0.98 0.005 280); /* charcoal-50 - loading state */
+    border-radius: 0.5rem; /* rounded-lg */
+    overflow: hidden;
+  }
+  
+  /* Hover - Subtle, not aggressive */
+  &:hover {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm - minimal */
+    transition: all 200ms; /* Quick, smooth */
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   KEY IMPROVEMENTS SUMMARY
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/*
+  1. SPACING
+     Before: 5.6px padding everywhere
+     After: 8px top, 4px bottom, 0px sides - TIGHT
+  
+  2. TITLE
+     Before: 1 line, semibold (600)
+     After: 2 lines, normal (400) - MORE READABLE
+  
+  3. PRICE
+     Before: text-sm (14px), semibold (600)
+     After: text-base (16px), bold (700) - PROMINENT
+  
+  4. BADGES
+     Before: Bright blues/greens/reds - AMATEUR
+     After: Subtle neutrals/pastels - PROFESSIONAL
+  
+  5. TYPOGRAPHY SCALE
+     Before: Inconsistent, hard to read
+     After: Clear hierarchy (10px → 11px → 12px → 14px → 16px)
+  
+  6. COLOR PALETTE
+     Before: Harsh status colors (success/error greens/reds)
+     After: Sophisticated charcoal + minimal accents
+  
+  7. OVERALL FEEL
+     Before: Cluttered, amateurish, loud
+     After: Clean, professional, Vinted-inspired ✨
+*/

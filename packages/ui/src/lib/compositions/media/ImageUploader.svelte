@@ -27,7 +27,7 @@
     class: className = ''
   }: Props = $props();
 
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement = $state()!;
   let dragOver = $state(false);
   let uploading = $state(false);
 
@@ -237,7 +237,7 @@
           />
           
           <!-- Image Controls -->
-          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 
+          <div class="absolute inset-0 bg-[var(--modal-overlay-bg)] opacity-0 group-hover:opacity-100 
             transition-opacity rounded-lg flex items-center justify-center space-x-2">
             
             <!-- Move Left -->
@@ -258,7 +258,7 @@
             <button
               onclick={() => removeImage(index)}
               aria-label="Remove image"
-              class="p-1.5 bg-red-500/80 hover:bg-red-500 rounded-full text-white"
+              class="p-1.5 bg-[var(--status-error-solid)]/80 hover:bg-[var(--status-error-solid)] rounded-full text-[var(--text-inverse)]"
               title="Remove image"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +283,7 @@
 
           <!-- Primary Badge -->
           {#if index === 0}
-            <div class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+            <div class="absolute top-2 left-2 bg-[var(--surface-brand-strong)]/50 text-white text-xs px-2 py-1 rounded-full font-medium">
               Primary
             </div>
           {/if}
@@ -296,7 +296,7 @@
   {#if images.length < maxImages}
     <button
       class="w-full border-2 border-dashed rounded-lg p-6 text-center transition-colors
-        {dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
+        {dragOver ? 'border-[var(--surface-brand-strong)]/40 bg-[var(--surface-brand-strong)]/5' : 'border-gray-300'}
         {disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 cursor-pointer'}"
       ondrop={handleDrop}
       ondragover={handleDragOver}
@@ -308,7 +308,7 @@
     >
       {#if uploading}
         <div class="flex flex-col items-center">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--brand-primary)] mb-2"></div>
           <p class="text-sm text-gray-500">Uploading images...</p>
         </div>
       {:else}
@@ -332,7 +332,7 @@
               <p class="text-green-600 font-medium">✓ Auto-converted to WebP for optimal quality</p>
             {/if}
             {#if images.length === 0}
-              <p class="text-blue-600 font-medium">First image will be the main photo</p>
+              <p class="text-[var(--brand-primary-strong)] font-medium">First image will be the main photo</p>
             {/if}
           </div>
         </div>

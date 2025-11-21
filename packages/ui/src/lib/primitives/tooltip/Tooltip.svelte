@@ -1,12 +1,23 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
 
   interface TooltipPosition {
     side: 'top' | 'bottom' | 'left' | 'right';
     align?: 'start' | 'center' | 'end';
   }
 
-  interface Props {
+  /**
+   * Tooltip component for contextual help and information.
+   * 
+   * @example
+   * ```svelte
+   * <Tooltip content="Help text" tooltipClass={{ 'bg-blue-500': isImportant }}>
+   *   <button>Hover me</button>
+   * </Tooltip>
+   * ```
+   */
+  export interface TooltipProps {
     /**
      * Whether the tooltip is open
      */
@@ -56,17 +67,17 @@
     /**
      * Custom CSS classes for trigger
      */
-    triggerClass?: string;
+    triggerClass?: import('svelte/elements').ClassValue;
 
     /**
      * Custom CSS classes for tooltip content
      */
-    tooltipClass?: string;
+    tooltipClass?: import('svelte/elements').ClassValue;
 
     /**
      * Custom CSS classes for tooltip arrow
      */
-    arrowClass?: string;
+    arrowClass?: import('svelte/elements').ClassValue;
 
     /**
      * Whether to force mobile behavior (always show on tap)
@@ -84,6 +95,8 @@
      */
     children?: Snippet;
   }
+  
+  type Props = TooltipProps;
 
   let {
     open = $bindable(false),
@@ -105,7 +118,7 @@
   // Simple state management
   let triggerElement: HTMLElement | undefined = $state();
   let tooltipElement: HTMLElement | undefined = $state();
-  let timeoutId: number | undefined;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   // Show tooltip
   function showTooltip() {
@@ -219,11 +232,15 @@
   <div
     bind:this={tooltipElement}
     id="tooltip-content"
-    class={computedTooltipClasses}
-    class:tooltip-top={positioning.side === 'top'}
-    class:tooltip-bottom={positioning.side === 'bottom'}
-    class:tooltip-left={positioning.side === 'left'}
-    class:tooltip-right={positioning.side === 'right'}
+    class={[
+      computedTooltipClasses,
+      {
+        'tooltip-top': positioning.side === 'top',
+        'tooltip-bottom': positioning.side === 'bottom',
+        'tooltip-left': positioning.side === 'left',
+        'tooltip-right': positioning.side === 'right'
+      }
+    ]}
     role="tooltip"
     data-tooltip-content
     data-side={positioning.side}
@@ -232,11 +249,15 @@
   >
     <!-- Arrow -->
     <div
-      class={computedArrowClasses}
-      class:arrow-top={positioning.side === 'top'}
-      class:arrow-bottom={positioning.side === 'bottom'}
-      class:arrow-left={positioning.side === 'left'}
-      class:arrow-right={positioning.side === 'right'}
+      class={[
+        computedArrowClasses,
+        {
+          'arrow-top': positioning.side === 'top',
+          'arrow-bottom': positioning.side === 'bottom',
+          'arrow-left': positioning.side === 'left',
+          'arrow-right': positioning.side === 'right'
+        }
+      ]}
       data-tooltip-arrow
     ></div>
 

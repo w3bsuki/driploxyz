@@ -85,10 +85,10 @@
 <nav
   aria-label="Bottom navigation"
   data-bottom-nav
-  class="fixed bottom-0 left-0 right-0 z-[80] sm:hidden pointer-events-auto
-         bg-[color:var(--surface-base)]/90 backdrop-blur-xl
-         border-t border-[color:var(--border-subtle)]/60 shadow-[0_-6px_24px_-12px_rgba(0,0,0,0.25)]
-         pb-[env(safe-area-inset-bottom)]"
+  class="fixed bottom-0 left-0 right-0 sm:hidden pointer-events-auto
+         bg-surface-base border-t border-border-subtle
+         pb-[var(--safe-area-bottom)]"
+  style="z-index: var(--z-fixed, 1200);"
 >
   <div class="grid grid-cols-5">
     {#each navItems as item (item.id)}
@@ -96,45 +96,57 @@
       
       <a
         href={item.href}
-        class="relative flex flex-col items-center justify-center gap-1
-               min-h-[var(--touch-primary)] py-[var(--space-2)]
-               no-underline hover:no-underline touch-manipulation"
+        class="relative flex flex-col items-center justify-center gap-0.5
+               min-h-[48px] py-1
+               no-underline hover:no-underline touch-manipulation
+               transition-colors duration-150"
         data-sveltekit-preload-data="hover"
         aria-current={active ? 'page' : undefined}
         aria-label={item.label}
         title={item.label}
       >
-        {#if active}
-          <span class="absolute top-0 inset-x-8 h-0.5 rounded-b bg-[color:var(--brand-primary)]"></span>
-        {/if}
         <!-- Icon -->
         <div class="relative">
-          <div class="{item.id === 'sell' ? 'rounded-full p-2 bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] shadow-[0_6px_20px_-6px_var(--brand-primary)]' : ''}">
+          {#if item.id === 'sell'}
+            <!-- Special sell button -->
+            <div class="rounded-full p-1.5 bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] transition-transform active:scale-95">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2.5"
+              >
+                <path d={item.icon} />
+              </svg>
+            </div>
+          {:else}
             <svg
-              class="w-7 h-7 transition-colors duration-200 {active && item.id !== 'sell' ? 'text-[color:var(--brand-primary)]' : item.id !== 'sell' ? 'text-[color:var(--text-tertiary)] hover:text-[color:var(--text-secondary)]' : ''}"
+              class="w-5 h-5 transition-colors {active ? 'text-text-primary' : 'text-text-tertiary'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              stroke-width="{active ? '2' : '1.5'}"
             >
               <path d={item.icon} />
             </svg>
-          </div>
+          {/if}
 
           <!-- Badge for messages only -->
           {#if item.showBadge && item.id === 'messages' && unreadMessageCount > 0}
             <div
-              class="absolute -top-1 -right-1 min-w-4 h-4 px-1
-                     bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)]
-                     text-[10px] font-bold rounded-full flex items-center justify-center"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5
+                     bg-status-error-solid text-text-inverse
+                     text-[9px] font-semibold rounded-full flex items-center justify-center
+                     ring-2 ring-surface-base"
             >
               {unreadMessageCount > 99 ? '99+' : unreadMessageCount}
             </div>
           {/if}
         </div>
-        <!-- Label (hidden for sell) -->
+        <!-- Label (hide for sell button) -->
         {#if item.id !== 'sell'}
-          <span class="text-[11px] leading-none {active ? 'text-[color:var(--brand-primary)] font-medium' : 'text-[color:var(--text-tertiary)]'}">
+          <span class="text-[length:var(--text-xs)] font-medium leading-none transition-colors {active ? 'text-text-primary' : 'text-text-tertiary'}">
             {item.label}
           </span>
         {/if}

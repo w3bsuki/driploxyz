@@ -15,6 +15,12 @@
       "options": {
         "parser": "svelte"
       }
+    },
+    {
+      "files": "apps/web/**/*",
+      "options": {
+        "useTabs": true
+      }
     }
   ]
 }

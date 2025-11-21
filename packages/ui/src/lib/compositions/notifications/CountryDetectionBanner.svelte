@@ -68,7 +68,7 @@
     <div class="flex gap-2">
       <button
         onclick={onAccept}
-        class="flex-1 px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors"
+        class="flex-1 px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-sm font-medium rounded-md hover:bg-[var(--btn-primary-hover)] transition-colors"
       >
         Switch to {countryNames[detectedCountry]}
       </button>

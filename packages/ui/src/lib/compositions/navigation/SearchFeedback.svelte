@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { SearchBarMode } from './types.js';
-import { useAnalytics } from '../../hooks/analytics.js';
+import type { SearchBarMode } from '../../types/search';
+import { useAnalytics } from '../../hooks/analytics';
 
 interface Props {
   mode: SearchBarMode;
@@ -58,7 +58,7 @@ const performanceIndicator = $derived(() => {
   if (loadTime < 500) {
     return { text: 'Lightning fast', color: 'text-green-600', icon: '⚡' };
   } else if (loadTime < 1000) {
-    return { text: 'Quick search', color: 'text-blue-600', icon: '🚀' };
+    return { text: 'Quick search', color: 'text-[var(--brand-primary-strong)]', icon: '🚀' };
   } else {
     return { text: 'Search complete', color: 'text-gray-600', icon: '✓' };
   }
@@ -157,7 +157,7 @@ function cancelFeedback() {
               <textarea
                 bind:value={feedbackReason}
                 placeholder="e.g., 'More size options', 'Different brands', 'Better filters'..."
-                class="mt-1 w-full px-3 py-2 text-[length:var(--text-sm)] border border-[color:var(--border-default)] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                class="mt-1 w-full px-3 py-2 text-[length:var(--text-sm)] border border-[color:var(--border-default)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--state-focus)] focus:border-[var(--border-focus)] resize-none"
                 rows="2"
                 maxlength="200"
               ></textarea>
@@ -167,7 +167,7 @@ function cancelFeedback() {
             <button
               onclick={submitDetailedFeedback}
               disabled={!feedbackReason.trim()}
-              class="px-3 py-1.5 h-8 min-h-8 text-[length:var(--text-xs)] font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors duration-200"
+              class="px-3 py-1.5 h-8 min-h-8 text-[length:var(--text-xs)] font-medium text-[color:var(--btn-primary-text)] bg-[var(--btn-primary-bg)] hover:bg-[var(--btn-primary-hover)] disabled:bg-gray-300 disabled:cursor-not-allowed rounded-md transition-colors duration-200"
             >
               Submit
             </button>

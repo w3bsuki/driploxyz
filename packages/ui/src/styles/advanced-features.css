@@ -1,0 +1,300 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN SYSTEM — Advanced Features (Tailwind CSS v4)
+  Advanced features for modern web development
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONTAINER QUERIES — Responsive Components
+   Component-level responsiveness based on container size
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@container (min-width: 20rem) {
+  .product-card {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@container (min-width: 30rem) {
+  .product-card {
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .search-results {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@container (min-width: 40rem) {
+  .product-card {
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .search-results {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CONTENT VISIBILITY — Performance Optimizations
+   Improve rendering performance for large content areas
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+@utility content-visibility-hidden {
+  content-visibility: hidden;
+  contain-intrinsic-size: 0 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COLOR-MIX() — Interactive States
+   Dynamic color mixing for hover and focus states
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility btn-hover {
+  background-color: color-mix(in oklch, var(--btn-bg) 85%, var(--state-hover) 15%);
+}
+
+@utility btn-active {
+  background-color: color-mix(in oklch, var(--btn-bg) 70%, var(--state-active) 30%);
+}
+
+@utility card-hover {
+  background-color: color-mix(in oklch, var(--card-bg) 95%, var(--state-hover) 5%);
+}
+
+@utility input-focus {
+  border-color: color-mix(in oklch, var(--input-border) 70%, var(--state-focus) 30%);
+}
+
+/* Dark mode color-mix optimizations */
+@utility btn-hover-dark {
+  background-color: color-mix(in oklch, var(--btn-bg) 90%, oklch(0.30 0.008 280) 10%);
+}
+
+@utility btn-active-dark {
+  background-color: color-mix(in oklch, var(--btn-bg) 80%, oklch(0.35 0.008 280) 20%);
+}
+
+@utility card-hover-dark {
+  background-color: color-mix(in oklch, var(--card-bg) 98%, oklch(0.30 0.008 280) 2%);
+}
+
+/* Apply dark mode utilities in dark theme */
+@media (prefers-color-scheme: dark) {
+  .btn-hover {
+    background-color: color-mix(in oklch, var(--btn-bg) 90%, oklch(0.30 0.008 280) 10%);
+  }
+  
+  .btn-active {
+    background-color: color-mix(in oklch, var(--btn-bg) 80%, oklch(0.35 0.008 280) 20%);
+  }
+  
+  .card-hover {
+    background-color: color-mix(in oklch, var(--card-bg) 98%, oklch(0.30 0.008 280) 2%);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GPU-ACCELERATED ANIMATIONS
+   Hardware-accelerated transforms for smooth animations
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+@utility slide-up {
+  transform: translateY(20px) translateZ(0);
+  opacity: 0;
+  transition: transform var(--duration-slow) var(--ease-out), 
+              opacity var(--duration-slow) var(--ease-out);
+}
+
+@utility slide-up-active {
+  transform: translateY(0) translateZ(0);
+  opacity: 1;
+}
+
+@utility fade-in {
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+@utility fade-in-active {
+  opacity: 1;
+}
+
+@utility scale-in {
+  transform: scale(0.9) translateZ(0);
+  opacity: 0;
+  transition: transform var(--duration-base) var(--ease-out), 
+              opacity var(--duration-base) var(--ease-out);
+}
+
+@utility scale-in-active {
+  transform: scale(1) translateZ(0);
+  opacity: 1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE TYPOGRAPHY — Fluid Scaling
+   Advanced typography with clamp() for smooth scaling
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility fluid-text-xs {
+  font-size: clamp(0.6875rem, 0.65rem + 0.25vw, 0.75rem);
+  line-height: var(--text-xs--line-height);
+}
+
+@utility fluid-text-sm {
+  font-size: clamp(0.8125rem, 0.75rem + 0.4vw, 0.875rem);
+  line-height: var(--text-sm--line-height);
+}
+
+@utility fluid-text-base {
+  font-size: clamp(0.9375rem, 0.85rem + 0.6vw, 1rem);
+  line-height: var(--text-base--line-height);
+}
+
+@utility fluid-text-lg {
+  font-size: clamp(1.0625rem, 0.95rem + 0.75vw, 1.125rem);
+  line-height: var(--text-lg--line-height);
+}
+
+@utility fluid-text-xl {
+  font-size: clamp(1.1875rem, 1.05rem + 0.9vw, 1.25rem);
+  line-height: var(--text-xl--line-height);
+}
+
+@utility fluid-text-2xl {
+  font-size: clamp(1.375rem, 1.2rem + 1.2vw, 1.5rem);
+  line-height: var(--text-2xl--line-height);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODERN LAYOUT PATTERNS
+   Advanced layout utilities for complex designs
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility masonry {
+  column-count: 2;
+  column-gap: var(--space-4);
+}
+
+@utility masonry-sm {
+  column-count: 1;
+  column-gap: var(--space-3);
+}
+
+@utility masonry-md {
+  column-count: 2;
+  column-gap: var(--space-4);
+}
+
+@utility masonry-lg {
+  column-count: 3;
+  column-gap: var(--space-6);
+}
+
+@utility masonry-item {
+  break-inside: avoid;
+  margin-bottom: var(--space-4);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE BREAKPOINTS — Enhanced
+   Advanced responsive utilities
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@container (min-width: 48rem) {
+  .masonry {
+    column-count: 3;
+  }
+  
+  .masonry-lg {
+    column-count: 4;
+  }
+}
+
+@container (min-width: 64rem) {
+  .masonry {
+    column-count: 4;
+  }
+  
+  .masonry-lg {
+    column-count: 5;
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ACCESSIBILITY ENHANCEMENTS
+   Advanced accessibility features
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@utility focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard navigation */
+@utility skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  z-index: var(--z-tooltip);
+  transition: top var(--duration-fast) var(--ease-out);
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DARK MODE ENHANCEMENTS
+   Advanced dark mode features
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (prefers-color-scheme: dark) {
+  .dark-auto {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .light-auto {
+    color-scheme: light;
+  }
+}
+
+/* Smooth theme transitions */
+@utility theme-transition {
+  transition: background-color var(--duration-base) var(--ease-out),
+              color var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
+}

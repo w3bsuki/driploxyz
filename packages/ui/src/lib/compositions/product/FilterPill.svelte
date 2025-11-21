@@ -21,22 +21,22 @@
     switch (variant) {
       case 'primary':
         return active
-          ? `${baseClasses} bg-black text-white shadow-md`
+          ? `${baseClasses} bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] shadow-md`
           : `${baseClasses} bg-white text-gray-900 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 shadow-sm font-semibold`;
       
       case 'category':
         return active
-          ? `${baseClasses} bg-black text-white shadow-sm`
+          ? `${baseClasses} bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] shadow-sm`
           : `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200`;
       
       case 'condition':
         return active
-          ? `${baseClasses} bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md`
+          ? `${baseClasses} bg-zinc-900 text-[var(--text-inverse)] shadow-md`
           : `${baseClasses} bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50`;
       
       default:
         return active
-          ? `${baseClasses} bg-blue-600 text-white shadow-sm`
+          ? `${baseClasses} bg-[var(--brand-primary-strong)] text-[var(--text-inverse)] shadow-sm`
           : `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200`;
     }
   }

@@ -59,11 +59,11 @@
   const sellerHref = seller?.username ? generateLocaleUrl(`/profile/${seller.username}`) : '';
 
   // Build breadcrumb items
-  const breadcrumbItems = $derived(() => {
-    const items: Array<{ name: string; href?: string; current?: boolean; isHome?: boolean }> = [];
+  const items = $derived.by(() => {
+    const arr: Array<{ name: string; href?: string; current?: boolean; isHome?: boolean }> = [];
     
     // Home
-    items.push({ 
+  arr.push({ 
       name: m.nav_home(), 
       href: generateLocaleUrl('/'),
       isHome: true
@@ -71,7 +71,7 @@
     
     // Category hierarchy
     if (topLevelCategory?.slug) {
-      items.push({ 
+  arr.push({ 
         name: translations?.categoryTranslation 
           ? translations.categoryTranslation(topLevelCategory.name, topLevelCategory.slug) 
           : topLevelCategory.name, 
@@ -80,7 +80,7 @@
     }
     
     if (parentCategory?.slug && parentCategory.slug !== topLevelCategory?.slug) {
-      items.push({ 
+  arr.push({ 
         name: translations?.categoryTranslation 
           ? translations.categoryTranslation(parentCategory.name, parentCategory.slug) 
           : parentCategory.name, 
@@ -89,7 +89,7 @@
     }
     
     if (category?.slug && category.slug !== parentCategory?.slug && category.slug !== topLevelCategory?.slug) {
-      items.push({ 
+  arr.push({ 
         name: translations?.categoryTranslation 
           ? translations.categoryTranslation(category.name, category.slug) 
           : category.name, 
@@ -98,19 +98,19 @@
     }
     
     // Current Product (truncate on mobile)
-    items.push({ 
+  arr.push({ 
       name: productTitle, 
       current: true 
     });
     
-    return items;
+    return arr;
   });
 
   // Build SEO BreadcrumbList (JSON-LD)
-  const breadcrumbLd = $derived(() => ({
+  const breadcrumbLd = $derived.by(() => ({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems().map((item, idx) => ({
+    itemListElement: items.map((item, idx) => ({
       '@type': 'ListItem',
       position: idx + 1,
       name: item.name,
@@ -120,8 +120,8 @@
 </script>
 
 <!-- Mobile-First Professional Breadcrumb -->
-<nav 
-  class="w-full {variant === 'solid' ? 'bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]' : ''}"
+<nav
+  class={`w-full ${variant === 'solid' ? 'bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]' : ''}`}
   aria-label="Breadcrumb"
 >
   <div class="flex items-center px-3 py-2 max-w-screen-xl mx-auto sm:px-4 sm:py-3">
@@ -141,8 +141,7 @@
 
     <!-- Breadcrumb List -->
     <ol class="flex items-center flex-1 min-w-0 space-x-1 text-sm overflow-x-auto scrollbarhide">
-      {#each breadcrumbItems() as item, index}
-        {@const isLast = index === breadcrumbItems().length - 1}
+      {#each items as item, index (item.href || index)}
         <li class="flex items-center">
           {#if item.current}
             <!-- Current Page (non-clickable) -->
@@ -173,7 +172,7 @@
           {/if}
           
           <!-- Separator -->
-          {#if !isLast}
+          {#if index !== items.length - 1}
             <svg class="w-4 h-4 mx-1 text-[color:var(--gray-400)] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>
@@ -186,6 +185,8 @@
 
 <!-- SEO JSON-LD -->
 <svelte:head>
-  {@html `<script type="application/ld+json">${JSON.stringify(breadcrumbLd())}</script>`}
+  <script type="application/ld+json">
+    {@html JSON.stringify(breadcrumbLd)}
+  </script>
 </svelte:head>
 

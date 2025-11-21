@@ -11,6 +11,7 @@
     copy?: string;
     cta?: BannerCta;
     itemCount?: number;
+    itemCountText?: string;
     showCategoryTabs?: boolean;
     activeCategory?: Category;
     onCategoryChange?: (category: Category) => void;
@@ -18,20 +19,62 @@
   }
 
   const classes = {
-    // Professional white card shell
-  shell: 'relative isolate w-full overflow-hidden rounded-[var(--radius-sm)] border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm sm:px-5 sm:py-4 lg:px-7 lg:py-[18px]',
-    layout: 'mx-auto flex w-full max-w-screen-xl flex-col items-center gap-1 sm:gap-1.5 text-center',
-    copyStack: 'flex flex-col items-center gap-0.5',
-    meta: 'inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-600 border border-slate-200',
-    heading: 'text-[1.4rem] font-semibold leading-tight text-slate-900 sm:text-[1.675rem] lg:text-[1.75rem]',
-    controls: 'flex flex-col items-center gap-1 sm:gap-1.5 w-full md:flex-row md:flex-wrap md:justify-center md:gap-1.5',
-    // Neutral segmented control with orange accent for active
-  toggleGroup: 'grid grid-cols-2 gap-1 rounded-[var(--radius-sm)] border border-slate-300 bg-white p-1 text-sm font-medium text-slate-700',
-    toggleButton: 'rounded-[var(--radius-sm)] px-3.5 py-2.5 text-center transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white min-h-[44px]',
-    toggleButtonActive: 'bg-orange-600 text-white',
-    toggleButtonInactive: 'text-slate-700 hover:bg-slate-50',
-    // Orange accent CTA
-  ctaButton: 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:px-5 sm:py-3 sm:text-base min-h-[44px]'
+    shell: `
+      relative isolate w-full overflow-hidden
+      rounded-[var(--radius-sm)]
+      bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)]
+      px-[var(--space-4)] py-[var(--space-3)]
+      shadow-[var(--shadow-sm)]
+      sm:px-[var(--space-6)] sm:py-[var(--space-4)]
+    `.replace(/\s+/g, ' ').trim(),
+    layout: `
+      mx-auto flex w-full max-w-[min(100%,72rem)] flex-col items-center
+      gap-[var(--space-2)] text-center
+    `.replace(/\s+/g, ' ').trim(),
+    copyStack: 'flex flex-col items-center gap-[var(--space-1)]',
+    meta: `
+      inline-flex items-center gap-[var(--space-1)] rounded-full m-0
+      bg-[color-mix(in_oklch,var(--text-inverse)_15%,transparent)]
+      px-[var(--space-2)] py-[var(--space-1)]
+      text-[length:var(--text-xs)] font-[var(--font-semibold)] uppercase tracking-[0.1em]
+      text-[color:var(--text-inverse)]
+    `.replace(/\s+/g, ' ').trim(),
+    heading: `
+  text-[length:var(--text-xl)] font-[var(--font-bold)] leading-[var(--leading-tight)] tracking-tight m-0
+  text-[color:var(--text-inverse)]
+      sm:text-[length:var(--text-2xl)] lg:text-[length:var(--text-3xl)]
+    `.replace(/\s+/g, ' ').trim(),
+    controls: `
+      flex flex-col items-center gap-[var(--space-2)] w-full
+      md:flex-row md:flex-wrap md:justify-center md:gap-[var(--space-2)]
+    `.replace(/\s+/g, ' ').trim(),
+    toggleGroup: `
+      grid grid-cols-2 gap-[var(--space-1)] rounded-[var(--radius-md)]
+      bg-[color-mix(in_oklch,var(--text-inverse)_10%,transparent)]
+      p-[var(--space-1)] text-[length:var(--text-sm)] font-[var(--font-medium)]
+    `.replace(/\s+/g, ' ').trim(),
+    toggleButton: `
+      rounded-[var(--radius-sm)] px-[var(--space-3)] py-[var(--space-2)]
+      text-center transition-colors duration-150
+      focus-visible:outline-none focus-visible:ring-2
+      focus-visible:ring-[color:var(--text-inverse)]
+      focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--brand-primary-strong)]
+      min-h-[var(--touch-standard)]
+    `.replace(/\s+/g, ' ').trim(),
+    toggleButtonActive: 'bg-[color:var(--text-inverse)] text-[color:var(--text-brand)]',
+    toggleButtonInactive: 'text-[color:var(--text-inverse)] hover:bg-[color-mix(in_oklch,var(--text-inverse)_20%,transparent)]',
+    ctaButton: `
+      inline-flex items-center justify-center gap-[var(--space-1)]
+      rounded-[var(--radius-md)] bg-[color:var(--text-inverse)]
+      px-[var(--space-4)] py-[var(--space-2)] text-[length:var(--text-sm)]
+      font-[var(--font-semibold)] text-[color:var(--text-brand)] transition-colors duration-150
+      hover:bg-[color-mix(in_oklch,var(--text-inverse)_92%,transparent)]
+      focus-visible:outline-none focus-visible:ring-2
+      focus-visible:ring-[color:var(--text-inverse)]
+      focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--brand-primary-strong)]
+      sm:px-[var(--space-5)] sm:text-[length:var(--text-base)]
+      min-h-[var(--touch-standard)]
+    `.replace(/\s+/g, ' ').trim()
   } as const;
 
   let {
@@ -39,6 +82,7 @@
     copy,
     cta,
     itemCount,
+    itemCountText,
     showCategoryTabs = true,
     activeCategory = 'fresh',
     onCategoryChange,
@@ -68,11 +112,11 @@
   <div class={classes.layout}>
     <div class={classes.copyStack}>
       {#if itemCount}
-        <p class={classes.meta}>{itemCount} new listings</p>
+        <p class={classes.meta}>{itemCountText || `${itemCount} new listings`}</p>
       {/if}
 
       <h2 class={classes.heading}>{heading}</h2>
-  <p class="max-w-[60ch] text-[13px] leading-snug text-slate-600 sm:text-sm">{resolvedCopy}</p>
+  <p class="max-w-[60ch] text-[length:var(--text-sm)] leading-[1.5] text-[color:var(--text-inverse)] opacity-90 m-0">{resolvedCopy}</p>
     </div>
 
     <div class={classes.controls}>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  // Note: goto function should be passed as prop when used in SvelteKit apps
   import { isBrowser } from '../../utils/runtime.js';
   import type {
     ProductWithImages,
@@ -28,54 +27,33 @@
     onCategorySelect,
     onSellerSelect,
     onCollectionSelect,
-    translations = {}
+    translations = {},
+    filterType = 'products'
   }: SearchDropdownProps = $props();
 
-  let results: ProductWithImages[] = $state.raw([]);
+  let results = $state<ProductWithImages[]>([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
-  // Cross-platform timeout handle
   let searchTimeout: ReturnType<typeof setTimeout> | undefined;
   let dropdownVisible = $derived(visible);
   let selectedIndex = $state(-1);
-  let activeTab = $state<'categories' | 'collections' | 'sellers'>('categories');
   let navigationStack = $state<{ categories: CategoryWithChildren[], level: number }>({ categories: [], level: 1 });
-
-  const recentSearches = $state<string[]>([]);
+  let recentSearches = $state<string[]>([]);
 
   // Default translations
   const defaultTranslations = {
     categories: 'Categories',
     collections: 'Collections',
     sellers: 'Sellers',
+    brands: 'Brands',
     products: 'Products',
     searching: 'Searching...',
     viewAllResults: 'View all results for',
     ...translations
   };
 
-  // Context-aware tab configuration
-  const availableTabs = $derived(() => {
-    const tabs: Array<{ key: 'categories' | 'collections' | 'sellers', label: string }> = [];
-
-    // Categories tab - always available but content varies by context
-    tabs.push({ key: 'categories', label: defaultTranslations.categories });
-
-    // Collections tab - available in main and search contexts
-    if (context === 'main' || context === 'search') {
-      tabs.push({ key: 'collections', label: defaultTranslations.collections });
-    }
-
-    // Sellers tab - available in main and search contexts
-    if (context === 'main' || context === 'search') {
-      tabs.push({ key: 'sellers', label: defaultTranslations.sellers });
-    }
-
-    return tabs;
-  });
-
   // Context-aware categories display
-  const displayCategories = $derived(() => {
+  const displayCategories = $derived.by(() => {
     if (navigationStack.categories.length > 0) {
       return navigationStack.categories;
     }
@@ -111,7 +89,7 @@
   });
 
   // Filtered collections based on context
-  const displayCollections = $derived(() => {
+  const displayCollections = $derived.by(() => {
     if (context === 'category' && categoryContext) {
       // For category pages, show collections relevant to that category
       const contextSlug = typeof categoryContext === 'string' ? categoryContext : categoryContext.slug;
@@ -124,9 +102,15 @@
   });
 
   // Top sellers with product counts
-  const displaySellers = $derived(() => {
+  const displaySellers = $derived.by(() => {
     return sellers.slice(0, 5); // Show top 5 sellers
   });
+
+  const dropdownContainerClass = 'search-dropdown-container bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-b-[var(--radius-lg)] shadow-[var(--shadow-xl)] overflow-hidden absolute top-full left-0 right-0 z-[100] backdrop-blur-sm';
+
+  const resultButtonBaseClass = 'w-full px-[var(--space-4)] py-[var(--space-3)] flex items-center gap-[var(--space-3)] text-left transition-all duration-[var(--duration-fast)] border-b border-[color:var(--border-subtle)] last:border-0 hover:bg-[color:var(--state-hover)]';
+  
+  const resultButtonActiveClass = 'bg-[color:var(--state-hover)] ring-1 ring-inset ring-[color:var(--state-focus)]';
 
   // Load recent searches from localStorage
   $effect(() => {
@@ -135,7 +119,7 @@
         const saved = localStorage.getItem('driplo_recent_searches');
         if (saved) {
           const parsed = JSON.parse(saved);
-          recentSearches.splice(0, recentSearches.length, ...parsed.slice(0, 5));
+          recentSearches = parsed.slice(0, 5);
         }
       } catch (e) {
         // Ignore localStorage errors
@@ -149,7 +133,7 @@
     try {
       const trimmed = searchQuery.trim();
       const updated = [trimmed, ...recentSearches.filter(s => s !== trimmed)].slice(0, 5);
-      recentSearches.splice(0, recentSearches.length, ...updated);
+      recentSearches = updated;
       localStorage.setItem('driplo_recent_searches', JSON.stringify(updated));
     } catch (e) {
       // Ignore localStorage errors
@@ -335,205 +319,167 @@
   });
 </script>
 
+{#snippet emptyState(icon: string, message: string)}
+  <div class="p-[var(--space-8)] text-center text-[color:var(--text-secondary)]">
+    {@html icon}
+    <p class="text-sm">{message}</p>
+  </div>
+{/snippet}
+
+{#snippet loadingState()}
+  <div class="p-[var(--space-8)] text-center text-[color:var(--text-secondary)]">
+    <div class="inline-flex items-center gap-[var(--space-2)]">
+      <div class="w-[var(--space-4)] h-[var(--space-4)] border-2 border-[color:var(--brand-primary)] border-t-transparent rounded-full animate-spin"></div>
+      {defaultTranslations.searching}
+    </div>
+  </div>
+{/snippet}
+
+{#snippet productImage(product: ProductWithImages)}
+  {#if product.images?.[0]}
+    {#if typeof product.images[0] === 'string'}
+      <img
+        src={product.images[0]}
+        alt={product.title}
+        class="w-[var(--space-12)] h-[var(--space-12)] object-cover rounded-[var(--radius-lg)] flex-shrink-0"
+      />
+    {:else if (typeof product.images[0] === 'object' && 'image_url' in product.images[0])}
+      <img
+        src={(product.images[0] as any).image_url}
+        alt={product.title}
+        class="w-[var(--space-12)] h-[var(--space-12)] object-cover rounded-[var(--radius-lg)] flex-shrink-0"
+      />
+    {/if}
+  {:else}
+    <div class="w-[var(--space-12)] h-[var(--space-12)] bg-[color:var(--surface-subtle)] rounded-[var(--radius-lg)] flex items-center justify-center flex-shrink-0">
+      <svg class="w-[var(--space-6)] h-[var(--space-6)] text-[color:var(--text-disabled)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    </div>
+  {/if}
+{/snippet}
+
+{#snippet sellerAvatar(seller: SearchSeller)}
+  {#if seller.avatar_url}
+    <img
+      src={seller.avatar_url}
+      alt={seller.username}
+      class="w-[var(--space-12)] h-[var(--space-12)] rounded-full object-cover flex-shrink-0"
+    />
+  {:else}
+    <div class="w-[var(--space-12)] h-[var(--space-12)] rounded-full bg-gradient-to-br from-[color:var(--brand-primary)] to-[color:var(--brand-secondary)] flex items-center justify-center flex-shrink-0">
+      <span class="text-[color:var(--text-inverse)] font-semibold text-lg">{seller.username.charAt(0).toUpperCase()}</span>
+    </div>
+  {/if}
+{/snippet}
+
 {#if dropdownVisible}
   <div
-    class="search-dropdown-container absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-[var(--input-radius)] shadow-lg z-50 {className}"
+    class="{dropdownContainerClass} {className}"
     onclick={(e) => e.stopPropagation()}
-    onkeydown={(e) => { if (e.key === 'Escape') handleClickOutside(); }}
+    onkeydown={(e) => { if (e.key === 'Escape') onClose?.(); }}
     role="dialog"
     tabindex="0"
     aria-label="Search results and browse options"
   >
     {#if query && query.trim()}
       <!-- Search Results Section -->
-      {#if loading}
-        <div class="p-4 text-center text-gray-500">
-          <div class="inline-flex items-center gap-2">
-            <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            Searching...
+      <div class="max-h-[60vh] overflow-y-auto">
+        {#if loading}
+          {@render loadingState()}
+        {:else if error}
+          <div class="p-[var(--space-8)] text-center text-[color:var(--status-error-text)]">
+            {error}
           </div>
-        </div>
-      {:else if error}
-        <div class="p-4 text-center text-red-500">
-          {error}
-        </div>
-      {:else if results.length > 0}
-        <div class="border-b border-gray-100" role="listbox" id={listboxId} aria-label={defaultTranslations.products}>
-          <div class="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Products
-          </div>
-          {#each results as product, index}
-            <button
-              class="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 text-left transition-colors {selectedIndex === index ? 'bg-blue-50' : ''}"
-              onclick={() => handleProductSelect(product)}
-              role="option"
-              aria-selected={selectedIndex === index}
-              id={`${listboxId}-option-${index}`}
-            >
-              {#if product.images?.[0]}
-                {#if typeof product.images[0] === 'string'}
-                  <img
-                    src={product.images[0] as string}
-                    alt={product.title}
-                    class="w-10 h-10 object-cover rounded-lg flex-shrink-0"
-                  />
-                {:else if (typeof product.images[0] === 'object' && 'image_url' in product.images[0])}
-                  <img
-                    src={(product.images[0] as any).image_url}
-                    alt={product.title}
-                    class="w-10 h-10 object-cover rounded-lg flex-shrink-0"
-                  />
-                {/if}
-              {:else}
-                <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              {/if}
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-gray-900 truncate">{product.title}</div>
-                <div class="text-sm text-gray-500 flex items-center gap-2">
-                  <span>{formatPrice(product.price)}</span>
-                  {#if product.category_name}
-                    <span>•</span>
-                    <span>{product.category_name}</span>
-                  {/if}
-                </div>
-              </div>
-            </button>
-          {/each}
+        {:else}
+          <!-- Products -->
+          {#if filterType === 'products' && results.length > 0}
+            <div role="listbox" id={listboxId} aria-label={defaultTranslations.products} class="py-[var(--space-1)]">
+              {#each results as product, index (product.id)}
+                <button
+                  class="{resultButtonBaseClass} {selectedIndex === index ? resultButtonActiveClass : ''}"
+                  onclick={() => handleProductSelect(product)}
+                  role="option"
+                  aria-selected={selectedIndex === index}
+                  id="{listboxId}-option-{index}"
+                >
+                  {@render productImage(product)}
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-[color:var(--text-primary)] truncate">{product.title}</div>
+                    <div class="text-sm text-[color:var(--text-secondary)] flex items-center gap-[var(--space-2)]">
+                      <span class="font-semibold text-[color:var(--brand-primary)]">{formatPrice(product.price)}</span>
+                      {#if product.category_name}
+                        <span>•</span>
+                        <span>{product.category_name}</span>
+                      {/if}
+                    </div>
+                  </div>
+                </button>
+              {/each}
 
-          {#if results.length >= maxResults}
-            <button
-              class="w-full px-4 py-3 text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors border-t border-gray-100"
-              onclick={() => handleSearchSelect(query)}
-            >
-              View all results for "{query}"
-            </button>
+              {#if results.length >= maxResults}
+                <button
+                  class="w-full px-[var(--space-4)] py-[var(--space-3)] text-[color:var(--brand-primary)] hover:bg-[color:var(--state-hover)] text-sm font-medium transition-colors duration-[var(--duration-fast)] border-t border-[color:var(--border-subtle)]"
+                  onclick={() => handleSearchSelect(query)}
+                >
+                  {defaultTranslations.viewAllResults} "{query}"
+                </button>
+              {/if}
+            </div>
+          {:else if filterType === 'products'}
+            {@render emptyState(
+              '<svg class="w-12 h-12 mx-auto mb-3 text-[color:var(--text-disabled)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>',
+              `No products found for "${query}"`
+            )}
           {/if}
-        </div>
-      {/if}
-    {/if}
-
-    <!-- Context-Aware Tabbed Browse Section -->
-    <div class="p-4">
-      <!-- Tab Headers - Dynamic based on context -->
-      <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
-        {#each availableTabs() as tab}
-          <button
-            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeTab === tab.key ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
-            onclick={() => activeTab = tab.key}
-          >
-            {tab.label}
-          </button>
-        {/each}
-      </div>
-
-      <!-- Tab Content with Smooth Transitions -->
-      <div class="relative min-h-[120px]">
-        {#key activeTab}
-          <div class="animate-in fade-in-0 duration-200">
-            {#if activeTab === 'categories'}
-              <!-- Hierarchical Navigation Header -->
-              {#if navigationStack.level > 1}
-                <div class="mb-4">
+          
+          <!-- Categories/Brands -->
+          {#if filterType === 'brands'}
+            <div class="p-[var(--space-3)]">
+              <div class="grid grid-cols-2 gap-[var(--space-2)]">
+                {#each displayCategories as category (category.id || category.slug)}
                   <button
-                    onclick={handleBackNavigation}
-                    class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to Categories
-                  </button>
-                </div>
-              {/if}
-
-              <!-- Categories Grid -->
-              <div class="grid grid-cols-2 gap-3">
-                {#each displayCategories() as category}
-                  <button
-                    class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                    class="flex items-center gap-[var(--space-2)] p-[var(--space-3)] bg-[color:var(--surface-base)] hover:bg-[color:var(--state-hover)] rounded-[var(--radius-md)] border border-[color:var(--border-subtle)] hover:border-[color:var(--border-default)] transition-all duration-[var(--duration-fast)] text-left"
                     onclick={() => handleCategorySelect(category)}
                   >
-                    <span class="text-2xl">{category.emoji || '📁'}</span>
+                    <span class="text-xl">{category.emoji || '🏷️'}</span>
                     <div class="flex-1 min-w-0">
-                      <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate block">{category.name}</span>
+                      <span class="font-medium text-[color:var(--text-primary)] text-sm truncate block">{category.name}</span>
                       {#if category.product_count}
-                        <span class="text-xs text-gray-500">({category.product_count})</span>
-                      {/if}
-                    </div>
-                    {#if category.children && category.children.length > 0 && context === 'main'}
-                      <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    {/if}
-                  </button>
-                {/each}
-              </div>
-
-              <!-- Empty state for categories -->
-              {#if displayCategories().length === 0}
-                <div class="text-center py-8 text-gray-500">
-                  <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  <p class="text-sm">No categories available</p>
-                </div>
-              {/if}
-
-            {:else if activeTab === 'collections'}
-              <div class="grid grid-cols-2 gap-3">
-                {#each displayCollections() as collection}
-                  <button
-                    class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
-                    onclick={() => handleCollectionSelect(collection)}
-                  >
-                    <span class="text-2xl">{collection.emoji}</span>
-                    <div class="flex-1 min-w-0">
-                      <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate block">{collection.label}</span>
-                      {#if collection.product_count}
-                        <span class="text-xs text-gray-500">({collection.product_count})</span>
+                        <span class="text-xs text-[color:var(--text-tertiary)]">({category.product_count})</span>
                       {/if}
                     </div>
                   </button>
                 {/each}
               </div>
-
-            {:else if activeTab === 'sellers'}
-              <div class="space-y-3">
-                {#each displaySellers() as seller}
+            </div>
+          {/if}
+          
+          <!-- Sellers -->
+          {#if filterType === 'sellers'}
+            {#if displaySellers.length > 0}
+              <div class="p-[var(--space-2)]">
+                {#each displaySellers as seller (seller.username)}
                   <button
-                    class="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                    class="w-full flex items-center gap-[var(--space-3)] p-[var(--space-3)] hover:bg-[color:var(--state-hover)] rounded-[var(--radius-md)] transition-all duration-[var(--duration-fast)] text-left"
                     onclick={() => handleSellerSelect(seller)}
                   >
-                    {#if seller.avatar_url}
-                      <img
-                        src={seller.avatar_url}
-                        alt={seller.username}
-                        class="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                      />
-                    {:else}
-                      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                        <span class="text-white font-semibold text-sm">{seller.username.charAt(0).toUpperCase()}</span>
-                      </div>
-                    {/if}
+                    {@render sellerAvatar(seller)}
                     <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2">
-                        <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate">{seller.username}</span>
+                      <div class="flex items-center gap-[var(--space-2)]">
+                        <span class="font-medium text-[color:var(--text-primary)] truncate">@{seller.username}</span>
                         {#if seller.is_verified}
-                          <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                          <svg class="w-[var(--space-4)] h-[var(--space-4)] text-[color:var(--brand-primary)] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                           </svg>
                         {/if}
                       </div>
-                      <div class="flex items-center gap-2 text-sm text-gray-500">
+                      <div class="flex items-center gap-[var(--space-2)] text-sm text-[color:var(--text-secondary)]">
                         <span>{seller.total_products} items</span>
                         {#if seller.rating}
                           <span>•</span>
-                          <div class="flex items-center gap-1">
-                            <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                          <div class="flex items-center gap-[var(--space-1)]">
+                            <svg class="w-[var(--space-3)] h-[var(--space-3)] text-[color:var(--status-warning-text)]" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                             <span>{seller.rating.toFixed(1)}</span>
@@ -543,21 +489,22 @@
                     </div>
                   </button>
                 {/each}
-
-                <!-- View More Sellers Button -->
-                {#if sellers.length > 5}
-                  <button
-                    onclick={() => { if (isBrowser) window.location.href = '/sellers'; }}
-                    class="w-full px-4 py-3 text-center text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors border-t border-gray-100 rounded-lg"
-                  >
-                    View All Sellers ({sellers.length})
-                  </button>
-                {/if}
               </div>
+            {:else}
+              {@render emptyState(
+                '<svg class="w-12 h-12 mx-auto mb-3 text-[color:var(--text-disabled)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" /></svg>',
+                'No sellers found'
+              )}
             {/if}
-          </div>
-        {/key}
+          {/if}
+        {/if}
       </div>
-    </div>
+    {:else}
+      <!-- Empty state when no search query -->
+      {@render emptyState(
+        '<svg class="w-12 h-12 mx-auto mb-3 text-[color:var(--text-disabled)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>',
+        'Start typing to search...'
+      )}
+    {/if}
   </div>
 {/if}

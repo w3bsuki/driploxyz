@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Button, Avatar, type Product } from '@repo/ui';
+  import { Button, Avatar } from '@repo/ui';
   import type { PageData } from './$types';
   
   interface Props {
@@ -11,9 +11,19 @@
   
   const sellerId = page.params.sellerId;
   const seller = data.seller;
-  
-  // Transform products for display
-  const sellerProducts: Product[] = data.products.map(p => ({
+  type OfferListProduct = {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    images: string[];
+    brand: string | null;
+    size: string | null;
+    condition: string;
+  };
+
+  // Transform products for display (use local lightweight type)
+  const sellerProducts: OfferListProduct[] = data.products.map(p => ({
     id: p.id,
     title: p.title,
     description: p.description || '',
@@ -21,13 +31,7 @@
     images: p.images || [],
     brand: p.brand,
     size: p.size,
-    condition: p.condition,
-    category: 'Clothing', // Category name lookup to be implemented
-    sellerId: p.sellerId,
-    sellerName: p.sellerName,
-    sellerRating: p.sellerRating,
-    createdAt: p.created_at,
-    location: p.location || ''
+    condition: p.condition
   }));
   
   // Bundle state
@@ -121,10 +125,10 @@
           <h1 class="text-lg sm:text-xl font-bold text-gray-900">Create Bundle Offer</h1>
         </div>
         <div class="flex items-center space-x-3">
-          <Avatar src={seller.avatar} name={seller.name} size="sm" />
+          <Avatar src={(seller as any).avatar_url} name={(seller as any).full_name || (seller as any).username || ''} size="sm" />
           <div class="hidden sm:block">
-            <p class="text-sm font-medium text-gray-900">{seller.name}</p>
-            <p class="text-xs text-gray-500">Usually responds in {seller.responseTime}</p>
+            <p class="text-sm font-medium text-gray-900">{(seller as any).full_name || (seller as any).username || ''}</p>
+            <p class="text-xs text-gray-500">Usually responds in 24h</p>
           </div>
         </div>
       </div>
@@ -169,7 +173,7 @@
                       {#if selectedItems.has(product.id)}
                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                           <div class="bg-white rounded-full p-2">
-                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-6 h-6 text-zinc-900" fill="currentColor" viewBox="0 0 20 20">
                               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
                           </div>
@@ -226,7 +230,7 @@
               </div>
               <button 
                 onclick={suggestPrice}
-                class="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                class="text-xs text-zinc-600 hover:text-zinc-900 mt-1"
                 aria-label="Suggest price with 15% discount"
               >
                 Suggest price (15% off)
@@ -234,12 +238,12 @@
             </div>
             
             {#if offerAmount && parseFloat(offerAmount) > 0}
-              <div class="bg-green-50 rounded-lg p-3 mb-4">
+              <div class="bg-zinc-50 rounded-lg p-3 mb-4">
                 <div class="flex justify-between items-center">
-                  <span class="text-sm text-green-800">You save</span>
+                  <span class="text-sm text-zinc-900">You save</span>
                   <div class="text-right">
-                    <span class="font-bold text-green-800">${savings.toFixed(2)}</span>
-                    <span class="text-xs text-green-600 ml-1">({savingsPercent}% off)</span>
+                    <span class="font-bold text-zinc-900">${savings.toFixed(2)}</span>
+                    <span class="text-xs text-zinc-600 ml-1">({savingsPercent}% off)</span>
                   </div>
                 </div>
               </div>
@@ -291,13 +295,13 @@
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-lg p-6 max-w-sm w-full">
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
           <h3 class="text-lg font-semibold mb-2">Offer Sent!</h3>
-          <p class="text-gray-600 text-sm">Your bundle offer has been sent to {seller.name}. You'll be notified when they respond.</p>
+          <p class="text-gray-600 text-sm">Your bundle offer has been sent to {(seller as any).full_name || (seller as any).username || 'the seller'}. You'll be notified when they respond.</p>
         </div>
       </div>
     </div>

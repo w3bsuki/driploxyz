@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { validateEmail, validatePassword, sanitizeInput } from '../../utils/validation';
 
 // Mock Supabase
 vi.mock('@supabase/supabase-js', () => ({
@@ -38,8 +39,7 @@ describe('Auth Helpers', () => {
       ];
 
       validEmails.forEach(email => {
-        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        expect(isValid).toBe(true);
+        expect(validateEmail(email)).toBe(true);
       });
     });
 
@@ -54,8 +54,7 @@ describe('Auth Helpers', () => {
       ];
 
       invalidEmails.forEach(email => {
-        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        expect(isValid).toBe(false);
+        expect(validateEmail(email)).toBe(false);
       });
     });
   });
@@ -70,9 +69,7 @@ describe('Auth Helpers', () => {
       ];
 
       strongPasswords.forEach(password => {
-        // At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
-        const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-        expect(isValid).toBe(true);
+        expect(validatePassword(password)).toBe(true);
       });
     });
 
@@ -89,30 +86,27 @@ describe('Auth Helpers', () => {
       ];
 
       weakPasswords.forEach(password => {
-        const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
-        expect(isValid).toBe(false);
+        expect(validatePassword(password)).toBe(false);
       });
     });
   });
 
   describe('sanitizeInput', () => {
     it('should sanitize HTML input', () => {
-      const maliciousInput = '<script>alert("xss")</script>Hello World';
-      const sanitized = maliciousInput.replace(/<[^>]*>/g, '');
-      
-      expect(sanitized).toBe('Hello World');
+  const maliciousInput = '<script>alert("xss")</script>Hello World';
+  const sanitized = sanitizeInput(maliciousInput);
+  expect(sanitized).toBe('Hello World');
     });
 
     it('should handle empty input', () => {
-      const sanitized = ''.replace(/<[^>]*>/g, '');
-      expect(sanitized).toBe('');
+  const sanitized = sanitizeInput('');
+  expect(sanitized).toBe('');
     });
 
     it('should preserve safe text', () => {
-      const safeInput = 'Hello, this is safe text!';
-      const sanitized = safeInput.replace(/<[^>]*>/g, '');
-      
-      expect(sanitized).toBe('Hello, this is safe text!');
+  const safeInput = 'Hello, this is safe text!';
+  const sanitized = sanitizeInput(safeInput);
+  expect(sanitized).toBe('Hello, this is safe text!');
     });
   });
 

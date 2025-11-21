@@ -13,7 +13,7 @@
 
   interface Props {
     action?: string;
-    method?: string;
+    method?: 'get' | 'post' | 'GET' | 'POST' | 'dialog' | 'DIALOG';
     schema?: ZodSchema<Record<string, unknown>>;
     initialValues?: Record<string, unknown>;
     onSubmit?: (values: Record<string, unknown>) => Promise<void> | void;
@@ -48,7 +48,7 @@
     { validateOnChange, validateOnBlur }
   ) : null;
 
-  let formElement = $state<HTMLFormElement>();
+  // No local ref needed
   let isSubmitting = $state(false);
 
   // Enhanced submit function for SvelteKit
@@ -75,7 +75,7 @@
 
         await update();
       } catch (error) {
-        onError?.(error);
+        onError?.(error instanceof Error ? error : new Error('Unknown error'));
       }
     };
   };
@@ -87,10 +87,11 @@
     try {
       const isValid = await validator.handleSubmit(onSubmit);
       if (isValid) {
-        onSuccess?.(validator.formState.values);
+        // Create a success-like object for consumers expecting ActionResult
+        onSuccess?.({ type: 'success', status: 200, data: validator.formState.values } as unknown as ActionResult);
       }
     } catch (error) {
-      onError?.(error);
+      onError?.(error instanceof Error ? error : new Error('Unknown error'));
     } finally {
       isSubmitting = false;
     }
@@ -105,12 +106,19 @@
 
   // Export for parent component access
   export { formContext };
+  type MethodAttr = 'GET' | 'POST' | 'dialog' | 'get' | 'post' | 'DIALOG';
+  function normalizeFormMethod(m?: string): MethodAttr {
+    const v = m ?? 'POST';
+    if (v === 'dialog' || v === 'DIALOG') return v as MethodAttr;
+    const upper = v.toUpperCase();
+    return (upper === 'GET' || upper === 'POST') ? (upper as MethodAttr) : 'POST';
+  }
+  const methodAttr: MethodAttr = $derived(normalizeFormMethod(method));
 </script>
 
 <form
-  bind:this={formElement}
   {action}
-  {method}
+  method={methodAttr}
   class={className}
   novalidate={noValidate}
   use:enhance={enhanceSubmit}

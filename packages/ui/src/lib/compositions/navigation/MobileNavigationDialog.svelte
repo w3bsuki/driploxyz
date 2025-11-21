@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { fly, fade } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
   import MegaMenuCategories from './MegaMenuCategories.svelte';
   import MobileMenuSearch from './MobileMenuSearch.svelte';
   import Avatar from '../../primitives/avatar/Avatar.svelte';
@@ -45,10 +47,10 @@
       newToday: 'New Today',
       orders: 'Orders',
       favorites: 'Favorites',
-      categoryWomen: 'Women',
-      categoryMen: 'Men',
-      categoryKids: 'Kids',
-      categoryUnisex: 'Unisex',
+      categoryWomen: i18n.category_women?.() ?? 'Women',
+      categoryMen: i18n.category_men?.() ?? 'Men',
+      categoryKids: i18n.category_kids?.() ?? 'Kids',
+      categoryUnisex: i18n.category_unisex?.() ?? 'Unisex',
       help: 'Help Center',
       privacy: 'Privacy',
       terms: 'Terms',
@@ -212,47 +214,54 @@
   }
 </script>
 
-<!-- Mobile menu - Full screen overlay (always rendered for smooth transitions) -->
+{#if isOpen}
+<!-- Mobile menu - Full screen overlay -->
 <div
   use:portal
-  class="sm:hidden fixed inset-0 z-[99999] mobile-nav-dialog transition-all duration-300 ease-out {isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}"
-  style="position: fixed; top: var(--app-header-offset, 56px); left: 0; right: 0; bottom: 0; z-index: 99999;"
+  class="sm:hidden fixed inset-0 z-[var(--z-overlay)] mobile-nav-dialog"
+  style="position: fixed; top: var(--app-header-offset, 56px); left: 0; right: 0; bottom: 0; z-index: var(--z-overlay);"
   role="dialog"
   aria-label="Mobile navigation menu"
   {id}
   bind:this={dialogElement}
 >
-  <!-- Full-screen mobile menu panel -->
+  <!-- Backdrop overlay -->
   <div
-    class="h-full bg-white shadow-lg overflow-hidden transition-opacity transition-transform duration-300 ease-out {isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}"
-  >
+    class="absolute inset-0 bg-[color:var(--modal-overlay-bg)]"
+    onclick={closeMenu}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 150 }}
+  ></div>
+
+  <!-- Full-screen mobile menu panel -->
+  <div class="relative z-10 h-full bg-surface-base shadow-lg overflow-hidden" in:fly={{ x: -300, duration: 250, easing: quintOut }} out:fly={{ x: -250, duration: 200, easing: quintOut }}>
       <!-- Main content container -->
-      <div class="h-full bg-white flex flex-col relative">
+      <div class="h-full bg-surface-base flex flex-col relative">
 
         <!-- Content area with scroll -->
         <div class="flex-1 overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch;">
-          <div class="px-4 pt-6 pb-4 space-y-6">
+          <div class="px-4 pt-4 pb-4 space-y-4">
 
           {#if isLoggedIn && user && profile}
             <!-- Enhanced User Profile Section -->
-            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 relative">
+            <div class="bg-surface-subtle rounded-lg p-2.5 border border-border-subtle relative">
               <!-- Notifications quick action (top-right) -->
               <a
                 href="/notifications"
                 onclick={closeMenu}
                 aria-label="Notifications"
-                class="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 text-gray-600"
+                class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-surface-muted text-text-tertiary transition-colors"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
                 {#if typeof unreadNotifications === 'number' && unreadNotifications > 0}
-                  <span class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 bg-status-error-solid text-text-inverse text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-surface-base">
                     {unreadNotifications > 99 ? '99' : unreadNotifications}
                   </span>
                 {/if}
               </a>
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2.5">
                 <!-- User Avatar -->
                 <Avatar
                   name={userDisplayName}
@@ -265,8 +274,8 @@
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 min-w-0">
-                    <div class="font-semibold text-gray-900 text-sm truncate">{userDisplayName}</div>
-                    <div class="flex items-center gap-1 text-[11px] text-gray-600 flex-shrink-0">
+                    <div class="font-semibold text-text-primary text-sm truncate">{userDisplayName}</div>
+                    <div class="flex items-center gap-1 text-[11px] text-text-tertiary flex-shrink-0">
                       <svg class="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -274,19 +283,19 @@
                     </div>
                   </div>
                   {#if profile?.username}
-                    <div class="text-xs text-gray-500 truncate">@{profile.username}</div>
+                    <div class="text-xs text-text-muted truncate">@{profile.username}</div>
                   {/if}
                 </div>
                 </div>
 
                 <!-- Quick actions: compact and aligned -->
-                <div class="mt-3 grid grid-cols-2 gap-2">
+                <div class="mt-2.5 grid grid-cols-2 gap-2">
                   <a
                     href="/account"
                     onclick={closeMenu}
-                    class="inline-flex items-center justify-center min-h-[40px] px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-900"
+                    class="inline-flex items-center justify-center min-h-[36px] px-2.5 text-sm font-medium rounded-lg border border-border-subtle bg-surface-base hover:bg-surface-subtle active:bg-surface-muted text-text-primary transition-colors"
                   >
-                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="w-4 h-4 mr-1.5 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     {translations.myProfile || 'View Profile'}
@@ -294,14 +303,14 @@
                   <a
                     href="/messages"
                     onclick={closeMenu}
-                    class="relative inline-flex items-center justify-center min-h-[40px] px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-900"
+                    class="relative inline-flex items-center justify-center min-h-[36px] px-2.5 text-sm font-medium rounded-lg border border-border-subtle bg-surface-base hover:bg-surface-subtle active:bg-surface-muted text-text-primary transition-colors"
                   >
-                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="w-4 h-4 mr-1.5 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zM12 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm3.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337 5.972 5.972 0 01-3.035 1.557 4.48 4.48 0 00.467-1.226c.233-1.162-.758-2.204-1.535-2.943C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                     </svg>
                     Messages
                     {#if typeof unreadMessages === 'number' && unreadMessages > 0}
-                      <span class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      <span class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 bg-status-error-solid text-text-inverse text-[9px] font-bold rounded-full flex items-center justify-center ring-2 ring-surface-base">
                         {unreadMessages > 99 ? '99' : unreadMessages}
                       </span>
                     {/if}
@@ -315,7 +324,7 @@
             <div>
               <MobileMenuSearch
                 placeholder={translations.searchPlaceholder}
-                {searchFunction}
+                searchFunction={searchFunction as any}
                 onSearch={handleSearch}
                 onClose={closeMenu}
                 class="w-full"
@@ -327,34 +336,34 @@
           {#if currentView === 'main'}
             <!-- Main Categories -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">
+              <h2 class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">
                 {translations.browseCategories}
               </h2>
-              <div class="space-y-2.5">
+              <div class="space-y-2">
               <!-- Women Category -->
               <button
                 onclick={() => handleCategoryClick('women', 1, ['women'])}
-                class="w-full flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2 px-2.5 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted rounded-lg transition-colors touch-manipulation"
                 aria-label="Browse Women's items"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span class="text-2xl">👗</span>
+                  <div class="flex-shrink-0 w-9 h-9 bg-surface-muted rounded-lg flex items-center justify-center">
+                    <span class="text-xl">👗</span>
                   </div>
 
                   <!-- Category Info -->
                   <div class="flex-1 text-left">
-                    <div class="font-semibold text-gray-900 text-base">{translations.categoryWomen}</div>
-                    <div class="text-sm text-gray-500">
+                    <div class="font-semibold text-text-primary text-sm">{translations.categoryWomen}</div>
+                    <div class="text-xs text-text-tertiary">
                       {formatItemCount(categoryCounts().women)}
                     </div>
                   </div>
                 </div>
 
                 <!-- Arrow indicator -->
-                <div class="flex-shrink-0 text-gray-400">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0 text-text-muted">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -363,27 +372,27 @@
               <!-- Men Category -->
               <button
                 onclick={() => handleCategoryClick('men', 1, ['men'])}
-                class="w-full flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2 px-3 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 aria-label="Browse Men's items"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span class="text-2xl">👔</span>
+                  <div class="flex-shrink-0 w-9 h-9 bg-surface-muted rounded-lg flex items-center justify-center">
+                    <span class="text-xl">👔</span>
                   </div>
 
                   <!-- Category Info -->
                   <div class="flex-1 text-left">
-                    <div class="font-semibold text-gray-900 text-base">{translations.categoryMen}</div>
-                    <div class="text-sm text-gray-500">
+                    <div class="font-semibold text-text-primary text-sm">{translations.categoryMen}</div>
+                    <div class="text-sm text-text-muted">
                       {formatItemCount(categoryCounts().men)}
                     </div>
                   </div>
                 </div>
 
                 <!-- Arrow indicator -->
-                <div class="flex-shrink-0 text-gray-400">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0 text-text-muted">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -392,27 +401,27 @@
               <!-- Kids Category -->
               <button
                 onclick={() => handleCategoryClick('kids', 1, ['kids'])}
-                class="w-full flex items-center justify-between py-2.5 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2 px-3 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 aria-label="Browse Kids items"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span class="text-2xl">👶</span>
+                  <div class="flex-shrink-0 w-9 h-9 bg-surface-muted rounded-lg flex items-center justify-center">
+                    <span class="text-xl">👶</span>
                   </div>
 
                   <!-- Category Info -->
                   <div class="flex-1 text-left">
-                    <div class="font-semibold text-gray-900 text-base">{translations.categoryKids}</div>
-                    <div class="text-sm text-gray-500">
+                    <div class="font-semibold text-text-primary text-sm">{translations.categoryKids}</div>
+                    <div class="text-sm text-text-muted">
                       {formatItemCount(categoryCounts().kids)}
                     </div>
                   </div>
                 </div>
 
                 <!-- Arrow indicator -->
-                <div class="flex-shrink-0 text-gray-400">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0 text-text-muted">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -421,27 +430,27 @@
               <!-- Unisex Category -->
               <button
                 onclick={() => handleCategoryClick('unisex', 1, ['unisex'])}
-                class="w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between p-3 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 aria-label="Browse Unisex items"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span class="text-2xl">🌍</span>
+                  <div class="flex-shrink-0 w-9 h-9 bg-surface-muted rounded-lg flex items-center justify-center">
+                    <span class="text-xl">🌍</span>
                   </div>
 
                   <!-- Category Info -->
                   <div class="flex-1 text-left">
-                    <div class="font-semibold text-gray-900 text-base">{translations.categoryUnisex}</div>
-                    <div class="text-sm text-gray-500">
+                    <div class="font-semibold text-text-primary text-sm">{translations.categoryUnisex}</div>
+                    <div class="text-sm text-text-muted">
                       {formatItemCount(categoryCounts().unisex)}
                     </div>
                   </div>
                 </div>
 
                 <!-- Arrow indicator -->
-                <div class="flex-shrink-0 text-gray-400">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0 text-text-muted">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -451,39 +460,39 @@
 
             <!-- Quick Actions Section -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.quickActionsLabel}</h2>
+              <h2 class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">{translations.quickActionsLabel}</h2>
               <div class="grid grid-cols-3 gap-2.5">
                 <a
                   href="/search"
                   onclick={closeMenu}
-                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 mb-1 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <span class="text-xs font-medium text-gray-900 text-center">{translations.browseAll}</span>
+                  <span class="text-xs font-medium text-text-primary text-center">{translations.browseAll}</span>
                 </a>
 
                 <a
                   href="/brands"
                   onclick={closeMenu}
-                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 mb-1 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
-                  <span class="text-xs font-medium text-gray-900 text-center">{translations.popularBrands}</span>
+                  <span class="text-xs font-medium text-text-primary text-center">{translations.popularBrands}</span>
                 </a>
 
                 <a
                   href="/new"
                   onclick={closeMenu}
-                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 mb-1 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-xs font-medium text-gray-900 text-center">{translations.newToday}</span>
+                  <span class="text-xs font-medium text-text-primary text-center">{translations.newToday}</span>
                 </a>
               </div>
 
@@ -492,23 +501,23 @@
                   <a
                     href="/orders"
                     onclick={closeMenu}
-                    class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                    class="flex flex-col items-center px-2.5 py-2 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                   >
-                    <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mb-1 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
                     </svg>
-                    <span class="text-xs font-medium text-gray-900 text-center">{translations.orders}</span>
+                    <span class="text-xs font-medium text-text-primary text-center">{translations.orders}</span>
                   </a>
 
                   <a
                     href="/favorites"
                     onclick={closeMenu}
-                    class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                    class="flex flex-col items-center px-2.5 py-2 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                   >
-                    <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mb-1 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
-                    <span class="text-xs font-medium text-gray-900 text-center">{translations.favorites}</span>
+                    <span class="text-xs font-medium text-text-primary text-center">{translations.favorites}</span>
                   </a>
                 </div>
               {/if}
@@ -516,11 +525,11 @@
 
             <!-- Settings Section -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.settingsLabel}</h2>
-              <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
+              <h2 class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">{translations.settingsLabel}</h2>
+              <div class="bg-surface-base rounded-xl border border-border-subtle p-4 space-y-4">
                 <!-- Language & Theme -->
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-gray-900">Language & Theme</span>
+                  <span class="text-sm font-medium text-text-primary">Language & Theme</span>
                   <div class="flex items-center gap-2">
                     <LanguageSwitcher
                       currentLanguage={currentLanguage}
@@ -537,14 +546,14 @@
 
             <!-- Support Links -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">Support</h2>
-              <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+              <h2 class="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2 px-2">Support</h2>
+              <div class="bg-surface-subtle rounded-lg border border-border-subtle overflow-hidden">
                 <a
                   href="/help"
                   onclick={closeMenu}
-                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[36px]"
+                  class="flex items-center px-2.5 py-2.5 text-text-primary hover:bg-surface-muted transition-colors border-b border-border-subtle last:border-b-0 touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span class="text-sm font-medium">{translations.help}</span>
@@ -553,9 +562,9 @@
                 <a
                   href="/privacy"
                   onclick={closeMenu}
-                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[40px]"
+                  class="flex items-center px-2.5 py-2.5 text-text-primary hover:bg-surface-muted transition-colors border-b border-border-subtle last:border-b-0 touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   <span class="text-sm font-medium">{translations.privacy}</span>
@@ -564,9 +573,9 @@
                 <a
                   href="/terms"
                   onclick={closeMenu}
-                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[40px]"
+                  class="flex items-center px-2.5 py-2.5 text-text-primary hover:bg-surface-muted transition-colors border-b border-border-subtle last:border-b-0 touch-manipulation min-h-[36px]"
                 >
-                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <span class="text-sm font-medium">{translations.terms}</span>
@@ -579,9 +588,9 @@
               <!-- Sign Out -->
               <div class="pt-2">
                 <button
-                  onclick={() => { closeMenu(); onSignOut(); }}
+                  onclick={() => { closeMenu(); onSignOut?.(); }}
                   disabled={signingOut}
-                  class="w-full flex items-center justify-center px-4 py-3.5 text-red-600 hover:text-red-700 hover:bg-red-50 active:bg-red-100 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[40px]"
+                  class="w-full flex items-center justify-center px-4 py-3.5 text-status-error-text hover:text-status-error-text hover:bg-status-error-bg active:bg-status-error-bg rounded-xl transition-all duration-200 border border-status-error-border hover:border-status-error-border disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[36px]"
                 >
                   {#if signingOut}
                     <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
@@ -600,18 +609,18 @@
             {:else}
               <!-- Sign In/Up -->
               <div class="pt-2">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                   <a
                     href="/login"
                     onclick={closeMenu}
-                    class="flex items-center justify-center px-4 py-3.5 text-gray-900 hover:text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 touch-manipulation min-h-[40px]"
+                    class="flex items-center justify-center px-4 py-3.5 text-text-primary hover:text-text-secondary hover:bg-surface-subtle active:bg-surface-muted rounded-xl transition-all duration-200 border border-border-subtle hover:border-border-default touch-manipulation min-h-[36px]"
                   >
                     <span class="font-semibold">{translations.signIn}</span>
                   </a>
                   <a
                     href="/signup"
                     onclick={closeMenu}
-                    class="flex items-center justify-center px-4 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 active:bg-gray-900 transition-all duration-200 touch-manipulation min-h-[40px]"
+                    class="flex items-center justify-center px-4 py-3.5 bg-text-primary text-text-inverse rounded-xl font-semibold hover:opacity-90 active:opacity-80 transition-all duration-200 touch-manipulation min-h-[36px]"
                   >
                     <span>{translations.signUp}</span>
                   </a>
@@ -625,17 +634,17 @@
               <div class="flex items-center gap-3 mb-4">
                 <button
                   onclick={handleBackToMain}
-                  class="flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors touch-manipulation"
+                  class="flex items-center justify-center min-w-[40px] min-h-[36px] rounded-lg text-text-muted hover:text-text-secondary hover:bg-surface-muted transition-colors touch-manipulation"
                   aria-label="Back to main menu"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <h1 class="text-lg font-semibold text-gray-900">
+                <h1 class="text-lg font-semibold text-text-primary">
                   {selectedMainCategory.name}
                   {#if categoryBreadcrumb.length > 1}
-                    <span class="text-gray-500"> / {categoryBreadcrumb[categoryBreadcrumb.length - 1].name}</span>
+                    <span class="text-text-muted"> / {categoryBreadcrumb[categoryBreadcrumb.length - 1].name}</span>
                   {/if}
                 </h1>
               </div>
@@ -645,12 +654,12 @@
                 {#each selectedMainCategory.children as subcategory}
                   <button
                     onclick={() => handleSubcategoryClick(subcategory)}
-                  class="w-full flex items-center justify-between px-3 py-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="w-full flex items-center justify-between px-2.5 py-2.5 bg-surface-subtle border border-border-subtle hover:border-border-default hover:bg-surface-muted hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
                   >
                     <div class="flex items-center gap-3">
                       <div class="text-left">
-                        <div class="font-medium text-gray-900">{subcategory.name}</div>
-                        <div class="text-sm text-gray-500">
+                        <div class="font-medium text-text-primary">{subcategory.name}</div>
+                        <div class="text-sm text-text-muted">
                           {formatItemCount(subcategory.product_count || 0)}
                         </div>
                       </div>
@@ -658,7 +667,7 @@
 
                     <!-- Arrow for further subcategories -->
                     {#if subcategory.children && subcategory.children.length > 0}
-                      <div class="flex-shrink-0 text-gray-400">
+                      <div class="flex-shrink-0 text-text-muted">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -670,8 +679,9 @@
             </div>
           {/if}
 
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+{/if}

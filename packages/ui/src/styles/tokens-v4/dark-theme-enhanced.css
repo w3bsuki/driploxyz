@@ -1,0 +1,172 @@
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DRIPLO DESIGN TOKENS · Enhanced Dark Theme (Tailwind CSS v4)
+  Enhanced dark mode with color-mix() and better contrast
+  Supports both manual toggle and system preference
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* System Preference Dark Mode - Enhanced */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Surface overrides - Enhanced with color-mix() */
+    --surface-base: oklch(0.15 0.012 280);
+    --surface-subtle: color-mix(in oklch, var(--color-charcoal-800) 85%, var(--surface-base) 15%);
+    --surface-muted: color-mix(in oklch, var(--color-charcoal-700) 70%, var(--surface-base) 30%);
+    --surface-emphasis: color-mix(in oklch, var(--color-charcoal-600) 50%, var(--surface-base) 50%);
+    --surface-inverse: oklch(1 0 0);
+    --surface-brand: var(--brand-primary-strong);
+    --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--surface-base) 78%);
+    --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, oklch(0 0 0) 15%);
+
+    /* Premium surface variants for dark mode - Enhanced */
+    --surface-luxury: color-mix(in oklch, var(--color-gold-300) 15%, var(--surface-base) 85%);
+    --surface-premium: color-mix(in oklch, var(--color-burgundy-300) 15%, var(--surface-base) 85%);
+    --surface-elegant: color-mix(in oklch, var(--color-zinc-300) 15%, var(--surface-base) 85%);
+
+    /* Text overrides - Enhanced contrast */
+    --text-primary: oklch(0.98 0.005 280);              /* Light text - 16.7:1 */
+    --text-secondary: oklch(0.92 0.008 280);            /* Secondary light - 9.5:1 */
+    --text-tertiary: oklch(0.85 0.01 280);              /* Tertiary light - 6.5:1 */
+    --text-muted: oklch(0.75 0.012 280);               /* Muted light - 4.5:1 */
+    --text-disabled: oklch(0.65 0.014 280);             /* Disabled light - 3.5:1 */
+    --text-inverse: oklch(0.15 0.012 280);              /* Inverse dark */
+
+    /* Border overrides - Enhanced */
+    --border-subtle: oklch(0.30 0.014 280);              /* Subtle dark border */
+    --border-default: oklch(0.40 0.016 280);             /* Standard dark border */
+    --border-emphasis: oklch(0.50 0.015 280);            /* Emphasized dark border */
+    --border-inverse: oklch(0.85 0.01 280);              /* Inverse light border */
+
+    /* Interactive state overrides - Enhanced with color-mix() */
+    --state-hover: color-mix(in oklch, oklch(0.30 0.008 280) 40%, transparent 60%);
+    --state-active: color-mix(in oklch, oklch(0.35 0.008 280) 60%, transparent 40%);
+    --state-focus: var(--brand-primary-soft);
+
+    /* Premium interactive states for dark mode - Enhanced */
+    --state-hover-luxury: color-mix(in oklch, oklch(0.30 0.02 85) 30%, transparent 70%);
+    --state-hover-premium: color-mix(in oklch, oklch(0.30 0.015 25) 30%, transparent 70%);
+    --state-hover-elegant: color-mix(in oklch, oklch(0.30 0.015 245) 30%, transparent 70%);
+
+    /* Button overrides - Enhanced */
+    --btn-secondary-bg: var(--surface-subtle);
+    --btn-secondary-hover: var(--state-hover);
+    --btn-secondary-border: var(--border-default);
+    
+    --btn-ghost-hover: var(--state-hover-elegant);
+
+    /* Input overrides - Enhanced */
+    --input-bg: var(--surface-subtle);
+    --input-border: var(--border-default);
+
+    /* Card overrides - Enhanced */
+    --card-bg: var(--surface-base);
+    --card-border: var(--border-subtle);
+    --card-luxury-bg: var(--surface-luxury);
+    --card-premium-bg: var(--surface-premium);
+    --card-elegant-bg: var(--surface-elegant);
+
+    /* Navigation overrides - Enhanced */
+    --nav-bg: var(--surface-base);
+    --nav-border: var(--border-subtle);
+    --bottom-nav-bg: var(--surface-base);
+    --bottom-nav-border: var(--border-subtle);
+
+    /* Pill navigation overrides - Enhanced */
+    --pill-bg: var(--surface-subtle);
+    --pill-bg-hover: var(--state-hover);
+    --pill-text: var(--text-secondary);
+
+    /* Modal & dialog overrides - Enhanced */
+    --modal-bg: color-mix(in oklch, var(--surface-subtle) 50%, var(--surface-base) 50%);
+    --modal-overlay-bg: oklch(0 0 0 / 0.7);
+
+    /* Toast overrides - Enhanced */
+    --toast-bg: var(--surface-inverse);
+    --toast-text: var(--text-primary);
+  }
+}
+
+/* Manual Dark Mode Toggle - Enhanced */
+[data-theme="dark"] {
+  /* Surface overrides - Enhanced with color-mix() */
+  --surface-base: oklch(0.15 0.012 280);
+  --surface-subtle: color-mix(in oklch, var(--color-charcoal-800) 85%, var(--surface-base) 15%);
+  --surface-muted: color-mix(in oklch, var(--color-charcoal-700) 70%, var(--surface-base) 30%);
+  --surface-emphasis: color-mix(in oklch, var(--color-charcoal-600) 50%, var(--surface-base) 50%);
+  --surface-inverse: oklch(1 0 0);
+  --surface-brand: var(--brand-primary-strong);
+  --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--surface-base) 78%);
+  --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, oklch(0 0 0) 15%);
+
+  /* Premium surface variants for dark mode - Enhanced */
+  --surface-luxury: color-mix(in oklch, var(--color-gold-300) 15%, var(--surface-base) 85%);
+  --surface-premium: color-mix(in oklch, var(--color-burgundy-300) 15%, var(--surface-base) 85%);
+  --surface-elegant: color-mix(in oklch, var(--color-zinc-300) 15%, var(--surface-base) 85%);
+
+  /* Text overrides - Enhanced contrast */
+  --text-primary: oklch(0.98 0.005 280);              /* Light text - 16.7:1 */
+  --text-secondary: oklch(0.92 0.008 280);            /* Secondary light - 9.5:1 */
+  --text-tertiary: oklch(0.85 0.01 280);              /* Tertiary light - 6.5:1 */
+  --text-muted: oklch(0.75 0.012 280);               /* Muted light - 4.5:1 */
+  --text-disabled: oklch(0.65 0.014 280);             /* Disabled light - 3.5:1 */
+  --text-inverse: oklch(0.15 0.012 280);              /* Inverse dark */
+
+  /* Border overrides - Enhanced */
+  --border-subtle: oklch(0.30 0.014 280);              /* Subtle dark border */
+  --border-default: oklch(0.40 0.016 280);             /* Standard dark border */
+  --border-emphasis: oklch(0.50 0.015 280);            /* Emphasized dark border */
+  --border-inverse: oklch(0.85 0.01 280);              /* Inverse light border */
+
+  /* Interactive state overrides - Enhanced with color-mix() */
+  --state-hover: color-mix(in oklch, oklch(0.30 0.008 280) 40%, transparent 60%);
+  --state-active: color-mix(in oklch, oklch(0.35 0.008 280) 60%, transparent 40%);
+  --state-focus: var(--brand-primary-soft);
+
+  /* Premium interactive states for dark mode - Enhanced */
+  --state-hover-luxury: color-mix(in oklch, oklch(0.30 0.02 85) 30%, transparent 70%);
+  --state-hover-premium: color-mix(in oklch, oklch(0.30 0.015 25) 30%, transparent 70%);
+  --state-hover-elegant: color-mix(in oklch, oklch(0.30 0.015 245) 30%, transparent 70%);
+
+  /* Button overrides - Enhanced */
+  --btn-secondary-bg: var(--surface-subtle);
+  --btn-secondary-hover: var(--state-hover);
+  --btn-secondary-border: var(--border-default);
+  
+  --btn-ghost-hover: var(--state-hover-elegant);
+
+  /* Input overrides - Enhanced */
+  --input-bg: var(--surface-subtle);
+  --input-border: var(--border-default);
+
+  /* Card overrides - Enhanced */
+  --card-bg: var(--surface-base);
+  --card-border: var(--border-subtle);
+  --card-luxury-bg: var(--surface-luxury);
+  --card-premium-bg: var(--surface-premium);
+  --card-elegant-bg: var(--surface-elegant);
+
+  /* Navigation overrides - Enhanced */
+  --nav-bg: var(--surface-base);
+  --nav-border: var(--border-subtle);
+  --bottom-nav-bg: var(--surface-base);
+  --bottom-nav-border: var(--border-subtle);
+
+  /* Pill navigation overrides - Enhanced */
+  --pill-bg: var(--surface-subtle);
+  --pill-bg-hover: var(--state-hover);
+  --pill-text: var(--text-secondary);
+
+  /* Modal & dialog overrides - Enhanced */
+  --modal-bg: color-mix(in oklch, var(--surface-subtle) 50%, var(--surface-base) 50%);
+  --modal-overlay-bg: oklch(0 0 0 / 0.7);
+
+  /* Toast overrides - Enhanced */
+  --toast-bg: var(--surface-inverse);
+  --toast-text: var(--text-primary);
+}
+
+/* Dark mode color charcoal-850 fallback - Enhanced */
+@theme {
+  --color-charcoal-850: oklch(0.17 0.011 280);
+}

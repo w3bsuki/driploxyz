@@ -30,7 +30,7 @@
   }: Props = $props();
 
 
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement = $state()!;
   let uploading = $state(false);
   let isDragging = $state(false);
   let error = $state('');
@@ -131,7 +131,7 @@
   <!-- Upload Area -->
   <div
     class="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors duration-200 {isDragging 
-      ? 'border-blue-500 bg-blue-50' 
+      ? 'border-blue-500 bg-[var(--surface-brand-strong)]/5' 
       : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'} {disabled || uploading 
       ? 'opacity-50 cursor-not-allowed' 
       : ''}"
@@ -147,16 +147,16 @@
   >
     {#if uploading}
       <div class="flex flex-col items-center space-y-2">
-        <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <span class="text-sm text-blue-600 font-medium">{uploadingText}</span>
+        <div class="w-8 h-8 border-2 border-[var(--brand-primary)] border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-sm text-[var(--brand-primary-strong)] font-medium">{uploadingText}</span>
       </div>
     {:else if isDragging}
       <div class="flex flex-col items-center space-y-2">
-        <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-8 w-8 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
-        <span class="text-sm text-blue-600 font-medium">{dropHereText}</span>
+        <span class="text-sm text-[var(--brand-primary-strong)] font-medium">{dropHereText}</span>
       </div>
     {:else}
       <div class="flex flex-col items-center space-y-2">
@@ -211,7 +211,7 @@
 
   <!-- Help text -->
   <div class="flex items-start space-x-2">
-    <svg class="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="h-4 w-4 text-[var(--brand-primary-strong)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     <p class="text-xs text-gray-500">

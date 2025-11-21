@@ -5,7 +5,7 @@
 <script lang="ts">
   // Removed Melt UI dependency - using simple portal implementation
   import { fly } from 'svelte/transition';
-  import Toast from './Toast.svelte';
+  import * as ToastComponent from './Toast.svelte';
   import type { ToastProviderProps, Toast as ToastData, ToastInput } from './types';
   
   interface Props extends ToastProviderProps {
@@ -112,6 +112,8 @@
   function handleToastDismiss(id: string) {
     removeToastData(id);
   }
+
+  // Provide a default export compatibility by exporting the component instance signature
 </script>
 
 <!-- Main content -->
@@ -141,7 +143,7 @@
         delay: 0 
       }}
     >
-      <Toast 
+      <ToastComponent.default 
         {toast} 
         onDismiss={handleToastDismiss}
       />

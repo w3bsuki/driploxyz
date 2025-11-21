@@ -17,7 +17,8 @@
   const supabase = createBrowserSupabaseClient();
   
   let activeTab = $state<'to_ship' | 'shipped' | 'incoming' | 'completed'>('to_ship');
-  let selectedOrder = $state<{ id: string; tracking_number?: string; status: string } | null>(null);
+  type OrderStatusType = 'pending' | 'paid' | 'processing' | 'pending_shipment' | 'shipped' | 'in_transit' | 'delivered' | 'completed' | 'cancelled' | 'disputed' | 'failed';
+  let selectedOrder = $state<{ id: string; tracking_number?: string; status: OrderStatusType } | null>(null);
   let trackingNumber = $state('');
   let showTrackingModal = $state(false);
   let showReviewModal = $state(false);
@@ -26,7 +27,7 @@
   
   // Filter orders based on tab and user role
   const filteredOrders: OrderUI[] = $derived.by(() => {
-    const userId = data.user?.id;
+    const userId = data.user?.id || '';
     
     const orders = (data.orders || []).map(o => mapOrder(o as any));
 
@@ -35,28 +36,28 @@
         // Items seller needs to ship
         return orders.filter(o => 
           o.sellerId === userId && 
-          ['paid', 'processing', 'pending_shipment'].includes(o.status)
+          ['paid', 'processing', 'pending_shipment'].includes(o.status ?? 'pending')
         ) || [];
         
       case 'shipped':
         // Items seller has shipped
         return orders.filter(o => 
           o.sellerId === userId && 
-          ['shipped', 'in_transit'].includes(o.status)
+          ['shipped', 'in_transit'].includes(o.status ?? 'pending')
         ) || [];
         
       case 'incoming':
         // Orders buyer is waiting for
         return orders.filter(o => 
           o.buyerId === userId && 
-          ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
+          ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status ?? 'pending')
         ) || [];
         
       case 'completed':
         // Completed orders for both
         return orders.filter(o => 
           (o.sellerId === userId || o.buyerId === userId) && 
-          ['delivered', 'completed'].includes(o.status)
+          ['delivered', 'completed'].includes(o.status ?? 'pending')
         ) || [];
         
       default:
@@ -67,15 +68,15 @@
   // Count items needing action
   interface ActionCounts { toShip: number; incoming: number }
   const actionCounts: ActionCounts = $derived.by(() => {
-    const userId = data.user?.id;
+    const userId = data.user?.id || '';
     const orders = data.orders || [];
     const toShip = orders.filter(o => 
       o.seller_id === userId && 
-      ['paid', 'processing', 'pending_shipment'].includes(o.status)
+      ['paid', 'processing', 'pending_shipment'].includes(o.status ?? 'pending')
     ).length;
     const incoming = orders.filter(o => 
       o.buyer_id === userId && 
-      ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
+      ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status ?? 'pending')
     ).length;
     return { toShip, incoming };
   });
@@ -99,11 +100,11 @@
     };
   }
   
-  async function updateOrderStatus(orderId: string, newStatus: string, tracking?: string) {
+  async function updateOrderStatus(orderId: string, newStatus: OrderStatusType, tracking?: string) {
     loading = true;
     
     try {
-      const updateData: { status: string; tracking_number?: string } = { status: newStatus };
+  const updateData: { status: OrderStatusType; tracking_number?: string } = { status: newStatus };
       if (tracking) {
         updateData.tracking_number = tracking;
       }
@@ -118,12 +119,12 @@
         toasts.success('Order status updated successfully');
         
         // Update local data
-        if (data.orders) {
+        if (Array.isArray(data.orders)) {
           const index = data.orders.findIndex(o => o.id === orderId);
           if (index !== -1) {
-            data.orders[index].status = newStatus;
+            (data.orders[index] as any).status = newStatus;
             if (tracking) {
-              data.orders[index].tracking_number = tracking;
+              (data.orders[index] as any).tracking_number = tracking;
             }
           }
         }
@@ -141,9 +142,9 @@
     }
   }
   
-  function openTrackingModal(order: { id: string; tracking_number?: string; status: string }) {
-    selectedOrder = order;
-    trackingNumber = order.tracking_number || '';
+  function openTrackingModal(order: { id: string; tracking_number?: string | null; status: OrderStatusType }) {
+    selectedOrder = { id: order.id, status: order.status, tracking_number: order.tracking_number ?? undefined };
+    trackingNumber = order.tracking_number ?? '';
     showTrackingModal = true;
   }
   
@@ -156,7 +157,7 @@
     await updateOrderStatus(selectedOrder.id, 'shipped', trackingNumber);
   }
   
-  async function confirmDelivery(order: { id: string; status: string }) {
+  async function confirmDelivery(order: { id: string; status: OrderStatusType }) {
     if (confirm('Confirm that you have received this order?')) {
       await updateOrderStatus(order.id, 'delivered');
       // Show review modal after confirming delivery
@@ -175,38 +176,39 @@
     reviewOrder = null;
   }
   
-  async function handleReviewSubmit(data: {
+  async function handleReviewSubmit(form: {
     rating: number;
     title: string;
     comment: string;
     imageUrls: string[];
   }) {
-    if (!reviewOrder) return;
+  const ro = reviewOrder;
+  if (!ro) return;
     
     try {
       const response = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: reviewOrder.id,
-          rating: data.rating,
-          title: data.title || null,
-          comment: data.comment || null,
-          image_urls: data.imageUrls.length > 0 ? data.imageUrls : null
+          order_id: ro.id,
+          rating: form.rating,
+          title: form.title || null,
+          comment: form.comment || null,
+          image_urls: form.imageUrls.length > 0 ? form.imageUrls : null
         })
       });
       
-      if (!response.ok) {
+  if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to submit review');
       }
       
       toasts.success('Thank you for your review!');
       // Update the order in local state
-      if (data.orders) {
-        const orderIndex = data.orders.findIndex(o => o.id === reviewOrder.id);
+      if (Array.isArray(data.orders)) {
+        const orderIndex = data.orders.findIndex((o: any) => o.id === ro.id);
         if (orderIndex !== -1) {
-          data.orders[orderIndex].buyer_rated = true;
+          (data.orders[orderIndex] as any).buyer_rated = true;
         }
       }
       closeReviewModal();
@@ -219,10 +221,10 @@
   
   function handleReviewPromptSubmit(orderId: string) {
     // Update the order in local state to reflect that review was submitted
-    if (data.orders) {
+    if (Array.isArray(data.orders)) {
       const orderIndex = data.orders.findIndex(o => o.id === orderId);
       if (orderIndex !== -1) {
-        data.orders[orderIndex].buyer_rated = true;
+        (data.orders[orderIndex] as any).buyer_rated = true;
       }
     }
     toasts.success('Thank you for your review!');
@@ -366,27 +368,28 @@
     <!-- Review Prompts - Show at the top for delivered but unreviewed orders -->
     <div class="mb-6">
       <ReviewPrompt
-        orders={data.orders
-          ?.filter(order => 
-            order.buyer_id === data.user?.id && 
-            order.status === 'delivered' && 
-            !order.buyer_rated
-          )
-          .map(order => ({
-            id: order.id,
-            product: {
-              id: order.product?.id || '',
-              title: order.product?.title || 'Product',
-              image_url: order.product?.first_image || order.product?.images?.[0]
-            },
-            seller: {
-              id: order.seller_id,
-              username: order.seller?.username || 'Seller'
-            },
-            delivered_at: order.delivered_at || order.updated_at,
-            buyer_rated: order.buyer_rated || false
-          })) || []
-        }
+        orders={(Array.isArray(data.orders)
+          ? data.orders
+            .filter(order => 
+              order.buyer_id === data.user?.id && 
+              order.status === 'delivered' && 
+              !order.buyer_rated
+            )
+            .map(order => ({
+              id: order.id,
+              product: {
+                id: (order as any).product?.id || '',
+                title: (order as any).product?.title || 'Product',
+                image_url: (order as any).product?.first_image || (order as any).product?.images?.[0] || ''
+              },
+              seller: {
+                id: order.seller_id,
+                username: order.seller?.username || 'Seller'
+              },
+              delivered_at: (order.delivered_at as string | null) || (order.updated_at as string) || '',
+              buyer_rated: order.buyer_rated || false
+            }))
+          : []) as any}
         onReviewSubmit={handleReviewPromptSubmit}
       />
     </div>
@@ -505,7 +508,7 @@
                   {#if false}
                     <!-- Bundle display -->
                     <div class="relative w-24 h-24">
-                      <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-[color:var(--status-info-bg)] rounded-xl flex items-center justify-center shadow-sm">
+                      <div class="w-24 h-24 bg-gradient-to-br from-zinc-100 to-[color:var(--status-info-bg)] rounded-xl flex items-center justify-center shadow-sm">
                         <span class="text-3xl">📦</span>
                       </div>
                       <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-sm">
@@ -581,7 +584,7 @@
                     <div class="flex gap-2 mt-4">
                       {#if activeTab === 'to_ship' && isSeller}
                         <Button
-                          onclick={() => openTrackingModal(order)}
+                              onclick={() => openTrackingModal({ id: order.id, status: (order.status ?? 'pending') as OrderStatusType, tracking_number: order.tracking_number ?? undefined })}
                           size="sm"
                           variant="primary"
                         >
@@ -596,7 +599,7 @@
                         </Button>
                       {:else if activeTab === 'incoming' && !isSeller && order.status === 'shipped'}
                         <Button
-                          onclick={() => confirmDelivery(order)}
+                          onclick={() => confirmDelivery({ id: order.id, status: (order.status ?? 'pending') as OrderStatusType })}
                           size="sm"
                           variant="primary"
                         >
@@ -611,7 +614,7 @@
                         </Button>
                       {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered'}
                         <Button
-                          onclick={() => openReviewModal(order)}
+                          onclick={() => openReviewModal({ id: order.id, ...(order.product ? { product: { title: order.product.title, images: order.product.images, ...(order.product.firstImage ? { first_image: order.product.firstImage } : {}) } } : {}), seller: { username: order.seller?.username } })}
                           size="sm"
                           variant="primary"
                         >

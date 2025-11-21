@@ -77,19 +77,21 @@
   const supabase = createBrowserSupabaseClient();
   
   // Categories
+  type Category = { id: string; name: string; parent_id: string | null };
+  const allCategories: Category[] = (data.categories as unknown as Category[]) || [];
   const genderCategories = $derived(
-    data.categories?.filter((cat: any) => !cat.parent_id) || []
+    allCategories.filter((cat) => !cat.parent_id)
   );
 
   const typeCategories = $derived(
     formData.gender_category_id 
-      ? data.categories?.filter((cat: any) => cat.parent_id === formData.gender_category_id) || []
+      ? allCategories.filter((cat) => cat.parent_id === formData.gender_category_id)
       : []
   );
 
   const specificCategories = $derived(
     formData.type_category_id
-      ? data.categories?.filter((cat: any) => cat.parent_id === formData.type_category_id) || []
+      ? allCategories.filter((cat) => cat.parent_id === formData.type_category_id)
       : []
   );
   
@@ -365,7 +367,7 @@
       <!-- Brand subscription required -->
       <div class="text-center py-12 max-w-lg mx-auto w-full px-4">
         <div class="inline-flex items-center justify-center w-16 h-16 bg-[color:var(--brand-primary-subtle)] rounded-full mb-4">
-          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
@@ -520,7 +522,7 @@
               }}
             >
               <StepCategory
-                categories={data.categories}
+                categories={data.categories as any}
                 bind:formData
                 suggestions={categorySuggestions}
                 showSuggestions={showSuggestions}
@@ -537,19 +539,19 @@
                     // Map suggestion to actual category IDs
                     if (categorySuggestions.gender) {
                       const genderCat = genderCategories.find((c: any) => c.name === categorySuggestions?.gender);
-                      if (genderCat) {
+                      if (genderCat && typeof genderCat.id === 'string') {
                         formData.gender_category_id = genderCat.id;
                       }
                     }
                     if (categorySuggestions.type && formData.gender_category_id) {
                       const typeCat = typeCategories.find((c: any) => c.name === categorySuggestions?.type);
-                      if (typeCat) {
+                      if (typeCat && typeof typeCat.id === 'string') {
                         formData.type_category_id = typeCat.id;
                       }
                     }
                     if (categorySuggestions.specific && formData.type_category_id) {
                       const specificCat = specificCategories.find((c: any) => c.name === categorySuggestions?.specific);
-                      if (specificCat) {
+                      if (specificCat && typeof specificCat.id === 'string') {
                         formData.category_id = specificCat.id;
                       }
                     }
@@ -676,10 +678,10 @@
 
                     {#if formData.use_premium_boost}
                       <div class="flex items-center gap-1 px-2 py-1 bg-[color:var(--brand-primary-subtle)] rounded text-xs">
-                        <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        <span class="text-purple-700 font-medium">Boosted</span>
+                        <span class="text-zinc-700 font-medium">Boosted</span>
                       </div>
                     {/if}
                   </div>

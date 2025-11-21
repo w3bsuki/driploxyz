@@ -243,29 +243,29 @@
           {@const hasPremium = userSubscriptions.some(s => s.status === 'active' && s.subscription_plans?.plan_type === 'premium')}
           {@const premiumFeatures = [i18n.upgrade_premiumFeature1(), i18n.upgrade_premiumFeature2(), i18n.upgrade_premiumFeature3()]}
           {@const premiumPrice = discountInfo.eligible ? calculateDiscountedPrice(24.99) : 24.99}
-        <div class="bg-white rounded-xl border-2 {hasPremium ? 'border-purple-500' : 'border-purple-300'} p-1.5 shadow-xl backdrop-blur-xl max-w-xs w-full relative">
+        <div class="bg-white rounded-xl border-2 {hasPremium ? 'border-zinc-900' : 'border-zinc-300'} p-1.5 shadow-xl backdrop-blur-xl max-w-xs w-full relative">
           <!-- Popular Badge -->
           <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-            <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <div class="bg-zinc-900 text-white text-xs font-bold px-3 py-1 rounded-full">
               ⭐ {i18n.upgrade_mostPopular()}
             </div>
           </div>
           
           <!-- Header with glass effect -->
-          <div class="bg-purple-50/80 relative mb-4 rounded-xl border border-purple-200 p-4">
+          <div class="bg-zinc-50/80 relative mb-4 rounded-xl border border-zinc-200 p-4">
             <div 
               aria-hidden="true"
               class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
-              style="background: linear-gradient(180deg, rgba(139,92,246,0.07) 0%, rgba(139,92,246,0.03) 40%, rgba(0,0,0,0) 100%)"
+              style="background: linear-gradient(180deg, rgba(24,24,27,0.07) 0%, rgba(24,24,27,0.03) 40%, rgba(0,0,0,0) 100%)"
             ></div>
             
             <div class="mb-8 flex items-center justify-between">
-              <div class="text-purple-700 flex items-center gap-2 text-sm font-medium">
+              <div class="text-zinc-700 flex items-center gap-2 text-sm font-medium">
                 <span class="text-lg">⭐</span>
                 <span>{i18n.upgrade_premiumPlan()}</span>
               </div>
               {#if hasPremium}
-                <span class="bg-purple-600 text-white rounded-full px-2 py-0.5 text-xs">
+                <span class="bg-zinc-900 text-white rounded-full px-2 py-0.5 text-xs">
                   {i18n.upgrade_activePlan()}
                 </span>
               {/if}
@@ -273,19 +273,19 @@
             
             <div class="mb-3 flex items-end gap-1">
               {#if discountInfo.eligible && !hasPremium}
-                <span class="text-3xl font-extrabold tracking-tight text-purple-900">${premiumPrice.toFixed(2)}</span>
-                <span class="text-purple-700 pb-1 text-sm line-through ml-2">$24.99</span>
+                <span class="text-3xl font-extrabold tracking-tight text-zinc-900">${premiumPrice.toFixed(2)}</span>
+                <span class="text-zinc-500 pb-1 text-sm line-through ml-2">$24.99</span>
               {:else}
-                <span class="text-3xl font-extrabold tracking-tight text-purple-900">$24.99</span>
+                <span class="text-3xl font-extrabold tracking-tight text-zinc-900">$24.99</span>
               {/if}
-              <span class="text-purple-700 pb-1 text-sm">{i18n.upgrade_perMonth()}</span>
+              <span class="text-zinc-600 pb-1 text-sm">{i18n.upgrade_perMonth()}</span>
             </div>
             
             {#if hasPremium}
               {@const currentSub = getCurrentPlan('premium')}
               <button 
                 onclick={() => cancelSubscription(currentSub?.stripe_subscription_id || '', 'premium')}
-                class="w-full font-semibold text-purple-600 border border-purple-300 hover:bg-purple-50 py-3 px-4 rounded-lg transition-colors"
+                class="w-full font-semibold text-zinc-600 border border-zinc-300 hover:bg-zinc-50 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'premium' ? i18n.upgrade_canceling() : i18n.upgrade_cancelPlan()}
@@ -293,7 +293,7 @@
             {:else}
               <button
                 onclick={() => subscribeToPlan('c0587696-cbcd-4e6b-b6bc-ba84fb47ddce', 'premium')}
-                class="w-full font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 py-3 px-4 rounded-lg transition-colors"
+                class="w-full font-semibold text-white bg-zinc-900 hover:bg-zinc-800 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'premium' ? i18n.upgrade_processing() : i18n.upgrade_getPremium()}
@@ -307,14 +307,14 @@
               {#each premiumFeatures as feature}
                 <li class="text-gray-600 flex items-start gap-3 text-sm">
                   <span class="mt-0.5">
-                    <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-purple-600 rounded-full text-xs">✓</span>
+                    <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-zinc-900 rounded-full text-xs">✓</span>
                   </span>
                   <span>{feature}</span>
                 </li>
               {/each}
             </ul>
             {#if discountInfo.eligible && !hasPremium}
-              <div class="bg-purple-100 text-purple-700 rounded-sm px-3 py-2 text-center">
+              <div class="bg-zinc-100 text-zinc-800 rounded-sm px-3 py-2 text-center">
                 <span class="text-sm font-bold">{i18n.upgrade_discountFirstMonth()}</span>
               </div>
             {/if}
@@ -327,9 +327,9 @@
           {@const hasBrand = userSubscriptions.some(s => s.status === 'active' && s.subscription_plans?.plan_type === 'brand')}
           {@const brandFeatures = [i18n.upgrade_brandFeature1(), i18n.upgrade_brandFeature2(), i18n.upgrade_brandFeature3()]}
           {@const brandPrice = discountInfo.eligible ? calculateDiscountedPrice(49.99) : 49.99}
-        <div class="bg-white rounded-xl border {hasBrand ? 'border-blue-400' : 'border-gray-200'} p-1.5 shadow-xl backdrop-blur-xl max-w-xs w-full">
+        <div class="bg-white rounded-xl border {hasBrand ? 'border-[var(--surface-brand-strong)]/40' : 'border-gray-200'} p-1.5 shadow-xl backdrop-blur-xl max-w-xs w-full">
           <!-- Header with glass effect -->
-          <div class="bg-blue-50/80 relative mb-4 rounded-xl border border-blue-200 p-4">
+          <div class="bg-[var(--surface-brand-strong)]/5/80 relative mb-4 rounded-xl border border-[var(--surface-brand-strong)]/20 p-4">
             <div 
               aria-hidden="true"
               class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
@@ -337,12 +337,12 @@
             ></div>
             
             <div class="mb-8 flex items-center justify-between">
-              <div class="text-blue-700 flex items-center gap-2 text-sm font-medium">
+              <div class="text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] flex items-center gap-2 text-sm font-medium">
                 <span class="text-lg">🏢</span>
                 <span>{i18n.upgrade_brandPlan()}</span>
               </div>
               {#if hasBrand}
-                <span class="bg-blue-600 text-white rounded-full px-2 py-0.5 text-xs">
+                <span class="bg-[var(--brand-primary-strong)] text-white rounded-full px-2 py-0.5 text-xs">
                   {i18n.upgrade_activePlan()}
                 </span>
               {/if}
@@ -350,19 +350,19 @@
             
             <div class="mb-3 flex items-end gap-1">
               {#if discountInfo.eligible && !hasBrand}
-                <span class="text-3xl font-extrabold tracking-tight text-blue-900">${brandPrice.toFixed(2)}</span>
-                <span class="text-blue-700 pb-1 text-sm line-through ml-2">$49.99</span>
+                <span class="text-3xl font-extrabold tracking-tight text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]">${brandPrice.toFixed(2)}</span>
+                <span class="text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] pb-1 text-sm line-through ml-2">$49.99</span>
               {:else}
-                <span class="text-3xl font-extrabold tracking-tight text-blue-900">$49.99</span>
+                <span class="text-3xl font-extrabold tracking-tight text-[color-mix(in_oklch,var(--brand-primary-strong)_70%,black_30%)]">$49.99</span>
               {/if}
-              <span class="text-blue-700 pb-1 text-sm">{i18n.upgrade_perMonth()}</span>
+              <span class="text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] pb-1 text-sm">{i18n.upgrade_perMonth()}</span>
             </div>
             
             {#if hasBrand}
               {@const currentSub = getCurrentPlan('brand')}
               <button 
                 onclick={() => cancelSubscription(currentSub?.stripe_subscription_id || '', 'brand')}
-                class="w-full font-semibold text-blue-600 border border-blue-300 hover:bg-blue-50 py-3 px-4 rounded-lg transition-colors"
+                class="w-full font-semibold text-[var(--brand-primary-strong)] border border-[var(--surface-brand-strong)]/30 hover:bg-[var(--surface-brand-strong)]/5 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'brand' ? i18n.upgrade_canceling() : i18n.upgrade_cancelPlan()}
@@ -370,7 +370,7 @@
             {:else}
               <button
                 onclick={() => subscribeToPlan('989b722e-4050-4c63-ac8b-ab105f14027c', 'brand')}
-                class="w-full font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 py-3 px-4 rounded-lg transition-colors"
+                class="w-full font-semibold text-white bg-zinc-900 hover:bg-zinc-800 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'brand' ? i18n.upgrade_processing() : i18n.upgrade_getBrand()}
@@ -384,14 +384,14 @@
               {#each brandFeatures as feature}
                 <li class="text-gray-600 flex items-start gap-3 text-sm">
                   <span class="mt-0.5">
-                    <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-blue-600 rounded-full text-xs">✓</span>
+                    <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-[var(--brand-primary-strong)] rounded-full text-xs">✓</span>
                   </span>
                   <span>{feature}</span>
                 </li>
               {/each}
             </ul>
             {#if discountInfo.eligible && !hasBrand}
-              <div class="bg-blue-100 text-blue-700 rounded-sm px-3 py-2 text-center">
+              <div class="bg-[var(--surface-brand-strong)]/10 text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] rounded-sm px-3 py-2 text-center">
                 <span class="text-sm font-bold">{i18n.upgrade_discountFirstMonth()}</span>
               </div>
             {/if}

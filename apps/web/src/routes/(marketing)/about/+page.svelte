@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import * as i18n from '@repo/i18n';
 	import { SEOMetaTags } from '@repo/ui';
-	import type { PageData } from './$types';
-
-	let { data }: { data: PageData } = $props();
+    
 
 	const pageTitle = 'About Driplo - Bulgaria & UK\'s Premier Fashion Marketplace';
 	const pageDescription = 'Discover Driplo, the trusted marketplace for second-hand fashion across Bulgaria and the UK. Buy and sell unique clothing, shoes, and accessories with confidence.';
@@ -20,20 +17,20 @@
 />
 
 <!-- Hero Section -->
-<section class="bg-gradient-to-br from-blue-50 via-white to-purple-50 py-16 px-4">
+<section class="bg-zinc-50 py-16 px-4">
 	<div class="max-w-4xl mx-auto text-center">
 		<h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-			About <span class="text-blue-600">Driplo</span>
+			About <span class="text-[var(--brand-primary-strong)]">Driplo</span>
 		</h1>
 		<p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
 			Bulgaria and the UK\'s trusted marketplace for pre-loved fashion.
 			Connecting style-conscious buyers and sellers since 2024.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-4 justify-center">
-			<a href="/sell" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+			<a href="/sell" class="inline-flex items-center justify-center px-6 py-3 bg-[var(--brand-primary-strong)] text-white font-medium rounded-lg hover:bg-zinc-800 transition-colors">
 				Start Selling
 			</a>
-			<a href="/search" class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-medium rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors">
+			<a href="/search" class="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-900 font-medium rounded-lg border border-zinc-900 hover:bg-zinc-50 transition-colors">
 				Browse Fashion
 			</a>
 		</div>
@@ -56,8 +53,8 @@
 					of a community that values quality, sustainability, and individual style.
 				</p>
 				<div class="grid grid-cols-2 gap-6">
-					<div class="text-center p-4 bg-blue-50 rounded-lg">
-						<div class="text-2xl font-bold text-blue-600 mb-2">50K+</div>
+					<div class="text-center p-4 bg-[var(--surface-brand-strong)]/5 rounded-lg">
+						<div class="text-2xl font-bold text-[var(--brand-primary-strong)] mb-2">50K+</div>
 						<div class="text-sm text-gray-600">Active Items</div>
 					</div>
 					<div class="text-center p-4 bg-green-50 rounded-lg">
@@ -66,7 +63,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="bg-gradient-to-br from-purple-100 to-blue-100 p-8 rounded-2xl">
+			<div class="bg-zinc-100 p-8 rounded-2xl">
 				<div class="space-y-6">
 					<div class="flex items-start gap-4">
 						<div class="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center">
@@ -107,8 +104,8 @@
 		<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">How Driplo Works</h2>
 		<div class="grid md:grid-cols-3 gap-8">
 			<div class="text-center">
-				<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-					<span class="text-2xl font-bold text-blue-600">1</span>
+				<div class="w-16 h-16 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+					<span class="text-2xl font-bold text-[var(--brand-primary-strong)]">1</span>
 				</div>
 				<h3 class="text-xl font-semibold text-gray-900 mb-3">Browse & Discover</h3>
 				<p class="text-gray-600">
@@ -117,8 +114,8 @@
 				</p>
 			</div>
 			<div class="text-center">
-				<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-					<span class="text-2xl font-bold text-blue-600">2</span>
+				<div class="w-16 h-16 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+					<span class="text-2xl font-bold text-[var(--brand-primary-strong)]">2</span>
 				</div>
 				<h3 class="text-xl font-semibold text-gray-900 mb-3">Buy & Sell Safely</h3>
 				<p class="text-gray-600">
@@ -127,8 +124,8 @@
 				</p>
 			</div>
 			<div class="text-center">
-				<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-					<span class="text-2xl font-bold text-blue-600">3</span>
+				<div class="w-16 h-16 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+					<span class="text-2xl font-bold text-[var(--brand-primary-strong)]">3</span>
 				</div>
 				<h3 class="text-xl font-semibold text-gray-900 mb-3">Connect & Style</h3>
 				<p class="text-gray-600">
@@ -146,7 +143,7 @@
 		<h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Our Values</h2>
 		<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
 			<div class="text-center">
-				<div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-3xl">♻️</span>
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Sustainability</h3>
@@ -160,7 +157,7 @@
 				<p class="text-gray-600 text-sm">Building a safe, reliable marketplace</p>
 			</div>
 			<div class="text-center">
-				<div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+				<div class="w-20 h-20 bg-[var(--surface-brand-strong)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
 					<span class="text-3xl">🎨</span>
 				</div>
 				<h3 class="font-semibold text-gray-900 mb-2">Individuality</h3>
@@ -186,19 +183,19 @@
 		</p>
 		<div class="grid md:grid-cols-3 gap-8">
 			<div class="bg-white p-6 rounded-xl shadow-sm">
-				<div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full mx-auto mb-4"></div>
+				<div class="w-24 h-24 bg-zinc-300 rounded-full mx-auto mb-4"></div>
 				<h3 class="font-semibold text-gray-900 mb-1">Team Driplo</h3>
 				<p class="text-gray-600 text-sm">Fashion & Tech Enthusiasts</p>
 				<p class="text-gray-500 text-sm mt-2">Passionate about making sustainable fashion accessible to everyone</p>
 			</div>
 			<div class="bg-white p-6 rounded-xl shadow-sm">
-				<div class="w-24 h-24 bg-gradient-to-br from-green-400 to-blue-400 rounded-full mx-auto mb-4"></div>
+				<div class="w-24 h-24 bg-zinc-400 rounded-full mx-auto mb-4"></div>
 				<h3 class="font-semibold text-gray-900 mb-1">Community First</h3>
 				<p class="text-gray-600 text-sm">Built for Users</p>
 				<p class="text-gray-500 text-sm mt-2">Every feature designed with our community in mind</p>
 			</div>
 			<div class="bg-white p-6 rounded-xl shadow-sm">
-				<div class="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mx-auto mb-4"></div>
+				<div class="w-24 h-24 bg-zinc-500 rounded-full mx-auto mb-4"></div>
 				<h3 class="font-semibold text-gray-900 mb-1">Local Focus</h3>
 				<p class="text-gray-600 text-sm">Bulgaria & UK Markets</p>
 				<p class="text-gray-500 text-sm mt-2">Serving local communities with global standards</p>
@@ -208,17 +205,17 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-16 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+<section class="py-16 px-4 bg-zinc-900">
 	<div class="max-w-4xl mx-auto text-center">
 		<h2 class="text-3xl font-bold text-white mb-6">Join the Driplo Community</h2>
-		<p class="text-xl text-blue-100 mb-8">
+		<p class="text-xl text-zinc-300 mb-8">
 			Start buying and selling unique fashion pieces today. Be part of the sustainable fashion revolution.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-4 justify-center">
-			<a href="/signup" class="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+			<a href="/signup" class="inline-flex items-center justify-center px-8 py-4 bg-white text-zinc-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
 				Sign Up Free
 			</a>
-			<a href="/sell" class="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-blue-600 transition-colors">
+			<a href="/sell" class="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-zinc-900 transition-colors">
 				List Your First Item
 			</a>
 		</div>

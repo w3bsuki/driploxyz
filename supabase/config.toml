@@ -1,5 +1,6 @@
 # Supabase configuration file
 # This file is used for local development and type generation
+project_id = "driplo-local"
 
 [api]
 enabled = true

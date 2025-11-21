@@ -30,9 +30,9 @@
   };
   
   const getStatusColor = (listing: { is_sold: boolean | null | undefined; status: string | null | undefined }) => {
-    if (listing.is_sold) return 'bg-green-100 text-green-800';
-    if ((listing.status ?? '') === 'active') return 'bg-blue-100 text-blue-800';
-    if ((listing.status ?? '') === 'draft') return 'bg-yellow-100 text-yellow-800';
+    if (listing.is_sold) return 'bg-zinc-100 text-zinc-800';
+    if ((listing.status ?? '') === 'active') return 'bg-zinc-100 text-zinc-900';
+    if ((listing.status ?? '') === 'draft') return 'bg-zinc-50 text-zinc-600';
     return 'bg-gray-100 text-gray-800';
   };
   
@@ -76,15 +76,15 @@
       </div>
       <div class="bg-white p-4 rounded-lg shadow-xs">
         <p class="text-sm text-gray-600">{i18n.listings_active()}</p>
-  <p class="text-2xl font-bold text-blue-600">{data.stats?.active ?? 0}</p>
+  <p class="text-2xl font-bold text-zinc-900">{data.stats?.active ?? 0}</p>
       </div>
       <div class="bg-white p-4 rounded-lg shadow-xs">
         <p class="text-sm text-gray-600">{i18n.listings_sold()}</p>
-  <p class="text-2xl font-bold text-green-600">{data.stats?.sold ?? 0}</p>
+  <p class="text-2xl font-bold text-zinc-600">{data.stats?.sold ?? 0}</p>
       </div>
       <div class="bg-white p-4 rounded-lg shadow-xs">
         <p class="text-sm text-gray-600">{i18n.listings_draft()}</p>
-  <p class="text-2xl font-bold text-yellow-600">{data.stats?.draft ?? 0}</p>
+  <p class="text-2xl font-bold text-zinc-600">{data.stats?.draft ?? 0}</p>
       </div>
     </div>
 
@@ -94,7 +94,7 @@
         <button
           onclick={() => activeTab = 'all'}
           class="text-sm font-medium {activeTab === 'all' 
-            ? 'text-blue-600 border-b-2 border-blue-600 pb-2' 
+            ? 'text-zinc-900 border-b-2 border-zinc-900 pb-2' 
             : 'text-gray-500 hover:text-gray-700'}"
         >
           {i18n.listings_all()} ({data.stats?.total ?? 0})
@@ -102,7 +102,7 @@
         <button
           onclick={() => activeTab = 'active'}
           class="text-sm font-medium {activeTab === 'active' 
-            ? 'text-blue-600 border-b-2 border-blue-600 pb-2' 
+            ? 'text-zinc-900 border-b-2 border-zinc-900 pb-2' 
             : 'text-gray-500 hover:text-gray-700'}"
         >
           {i18n.listings_active()} ({data.stats?.active ?? 0})
@@ -110,7 +110,7 @@
         <button
           onclick={() => activeTab = 'sold'}
           class="text-sm font-medium {activeTab === 'sold' 
-            ? 'text-blue-600 border-b-2 border-blue-600 pb-2' 
+            ? 'text-zinc-900 border-b-2 border-zinc-900 pb-2' 
             : 'text-gray-500 hover:text-gray-700'}"
         >
           {i18n.listings_sold()} ({data.stats?.sold ?? 0})
@@ -118,7 +118,7 @@
         <button
           onclick={() => activeTab = 'draft'}
           class="text-sm font-medium {activeTab === 'draft' 
-            ? 'text-blue-600 border-b-2 border-blue-600 pb-2' 
+            ? 'text-zinc-900 border-b-2 border-zinc-900 pb-2' 
             : 'text-gray-500 hover:text-gray-700'}"
         >
           {i18n.listings_draft()} ({data.stats?.draft ?? 0})
@@ -181,7 +181,7 @@
                     <div class="flex space-x-2">
                       <button 
                         onclick={(e: MouseEvent) => { e.stopPropagation(); goto(`/product/${listing.id}/edit`); }} 
-                        class="text-blue-600 hover:text-blue-800"
+                        class="text-zinc-600 hover:text-zinc-900"
                         type="button"
                         aria-label="Edit listing"
                       >

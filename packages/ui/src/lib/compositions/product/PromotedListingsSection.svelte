@@ -74,13 +74,23 @@
       promotedScrollContainer.scrollBy({ left: cardWidth, behavior: 'smooth' });
     }
   }
+
+  function handleKeyboardScroll(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      scrollLeft();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      scrollRight();
+    }
+  }
 </script>
 
 {#if activePromotedProducts.length > 0}
 	<!-- Enhanced section with separator banner -->
-	<section class="pb-2 sm:pb-3 {className}">
+	<section class="{className}">
 		<!-- Section Banner with proper container -->
-		<div class="px-2 sm:px-4 lg:px-6 mb-3 sm:mb-4">
+		<div class="px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)] mb-[var(--space-1)]">
 			<PromotedListingsBanner
 				heading={translations.promoted_listings}
 				copy={translations.promoted_description}
@@ -103,10 +113,21 @@
 		</div>
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
-		<div class="relative px-2 sm:px-4 lg:px-6">
-			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbarhide promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
-				{#each activePromotedProducts as product (product.id)}
-					<div class="flex-shrink-0 snap-start basis-1/2 sm:basis-1/3 lg:basis-1/4 xl:basis-1/5" data-promoted-card>
+		<div class="relative px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+      <div 
+				class="flex gap-[var(--space-2)] sm:gap-[var(--space-3)] overflow-x-auto scrollbarhide promoted-cards-container" 
+				style="scroll-snap-type: x mandatory;" 
+				data-promoted-scroll 
+				bind:this={promotedScrollContainer}
+				role="region"
+				aria-label="Promoted listings - horizontal scroll, use arrow keys to navigate"
+				tabindex="0"
+				onkeydown={handleKeyboardScroll}
+			>
+        {#each activePromotedProducts as product (product.id)}
+          <div class="home-promoted-card flex-shrink-0 snap-start" data-promoted-card>
 						<ProductCard
 							{product}
 							onclick={onProductClick}
@@ -135,5 +156,34 @@
 		</div>
 	</section>
 {/if}
+
+
+<style>
+  :global(.home-promoted-card) {
+    flex-basis: calc((100% - var(--space-2)) / 2);
+    max-width: calc((100% - var(--space-2)) / 2);
+  }
+
+  @media (min-width: 640px) {
+    :global(.home-promoted-card) {
+      flex-basis: calc((100% - (2 * var(--space-3))) / 3);
+      max-width: calc((100% - (2 * var(--space-3))) / 3);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :global(.home-promoted-card) {
+      flex-basis: calc((100% - (3 * var(--space-3))) / 4);
+      max-width: calc((100% - (3 * var(--space-3))) / 4);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    :global(.home-promoted-card) {
+      flex-basis: calc((100% - (4 * var(--space-3))) / 5);
+      max-width: calc((100% - (4 * var(--space-3))) / 5);
+    }
+  }
+</style>
 
 

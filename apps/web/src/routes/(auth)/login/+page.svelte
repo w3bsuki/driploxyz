@@ -14,8 +14,8 @@
 
   // OAuth state
   let oauthSubmitting = $state<string | null>(null);
-  const oauthProviders = $derived(getOAuthProviders());
-  const hasOauth = $derived(hasOAuthProviders());
+  const oauthProviders: OAuthProvider[] = $derived(getOAuthProviders());
+  const hasOauth: boolean = $derived(hasOAuthProviders());
 
   let submitting = $state(false);
 
@@ -72,34 +72,35 @@
   // Handle form errors with toast - prevent infinite loops
   $effect(() => {
     // Create a unique key from current form errors to detect actual changes
-    const currentFormErrorsKey = form?.errors
+    const fe = form?.errors as Record<string, string> | { _form: string } | undefined;
+    const currentFormErrorsKey = fe
       ? JSON.stringify({
-          _form: form.errors._form,
-          email: form.errors.email,
-          password: form.errors.password
+          _form: ' _form' in fe ? fe._form : undefined,
+          email: 'email' in (fe as any) ? (fe as any).email : undefined,
+          password: 'password' in (fe as any) ? (fe as any).password : undefined
         })
       : '';
 
     // Only show toasts if form errors actually changed (not just form object reference)
     if (currentFormErrorsKey && currentFormErrorsKey !== prevFormErrorsKey) {
       // Sync server errors with client validator
-      if (form?.errors) {
-        Object.entries(form.errors).forEach(([field, error]) => {
+      if (fe) {
+        Object.entries(fe).forEach(([field, error]) => {
           if (field !== '_form' && error) {
             validator.formState.errors[field as keyof typeof validator.formState.errors] = error;
             validator.formState.touched[field as keyof typeof validator.formState.touched] = true;
           }
         });
 
-        if (form.errors._form) {
-          toasts.error(form.errors._form, {
+        if ('_form' in fe && typeof fe._form === 'string') {
+          toasts.error(fe._form, {
             duration: 6000
           });
-          announceToScreenReader(`Login error: ${form.errors._form}`, 'assertive');
+          announceToScreenReader(`Login error: ${fe._form}`, 'assertive');
         }
 
         // Focus first field with error
-        focusFirstErrorField(form.errors);
+        focusFirstErrorField(fe);
       }
     }
 
@@ -172,7 +173,7 @@
         {#each oauthProviders as provider}
           <button
             type="button"
-            class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onclick={() => handleOAuthSignIn(provider)}
             disabled={oauthSubmitting === provider.id}
           >
@@ -231,7 +232,7 @@
             bind:value={email}
             onchange={() => validator.setFieldValue('email', email)}
             onblur={() => validator.touchField('email')}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-zinc-900 focus:border-zinc-500"
             data-testid="login-email-input"
           />
           {#if emailError}
@@ -253,7 +254,7 @@
             bind:value={password}
             onchange={() => validator.setFieldValue('password', password)}
             onblur={() => validator.touchField('password')}
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-zinc-900 focus:border-zinc-500"
             data-testid="login-password-input"
           />
           {#if passwordError}
@@ -274,7 +275,7 @@
         <button
           type="submit"
           disabled={submitting || (browser && validator.hasErrors)}
-          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-[color:var(--primary)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2.5 text-sm transition-colors duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-[color:var(--primary)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-fg)] focus-visible:ring-zinc-900 px-4 py-2.5 text-sm transition-colors duration-200"
           aria-describedby="submit-status"
           data-testid="login-submit-button"
         >
@@ -310,7 +311,7 @@
   <!-- Social Login Options -->
   <div class="grid grid-cols-2 gap-3">
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-zinc-900 px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -322,7 +323,7 @@
       Google
     </button>
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-zinc-900 px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">

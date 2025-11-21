@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Product, Category, Result } from '../entities';
-import type { ProductRepository, CategoryRepository } from '../ports';
-import { NotFoundError, ProductValidationError as ValidationError } from '../entities';
+import type { Product, Category, Result } from '../types';
+import type { ProductRepository, CategoryRepository } from '../types';
+import { NotFoundError, ProductValidationError as ValidationError } from '../types';
 import {
   GetProductBySlug,
   SearchProducts,

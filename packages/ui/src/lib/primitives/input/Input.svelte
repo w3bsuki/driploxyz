@@ -1,7 +1,20 @@
 <script lang="ts">
-  import type { HTMLInputAttributes } from 'svelte/elements';
-  // Extend native input attributes so consumers can pass standard props like min, max, maxlength, aria-*, etc.
-  interface Props extends Omit<HTMLInputAttributes, 'class' | 'children' | 'value' | 'type' | 'oninput' | 'onchange' | 'onfocus' | 'onblur'> {
+  import type { HTMLInputAttributes, ClassValue } from 'svelte/elements';
+  
+  /**
+   * Input component with label, description, and error states.
+   * 
+   * @example
+   * ```svelte
+   * <Input 
+   *   label="Email" 
+   *   type="email" 
+   *   bind:value={email}
+   *   class={{ 'border-red-500': hasError }}
+   * />
+   * ```
+   */
+  export interface InputProps extends Omit<HTMLInputAttributes, 'class' | 'children' | 'value' | 'type' | 'oninput' | 'onchange' | 'onfocus' | 'onblur'> {
     type?: HTMLInputElement['type'];
     value?: string | number | boolean;
     placeholder?: string;
@@ -10,7 +23,7 @@
     error?: string;
     disabled?: boolean;
     required?: boolean;
-    class?: string;
+    class?: ClassValue;
     id?: string;
     name?: string;
     autocomplete?: HTMLInputElement['autocomplete'];
@@ -21,10 +34,12 @@
     onblur?: (event: FocusEvent) => void;
     [attr: string]: unknown;
   }
+  
+  type Props = InputProps;
 
   let {
     type = 'text',
-  value = $bindable<string | number | boolean>(''),
+    value = $bindable<string | number | boolean>(''),
     placeholder,
     label,
     description,

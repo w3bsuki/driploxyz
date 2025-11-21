@@ -90,7 +90,7 @@
     <div class="flex gap-2 overflow-x-auto scrollbarhide">
       {#each messageTabData as tab (tab.id)}
         <button
-          onclick={() => handleTabChange(tab.id)}
+          onclick={() => handleTabChange(tab.id as 'all' | 'buying' | 'selling' | 'offers' | 'unread')}
           class="flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap
             {activeTab === tab.id 
               ? 'bg-black text-white shadow-sm transform scale-[0.98]' 
@@ -159,10 +159,10 @@
                 
                 {#if conversation.isProductConversation && conversation.productTitle}
                   <div class="flex items-center space-x-1.5 mb-2">
-                    <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <p class="text-[13px] text-blue-700 truncate bg-blue-50 px-2 py-0.5 rounded-full">
+                    <p class="text-[13px] text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)] truncate bg-[var(--surface-brand-strong)]/5 px-2 py-0.5 rounded-full">
                       {conversation.productTitle} • €{conversation.productPrice}
                     </p>
                   </div>
@@ -173,7 +173,7 @@
                     {conversation.lastMessage || 'Start a conversation...'}
                   </p>
                   {#if conversation.unread}
-                    <div class="flex-none w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div class="flex-none w-2 h-2 bg-[var(--surface-brand-strong)]/50 rounded-full"></div>
                   {/if}
                 </div>
               </div>

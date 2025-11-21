@@ -259,8 +259,8 @@
            transition-colors duration-[var(--duration-base)]
            min-h-[var(--touch-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2
            {activeFilterCount > 0
-             ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)]'
-             : 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] hover:bg-[color:var(--primary-600)]'}"
+             ? 'bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)]'
+             : 'bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)] hover:bg-zinc-800'}"
     aria-label="Open filters"
   >
     {@render trigger()}
@@ -276,7 +276,7 @@
     aria-label="Close filters"
     onclick={() => (open = false)}
     onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (open = false)}
-    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
+  class="fixed inset-0 z-50 bg-[color:var(--modal-overlay-bg)] backdrop-blur-sm"
     style="z-index: 9999;"
   ></div>
 
@@ -389,10 +389,10 @@
       <button
         onclick={handleApply}
         class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 
-               bg-[color:var(--primary)] text-[color:var(--primary-fg)] 
+               bg-[color:var(--brand-primary-strong)] text-[color:var(--text-inverse)] 
                rounded-[var(--radius-md)] font-medium text-sm
                min-h-[var(--touch-primary)] 
-               hover:bg-[color:var(--primary-600)] active:scale-98
+               hover:bg-zinc-800 active:scale-98
                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)]
                transition-all duration-[var(--duration-base)]
                disabled:opacity-50 disabled:cursor-not-allowed"

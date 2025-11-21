@@ -58,8 +58,19 @@
   );
   
   function showError(field: string): boolean {
-    return touched[field] && !!errors[field];
+    return Boolean(touched[field]) && Boolean(errors[field]);
   }
+
+  // React to bound value changes instead of attaching DOM change events to UI components
+  $effect(() => {
+    onFieldChange('gender_category_id', formData.gender_category_id);
+  });
+  $effect(() => {
+    onFieldChange('type_category_id', formData.type_category_id);
+  });
+  $effect(() => {
+    onFieldChange('category_id', formData.category_id);
+  });
 </script>
 
 <div class="space-y-3">
@@ -75,7 +86,6 @@
       onUpload={onImageUpload}
       onDelete={onImageDelete}
       bind:uploading={isUploadingImages}
-      class="mb-2"
     />
     {#if showError('photos')}
       <p class="text-sm text-red-600 mt-1">{errors.photos}</p>
@@ -99,16 +109,12 @@
 
   <!-- Gender/Age Category -->
   <div>
-    <Select
+      <Select
       label={i18n.sell_whoIsThisFor()}
       bind:value={formData.gender_category_id}
       error={showError('gender_category_id') ? errors.gender_category_id : ''}
       required
-      onchange={() => {
-        onFieldChange('gender_category_id', formData.gender_category_id);
-        formData.type_category_id = '';
-        formData.category_id = '';
-      }}
+        
       name="gender_category_id"
     >
       <option value="">{i18n.sell_selectGenderAge()}</option>
@@ -126,10 +132,7 @@
         bind:value={formData.type_category_id}
         error={showError('type_category_id') ? errors.type_category_id : ''}
         required
-        onchange={() => {
-          onFieldChange('type_category_id', formData.type_category_id);
-          formData.category_id = '';
-        }}
+        
         name="type_category_id"
       >
         <option value="">{i18n.sell_selectProductType()}</option>
@@ -148,7 +151,7 @@
         bind:value={formData.category_id}
         error={showError('category_id') ? errors.category_id : ''}
         required
-        onchange={() => onFieldChange('category_id', formData.category_id)}
+        
         name="category_id"
       >
         <option value="">{i18n.sell_whatExactlyIsIt()}</option>

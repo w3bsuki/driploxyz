@@ -96,11 +96,11 @@
       </div>
       <div class="bg-white rounded-lg p-4 shadow-sm">
         <p class="text-sm text-gray-600">{i18n.sales_itemsSold()}</p>
-        <p class="text-2xl font-bold text-blue-600">{data.soldProducts.length}</p>
+        <p class="text-2xl font-bold text-[var(--brand-primary-strong)]">{data.soldProducts.length}</p>
       </div>
       <div class="bg-white rounded-lg p-4 shadow-sm">
     <p class="text-sm text-gray-600">{i18n.sales_thisMonth()}</p>
-  <p class="text-2xl font-bold text-purple-600">{analytics.thisMonthSales}</p>
+  <p class="text-2xl font-bold text-zinc-900">{analytics.thisMonthSales}</p>
       </div>
     </div>
 
@@ -152,9 +152,9 @@
                 <h3 class="font-medium text-green-800 mb-1">{i18n.sales_totalEarned()}</h3>
                 <p class="text-2xl font-bold text-green-600">{formatPrice(data.earnings.total)}</p>
               </div>
-              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 class="font-medium text-blue-800 mb-1">{i18n.sales_availableBalance()}</h3>
-                <p class="text-2xl font-bold text-blue-600">{formatPrice(data.earnings.available)}</p>
+              <div class="bg-[var(--surface-brand-strong)]/5 border border-[var(--surface-brand-strong)]/20 rounded-lg p-4">
+                <h3 class="font-medium text-[color-mix(in_oklch,var(--brand-primary-strong)_80%,black_20%)] mb-1">{i18n.sales_availableBalance()}</h3>
+                <p class="text-2xl font-bold text-[var(--brand-primary-strong)]">{formatPrice(data.earnings.available)}</p>
                 <Button size="sm" class="mt-2" href="/dashboard/earnings">{i18n.sales_requestPayout()}</Button>
               </div>
               <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -187,7 +187,7 @@
                             <span class="mx-1">•</span>
                             <a 
                               href="/messages?conversation={order.buyer_id}__{order.product_id}"
-                              class="text-blue-600 hover:text-blue-700"
+                              class="text-[var(--brand-primary-strong)] hover:text-[color-mix(in_oklch,var(--brand-primary-strong)_90%,black_10%)]"
                             >
                               {i18n.orders_messageBuyer()}
                             </a>

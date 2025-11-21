@@ -205,16 +205,16 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+    <div class="bg-zinc-900 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 class="text-lg sm:text-xl font-semibold mb-1">Complete Your Profile</h2>
-          <p class="text-blue-100 text-xs sm:text-sm">Add more details to increase your credibility</p>
+          <p class="text-[color-mix(in_oklch,var(--brand-primary-strong)_85%,white_15%)] text-xs sm:text-sm">Add more details to increase your credibility</p>
         </div>
         <div class="flex items-center gap-3 sm:gap-4">
           <div class="text-right">
             <p class="text-2xl sm:text-3xl font-bold">85%</p>
-            <p class="text-xs text-blue-100">Complete</p>
+            <p class="text-xs text-[color-mix(in_oklch,var(--brand-primary-strong)_85%,white_15%)]">Complete</p>
           </div>
           <Button href="/profile/edit" variant="secondary" size="sm" class="text-xs sm:text-sm">
             Complete Profile
@@ -231,8 +231,8 @@
           <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">
               {#if category.icon === 'user'}
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 bg-[var(--surface-brand-strong)]/10 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-[var(--brand-primary-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
@@ -243,8 +243,8 @@
                   </svg>
                 </div>
               {:else if category.icon === 'shield'}
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
@@ -275,7 +275,7 @@
           <!-- Category Items -->
           <div class="divide-y divide-gray-100">
             {#each category.items as item}
-              {#if item.toggle}
+              {#if 'toggle' in item && item.toggle}
                 <div class="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                   <div class="flex items-center gap-3 sm:gap-4">
                     <div class="text-gray-400 hidden sm:block">
@@ -324,12 +324,12 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-1 sm:gap-2">
-                    {#if item.badge}
+                    {#if 'badge' in item && item.badge}
                       <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full {item.badge === 'Premium' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}">
                         {item.badge}
                       </span>
                     {/if}
-                    {#if item.value}
+                    {#if 'value' in item && item.value}
                       <span class="text-xs sm:text-sm text-gray-400 hidden sm:inline">{item.value}</span>
                     {/if}
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -355,7 +355,7 @@
 
     <!-- Footer -->
     <div class="text-center py-8 text-sm text-gray-500">
-      <p>Need help? Visit our <a href="/help" class="text-blue-600 hover:underline">Help Center</a> or <a href="/support" class="text-blue-600 hover:underline">Contact Support</a></p>
+      <p>Need help? Visit our <a href="/help" class="text-[var(--brand-primary-strong)] hover:underline">Help Center</a> or <a href="/support" class="text-[var(--brand-primary-strong)] hover:underline">Contact Support</a></p>
     </div>
   </div>
 </div>

@@ -49,13 +49,13 @@
 	};
 	
 	// Generate full URL with locale prefix if needed
-	const fullUrl = $derived(() => {
+	const fullUrl = $derived.by(() => {
 		if (url) {
 			return getLocaleUrl(currentLocale, url);
 		}
 		return getLocaleUrl(currentLocale, '');
 	});
-	const fullImageUrl = $derived(() =>
+	const fullImageUrl = $derived.by(() =>
 		image && typeof image === 'string' && image.startsWith('http') 
 			? image 
 			: `https://driplo.xyz${image || '/default-og-image.jpg'}`
@@ -76,7 +76,7 @@
 	}
 
 	// Get critical images for preloading (first product image + hero images)
-	const criticalImages = $derived(() => {
+	const criticalImages = $derived.by(() => {
 		const images = [];
 		
 		// Add main product image (optimized for mobile and desktop)
@@ -118,7 +118,7 @@
 	});
 
 	// Generate preconnect hints for image domains
-	const preconnectDomains = $derived(() => {
+	const preconnectDomains = $derived.by(() => {
 		const domains = new Set<string>();
 		
 		// Add product image domains
@@ -154,7 +154,7 @@
 	const availability = $derived(product?.is_sold ? 'out of stock' : 'in stock');
 	
 	// Generate JSON-LD structured data for product
-	const jsonLd = $derived(() => {
+	const jsonLd = $derived.by(() => {
 		if (!product) return null;
 		
 		return {
@@ -164,10 +164,10 @@
 			description: product.description || description,
 			image: product.images?.map(img => 
 				typeof img === 'string' && img.startsWith('http') ? img : `https://driplo.xyz${img}`
-			) || [fullImageUrl()],
+			) || [fullImageUrl],
 			offers: {
 				'@type': 'Offer',
-				url: fullUrl(),
+				url: fullUrl,
 				priceCurrency: product.currency || 'EUR',
 				price: product.price,
 				availability: `https://schema.org/${availability === 'in stock' ? 'InStock' : 'OutOfStock'}`,
@@ -202,7 +202,7 @@
 	}
 	
 	// Generate breadcrumb structured data
-	const breadcrumbJsonLd = $derived(() => {
+	const breadcrumbJsonLd = $derived.by(() => {
 		if (!product) return null;
 		
 		const items = [
@@ -245,7 +245,7 @@
 			'@type': 'ListItem',
 			position: items.length + 1,
 			name: product.title,
-			item: fullUrl()
+			item: fullUrl
 		});
 		
 		return {
@@ -283,7 +283,7 @@
 	{#if canonical}
 		<link rel="canonical" href={canonical} />
 	{:else if url}
-		<link rel="canonical" href={fullUrl()} />
+		<link rel="canonical" href={fullUrl} />
 	{/if}
 	
 	<!-- Hreflang Links for SEO -->
@@ -300,10 +300,10 @@
 	
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type} />
-	<meta property="og:url" content={fullUrl()} />
+	<meta property="og:url" content={fullUrl} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:image" content={fullImageUrl()} />
+	<meta property="og:image" content={fullImageUrl} />
 	<meta property="og:site_name" content="Driplo" />
 	<meta property="og:locale" content={currentLocale === 'bg' ? 'bg_BG' : 'en_GB'} />
 	<meta property="og:locale:alternate" content={currentLocale === 'bg' ? 'en_GB' : 'bg_BG'} />
@@ -324,10 +324,10 @@
 	
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content={fullUrl()} />
+	<meta property="twitter:url" content={fullUrl} />
 	<meta property="twitter:title" content={title} />
 	<meta property="twitter:description" content={description} />
-	<meta property="twitter:image" content={fullImageUrl()} />
+	<meta property="twitter:image" content={fullImageUrl} />
 	<meta property="twitter:site" content="@driplo" />
 	
 	<!-- Additional meta tags for e-commerce -->
@@ -338,15 +338,15 @@
 	
 	<!-- JSON-LD Structured Data -->
 	<!-- JSON-LD Structured Data -->
-	{#if jsonLd()}
+	{#if jsonLd}
 		<script type="application/ld+json">
-			{JSON.stringify(jsonLd())}
+			{JSON.stringify(jsonLd)}
 		</script>
 	{/if}
 	
-	{#if breadcrumbJsonLd()}
+	{#if breadcrumbJsonLd}
 		<script type="application/ld+json">
-			{JSON.stringify(breadcrumbJsonLd())}
+			{JSON.stringify(breadcrumbJsonLd)}
 		</script>
 	{/if}
 	
@@ -369,12 +369,12 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	
 	<!-- Dynamic preconnect for image domains -->
-	{#each preconnectDomains() as domain}
+	{#each preconnectDomains as domain (domain)}
 		<link rel="preconnect" href={domain} />
 	{/each}
 	
 	<!-- Preload critical images for LCP optimization -->
-	{#each criticalImages() as image}
+	{#each criticalImages as image (image.url)}
 		<link 
 			rel="preload" 
 			href={image.url} 

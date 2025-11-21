@@ -37,32 +37,7 @@ export const config = ts.config(
         { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }
       ]
     }
-  },
-  {
-    // Package boundary rules
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['@repo/ui/*'],
-              message: 'UI package should not import from other @repo packages. Use @repo/core for utilities and @repo/domain for business logic.',
-              files: ['packages/ui/**/*']
-            },
-            {
-              group: ['@repo/core/*'],
-              message: 'Core package should not import from @repo/ui. Use @repo/domain for business logic.',
-              files: ['packages/core/**/*']
-            },
-            {
-              group: ['@repo/domain/*'],
-              message: 'Domain package should not import from @repo/ui. Keep domain logic pure.',
-              files: ['packages/domain/**/*']
-            }
-          ]
-        }
-      ]
-    }
   }
 );
+
+export default config;

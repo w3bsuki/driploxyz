@@ -1,64 +1,89 @@
+/*
+  Driplo Web App Styles
+  Tailwind CSS v4 + Design Tokens
+  
+  CRITICAL: Import order matters for Tailwind v4:
+  1. @import "tailwindcss" FIRST
+  2. @plugin directives
+  3. @source directives  
+  4. @theme customizations
+  5. Component/token imports LAST
+*/
+
+/* Step 1: Import Tailwind CSS v4 framework - MUST BE FIRST */
 @import 'tailwindcss';
+
+/* Step 2: Register Tailwind plugins */
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Step 3: Configure source paths for JIT compilation */
+@source '../../../packages/ui/src/**/*.{svelte,ts}';
+@source './lib/**/*.{svelte,ts}';
+@source './routes/**/*.{svelte,ts}';
+
+/* Step 4: Import design tokens AFTER Tailwind framework */
 @import '@repo/ui/styles/tokens-v4/tokens.css';
 @import '@repo/ui/styles/base.css';
 @import '@repo/ui/styles/components.css';
 @import '@repo/ui/styles/utilities.css';
-@plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
-
-@source '../../../packages/ui/src/**/*.{html,js,svelte,ts}';
-@source './lib/**/*.{svelte,ts}';
-@source './routes/**/*.{svelte,ts}';
-
-/*
-  Driplo Web App Styles
-  Extends the core design tokens with app-specific customizations
-*/
 
 @theme {
   --font-sans: 'Inter var', 'SF Pro Text', system-ui, sans-serif;
   
-  /* Enhanced brand color scales */
-  --brand-primary-50: oklch(0.98 0.01 240);
-  --brand-primary-100: oklch(0.95 0.02 240);
-  --brand-primary-200: oklch(0.90 0.04 240);
-  --brand-primary-300: oklch(0.82 0.06 240);
-  --brand-primary-400: oklch(0.72 0.09 240);
-  --brand-primary-500: oklch(0.62 0.12 240);
-  --brand-primary-600: oklch(0.52 0.15 240);
-  --brand-primary-700: oklch(0.42 0.18 240);
-  --brand-primary-800: oklch(0.32 0.15 240);
-  --brand-primary-900: oklch(0.22 0.10 240);
+  /* Enhanced brand color scales - STRICT ZINC REFACTOR */
+  /* Primary: Zinc (Neutral) */
+  --brand-primary-50: oklch(0.985 0 0);
+  --brand-primary-100: oklch(0.97 0 0);
+  --brand-primary-200: oklch(0.92 0 0);
+  --brand-primary-300: oklch(0.87 0 0);
+  --brand-primary-400: oklch(0.71 0 0);
+  --brand-primary-500: oklch(0.55 0 0);
+  --brand-primary-600: oklch(0.44 0 0);
+  --brand-primary-700: oklch(0.32 0 0);
+  --brand-primary-800: oklch(0.21 0 0);
+  --brand-primary-900: oklch(0.15 0 0);
   
-  --brand-secondary-50: oklch(0.98 0.01 300);
-  --brand-secondary-100: oklch(0.95 0.02 300);
-  --brand-secondary-200: oklch(0.90 0.04 300);
-  --brand-secondary-300: oklch(0.82 0.06 300);
-  --brand-secondary-400: oklch(0.72 0.09 300);
-  --brand-secondary-500: oklch(0.62 0.12 300);
-  --brand-secondary-600: oklch(0.52 0.15 300);
-  --brand-secondary-700: oklch(0.42 0.18 300);
-  --brand-secondary-800: oklch(0.32 0.15 300);
-  --brand-secondary-900: oklch(0.22 0.10 300);
+  /* Secondary: Zinc (Neutral) - Aliased to Primary for strict monochrome */
+  --brand-secondary-50: oklch(0.985 0 0);
+  --brand-secondary-100: oklch(0.97 0 0);
+  --brand-secondary-200: oklch(0.92 0 0);
+  --brand-secondary-300: oklch(0.87 0 0);
+  --brand-secondary-400: oklch(0.71 0 0);
+  --brand-secondary-500: oklch(0.55 0 0);
+  --brand-secondary-600: oklch(0.44 0 0);
+  --brand-secondary-700: oklch(0.32 0 0);
+  --brand-secondary-800: oklch(0.21 0 0);
+  --brand-secondary-900: oklch(0.15 0 0);
   
-  --brand-accent-50: oklch(0.98 0.01 50);
-  --brand-accent-100: oklch(0.95 0.02 50);
-  --brand-accent-200: oklch(0.90 0.04 50);
-  --brand-accent-300: oklch(0.82 0.08 50);
-  --brand-accent-400: oklch(0.72 0.12 50);
-  --brand-accent-500: oklch(0.62 0.16 50);
-  --brand-accent-600: oklch(0.52 0.18 50);
-  --brand-accent-700: oklch(0.42 0.16 50);
-  --brand-accent-800: oklch(0.32 0.12 50);
-  --brand-accent-900: oklch(0.22 0.08 50);
+  /* Accent: Zinc (Neutral) - Aliased to Primary for strict monochrome */
+  --brand-accent-50: oklch(0.985 0 0);
+  --brand-accent-100: oklch(0.97 0 0);
+  --brand-accent-200: oklch(0.92 0 0);
+  --brand-accent-300: oklch(0.87 0 0);
+  --brand-accent-400: oklch(0.71 0 0);
+  --brand-accent-500: oklch(0.55 0 0);
+  --brand-accent-600: oklch(0.44 0 0);
+  --brand-accent-700: oklch(0.32 0 0);
+  --brand-accent-800: oklch(0.21 0 0);
+  --brand-accent-900: oklch(0.15 0 0);
+
+  /* Base brand variables overrides */
+  --brand-primary: var(--brand-primary-600);
+  --brand-secondary: var(--brand-secondary-600);
+  --brand-accent: var(--brand-accent-600);
   
-  /* Enhanced elevation tokens */
-  --elevation-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
-  --elevation-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --elevation-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
-  --elevation-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.07);
-  --elevation-xl: 0 20px 25px rgba(0, 0, 0, 0.12), 0 10px 10px rgba(0, 0, 0, 0.08);
-  --elevation-2xl: 0 25px 50px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(0, 0, 0, 0.1);
+  /* Surface overrides for strict zinc */
+  --surface-brand-subtle: var(--brand-primary-50);
+  --surface-brand-strong: var(--brand-primary-600);
+  
+  /* Enhanced elevation tokens (aliased to foundation tokens) */
+  --elevation-xs: var(--shadow-2xs);
+  --elevation-sm: var(--shadow-xs);
+  --elevation-md: var(--shadow-sm);
+  --elevation-lg: var(--shadow-md);
+  --elevation-xl: var(--shadow-lg);
+  --elevation-2xl: var(--shadow-xl);
   
   /* Enhanced button states */
   --btn-primary-bg: var(--brand-primary-600);
@@ -83,10 +108,10 @@
   --btn-ghost-border: var(--brand-primary-200);
   --btn-ghost-border-hover: var(--brand-primary-300);
   
-  /* Enhanced focus states */
-  --focus-ring: 0 0 0 2px var(--brand-primary-500), 0 0 0 4px rgba(59, 130, 246, 0.1);
-  --focus-ring-error: 0 0 0 2px var(--status-error-solid), 0 0 0 4px rgba(239, 68, 68, 0.1);
-  --focus-ring-success: 0 0 0 2px var(--status-success-solid), 0 0 0 4px rgba(34, 197, 94, 0.1);
+  /* Enhanced focus states (token-driven, no hard-coded blue) */
+  --focus-ring: 0 0 0 2px var(--state-focus), 0 0 0 4px color-mix(in oklch, var(--state-focus) 20%, transparent);
+  --focus-ring-error: 0 0 0 2px var(--status-error-solid), 0 0 0 4px color-mix(in oklch, var(--status-error-solid) 20%, transparent);
+  --focus-ring-success: 0 0 0 2px var(--status-success-solid), 0 0 0 4px color-mix(in oklch, var(--status-success-solid) 20%, transparent);
 }
 
 /* Theme is now attribute-based via data-theme on <html>. */
@@ -221,30 +246,30 @@
   }
   
   /* Enhanced focus ring improvements */
-  *:focus {
-    outline: none;
-  }
-  
-  *:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
-    border-radius: var(--radius-sm);
-  }
-  
-  /* Enhanced focus for specific elements */
-  button:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible,
-  a:focus-visible {
-    box-shadow: var(--focus-ring);
+  *:focus { outline: none; }
+
+  /* Remove heavy focus visuals on touch devices to avoid random lines */
+  @media (hover: none) and (pointer: coarse) {
+    *:focus-visible { outline: none; box-shadow: none; }
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    a:focus-visible { box-shadow: none; }
   }
 
-  button:focus-visible:disabled,
-  input:focus-visible:disabled,
-  textarea:focus-visible:disabled,
-  select:focus-visible:disabled {
-    box-shadow: none;
+  /* Keep accessible focus visuals for keyboard/mouse environments */
+  @media (hover: hover) and (pointer: fine) {
+    *:focus-visible {
+      outline: 2px solid var(--state-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--focus-ring);
+    }
+    button:focus-visible:disabled,
+    input:focus-visible:disabled,
+    textarea:focus-visible:disabled,
+    select:focus-visible:disabled { box-shadow: none; }
   }
 
   /* Ensure interactive elements are always clickable */
@@ -473,6 +498,49 @@
 
   @media (min-width: 640px) {
     .section-divider { margin-block: var(--space-8); }
+  }
+
+  /* Home page stack adjustments */
+  .home-promoted-section {
+    position: relative;
+    z-index: 0;
+    padding-top: var(--space-2);
+    padding-bottom: 0;
+    margin-bottom: calc(-1 * var(--space-4));
+  }
+
+  @media (min-width: 640px) {
+    .home-promoted-section {
+      padding-top: var(--space-3);
+      padding-bottom: 0;
+      margin-bottom: calc(-1 * var(--space-5));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-promoted-section {
+      padding-top: var(--space-4);
+      padding-bottom: 0;
+      margin-bottom: calc(-1 * var(--space-6));
+    }
+  }
+
+  .home-newest-section {
+    position: relative;
+    z-index: 1;
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .home-newest-section {
+      margin-top: var(--space-6);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-newest-section {
+      margin-top: var(--space-7);
+    }
   }
 
   /* Vertical rhythm stacks */

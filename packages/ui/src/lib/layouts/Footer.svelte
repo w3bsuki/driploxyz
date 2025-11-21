@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
-  import type { FooterProps } from '../../types/panels';
+  import type { FooterProps } from '../types/panels';
 
   let {
     currentLanguage = 'en',
@@ -161,8 +161,8 @@
             <button
               type="submit"
               disabled={!email.trim() || isSubscribing}
-              class="min-h-[36px] px-4 py-2 bg-black text-white text-sm font-medium rounded-lg
-                     hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed 
+              class="min-h-[36px] px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--text-inverse)] text-sm font-medium rounded-lg
+                     hover:bg-[var(--btn-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed 
                      transition-colors flex items-center justify-center"
             >
               {#if isSubscribing}
@@ -264,8 +264,8 @@
         <!-- Logo/Branding -->
         <div class="flex items-center space-x-4">
           <div class="flex items-center space-x-2">
-            <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center">
-              <span class="text-white font-bold text-xs">D</span>
+            <div class="w-6 h-6 bg-[var(--brand-primary)] rounded-md flex items-center justify-center">
+              <span class="text-[var(--text-inverse)] font-bold text-xs">D</span>
             </div>
             <span class="font-bold text-gray-900 text-sm">Driplo</span>
           </div>

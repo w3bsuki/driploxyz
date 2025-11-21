@@ -27,7 +27,7 @@
     class: className = ''
   }: Props = $props();
   
-  let container: HTMLElement;
+  let container: HTMLElement = $state()!;
   let ProductGrid: unknown;
   let isLoaded = $state(false);
   let products = $state<Product[]>([]);
@@ -139,11 +139,14 @@
   $effect(() => {
     if (createLazyLoader) {
       // Use provided lazy loader
-      const lazyLoader = createLazyLoader(loadComponents, { rootMargin: '100px' });
-      return lazyLoader(container);
+      const action = createLazyLoader(loadComponents, { rootMargin: '100px' });
+      return () => {
+        const res = action(container);
+        return res?.destroy ? () => res.destroy!() : undefined;
+      };
     } else {
       // Fallback - load immediately
-      loadComponents();
+      void loadComponents();
     }
   });
 </script>
@@ -202,9 +205,7 @@
       {#if products.length > 50}
         <VirtualProductGrid 
           items={products}
-          {onProductClick}
-          {onFavorite}
-          {translations}
+          onItemClick={onProductClick}
           itemHeight={320}
           containerHeight={600}
         />
@@ -235,7 +236,7 @@
                 {/if}
                 <button
                   onclick={() => onProductClick(product)}
-                  class="mt-2 w-full bg-blue-600 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                  class="mt-2 w-full bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] py-2 px-4 rounded-lg text-sm hover:bg-[var(--btn-primary-hover)] transition-colors"
                 >
                   View Details
                 </button>
@@ -249,7 +250,7 @@
       {#if hasMore}
         <div use:createInfiniteScroll class="text-center py-8">
           {#if loading}
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--brand-primary)] mx-auto"></div>
           {:else}
             <button 
               onclick={loadMore}

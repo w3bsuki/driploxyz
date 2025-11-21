@@ -8,138 +8,246 @@
 
 @theme {
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     LUXURY FASHION BRAND IDENTITY
-     World-class premium color system for fashion marketplace
+     CLEAN MINIMALIST BRAND IDENTITY (Shadcn Style)
+     Zinc-based monochrome system with functional accents
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
   /* Primary Brand Colors */
-  --brand-primary: var(--color-charcoal-500);        /* Sophisticated charcoal */
-  --brand-primary-strong: var(--color-indigo-500);   /* Premium denim blue */
-  --brand-primary-soft: var(--color-indigo-100);     /* Light denim accent */
-  --brand-secondary: var(--color-burgundy-500);      /* Luxury burgundy */
-  --brand-accent: var(--color-gold-500);             /* Elegant champagne gold */
+  --color-brand-primary: var(--color-zinc-900);        /* Primary Black */
+  --color-brand-primary-strong: var(--color-zinc-950); /* Deep Black */
+  --color-brand-primary-soft: var(--color-zinc-100);   /* Soft Grey */
+  --color-brand-secondary: var(--color-zinc-700);      /* Secondary Dark Grey */
+  --color-brand-accent: var(--color-zinc-900);         /* Accent Black */
+
+  /* Legacy aliases */
+  --brand-primary: var(--color-brand-primary);
+  --brand-primary-strong: var(--color-brand-primary-strong);
+  --brand-primary-soft: var(--color-brand-primary-soft);
+  --brand-secondary: var(--color-brand-secondary);
+  --brand-accent: var(--color-brand-accent);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     SURFACE SYSTEM — Background Layers
+     SURFACE SYSTEM
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
-  /* Base Surfaces */
-  --surface-base: var(--color-charcoal-0);              /* Pure luxury white */
-  --surface-subtle: var(--color-charcoal-50);           /* Subtle warmth */
-  --surface-muted: var(--color-charcoal-100);           /* Gentle contrast */
-  --surface-emphasis: var(--color-charcoal-200);        /* Elevated surfaces */
-  --surface-inverse: var(--color-charcoal-500);         /* Luxury dark */
-  --surface-brand: var(--brand-primary);                /* Brand surface */
-  --surface-brand-subtle: var(--brand-primary-soft);    /* Soft brand */
-  --surface-brand-strong: var(--brand-primary-strong);  /* Strong brand */
+   /* Base Surfaces */
+   --color-surface-base: var(--color-white);                   /* Pure white */
+   --color-surface-subtle: var(--color-zinc-50);               /* Very light grey */
+   --color-surface-muted: var(--color-zinc-100);               /* Light grey */
+   --color-surface-emphasis: var(--color-zinc-200);            /* Grey emphasis */
+   --color-surface-inverse: var(--color-zinc-900);             /* Black surface */
+   --color-surface-brand: var(--color-brand-primary);          /* Brand surface */
+   --color-surface-brand-subtle: var(--color-brand-primary-soft); /* Soft brand surface */
+   --color-surface-brand-strong: var(--color-brand-primary-strong); /* Strong brand surface */
 
-  /* Premium Surface Variants */
-  --surface-luxury: var(--color-gold-50);             /* Premium gold tint */
-  --surface-premium: var(--color-burgundy-50);        /* Rich burgundy tint */
-  --surface-elegant: var(--color-indigo-50);          /* Sophisticated blue tint */
+   /* Legacy aliases */
+   --surface-base: var(--color-surface-base);
+   --surface-subtle: var(--color-surface-subtle);
+   --surface-muted: var(--color-surface-muted);
+   --surface-emphasis: var(--color-surface-emphasis);
+   --surface-inverse: var(--color-surface-inverse);
+   --surface-brand: var(--color-surface-brand);
+   --surface-brand-subtle: var(--color-surface-brand-subtle);
+   --surface-brand-strong: var(--color-surface-brand-strong);
+
+  /* Premium Surface Variants (Mapped to Zinc for clean look) */
+   --color-surface-luxury: var(--color-zinc-50);
+   --color-surface-premium: var(--color-zinc-50);
+   --color-surface-elegant: var(--color-zinc-50);
+
+   /* Legacy aliases */
+   --surface-luxury: var(--color-surface-luxury);
+   --surface-premium: var(--color-surface-premium);
+   --surface-elegant: var(--color-surface-elegant);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     TEXT HIERARCHY — Typography Colors
+     TEXT HIERARCHY
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
-  --text-primary: var(--color-charcoal-900);           /* Deep luxury text */
-  --text-secondary: var(--color-charcoal-700);         /* Elegant secondary */
-  --text-tertiary: var(--color-charcoal-600);          /* Subtle tertiary */
-  --text-muted: var(--color-charcoal-500);             /* Refined muted */
-  --text-disabled: var(--color-charcoal-400);          /* Sophisticated disabled */
-  --text-inverse: var(--color-charcoal-0);             /* Pure luxury white */
-  --text-link: var(--brand-primary-strong);            /* Premium links */
-  --text-link-hover: var(--color-indigo-600);          /* Sophisticated link hover */
+   /* Text Colors */
+   --color-text-primary: var(--color-zinc-950);           /* Almost black */
+   --color-text-secondary: var(--color-zinc-600);         /* Dark grey */
+   --color-text-tertiary: var(--color-zinc-500);          /* Medium grey */
+   --color-text-muted: var(--color-zinc-400);             /* Muted grey */
+   --color-text-disabled: var(--color-zinc-300);          /* Disabled grey */
+   --color-text-inverse: var(--color-white);              /* White text */
+   --color-text-link: var(--color-zinc-900);              /* Link black */
+   --color-text-link-hover: var(--color-zinc-700);        /* Link hover grey */
+   --color-text-brand: var(--color-brand-primary);        /* Brand text */
+   --color-text-brand-hover: var(--color-zinc-700);       /* Brand hover */
 
-  /* Premium Text Variants */
-  --text-luxury: var(--color-burgundy-600);           /* Luxury accent text */
-  --text-elegant: var(--color-gold-700);              /* Elegant accent text */
-  --text-premium: var(--color-emerald-600);           /* Premium accent text */
+   /* Legacy aliases */
+   --text-primary: var(--color-text-primary);
+   --text-secondary: var(--color-text-secondary);
+   --text-tertiary: var(--color-text-tertiary);
+   --text-muted: var(--color-text-muted);
+   --text-disabled: var(--color-text-disabled);
+   --text-inverse: var(--color-text-inverse);
+   --text-link: var(--color-text-link);
+   --text-link-hover: var(--color-text-link-hover);
+   --text-brand: var(--color-text-brand);
+   --text-brand-hover: var(--color-text-brand-hover);
+
+  /* Premium Text Variants (Mapped to Zinc) */
+  --color-text-luxury: var(--color-zinc-800);
+  --color-text-elegant: var(--color-zinc-800);
+  --color-text-premium: var(--color-zinc-800);
+
+  /* Legacy aliases */
+  --text-luxury: var(--color-text-luxury);
+  --text-elegant: var(--color-text-elegant);
+  --text-premium: var(--color-text-premium);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     BORDER SYSTEM — Separation & Definition
+     BORDER SYSTEM
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
-  --border-subtle: var(--color-charcoal-200);           /* Subtle elegance */
-  --border-default: var(--color-charcoal-300);          /* Standard borders */
-  --border-emphasis: var(--color-charcoal-400);         /* Emphasized borders */
-  --border-inverse: var(--color-charcoal-700);          /* Inverse borders */
+   /* Border Colors */
+   --color-border-subtle: var(--color-zinc-100);           /* Very subtle */
+   --color-border-default: var(--color-zinc-200);          /* Default border */
+   --color-border-emphasis: var(--color-zinc-300);         /* Darker border */
+   --color-border-inverse: var(--color-zinc-800);          /* Inverse border */
 
-  /* Premium Border Variants */
-  --border-luxury: var(--color-gold-300);            /* Gold accent borders */
-  --border-premium: var(--color-burgundy-300);       /* Burgundy accent borders */
-  --border-elegant: var(--color-indigo-300);         /* Blue accent borders */
+   /* Legacy aliases */
+   --border-subtle: var(--color-border-subtle);
+   --border-default: var(--color-border-default);
+   --border-emphasis: var(--color-border-emphasis);
+   --border-inverse: var(--color-border-inverse);
+
+  /* Premium Border Variants (Mapped to Zinc) */
+  --color-border-luxury: var(--color-zinc-300);
+  --color-border-premium: var(--color-zinc-300);
+  --color-border-elegant: var(--color-zinc-300);
+
+  /* Legacy aliases */
+  --border-luxury: var(--color-border-luxury);
+  --border-premium: var(--color-border-premium);
+  --border-elegant: var(--color-border-elegant);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     INTERACTIVE STATES — User Feedback
+     INTERACTIVE STATES
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
-  --state-hover: oklch(0.98 0.008 280 / 0.4);            /* Sophisticated hover */
-  --state-active: oklch(0.96 0.008 280 / 0.6);           /* Elegant active */
-  --state-focus: var(--brand-primary-strong);            /* Premium focus */
-  --state-disabled: var(--color-charcoal-300);           /* Refined disabled */
+   --state-hover: var(--color-zinc-100);                  /* Hover background */
+   --state-active: var(--color-zinc-200);                 /* Active background */
+   --state-focus: var(--color-zinc-900);                  /* Focus ring color */
+   --state-disabled: var(--color-zinc-100);               /* Disabled background */
 
-  /* Premium Interactive States */
-  --state-hover-luxury: oklch(0.98 0.02 85 / 0.3);       /* Gold hover */
-  --state-hover-premium: oklch(0.98 0.015 25 / 0.3);     /* Burgundy hover */
-  --state-hover-elegant: oklch(0.98 0.015 245 / 0.3);    /* Denim hover */
+  /* Premium Interactive States (Mapped to Zinc) */
+  --state-hover-luxury: var(--color-zinc-100);
+  --state-hover-premium: var(--color-zinc-100);
+  --state-hover-elegant: var(--color-zinc-100);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     STATUS TOKENS — User Feedback & Alerts
+     STATUS TOKENS
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
   /* Success State */
-  --status-success-bg: var(--color-emerald-50);           /* Emerald success */
-  --status-success-border: var(--color-emerald-200);      /* Emerald border */
-  --status-success-text: var(--color-emerald-700);        /* Emerald text */
-  --status-success-solid: var(--color-emerald-500);       /* Emerald solid */
+  --color-status-success-bg: var(--color-green-50);
+  --color-status-success-border: var(--color-green-200);
+  --color-status-success-text: var(--color-green-700);
+  --color-status-success-solid: var(--color-green-600);
+
+  /* Legacy aliases */
+  --status-success-bg: var(--color-status-success-bg);
+  --status-success-border: var(--color-status-success-border);
+  --status-success-text: var(--color-status-success-text);
+  --status-success-solid: var(--color-status-success-solid);
 
   /* Error State */
-  --status-error-bg: var(--color-burgundy-50);           /* Burgundy error */
-  --status-error-border: var(--color-burgundy-200);      /* Burgundy border */
-  --status-error-text: var(--color-burgundy-700);        /* Burgundy text */
-  --status-error-solid: var(--color-burgundy-500);       /* Burgundy solid */
+   --color-status-error-bg: var(--color-red-50);
+   --color-status-error-border: var(--color-red-200);
+   --color-status-error-text: var(--color-red-700);
+   --color-status-error-solid: var(--color-red-600);
+
+  /* Legacy aliases */
+  --status-error-bg: var(--color-status-error-bg);
+  --status-error-border: var(--color-status-error-border);
+  --status-error-text: var(--color-status-error-text);
+  --status-error-solid: var(--color-status-error-solid);
 
   /* Warning State */
-  --status-warning-bg: var(--color-gold-50);             /* Gold warning */
-  --status-warning-border: var(--color-gold-200);        /* Gold border */
-  --status-warning-text: var(--color-gold-700);          /* Gold text */
-  --status-warning-solid: var(--color-gold-500);         /* Gold solid */
+  --color-status-warning-bg: var(--color-amber-50);
+  --color-status-warning-border: var(--color-amber-200);
+  --color-status-warning-text: var(--color-amber-700);
+  --color-status-warning-solid: var(--color-amber-500);
+
+  /* Legacy aliases */
+  --status-warning-bg: var(--color-status-warning-bg);
+  --status-warning-border: var(--color-status-warning-border);
+  --status-warning-text: var(--color-status-warning-text);
+  --status-warning-solid: var(--color-status-warning-solid);
 
   /* Info State */
-  --status-info-bg: var(--color-indigo-50);              /* Denim info */
-  --status-info-border: var(--color-indigo-200);         /* Denim border */
-  --status-info-text: var(--color-indigo-700);           /* Denim text */
-  --status-info-solid: var(--color-indigo-500);          /* Denim solid */
+  --color-status-info-bg: var(--color-blue-50);
+  --color-status-info-border: var(--color-blue-200);
+  --color-status-info-text: var(--color-blue-700);
+  --color-status-info-solid: var(--color-blue-600);
+
+  /* Legacy aliases */
+  --status-info-bg: var(--color-status-info-bg);
+  --status-info-border: var(--color-status-info-border);
+  --status-info-text: var(--color-status-info-text);
+  --status-info-solid: var(--color-status-info-solid);
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      FASHION DOMAIN-SPECIFIC COLORS
-     Premium colors for clothing categories and conditions
+     Clean, functional colors for categories
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
   /* Product Condition Colors */
-  --condition-new: var(--color-emerald-500);             /* Premium new condition */
-  --condition-like-new: var(--color-indigo-500);         /* Excellent like-new */
-  --condition-good: var(--color-gold-500);               /* Good condition gold */
-  --condition-fair: var(--color-burgundy-400);           /* Fair condition burgundy */
+  --condition-new: var(--color-green-600);               /* New */
+  --condition-like-new: var(--color-blue-600);           /* Like New */
+  --condition-good: var(--color-zinc-600);               /* Good (Neutral) */
+  --condition-fair: var(--color-amber-600);              /* Fair */
 
-  /* Fashion Category Colors */
-  --category-men: var(--color-indigo-600);               /* Men's denim blue */
-  --category-women: var(--color-burgundy-500);           /* Women's burgundy */
-  --category-kids: var(--color-gold-500);                /* Kids' champagne gold */
-  --category-luxury: var(--color-charcoal-600);          /* Luxury category */
-  --category-vintage: var(--color-charcoal-500);         /* Vintage category */
-  --category-designer: var(--color-gold-600);            /* Designer category */
+  /* Fashion Category Colors (Monochrome/Clean) */
+  --category-men: var(--color-zinc-800);
+  --category-women: var(--color-zinc-800);
+  --category-kids: var(--color-zinc-800);
+  --category-luxury: var(--color-zinc-900);
+  --category-vintage: var(--color-zinc-700);
+  --category-designer: var(--color-zinc-900);
 
   /* Premium Interactive Colors */
-  --favorite-solid: oklch(0.55 0.18 15);                 /* Classic favorite red */
-  --favorite-hover: oklch(0.45 0.20 15);                 /* Hover favorite */
-  --favorite-luxury: var(--color-burgundy-500);          /* Luxury favorite */
+  --favorite-solid: var(--color-red-600);                /* Heart Red */
+  --favorite-hover: var(--color-red-700);
+  --favorite-luxury: var(--color-red-600);
 
   /* Premium Shopping Experience Colors */
-  --shopping-cart: var(--color-indigo-500);              /* Shopping cart blue */
-  --checkout-primary: var(--color-emerald-500);          /* Checkout success green */
-  --sale-accent: var(--color-burgundy-500);              /* Sale accent burgundy */
-  --new-arrival: var(--color-gold-500);                  /* New arrival gold */
-  --limited-edition: var(--color-charcoal-700);          /* Limited edition dark */
+  --shopping-cart: var(--color-zinc-900);
+  --checkout-primary: var(--color-green-600);
+  --sale-accent: var(--color-red-600);
+  --new-arrival: var(--color-blue-600);
+  --limited-edition: var(--color-zinc-900);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     PHASE 3 ADDITIONS — Missing Semantic Tokens
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Surface Tokens */
+  --surface-card: var(--color-white);
+  --surface-card-hover: var(--color-zinc-50);
+  --surface-input: var(--color-white);
+  --surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Additional Border Tokens */
+  --border-primary: var(--color-zinc-300);
+  --border-input: var(--color-zinc-300);
+  --border-focus: var(--color-zinc-900);
+  --border-focus-ring: rgba(24, 24, 27, 0.2); /* Zinc-900 ring */
+
+  /* Additional Text Tokens */
+  --text-placeholder: var(--color-zinc-400);
+
+  /* Additional State Tokens */
+  --state-hover-subtle: var(--color-zinc-100);
+  --state-disabled-bg: var(--color-zinc-100);
+  --state-disabled-text: var(--color-zinc-400);
+
+  /* Status Ring Tokens */
+  --status-error-ring: rgba(220, 38, 38, 0.2);   /* Red-600 */
+  --status-success-ring: rgba(22, 163, 74, 0.2); /* Green-600 */
+  --status-warning-ring: rgba(202, 138, 4, 0.2); /* Amber-600 */
+  --status-info-ring: rgba(37, 99, 235, 0.2);    /* Blue-600 */
 }

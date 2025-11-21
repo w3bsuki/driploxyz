@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Button, Avatar, UserBadge, AdminBadge, BottomNav, ReviewDisplay, RatingSummary } from '@repo/ui';
+  import { Button, Avatar, UserBadge, BottomNav, ReviewDisplay, RatingSummary } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/state';
+  import { page } from '$app/state';
   import * as i18n from '@repo/i18n';
   
   interface Props {
@@ -17,8 +17,15 @@
   let isFollowing = $state(data.isFollowing || false);
   let showFollowersModal = $state(false);
   let showFollowingModal = $state(false);
-  let followers = $state<unknown[]>([]);
-  let following = $state<unknown[]>([]);
+  type FollowUser = {
+    id: string;
+    username?: string | null;
+    full_name?: string | null;
+    avatar_url?: string | null;
+    sales_count?: number | null;
+  };
+  let followers = $state<FollowUser[]>([]);
+  let following = $state<FollowUser[]>([]);
   let loadingFollowers = $state(false);
   let loadingFollowing = $state(false);
   
@@ -28,9 +35,9 @@
       return;
     }
     
-    const { supabase } = await import('$lib/supabase/client');
-    const { ProfileService } = await import('@repo/core/services');
-    const profileService = new ProfileService(supabase);
+  const { createBrowserSupabaseClient } = await import('$lib/supabase/client');
+  const { ProfileService } = await import('@repo/core/services');
+  const profileService = new ProfileService(createBrowserSupabaseClient());
     
     if (isFollowing) {
       const { error } = await profileService.unfollowUser(data.currentUser.id, data.profile.id);
@@ -70,6 +77,41 @@
     const hours = Math.floor(seconds / (60 * 60));
     return `${hours}h`;
   };
+
+  // Normalize social links to an array for rendering (supports record or array inputs)
+  type SocialLink = { type: string; url: string };
+  const socialLinks = $derived<SocialLink[]>((() => {
+    const links = (data.profile as any).social_links as unknown;
+    if (!links) return [];
+    if (Array.isArray(links)) {
+      // Already an array of links
+      return links.filter((l): l is SocialLink => !!l && typeof l === 'object' && 'type' in l && 'url' in l);
+    }
+    if (typeof links === 'object') {
+      return Object.entries(links as Record<string, string | null | undefined>)
+        .filter(([, url]) => !!url)
+        .map(([type, url]) => ({ type, url: String(url) }));
+    }
+    return [];
+  })());
+
+  // Product thumbnails minimal type for URL/image usage
+  type ProductThumb = {
+    id: string;
+    title?: string | null;
+    images?: Array<{ image_url?: string | null }> | null;
+    slug?: string | null;
+    seller_username?: string | null;
+    profiles?: { username?: string | null } | null;
+    categories?: { slug?: string | null } | null;
+  };
+  const products = $derived<ProductThumb[]>((() => (Array.isArray(data.products) ? (data.products as ProductThumb[]) : []))());
+
+  // Reviews with ensured created_at string for UI components
+  const safeReviews = $derived((() => (data.reviews || []).map((r: any) => ({
+    ...r,
+    created_at: r.created_at || new Date(0).toISOString()
+  })))());
 </script>
 
 <svelte:head>
@@ -90,7 +132,7 @@
           size="xl"
         />
         {#if data.profile.is_verified}
-          <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
+          <div class="absolute -bottom-1 -right-1 bg-zinc-900 rounded-full p-1">
             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
@@ -111,9 +153,9 @@
               showFollowersModal = true;
               if (!loadingFollowers && followers.length === 0) {
                 loadingFollowers = true;
-                const { supabase } = await import('$lib/supabase/client');
+                const { createBrowserSupabaseClient } = await import('$lib/supabase/client');
                 const { ProfileService } = await import('@repo/core/services');
-                const profileService = new ProfileService(supabase);
+                const profileService = new ProfileService(createBrowserSupabaseClient());
                 const result = await profileService.getFollowers(data.profile.id);
                 if (!result.error) {
                   followers = result.data;
@@ -131,9 +173,9 @@
               showFollowingModal = true;
               if (!loadingFollowing && following.length === 0) {
                 loadingFollowing = true;
-                const { supabase } = await import('$lib/supabase/client');
+                const { createBrowserSupabaseClient } = await import('$lib/supabase/client');
                 const { ProfileService } = await import('@repo/core/services');
-                const profileService = new ProfileService(supabase);
+                const profileService = new ProfileService(createBrowserSupabaseClient());
                 const result = await profileService.getFollowing(data.profile.id);
                 if (!result.error) {
                   following = result.data;
@@ -152,7 +194,7 @@
         <div class="flex space-x-2">
           <Button 
             onclick={handleFollow}
-            variant={isFollowing ? 'outline-solid' : 'primary'}
+            variant={isFollowing ? 'outline' : 'primary'}
             size="sm"
             class="flex-1 text-sm"
           >
@@ -170,16 +212,13 @@
       <div class="flex items-center space-x-2 flex-wrap gap-y-1">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
         
-        <!-- Admin Badge (highest priority) -->
-        {#if data.profile.role === 'admin'}
-          <AdminBadge size="sm" />
         <!-- User Badge based on account type -->
-        {:else if data.profile.account_type === 'brand'}
+        {#if data.profile.account_type === 'brand'}
           <UserBadge type="brand" size="sm" />
-        {:else if data.profile.account_type === 'premium' || data.profile.account_type === 'pro'}
+        {:else if data.profile.account_type === 'pro'}
           <UserBadge type="pro" size="sm" />
         {:else if !data.profile.account_type || data.profile.account_type === 'personal'}
-          {#if data.profile.sales_count < 5}
+          {#if (data.profile.sold_listings || 0) < 5}
             <UserBadge type="new_seller" size="sm" />
           {/if}
         {/if}
@@ -187,16 +226,16 @@
         <!-- Rating -->
         {#if data.profile.rating}
           <div class="flex items-center space-x-1">
-            <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+            <svg class="w-3 h-3 text-zinc-900 fill-current" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
             </svg>
             <span class="text-xs text-gray-600">{data.profile.rating.toFixed(1)}</span>
           </div>
         {/if}
         
-        <!-- Top Seller -->
-        {#if data.profile.role === 'seller' && data.profile.sales_count > 10}
-          <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">{i18n.profile_premium()}</span>
+        <!-- Top Seller badge (simple heuristic) -->
+        {#if (data.profile.sold_listings || 0) > 10}
+          <span class="text-xs bg-zinc-100 text-zinc-900 px-2 py-0.5 rounded-full">Top seller</span>
         {/if}
       </div>
       <p class="text-xs text-gray-500">
@@ -208,10 +247,10 @@
       {/if}
       
       <!-- Social Links -->
-      {#if data.profile.social_links && data.profile.social_links.length > 0}
+      {#if socialLinks.length > 0}
         <div class="flex items-center space-x-2 mt-2">
-          {#each data.profile.social_links as link (link.type + link.url)}
-            <a href={link.url} target="_blank" class="text-blue-600 text-xs hover:underline">
+          {#each socialLinks as link (link.type + link.url)}
+            <a href={link.url} target="_blank" class="text-zinc-600 text-xs hover:underline">
               {link.type === 'instagram' ? '📷' : link.type === 'tiktok' ? '🎵' : '🌐'} {link.type}
             </a>
           {/each}
@@ -254,16 +293,16 @@
   <div class="px-2 sm:px-4 lg:px-6 py-3">
     {#if activeTab === 'posts'}
       <!-- Products Grid -->
-      {#if data.products.length > 0}
+      {#if products.length > 0}
         <div class="grid grid-cols-3 gap-1">
-          {#each data.products as product (product.id)}
+          {#each products as product (product.id)}
             <a
-              href="{getProductUrl(product)}"
+              href={getProductUrl(product)}
               class="aspect-square bg-gray-100 rounded-sm overflow-hidden block"
             >
               <img 
-                src={product.images[0]?.image_url || '/placeholder-product.svg'} 
-                alt={product.title}
+                src={(product.images?.[0]?.image_url) || '/placeholder-product.svg'} 
+                alt={product.title || ''}
                 class="w-full h-full object-cover"
               />
             </a>
@@ -278,7 +317,7 @@
       <!-- Reviews -->
       {#if data.reviews.length > 0}
         <div class="space-y-4">
-          {#each data.reviews as review}
+          {#each safeReviews as review}
             <ReviewDisplay {review} showProduct={true} />
           {/each}
           
@@ -317,7 +356,7 @@
               <span class="text-gray-600">{i18n.profile_rating()}</span>
               <span class="font-medium">
                 {#if data.profile.rating}
-                  {data.profile.rating.toFixed(1)}/5 ({data.profile.review_count || 0} {i18n.profile_reviews()})
+                  {data.profile.rating.toFixed(1)}/5 ({(data as any).profile?.review_count ?? 0} {i18n.profile_reviews()})
                 {:else}
                   {i18n.profile_noRatingsYet()}
                 {/if}
@@ -353,7 +392,7 @@
               Recent Reviews
             </h3>
             <div class="space-y-4">
-              {#each data.reviews.slice(0, 3) as review}
+              {#each safeReviews.slice(0, 3) as review}
                 <ReviewDisplay {review} />
               {/each}
             </div>
@@ -399,7 +438,7 @@
           {:else}
             {#each followers as follower}
               <a 
-                href="/profile/{follower.username || follower.id}"
+                href={`/profile/${follower.username || follower.id}`}
                 class="flex items-center p-3 hover:bg-gray-50 border-b"
                 onclick={() => showFollowersModal = false}
               >
@@ -414,7 +453,7 @@
                     <div class="text-xs text-gray-500">{follower.full_name}</div>
                   {/if}
                 </div>
-                {#if follower.sales_count > 0}
+                {#if (follower.sales_count || 0) > 0}
                   <div class="text-xs text-gray-500">{follower.sales_count} sales</div>
                 {/if}
               </a>
@@ -449,7 +488,7 @@
           {:else}
             {#each following as user}
               <a 
-                href="/profile/{user.username || user.id}"
+                href={`/profile/${user.username || user.id}`}
                 class="flex items-center p-3 hover:bg-gray-50 border-b"
                 onclick={() => showFollowingModal = false}
               >
@@ -464,7 +503,7 @@
                     <div class="text-xs text-gray-500">{user.full_name}</div>
                   {/if}
                 </div>
-                {#if user.sales_count > 0}
+                {#if (user.sales_count || 0) > 0}
                   <div class="text-xs text-gray-500">{user.sales_count} sales</div>
                 {/if}
               </a>
@@ -477,8 +516,6 @@
 
 <BottomNav 
   currentPath={page.url.pathname}
-  isNavigating={!!navigating}
-  navigatingTo={navigating?.to?.url.pathname}
   unreadMessageCount={unreadMessageCount()}
   labels={{
     home: i18n.nav_home(),

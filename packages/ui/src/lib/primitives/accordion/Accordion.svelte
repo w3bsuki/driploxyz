@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
 
   interface AccordionItem {
     id: string;
@@ -8,12 +9,26 @@
     contentSnippet?: Snippet;
   }
 
-  interface Props {
+  /**
+   * Accordion component for collapsible content sections.
+   * 
+   * @example
+   * ```svelte
+   * <Accordion 
+   *   items={faqItems}
+   *   multiple={true}
+   *   class={{ 'border-2': highlighted }}
+   * />
+   * ```
+   */
+  export interface AccordionProps {
     items: AccordionItem[];
     multiple?: boolean;
     disabled?: boolean;
-    class?: string;
+    class?: ClassValue;
   }
+  
+  type Props = AccordionProps;
 
   let {
     items = [],
@@ -84,8 +99,7 @@
       <button
         data-accordion-trigger={accordionItem.id}
         type="button"
-        class="accordion-trigger"
-        class:expanded={isExpanded(accordionItem.id)}
+        class={['accordion-trigger', { expanded: isExpanded(accordionItem.id) }]}
         aria-expanded={isExpanded(accordionItem.id)}
         aria-controls={`accordion-content-${accordionItem.id}`}
         disabled={disabled}
@@ -94,8 +108,7 @@
       >
         <span class="accordion-title">{accordionItem.title}</span>
         <svg
-          class="accordion-chevron"
-          class:rotated={isExpanded(accordionItem.id)}
+          class={['accordion-chevron', { rotated: isExpanded(accordionItem.id) }]}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -110,8 +123,7 @@
 
       <div
         id={`accordion-content-${accordionItem.id}`}
-        class="accordion-content"
-        class:expanded={isExpanded(accordionItem.id)}
+        class={['accordion-content', { expanded: isExpanded(accordionItem.id) }]}
         role="region"
         aria-labelledby={accordionItem.id}
         hidden={!isExpanded(accordionItem.id)}

@@ -48,13 +48,16 @@
   );
 
   // Generate accessible input props
+  function toAutoFill(value?: string): import('svelte/elements').FullAutoFill | undefined {
+    return value as unknown as import('svelte/elements').FullAutoFill | undefined;
+  }
   const accessibleInputProps = $derived(
     getInputProps(fieldName, fieldState, {
       type,
       required,
       disabled,
       placeholder,
-      autocomplete,
+      autocomplete: toAutoFill(autocomplete),
       ...inputProps
     })
   );

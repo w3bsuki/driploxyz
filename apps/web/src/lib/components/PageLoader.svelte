@@ -19,11 +19,11 @@
   // Show loader after delay to avoid flash on fast operations
   $effect(() => {
     if (show) {
-      timer = setTimeout(() => {
+      timer = (setTimeout(() => {
         showLoader = true;
-      }, delay);
+      }, delay) as unknown) as number;
     } else {
-      clearTimeout(timer);
+  if (timer) clearTimeout(timer);
       showLoader = false;
     }
     

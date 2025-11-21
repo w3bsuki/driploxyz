@@ -58,7 +58,7 @@
   const closeButtonStyles = $derived(() => {
     return [
       'absolute right-2 top-2 rounded-sm opacity-70 ring-offset-background transition-opacity',
-      'hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)] focus:ring-offset-2',
+  'hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] focus:ring-offset-2',
       'disabled:pointer-events-none',
       'min-h-[var(--touch-standard)] min-w-[var(--touch-standard)]',
       'flex items-center justify-center'

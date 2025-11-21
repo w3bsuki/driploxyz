@@ -47,14 +47,33 @@ export const load = (async ({ locals, parent }) => {
         .single();
 
       // Get product details
-      let product = null;
+      let product: { id: string; title: string; price: number; images: string[] } | null = null;
       if (order?.product_id) {
         const { data: productData } = await supabase
           .from('products')
-          .select('id, title, price, images')
+          .select('id, title, price')
           .eq('id', order.product_id)
           .single();
-        product = productData;
+
+        if (productData) {
+          // Fetch product images separately and normalize to an array of URLs
+          const { data: productImages } = await supabase
+            .from('product_images')
+            .select('image_url, sort_order')
+            .eq('product_id', productData.id);
+
+          const images = (productImages || [])
+            .sort((a: any, b: any) => (a?.sort_order || 0) - (b?.sort_order || 0))
+            .map((img: any) => img?.image_url)
+            .filter(Boolean);
+
+          product = {
+            id: productData.id,
+            title: productData.title,
+            price: Number(productData.price || 0),
+            images
+          };
+        }
       }
 
       // Get seller details
