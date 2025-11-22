@@ -413,7 +413,7 @@ export function syncFiltersToUrl(filters: FilterState, replaceStateMode = true) 
   // Update URL without navigation using SvelteKit utilities
   const newUrl = currentPage.url.pathname + (params.toString() ? '?' + params.toString() : '');
   
-  // Safely update URL: prefer SvelteKit navigation, but fall back to History API if router isn't ready
+  // Safely update URL: prefer SvelteKit navigation
   try {
     if (replaceStateMode) {
       replaceState(newUrl, {});
@@ -421,16 +421,8 @@ export function syncFiltersToUrl(filters: FilterState, replaceStateMode = true) 
       pushState(newUrl, {});
     }
   } catch (_err) {
-    // Fallback to native history to avoid "router is not initialized" errors during hydration
-    try {
-      if (replaceStateMode) {
-        window.history.replaceState({}, '', newUrl);
-      } else {
-        window.history.pushState({}, '', newUrl);
-      }
-    } catch {
-      // As a last resort, do nothing - URL sync isn't critical
-    }
+    // If router is not ready, we simply don't update the URL to avoid conflicts
+    // The state is still preserved in the store
   }
 }
 

@@ -1,0 +1,150 @@
+[
+  {
+    "Path": "HeroSearch.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "layout/Header.svelte",
+    "UsageCount": 1,
+    "Action": "MOVE to route",
+    "TargetRoute": "+layout.svelte",
+    "UsedBy": [
+      "routes/+layout.svelte"
+    ],
+    "Routes": [
+      "+layout.svelte"
+    ]
+  },
+  {
+    "Path": "LocaleSuggestionBanner.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "LocaleSwitcherBanner.svelte",
+    "UsageCount": 1,
+    "Action": "MOVE to route",
+    "TargetRoute": "+layout.svelte",
+    "UsedBy": [
+      "routes/+layout.svelte"
+    ],
+    "Routes": [
+      "+layout.svelte"
+    ]
+  },
+  {
+    "Path": "messaging/ConversationList.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "messaging/MessageInput.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "messaging/MessageThread.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "OnboardingSuccessModal.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "OptimizedImage.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "PageLoader.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "PaymentErrorBoundary.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "PayoutRequestModal.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "realtime/LocaleDetector.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "realtime/RealtimeManager.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "RealtimeErrorBoundary.svelte",
+    "UsageCount": 1,
+    "Action": "MOVE to route",
+    "TargetRoute": "+layout.svelte",
+    "UsedBy": [
+      "routes/+layout.svelte"
+    ],
+    "Routes": [
+      "+layout.svelte"
+    ]
+  },
+  {
+    "Path": "RegionSwitchModal.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  },
+  {
+    "Path": "VirtualProductGrid.svelte",
+    "UsageCount": 0,
+    "Action": "UNUSED - review for removal",
+    "TargetRoute": "",
+    "UsedBy": [],
+    "Routes": []
+  }
+]

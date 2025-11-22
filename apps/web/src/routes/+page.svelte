@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { MainPageSearchBar, BottomNav, FeaturedProducts, PromotedListingsSection } from '@repo/ui';
+	import { MainPageSearchBar, BottomNav, FeaturedProducts, PromotedListingsSection, FilterDrawer } from '@repo/ui';
 	import type { Product } from '@repo/ui/types';
 	import { mapProduct, mapCategory } from '$lib/types/domain';
 	import * as i18n from '@repo/i18n';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
+	import { createProductFilter } from '$lib/stores/product-filter.svelte';
 	import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -19,6 +20,8 @@
 	// Simple state management with Svelte 5
 	let searchQuery = $state('');
 	let loadingCategory = $state<string | null>(null);
+	let isFilterDrawerOpen = $state(false);
+	const filterStore = createProductFilter();
 
 	// Language state
 	let currentLang = $state(i18n.getLocale());
@@ -182,6 +185,17 @@
 
 	function handleSellClick() {
 		goto('/sell');
+	}
+
+	function handleFilterApply(filters: any) {
+		const params = new URLSearchParams();
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== null && value !== undefined && value !== 'all') {
+				params.set(key, String(value));
+			}
+		});
+		goto(`/search?${params.toString()}`);
+		isFilterDrawerOpen = false;
 	}
 
 	function formatPrice(price: number): string {
@@ -387,13 +401,22 @@
 	unreadMessageCount={notificationStore.unreadCount}
 	profileHref={'/account'}
 	isAuthenticated={!!data.user}
+  onFilterClick={() => isFilterDrawerOpen = true}
 	labels={{
 			home: i18n.nav_home(),
 			search: i18n.nav_search(),
 			sell: i18n.nav_sell(),
-			messages: i18n.nav_messages(),
+			filter: i18n.common_filter ? i18n.common_filter() : 'Filter',
 			profile: i18n.nav_profile()
 	}}
+/>
+
+<FilterDrawer
+	isOpen={isFilterDrawerOpen}
+	onClose={() => isFilterDrawerOpen = false}
+	onApply={handleFilterApply}
+	onClear={() => filterStore.resetFilters()}
+	currentFilters={filterStore.filters}
 />
 
 <!-- Auth Popup -->

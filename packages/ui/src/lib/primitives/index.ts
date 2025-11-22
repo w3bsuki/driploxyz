@@ -4,6 +4,7 @@ export { default as Select } from './select/Select.svelte';
 export { default as Tabs } from './tabs/Tabs.svelte';
 export { default as Tooltip } from './tooltip/Tooltip.svelte';
 export { Accordion } from './accordion/index';
+export * as Sheet from './sheet/index';
 // pill exports removed (reverting to existing quick pills)
 
 // Toast System - Comprehensive mobile-first toast components

@@ -1,549 +1,324 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
+  import * as i18n from '@repo/i18n';
+  
   import { 
     ProductCard, 
-    Button, 
-    BottomNav, 
-    CategoryPills,
-    FilterDrawer,
-    SearchDropdownInput,
-    ProductCardSkeleton
+    ProductCardSkeleton,
+    BottomNav,
+    Button
   } from '@repo/ui';
-
-  // Type definitions removed (no longer used)
-
-  import { unreadCount } from '$lib/stores/notifications.svelte';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/state';
-  import type { PageData } from './$types';
-  import * as i18n from '@repo/i18n';
-  import { formatPrice } from '$lib/utils/price';
-  import { translateCategory, getCategoryIcon } from '$lib/categories/mapping';
+  
+  import { notificationStore } from '$lib/stores/notifications.svelte';
   import { createProductFilter, syncFiltersToUrl } from '$lib/stores/product-filter.svelte';
-  import { browser } from '$app/environment';
-  import { debounce } from '$lib/utils/debounce';
+  import { formatPrice } from '$lib/utils/price';
   import { getProductUrl } from '$lib/utils/seo-urls';
-  
-  // Infinite scroll sentinel - properly managed with reactive cleanup
-  let loadMoreTrigger = $state<HTMLDivElement | null>(null);
-  let intersectionObserver = $state<IntersectionObserver | null>(null);
+  import { debounce } from '$lib/utils/debounce';
+  import type { PageData } from './$types';
+  import { mapCategory } from '$lib/types/domain';
 
-  // Only use $effect for DOM side effects like intersection observer
-  $effect(() => {
-    if (!browser || !loadMoreTrigger) {
-      intersectionObserver?.disconnect();
-      intersectionObserver = null;
-      return;
-    }
+  let { data }: { data: PageData } = $props();
 
-    intersectionObserver = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-      if (entry && entry.isIntersecting) loadMore();
-    }, { rootMargin: '400px 0px' });
-
-    intersectionObserver.observe(loadMoreTrigger);
-
-    return () => {
-      intersectionObserver?.disconnect();
-      intersectionObserver = null;
-    };
-  });
-
-  interface Props {
-    data: PageData;
-  }
-  
-  let { data }: Props = $props();
-  
-  // Initialize filter store with persistence
+  // -- Store & Context --
   const filterStore = createProductFilter();
-  
-  // Core UI state
-  let showFilterDrawer = $state(false);
-  let searchQuery = $state('');
-  let ariaLiveMessage = $state('');
+  const filterDrawer = getContext<{ open: () => void, close: () => void }>('filterDrawer');
 
-  
-  // Single derived filter state for performance
+  // -- Derived State from Store --
   let filters = $derived(filterStore.filters);
-  let previewFilteredProducts = $derived(filterStore.previewFilteredProducts);
-
-  // Client-side script initialized
-
-  // Popular brands
-  const popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gap', 'Levi\'s', 'North Face'];
-
-  // L1 Categories for pills (Women/Men/Kids/Unisex)
-  let categoryPillsData = $derived.by(() => {
-    if (!data.categories || data.categories.length === 0) {
-      return [];
-    }
-    
-    return data.categories.map(cat => ({
-      id: cat.id,
-      name: translateCategory(cat.name),
-      slug: cat.slug,
-      icon: getCategoryIcon(cat.name),
-      count: undefined // Could add product counts if needed
-    }));
-  });
-
-  // Resolve categoryHierarchy once for dynamic L2/L3 pills
-  type L3 = { id: string; name: string; slug: string };
-  type L2 = { id: string; name: string; level3?: L3[] };
-  type L1 = { id: string; name: string; slug: string; level2?: Record<string, L2> };
-  let categoryHierarchyData = $state<Record<string, L1>>({});
-
-  $effect(() => {
-    if (data.categoryHierarchy) {
-      Promise.resolve(data.categoryHierarchy).then((h: Record<string, L1>) => {
-        categoryHierarchyData = h || {};
-      });
-    }
-  });
-
-  // Compute which pills to show based on selected filters
-  type UIPill = { id: string; name: string; slug: string; count?: number };
-  const pillsMode: 'L1' | 'L2' | 'L3' = $derived.by(() => {
-    if (filters.category && !filters.subcategory && !filters.specific) return 'L2';
-    if (filters.category && filters.subcategory && !filters.specific) return 'L3';
-    return 'L1';
-  });
-
-  const currentPills: UIPill[] = $derived.by(() => {
-    if (pillsMode === 'L1') {
-      return categoryPillsData;
-    }
-    const l1Slug = filters.category as string | null;
-    if (!l1Slug) return categoryPillsData;
-    const l1Node = categoryHierarchyData[l1Slug];
-    if (!l1Node || !l1Node.level2) return categoryPillsData;
-
-    if (pillsMode === 'L2') {
-      const allowedL2 = new Set(['clothing', 'shoes', 'accessories', 'bags']);
-      return Object.entries(l1Node.level2)
-        .map(([l2Slug, l2Data]) => {
-          const cleanSlug = l2Slug.replace(`${l1Slug}-`, '').replace('-new', '');
-          return { id: l2Data.id, name: translateCategory(l2Data.name), slug: cleanSlug };
-        })
-        .filter((p) => allowedL2.has(p.slug));
-    }
-
-    // L3 mode
-    const subSlug = filters.subcategory as string | null;
-    let l2Match: L2 | undefined;
-    for (const [l2Slug, l2Data] of Object.entries(l1Node.level2)) {
-      const cleanSlug = l2Slug.replace(`${l1Slug}-`, '').replace('-new', '');
-      if (cleanSlug === subSlug) { l2Match = l2Data; break; }
-    }
-    if (!l2Match || !l2Match.level3) return [];
-    return (l2Match.level3 || []).map((l3) => ({
-      id: l3.id,
-      name: translateCategory(l3.name),
-      slug: l3.slug.replace(`${l1Slug}-`, '')
-    }));
-  });
-
-  const currentActiveSlug = $derived.by(() => {
-    if (pillsMode === 'L1') return filters.category;
-    if (pillsMode === 'L2') return filters.subcategory;
-    return filters.specific;
-  });
-
-  function handlePillSelect(slug: string | null) {
-    if (pillsMode === 'L1') {
-      if (slug === null) {
-        filterStore.updateMultipleFilters({ category: null, subcategory: null, specific: null });
-      } else {
-        filterStore.updateMultipleFilters({ category: slug, subcategory: null, specific: null });
-      }
-    } else if (pillsMode === 'L2') {
-      if (slug) filterStore.updateMultipleFilters({ subcategory: slug, specific: null });
-    } else if (pillsMode === 'L3') {
-      if (slug) filterStore.updateFilter('specific', slug);
-    }
-  }
-
+  let products = $derived(filterStore.filteredProducts);
   
-  // Get all available brands from products
-  const availableBrands = $derived.by(() => {
-    const brands = new Set<string>();
-    filterStore.allProducts.forEach((p: any) => {
-      if (p.brand) brands.add(p.brand);
-    });
-    return Array.from(brands).sort();
-  });
-
-  // Get all available sizes from products
-  const availableSizes = $derived.by(() => {
-    const sizes = new Set<string>();
-    filterStore.allProducts.forEach((p: any) => {
-      if (p.size) sizes.add(p.size);
-    });
-    return Array.from(sizes);
-  });
-  
-  
-  // Common sizes based on category
-  const commonSizes = {
-    women: ['XS', 'S', 'M', 'L', 'XL'],
-    men: ['S', 'M', 'L', 'XL', 'XXL'],
-    kids: ['2T', '3T', '4T', '5-6', '7-8', '10-12'],
-    default: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-  };
-  
-  // Get current sizes based on selected category, fallback to all available sizes
-  let currentSizes = $derived(
-    availableSizes.length > 0 
-      ? availableSizes 
-      : (commonSizes[filters.category as keyof typeof commonSizes] || commonSizes.default)
-  );
-  
-  // Get current brands
-  let currentBrands = $derived(availableBrands.length > 0 ? availableBrands : popularBrands);
-  
-  
-  // Define a minimal Product shape compatible with filter store
-  type ListProduct = {
-    id: string;
-    title?: string;
-    description?: string;
-    brand?: string;
-    price?: number;
-    size?: string;
-    condition?: string;
-    createdAt?: string;
-    main_category_name?: string;
-    subcategory_name?: string;
-    specific_category_name?: string;
-    images?: string[];
-    product_images?: { image_url: string }[];
-    seller_name?: string;
-    seller_rating?: number;
-    seller_avatar?: string;
-    seller_id?: string;
-    category_name?: string;
-  };
-
-  // Initialize filters from server data - only needs to run once on mount
+  // -- Local State --
+  let searchQuery = $state(data.searchQuery || '');
+  let loadingMore = $state(false);
+  let hasMore = $state(!!data.hasMore);
+  let nextPage = $state((data.currentPage || 1) + 1);
+  let loadMoreTrigger = $state<HTMLElement | null>(null);
+  let observer = $state<IntersectionObserver | null>(null);
   let filtersInitialized = $state(false);
+  let isSearchFocused = $state(false);
 
+  // -- Derived Data --
+  let activeFiltersCount = $derived(
+    Object.entries(filters).filter(([key, value]) => {
+      if (key === 'query' || key === 'sort') return false;
+      return value !== null && value !== undefined && value !== 'all';
+    }).length
+  );
+
+  let categories = $derived(data.categories || []);
+  const mainCategories = $derived(
+    (categories || [])
+      .map((cat: any) => {
+        const mapped = mapCategory(cat);
+        return { ...mapped, name: mapped.name };
+      })
+  );
+
+  const quickConditionFilters = [
+		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.condition_newWithTags?.() ?? i18n.sell_condition_brandNewWithTags(), emoji: '🏷️' },
+		{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew(), emoji: '💎' },
+		{ key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good(), emoji: '👍' },
+		{ key: 'fair', label: i18n.condition_fair(), shortLabel: i18n.condition_fair(), emoji: '👌' }
+	];
+
+  // -- Effects --
+
+  // 1. Initialize Store from Server Data
   $effect(() => {
-  if (!filtersInitialized && data.products) {
-      // Handle products array directly (no longer wrapped in Promise)
-      const products: ListProduct[] = (Array.isArray(data.products) ? data.products : []).map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        description: p.description ?? '',
-        brand: p.brand ?? undefined,
-        price: typeof p.price === 'number' ? p.price : Number(p.price ?? 0),
-        size: p.size ?? undefined,
-        condition: p.condition ?? 'good',
-        createdAt: (p.created_at as string | null) ?? p.createdAt ?? new Date().toISOString(),
-        main_category_name: p.main_category_name || undefined,
-        subcategory_name: p.subcategory_name || undefined,
-        specific_category_name: p.specific_category_name || undefined,
-        // Ensure images are present in both formats expected by ProductCard/ProductImage
-        images: Array.isArray(p.images) && p.images.length
-          ? p.images
-          : (Array.isArray(p.product_images) ? p.product_images.map((img: any) => img.image_url) : []),
-        product_images: Array.isArray(p.product_images) && p.product_images.length
-          ? p.product_images
-          : (Array.isArray(p.images) ? p.images.map((url: string) => ({ image_url: url })) : [])
-      }));
-      filterStore.setProducts(products as any);
-      filterStore.loadPersistedFilters();
-
+    if (!filtersInitialized && data.products) {
+      const mappedProducts = (data.products || []).map(mapProductForStore);
+      filterStore.setProducts(mappedProducts);
+      
       if (data.filters) {
-      const serverFilters = {
-        query: data.searchQuery || '',
-        category: data.filters.category || null,
-        subcategory: data.filters.subcategory || null,
-        specific: data.filters.specific || null,
-        size: data.filters.size || 'all',
-        brand: data.filters.brand || 'all',
-        condition: data.filters.condition || 'all',
-        minPrice: data.filters.minPrice || '',
-        maxPrice: data.filters.maxPrice || '',
-        sortBy: data.filters.sortBy || 'relevance'
-      };
-
-      // Only override persisted filters if URL has non-default values
-      const hasUrlFilters = Object.entries(serverFilters).some(([key, value]) => {
-        if (key === 'sortBy') return value !== 'relevance';
-        if (typeof value === 'string' && (value === 'all' || value === '')) return false;
-        return value !== null;
-      });
-
-      if (hasUrlFilters) {
-        filterStore.updateMultipleFilters(serverFilters);
-      }
-
-      searchQuery = data.searchQuery || '';
+         const cleanFilters: any = { ...data.filters };
+         Object.keys(cleanFilters).forEach(key => {
+           if (cleanFilters[key] === null) delete cleanFilters[key];
+         });
+         filterStore.updateMultipleFilters({
+            query: data.searchQuery || '',
+            ...cleanFilters
+         });
       }
       filtersInitialized = true;
     }
   });
-  
-  // URL syncing - use $effect only for browser side effects
+
+  // 2. Sync Store to URL
   $effect(() => {
     if (browser && filtersInitialized) {
       syncFiltersToUrl(filters);
     }
   });
 
-  
-  // Get filtered products
-  let displayProducts: ListProduct[] = $derived(
-    filterStore.filteredProducts.map((p: any) => {
-      const images: string[] = Array.isArray(p.images) && p.images.length ? p.images : ['/placeholder-product.svg'];
-      const sellerName = p.seller?.username || p.seller_name || '';
-      return {
-        ...p,
-        // Ensure UI-required fields
-        images,
-        sellerName: sellerName === 'Unknown' ? '' : sellerName, // Don't show "Unknown"
-        sellerRating: typeof p.seller?.rating === 'number' ? p.seller.rating : (p.seller_rating ? Number(p.seller_rating) : 0),
-        sellerAvatar: p.seller?.avatar_url ?? p.seller_avatar ?? undefined,
-        sellerId: p.seller_id ?? p.sellerId ?? p.seller?.id ?? '',
-        createdAt: (p.created_at as string | null) ?? p.createdAt ?? new Date().toISOString(),
-        // Preserve category hierarchy for ProductCard
-        main_category_name: p.main_category_name ?? p.category_name ?? 'Uncategorized',
-        subcategory_name: p.subcategory_name ?? undefined,
-        specific_category_name: p.specific_category_name ?? undefined,
-        category_name: p.category_name ?? p.main_category_name ?? 'Uncategorized'
-    } as ListProduct;
-    })
-  );
-  
-  // Map ensures fallback category name for cards - preserve all category fields
-  import type { Product as UIProduct } from '@repo/ui';
-  const displayProductsWithCategory: UIProduct[] = $derived(
-    (displayProducts.map(p => ({
-      ...p,
-      // Preserve full category hierarchy
-      main_category_name: p.main_category_name || p.category_name || 'Uncategorized',
-      subcategory_name: p.subcategory_name,
-      specific_category_name: p.specific_category_name,
-      category_name: p.category_name || p.main_category_name || 'Uncategorized'
-    })) as unknown) as UIProduct[]
-  );
+  // 3. Infinite Scroll Observer
+  $effect(() => {
+    if (!browser || !loadMoreTrigger) return;
+    
+    observer?.disconnect();
+    observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && hasMore && !loadingMore) {
+        loadMore();
+      }
+    }, { rootMargin: '400px' });
+    
+    observer.observe(loadMoreTrigger);
+    
+    return () => observer?.disconnect();
+  });
 
-  // Active filter count for badge (excluding search query)
-  let activeFilterCount = $derived(
-    [
-      filters.category ? 1 : 0,
-      filters.subcategory ? 1 : 0,
-      filters.specific ? 1 : 0,
-      filters.size !== 'all' ? 1 : 0,
-      filters.brand !== 'all' ? 1 : 0,
-      filters.condition !== 'all' ? 1 : 0,
-      (filters.minPrice || filters.maxPrice) ? 1 : 0,
-      filters.sortBy !== 'relevance' ? 1 : 0
-    ].reduce((sum, val) => sum + val, 0)
-  );
-
-  // Infinite scroll state
-  let nextPage = $state((data.currentPage || 1) + 1);
-  let hasMore = $state(!!data.hasMore);
-  let loadingMore = $state(false);
-  let loadError = $state<string | null>(null);
-  let loadAbortController = $state<AbortController | null>(null);
+  // -- Handlers --
 
   async function loadMore() {
-    if (!browser || loadingMore || !hasMore) return;
-    // cancel any in-flight request
-    try { loadAbortController?.abort(); } catch {}
-    loadAbortController = new AbortController();
+    if (loadingMore || !hasMore) return;
     loadingMore = true;
-    loadError = null;
+
     try {
       const params = new URLSearchParams();
-      // Carry over filters
       if (filters.query) params.set('q', filters.query);
       if (filters.category) params.set('category', filters.category);
       if (filters.subcategory) params.set('subcategory', filters.subcategory);
       if (filters.specific) params.set('specific', filters.specific);
-      if (filters.size && filters.size !== 'all') params.set('size', filters.size);
-      if (filters.brand && filters.brand !== 'all') params.set('brand', filters.brand);
-      if (filters.condition && filters.condition !== 'all') params.set('condition', filters.condition);
-      if (filters.minPrice) params.set('min_price', filters.minPrice);
-      if (filters.maxPrice) params.set('max_price', filters.maxPrice);
-      if (filters.sortBy && filters.sortBy !== 'relevance') params.set('sort', filters.sortBy);
+      // Add other filters as needed
       params.set('page', String(nextPage));
-      params.set('pageSize', String(data.pageSize || 50));
-
-      const res = await fetch(`/api/search?${params.toString()}` , { signal: loadAbortController.signal });
+      
+      const res = await fetch(`/api/search?${params.toString()}`);
       if (res.ok) {
         const json = await res.json();
-        // API returns { data, pagination } shape; support legacy { products }
-        const incoming = Array.isArray(json.products) ? json.products : Array.isArray(json.data) ? json.data : [];
-        if (incoming.length > 0) {
-          filterStore.appendProducts(incoming);
+        const newProducts = (json.products || json.data || []).map(mapProductForStore);
+        if (newProducts.length > 0) {
+          filterStore.appendProducts(newProducts);
+          nextPage++;
+        } else {
+          hasMore = false;
         }
-        // pagination flags from either shape
-        hasMore = json.hasMore ?? json.pagination?.hasMore ?? (incoming.length > 0);
-        nextPage = (json.currentPage || json.pagination?.page || nextPage) + 1;
-      } else if (res.status !== 499) {
-        loadError = 'Failed to load more products';
+        hasMore = json.hasMore ?? (newProducts.length > 0);
       }
-    } catch (error) {
-      if ((error as any)?.name !== 'AbortError') {
-        console.error('Failed to load more products:', error);
-        loadError = 'Network error';
-      }
-    }
-    finally {
+    } catch (e) {
+      console.error('Failed to load more products:', e);
+    } finally {
       loadingMore = false;
     }
   }
-  
-  // Debounced search handler
-  const handleSearchDebounced = debounce((query: string) => {
+
+  function mapProductForStore(p: any) {
+     return {
+        ...p,
+        price: Number(p.price || 0),
+        images: p.images || [],
+        sellerName: p.seller?.username || p.seller_name || '',
+        sellerRating: typeof p.seller?.rating === 'number' ? p.seller.rating : (p.seller_rating ? Number(p.seller_rating) : 0),
+        sellerAvatar: p.seller?.avatar_url ?? p.seller_avatar ?? undefined,
+        sellerId: p.seller_id ?? p.sellerId ?? p.seller?.id ?? '',
+        createdAt: (p.created_at as string | null) ?? p.createdAt ?? new Date().toISOString(),
+        main_category_name: p.main_category_name ?? p.category_name ?? 'Uncategorized',
+        subcategory_name: p.subcategory_name ?? undefined,
+        specific_category_name: p.specific_category_name ?? undefined,
+        category_name: p.category_name ?? p.main_category_name ?? 'Uncategorized'
+     };
+  }
+
+  const handleSearch = debounce((query: string) => {
+    searchQuery = query;
     filterStore.updateFilter('query', query);
+    nextPage = 2; 
+    hasMore = true;
   }, 300);
 
-  // Search input handler
-  function handleSearchInput(value: string) {
-    searchQuery = value;
-    handleSearchDebounced(value);
+  function handleCategorySelect(slug: string | null) {
+    if (!slug || filters.category === slug) {
+      filterStore.updateFilter('category', null);
+    } else {
+      filterStore.updateMultipleFilters({ category: slug, subcategory: null, specific: null });
+    }
   }
 
-  // L1 handler replaced by handlePillSelect (supports L1/L2/L3)
-
-  // Apply filters from drawer
-  function handleApplyFilters(newFilters: Record<string, any>) {
-    // Update all filters at once
-    const filterUpdate: any = {};
-    
-    if (newFilters.brand !== undefined) filterUpdate.brand = newFilters.brand || 'all';
-    if (newFilters.condition !== undefined) filterUpdate.condition = newFilters.condition || 'all';
-    if (newFilters.size !== undefined) filterUpdate.size = newFilters.size || 'all';
-    if (newFilters.minPrice !== undefined) filterUpdate.minPrice = newFilters.minPrice || '';
-    if (newFilters.maxPrice !== undefined) filterUpdate.maxPrice = newFilters.maxPrice || '';
-    if (newFilters.sortBy !== undefined) filterUpdate.sortBy = newFilters.sortBy || 'relevance';
-    
-    filterStore.updateMultipleFilters(filterUpdate);
-    showFilterDrawer = false;
+  function handleConditionFilter(condition: string) {
+     if (filters.condition === condition) {
+        filterStore.updateFilter('condition', null);
+     } else {
+        filterStore.updateFilter('condition', condition);
+     }
   }
 
-  // Clear all filters
-  function clearAllFilters() {
-    filterStore.resetFilters();
-    searchQuery = '';
+  function removeFilter(key: string) {
+    filterStore.updateFilter(key, null);
   }
 
-  // Removed unused handleRemoveAppliedFilter (applied pills UI removed)
-
-  
-
-  
-  
-  // Product category translations
-  function getCategoryTranslation(categoryName: string): string {
-    const categoryMap: Record<string, string> = {
-      'Women': i18n.category_women(),
-      'Men': i18n.category_men(),
-      'Kids': i18n.category_kids(),
-      'Unisex': i18n.category_unisex(),
-      'Clothing': i18n.category_clothing(),
-      'Shoes': i18n.category_shoesType(),
-      'Accessories': i18n.category_accessoriesType(),
-      'Bags': i18n.category_bagsType()
-    };
-    return categoryMap[categoryName] || categoryName;
-  }
 </script>
 
 <svelte:head>
-  <title>Search - Driplo</title>
+  <title>{(i18n.nav_search ? i18n.nav_search() : 'Search') + ' - Driplo'}</title>
 </svelte:head>
 
-<div class="search-page min-h-screen pb-20 sm:pb-0">
+<div class="min-h-screen bg-[var(--surface-subtle)] pb-20 sm:pb-0">
   
-  <!-- ARIA Live Region for announcements -->
-  <div aria-live="polite" aria-atomic="true" class="sr-only">
-    {ariaLiveMessage}
-  </div>
-
-  <!-- Sticky Search Container -->
-  <div class="sticky-header sticky top-[var(--app-header-offset)] z-40">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-[var(--gutter-xxs)] sm:py-[var(--gutter-xs)]">
-
-      <!-- Search Bar with Dropdown -->
-      <div class="py-0 flex items-center gap-2">
-        <!-- Filter button (left) -->
-        <button
-          type="button"
-          class="search-filter-btn inline-flex items-center justify-center h-11 w-11 shrink-0 rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] hover:bg-[color:var(--surface-muted)] hover:border-[color:var(--border-emphasis)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--brand-primary)] transition-all active:scale-95"
-          aria-label="Open filters"
-          onclick={() => (showFilterDrawer = true)}
-        >
-          <svg class="w-5 h-5 text-[color:var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h18M6 12h12M10 19h4" />
+  <!-- Ultrathink Sticky Header -->
+  <div class="sticky top-0 z-40 bg-[var(--surface-base)] border-b border-[var(--border-subtle)] shadow-sm">
+    
+    <!-- Top Row: Search Input & Filter Toggle -->
+    <div class="px-4 py-3 flex items-center gap-3">
+      <div class="relative flex-1 group">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-[var(--text-tertiary)] group-focus-within:text-[var(--brand-primary)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-        </button>
-
-        <!-- Search with dropdown -->
-        <div class="flex-1">
-          <SearchDropdownInput
-            bind:searchValue={searchQuery}
-            onInput={handleSearchInput}
-            onSearch={(query) => handleSearchInput(query)}
-            placeholder={i18n.search_placeholder ? i18n.search_placeholder() : 'Search for clothes, brands...'}
-            searchId="search-page-input"
-          />
         </div>
+        <input
+          type="text"
+          bind:value={searchQuery}
+          oninput={(e) => handleSearch(e.currentTarget.value)}
+          onfocus={() => isSearchFocused = true}
+          onblur={() => isSearchFocused = false}
+          placeholder={i18n.search_placeholder?.() ?? "Search for items, brands, or styles..."}
+          class="block w-full pl-10 pr-10 py-2.5 bg-[var(--surface-subtle)] border-none rounded-xl text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:ring-2 focus:ring-[var(--brand-primary)] focus:bg-[var(--surface-base)] transition-all text-base"
+        />
+        {#if searchQuery}
+          <button
+            onclick={() => { searchQuery = ''; handleSearch(''); }}
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        {/if}
       </div>
 
-  <!-- Category Pills (unified) - inside same container -->
-  <div class="pt-[var(--gutter-xxs)] pb-[var(--gutter-xxs)]">
-        <CategoryPills
-          categories={currentPills}
-          activeCategory={currentActiveSlug as unknown as string | null}
-          onCategorySelect={handlePillSelect}
-          showAllButton={pillsMode === 'L1'}
-        />
-      </div>
+      <button
+        onclick={() => filterDrawer.open()}
+        class="relative p-2.5 rounded-xl bg-[var(--surface-subtle)] text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)] transition-colors active:scale-95"
+        aria-label="Filters"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        {#if activeFiltersCount > 0}
+          <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-[var(--brand-primary)] ring-2 ring-[var(--surface-base)]"></span>
+        {/if}
+      </button>
     </div>
+
+    <!-- Middle Row: Categories & Quick Filters (Horizontal Scroll) -->
+    <div class="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar items-center">
+      <!-- All Categories Pill -->
+      <button
+        onclick={() => handleCategorySelect(null)}
+        class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border {filters.category === null ? 'bg-[var(--text-primary)] text-[var(--surface-base)] border-transparent' : 'bg-[var(--surface-base)] text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-secondary)]'}"
+      >
+        All
+      </button>
+
+      <!-- Main Categories -->
+      {#each mainCategories as cat}
+        <button
+          onclick={() => handleCategorySelect(cat.slug)}
+          class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border {filters.category === cat.slug ? 'bg-[var(--text-primary)] text-[var(--surface-base)] border-transparent' : 'bg-[var(--surface-base)] text-[var(--text-secondary)] border-[var(--border-default)] hover:border-[var(--text-secondary)]'}"
+        >
+          {cat.name}
+        </button>
+      {/each}
+
+      <div class="w-px h-6 bg-[var(--border-subtle)] mx-1 flex-shrink-0"></div>
+
+      <!-- Condition Filters -->
+      {#each quickConditionFilters as condition}
+        <button
+          onclick={() => handleConditionFilter(condition.key)}
+          class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border {filters.condition === condition.key ? 'bg-[var(--surface-brand-subtle)] text-[var(--brand-dark)] border-[var(--brand-primary)]' : 'bg-[var(--surface-base)] text-[var(--text-secondary)] border-[var(--border-default)] hover:bg-[var(--surface-subtle)]'}"
+        >
+          <span>{condition.emoji}</span>
+          <span>{condition.shortLabel}</span>
+        </button>
+      {/each}
+    </div>
+
+    <!-- Bottom Row: Active Filters (Only if active) -->
+    {#if activeFiltersCount > 0}
+      <div class="px-4 py-2 bg-[var(--surface-muted)] border-t border-[var(--border-subtle)] flex gap-2 overflow-x-auto no-scrollbar">
+        {#each Object.entries(filters) as [key, value]}
+          {#if key !== 'query' && key !== 'sort' && value && value !== 'all' && key !== 'category' && key !== 'condition'}
+            <button 
+              onclick={() => removeFilter(key)}
+              class="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--surface-base)] border border-[var(--border-subtle)] text-xs font-medium text-[var(--text-secondary)] shadow-sm hover:text-[var(--brand-primary)] transition-colors"
+            >
+              <span class="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}: {value}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          {/if}
+        {/each}
+        <button 
+          onclick={() => filterStore.resetFilters()}
+          class="text-xs font-semibold text-[var(--brand-primary)] whitespace-nowrap px-2 hover:underline self-center"
+        >
+          Clear all
+        </button>
+      </div>
+    {/if}
   </div>
 
-  
-  
-  <!-- Products Grid (window scroll + infinite load) -->
-  <div 
-    class="max-w-7xl mx-auto pt-[var(--space-2)] pb-[var(--space-6)] px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]" 
-    data-testid="search-results-container"
-    style="
-      padding-left: max(var(--space-3), env(safe-area-inset-left));
-      padding-right: max(var(--space-3), env(safe-area-inset-right));
-    "
-  >
-    <!-- Compact results count -->
-    <div class="mb-[var(--space-2)]">
-      <p class="text-[11px] tertiary">
-        {displayProducts.length.toLocaleString()} {displayProducts.length === 1 ? 'item' : 'items'}
-        {#if searchQuery}
-          <span> for "{searchQuery}"</span>
-        {/if}
-      </p>
-    </div>
-    {#if displayProductsWithCategory.length > 0}
-      <!-- Responsive grid matching main page: 2-col mobile, 3-col tablet, 4-col desktop, 5-col xl -->
-      <div 
-        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[var(--space-2)] sm:gap-[var(--space-3)]"
-        role="list"
-        aria-label="Product results with {displayProductsWithCategory.length} items"
-      >
-        {#each displayProductsWithCategory as product, index (product.id)}
-          <article
-            role="listitem"
-            aria-setsize={displayProductsWithCategory.length}
-            aria-posinset={index + 1}
-          >
-            <ProductCard
-              {product}
-              onclick={() => goto(getProductUrl(product))}
-              translations={{
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    
+    <!-- Results Header -->
+    {#if products.length > 0}
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-[var(--text-secondary)] font-medium">
+          {products.length.toLocaleString()} {products.length === 1 ? 'result' : 'results'} found
+        </p>
+      </div>
+    {/if}
+
+    <!-- Product Grid -->
+    {#if products.length > 0}
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+        {#each products as product (product.id)}
+           <ProductCard 
+             {product} 
+             onclick={() => goto(getProductUrl(product))}
+             translations={{
                 size: i18n.product_size(),
                 currency: i18n.common_currency(),
                 addToFavorites: i18n.product_addToFavorites(),
@@ -554,134 +329,100 @@
                 good: i18n.condition_good(),
                 worn: i18n.sell_condition_worn(),
                 fair: i18n.condition_fair(),
-                formatPrice: (price: number) => formatPrice(price),
-                categoryTranslation: getCategoryTranslation
-              }}
-            />
-          </article>
+                formatPrice: (price) => formatPrice(price),
+                categoryTranslation: (name) => name
+             }}
+           />
         {/each}
         
+        <!-- Loading Skeletons (Append) -->
         {#if loadingMore}
-          {#each Array(5) as _}
-            <ProductCardSkeleton />
-          {/each}
+           {#each Array(4) as _, i (i)}
+             <ProductCardSkeleton />
+           {/each}
         {/if}
       </div>
       
-      <!-- Infinite scroll sentinel with better touch target -->
+      <!-- Infinite Scroll Trigger -->
       {#if hasMore}
-        <div class="flex flex-col items-center gap-3 py-8">
-          {#if loadError}
-            <div class="text-sm load-error font-medium">{loadError}</div>
-          {/if}
-          <button 
-            class="btn-secondary min-h-[48px] min-w-[140px] active:scale-95"
-            disabled={loadingMore}
-            onclick={loadMore}
-          >
-            {#if loadingMore}
-              <span class="inline-flex items-center gap-2">
-                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Loading...
-              </span>
-            {:else}
-              Load More Products
-            {/if}
-          </button>
-          <p class="text-xs tertiary">or scroll to auto-load</p>
+        <div bind:this={loadMoreTrigger} class="h-24 w-full flex justify-center items-center mt-8">
+           {#if !loadingMore}
+             <span class="text-sm text-[var(--text-tertiary)]">Scroll for more</span>
+           {:else}
+             <div class="w-6 h-6 border-2 border-[var(--brand-primary)] border-t-transparent rounded-full animate-spin"></div>
+           {/if}
         </div>
-        <div bind:this={loadMoreTrigger} class="h-1"></div>
       {/if}
-      
-    {:else}
-      <!-- Empty State -->
-      <div class="text-center py-16">
-        <div class="w-20 h-20 mx-auto mb-4 empty-icon rounded-full flex items-center justify-center">
-          <svg class="w-10 h-10 empty-icon-stroke" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <h3 class="heading-lg font-semibold text-primary mb-1">
-          {i18n.search_noItemsFound()}
-        </h3>
-        <p class="text-secondary text-sm">{i18n.search_adjustFilters()}</p>
-        {#if activeFilterCount > 0}
-          <Button onclick={clearAllFilters} variant="outline" size="sm" class="mt-4">
-            {i18n.search_clearAllFilters()}
-          </Button>
-        {/if}
+
+    {:else if !loadingMore && filtersInitialized}
+       <!-- Empty State -->
+       <div class="flex flex-col items-center justify-center py-20 text-center px-4 animate-in fade-in duration-500">
+          <div class="w-24 h-24 bg-[var(--surface-muted)] rounded-full flex items-center justify-center mb-6 shadow-sm">
+             <svg class="w-12 h-12 text-[var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+             </svg>
+          </div>
+          <h3 class="text-xl font-bold text-[var(--text-primary)] mb-2">
+            {i18n.search_noResults?.() ?? 'No items found'}
+          </h3>
+          <p class="text-base text-[var(--text-secondary)] mb-8 max-w-xs mx-auto">
+             We couldn't find anything matching your search. Try adjusting your filters or search for something else.
+          </p>
+          
+          {#if activeFiltersCount > 0}
+            <Button variant="outline" onclick={() => filterStore.resetFilters()} class="min-w-[140px]">
+               Clear all filters
+            </Button>
+          {:else}
+            <div class="space-y-6 w-full max-w-md">
+              <p class="text-sm font-medium text-[var(--text-secondary)] uppercase tracking-wider">
+                Popular Categories
+              </p>
+              <div class="flex flex-wrap gap-3 justify-center">
+                {#each mainCategories.slice(0, 6) as cat}
+                  <button
+                    onclick={() => handleCategorySelect(cat.slug)}
+                    class="px-5 py-2.5 rounded-xl bg-[var(--surface-base)] border border-[var(--border-default)] text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface-subtle)] hover:border-[var(--border-muted)] transition-all active:scale-95 shadow-sm"
+                  >
+                    {cat.name}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+       </div>
+    {:else if !filtersInitialized}
+      <!-- Initial Loading State -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+        {#each Array(10) as _, i (i)}
+          <ProductCardSkeleton />
+        {/each}
       </div>
     {/if}
-  </div>
+  </main>
 </div>
 
-<!-- Filter Drawer (Mobile Bottom Sheet) -->
-<FilterDrawer
-  isOpen={showFilterDrawer}
-  onClose={() => showFilterDrawer = false}
-  onApply={handleApplyFilters}
-  onClear={clearAllFilters}
-  currentFilters={{
-    brand: filters.brand === 'all' ? null : filters.brand,
-    condition: filters.condition === 'all' ? null : filters.condition,
-    size: filters.size === 'all' ? null : filters.size,
-    minPrice: filters.minPrice || null,
-    maxPrice: filters.maxPrice || null,
-    sortBy: filters.sortBy || 'relevance'
-  }}
-  previewCount={previewFilteredProducts.length}
-  brands={currentBrands}
-  sizes={currentSizes}
+<BottomNav
+	currentPath={page.url.pathname}
+	unreadMessageCount={notificationStore.unreadCount}
+	profileHref={'/account'}
+	isAuthenticated={!!data.user}
+  onFilterClick={() => filterDrawer.open()}
+	labels={{
+			home: i18n.nav_home(),
+			search: i18n.nav_search(),
+			sell: i18n.nav_sell(),
+			filter: 'Filter',
+			profile: i18n.nav_profile()
+	}}
 />
 
-<!-- Bottom Navigation - Hidden when filter drawer is open -->
-{#if !showFilterDrawer}
-  <BottomNav 
-    currentPath={page.url.pathname}
-    unreadMessageCount={unreadCount}
-    profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
-    isAuthenticated={!!data.user}
-    labels={{
-      home: i18n.nav_home(),
-      search: i18n.nav_search(),
-      sell: i18n.nav_sell(),
-      messages: i18n.nav_messages(),
-      profile: i18n.nav_profile()
-    }}
-  />
-{/if}
-
 <style>
-  /* Page background and common surfaces using tokens */
-  .search-page {
-    background-color: var(--surface-subtle);
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
   }
-
-  /* heading token helper */
-  .heading-lg { font-size: var(--text-lg); line-height: 1.3; }
-
-  .sticky-header {
-    background-color: var(--surface-base);
-    /* Match main page subtle divider; no heavy shadow */
-    border-bottom: 1px solid var(--border-subtle);
-    box-shadow: none;
+  .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
   }
-
-  /* Search filter button */
-  .search-filter-btn {
-    transition: all 150ms ease;
-  }
-
-  .text-primary { color: var(--color-text-primary); }
-  .text-secondary { color: var(--color-text-secondary); }
-  .tertiary { color: var(--color-text-tertiary); }
-
-
-  .load-error { color: var(--status-error-text, oklch(0.6 0.22 25)); }
-
-  .empty-icon { background-color: var(--surface-muted); }
-  .empty-icon-stroke { color: var(--color-text-tertiary); }
 </style>

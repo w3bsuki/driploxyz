@@ -1,0 +1,13 @@
+<script lang="ts">
+	import { Dialog as SheetPrimitive } from "bits-ui";
+
+	let {
+		open = $bindable(false),
+		onOpenChange,
+		children
+	}: SheetPrimitive.RootProps = $props();
+</script>
+
+<SheetPrimitive.Root bind:open {onOpenChange}>
+	{@render children?.()}
+</SheetPrimitive.Root>

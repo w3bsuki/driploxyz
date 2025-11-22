@@ -66,15 +66,8 @@ export { default as PaymentForm } from './compositions/forms/PaymentForm.svelte'
 export { default as CheckoutSummary } from './compositions/business/CheckoutSummary.svelte';
 
 // Filter components
-export { default as FilterPill } from './compositions/product/FilterPill.svelte';
-export { default as FilterPillGroup } from './compositions/product/FilterPillGroup.svelte';
 export { default as CategoryPill } from './primitives/pill/CategoryPill.svelte';
-export { default as CategoryFilterDropdown } from './compositions/product/CategoryFilterDropdown.svelte';
-export { default as FilterModal } from './compositions/product/FilterModal.svelte';
-export { default as StickyFilterModal } from './compositions/product/StickyFilterModal.svelte';
-export { default as AppliedFilters } from './compositions/product/AppliedFilters.svelte';
-export { default as AppliedFilterPills } from './compositions/product/AppliedFilterPills.svelte';
-export { default as FilterResultsAnnouncer } from './compositions/product/FilterResultsAnnouncer.svelte';
+
 
 // Rating components
 export { default as RatingModal } from './compositions/modals/RatingModal.svelte';
@@ -317,8 +310,7 @@ export { default as SearchBarSimple } from './compositions/navigation/SearchBarS
 // Mobile-first filter and browse components
 export { default as FilterDrawer } from './compositions/product/FilterDrawer.svelte';
 export { default as CategorySideDrawer } from './compositions/navigation/CategorySideDrawer.svelte';
-export { default as CategoryPills } from './compositions/product/CategoryPills.svelte';
 
 // Legacy components (kept for backwards compatibility)
 export { default as CategoryBrowseSheet } from './compositions/navigation/CategoryBrowseSheet.svelte';
-export { default as QuickConditionPills } from './compositions/product/QuickConditionPills.svelte';
+

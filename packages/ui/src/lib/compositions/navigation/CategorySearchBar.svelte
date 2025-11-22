@@ -2,7 +2,6 @@
 import SearchInput from '../../compositions/forms/SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
 import CategoryPill from '../../primitives/pill/CategoryPill.svelte';
-import AppliedFilterPills from '../../compositions/product/AppliedFilterPills.svelte';
 import { buildCategoryBreadcrumbs, type CategoryBreadcrumbItem } from '../../search/utils.js';
 import type {
   CategoryWithChildren,
@@ -302,21 +301,7 @@ const activeFilterCount = $derived.by(() => {
     <!-- Applied Filters with Enhanced Category Display -->
     {#if activeFilterCount > 0}
       <div class="pb-2">
-        <AppliedFilterPills
-          filters={appliedFilters || {}}
-          categoryLabels={{
-            women: i18n.category_women ? i18n.category_women() : 'Women',
-            men: i18n.category_men ? i18n.category_men() : 'Men',
-            kids: i18n.category_kids ? i18n.category_kids() : 'Kids',
-            unisex: i18n.category_unisex ? i18n.category_unisex() : 'Unisex'
-          }}
-          onRemoveFilter={onFilterRemove}
-          onClearAll={onClearAllFilters}
-          clearAllLabel={i18n.filter_clearAll ? i18n.filter_clearAll() : 'Clear All'}
-          class="justify-start"
-          maxDisplay={5}
-          showMore={false}
-        />
+        <!-- AppliedFilterPills removed as part of refactor -->
       </div>
     {/if}
   </div>

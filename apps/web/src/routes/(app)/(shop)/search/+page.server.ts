@@ -7,7 +7,6 @@ import { withTimeout } from '$lib/server/utils';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
-// Type for search_products RPC result
 interface SearchProductResult {
   id: string;
   title: string;
@@ -62,18 +61,11 @@ interface CategoryHierarchyL1 {
   level2: Record<string, CategoryHierarchyL2>;
 }
 
-// Note: resolveCategoryIds function removed as search_products RPC
-// now handles category filtering internally via filter_category parameter
-
-/**
- * Build simple category hierarchy for UI
- */
 function buildCategoryHierarchy(categories: Category[]): Record<string, CategoryHierarchyL1> {
   const hierarchy: Record<string, CategoryHierarchyL1> = {};
   const level1Map = new Map<string, CategoryHierarchyL1>();
   const level2Map = new Map<string, CategoryHierarchyL2>();
 
-  // Build level 1 categories
   categories.filter(c => c.level === 1 && c.is_active).forEach(l1 => {
     const l1Data = {
       id: l1.id,
@@ -85,7 +77,6 @@ function buildCategoryHierarchy(categories: Category[]): Record<string, Category
     level1Map.set(l1.id, l1Data);
   });
 
-  // Build level 2 categories
   categories.filter(c => c.level === 2 && c.is_active).forEach(l2 => {
     const parent = level1Map.get(l2.parent_id!);
     if (parent) {
@@ -101,7 +92,6 @@ function buildCategoryHierarchy(categories: Category[]): Record<string, Category
     }
   });
 
-  // Build level 3 categories
   categories.filter(c => c.level === 3 && c.is_active).forEach(l3 => {
     const parent = level2Map.get(l3.parent_id!);
     if (parent) {
@@ -118,21 +108,14 @@ function buildCategoryHierarchy(categories: Category[]): Record<string, Category
 }
 
 export const load = (async ({ url, locals, setHeaders, depends }) => {
-  // Country filtering is now handled by the search_products RPC function
-  // which uses the country_code column internally
-  // const country = locals.country || 'BG';
-
-  // Mark dependencies for intelligent invalidation
   depends('app:search');
   depends('app:products');
   depends('app:categories');
   
-  // Check if this is a legacy category hierarchy pattern in search
   const searchParams = url.searchParams;
   const hasLegacyCategoryParams = searchParams.has('category') && (searchParams.has('subcategory') || searchParams.has('specific'));
   
   if (hasLegacyCategoryParams) {
-    // Convert to new hierarchical route
     const result = searchParamsToSegments(searchParams);
     if (result.needsRedirect && result.canonicalPath) {
       const newUrl = result.canonicalPath + (result.searchParams.toString() ? `?${result.searchParams.toString()}` : '');
@@ -140,15 +123,12 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     }
   }
   
-  // Handle other legacy URL parameters and redirect if needed
   const urlResult = canonicalizeFilterUrl(url);
   if (urlResult.needsRedirect) {
     const canonicalUrl = buildCanonicalUrl(url, urlResult.canonical);
     redirect(301, canonicalUrl);
   }
   
-  // Optimize cache headers for search pages - user-specific but cacheable for short periods
-  // Search results are user-agnostic but contain filtering data that changes frequently
   const { user } = await locals.safeGetSession();
   setHeaders({
     'cache-control': user ? 'private, max-age=120, stale-while-revalidate=600' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
@@ -156,25 +136,16 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     'x-cache-strategy': 'search-page'
   });
   
-  // Parse all URL parameters with performance optimizations
   const query = url.searchParams.get('q') || '';
   const page = parseInt(url.searchParams.get('page') || '1', 10);
-  // Cursor-based pagination not used with RPC - using offset-based instead
-  // const cursor = url.searchParams.get('cursor');
-  const pageSize = 50; // Reasonable page size
+  const pageSize = 50;
 
-  // Performance tracking
   const startTime = Date.now();
   
-  // Category hierarchy parameters - canonical names only
-  // Level 1: Gender (women/men/kids/unisex)
   const category = url.searchParams.get('category') || '';
-  // Level 2: Product Type (clothing/shoes/bags/accessories)
   const subcategory = url.searchParams.get('subcategory') || '';
-  // Level 3: Specific Item (t-shirts/dresses/sneakers/etc)
   const specific = url.searchParams.get('specific') || '';
   
-  // Other filters
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -183,14 +154,11 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
   const sortBy = url.searchParams.get('sort') || 'relevance';
 
   try {
-    // Check if Supabase client is available
     if (!locals.supabase) {
       throw new Error('Supabase client not initialized');
     }
 
-    // Simple parallel queries for categories and filtering
-    const [categoriesResult, categoryCountsResult] = await Promise.all([
-      // Query 1: Fetch all categories for hierarchy
+    const [categoriesResult, categoryCountsResult, topSellersResult] = await Promise.all([
       withTimeout(
         locals.supabase
           .from('categories')
@@ -201,10 +169,18 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         2000,
         { data: [], error: null, count: null, status: 200, statusText: 'OK' }
       ),
-
-      // Query 2: Get virtual category counts (simplified replacement)
       withTimeout(
         locals.supabase.rpc('get_virtual_category_counts'),
+        2000,
+        { data: [], error: null, count: null, status: 200, statusText: 'OK' }
+      ),
+      withTimeout(
+        locals.supabase
+          .from('profiles')
+          .select('id, username, full_name, avatar_url, rating, sales_count')
+          .gt('sales_count', 0)
+          .order('sales_count', { ascending: false })
+          .limit(10),
         2000,
         { data: [], error: null, count: null, status: 200, statusText: 'OK' }
       )
@@ -212,8 +188,8 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
 
     const { data: allCategories } = categoriesResult;
     const { data: categoryCountsData } = categoryCountsResult;
+    const { data: topSellers } = topSellersResult;
 
-    // Resolve category slug for RPC function
     let categorySlug: string | null = null;
     if (specific && specific !== 'all') {
       categorySlug = specific;
@@ -223,42 +199,60 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       categorySlug = category;
     }
 
-    // ✅ OPTIMIZED: Using search_products RPC with full-text search
-    // Performance: 10-100x faster than ILIKE queries
-    // - GIN index on tsvector for instant lookups
-    // - Weighted search: title(A) > brand(B) > description(C) > condition(D)
-    // - ts_rank_cd relevance scoring when query provided
-    // - Single query replaces multiple ILIKE filters
     const offset = (page - 1) * pageSize;
     
-    // Call the RPC function - using type assertion since it's not in generated types yet
-    const rpcResponse = await (locals.supabase.rpc as any)('search_products', {
-      query_text: query?.trim() || '',
-      filter_category: categorySlug,
-      min_price: minPrice ? parseFloat(minPrice) : null,
-      max_price: maxPrice ? parseFloat(maxPrice) : null,
-      filter_size: size && size !== 'all' ? size : null,
-      filter_condition: condition && condition !== 'all' ? condition : null,
-      filter_brand: brand && brand !== 'all' ? brand : null,
-      result_limit: pageSize,
-      result_offset: offset,
-      filter_country_code: locals.country || 'BG'
-    });
-    
-    const searchResults = rpcResponse.data as SearchProductResult[] | null;
-    const productsError = rpcResponse.error;
+    let searchResults: SearchProductResult[] | null = null;
+    let productsError: any = null;
 
-    // Transform RPC results to match the expected format
-    // The RPC returns flat results, we need to enrich with profile data
+    try {
+      const rpcResponse = await (locals.supabase.rpc as any)('search_products', {
+        query_text: query?.trim() || '',
+        filter_category: categorySlug,
+        min_price: minPrice ? parseFloat(minPrice) : null,
+        max_price: maxPrice ? parseFloat(maxPrice) : null,
+        filter_size: size && size !== 'all' ? size : null,
+        filter_condition: condition && condition !== 'all' ? condition : null,
+        filter_brand: brand && brand !== 'all' ? brand : null,
+        result_limit: pageSize,
+        result_offset: offset,
+        filter_country_code: locals.country || 'BG'
+      });
+      
+      searchResults = rpcResponse.data as SearchProductResult[] | null;
+      productsError = rpcResponse.error;
+    } catch (rpcErr) {
+      console.error('RPC search failed, falling back to standard query:', rpcErr);
+      let queryBuilder = locals.supabase
+        .from('products')
+        .select('id, title, description, price, category, brand, condition, size, images, created_at, seller_id, slug, location, country_code')
+        .eq('status', 'active')
+        .range(offset, offset + pageSize - 1);
+
+      if (query) {
+        queryBuilder = queryBuilder.ilike('title', `%${query}%`);
+      }
+      
+      const fallbackRes = await queryBuilder;
+      if (fallbackRes.data) {
+        searchResults = fallbackRes.data.map(p => ({
+          ...(p as any),
+          relevance_rank: 0,
+          category_id: undefined,
+          profiles: null,
+          product_images: [],
+          categories: null
+        })) as unknown as SearchProductResult[];
+      }
+      productsError = fallbackRes.error;
+    }
+
     let products: SearchProductResult[] = searchResults || [];
     let count: number | null = null;
 
-    // If we have results, fetch additional data (profiles) in parallel
     if (products.length > 0) {
       const productIds = products.map(p => p.id);
       const sellerIds = products.map(p => p.seller_id);
 
-      // Fetch profiles and images in parallel
       const [profilesResult, imagesResult] = await Promise.all([
         locals.supabase
           .from('profiles')
@@ -289,7 +283,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         imagesMap.get(img.product_id)!.push(img.image_url);
       });
 
-      // Build lookups for category resolution
       const categoryById = new Map<string, Category>();
       (allCategories || []).forEach((cat: Category) => categoryById.set(cat.id, cat));
       const categoryByName = new Map<string, Category>();
@@ -297,18 +290,15 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       const categoryBySlug = new Map<string, Category>();
       (allCategories || []).forEach((cat: Category) => categoryBySlug.set(cat.slug.trim().toLowerCase(), cat));
 
-      // Enrich products with profile and image data + proper category hierarchy
       products = products.map(product => {
         const profile = profilesMap.get(product.seller_id);
         const images = imagesMap.get(product.id) || [];
         
-        // Resolve category hierarchy safely
         let resolvedMain: string | null = null;
         let resolvedSub: string | null = null;
         let resolvedSpecific: string | null = null;
         let resolvedCategoryNode: Category | null = null;
 
-        // Try to resolve by provided categories field first (if RPC returns it)
         const rpcCategory = (product as any).categories as { id: string; name: string; slug: string; parent_id: string | null; level: number } | null | undefined;
         if (rpcCategory?.id && categoryById.has(rpcCategory.id)) {
           resolvedCategoryNode = categoryById.get(rpcCategory.id)!;
@@ -317,13 +307,11 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
           if (maybe) resolvedCategoryNode = maybe;
         }
 
-        // If still unknown, attempt name-based resolution from product.category string
         if (!resolvedCategoryNode && product.category) {
           const maybe = categoryByName.get(product.category.trim().toLowerCase());
           if (maybe) resolvedCategoryNode = maybe;
         }
 
-        // If we have a node, walk up to construct L1/L2/L3 names
         if (resolvedCategoryNode) {
           const node = resolvedCategoryNode;
           if (node.level === 3) {
@@ -342,7 +330,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
             resolvedMain = node.name;
           }
         } else if (categorySlug) {
-          // Fallback: resolve by current filter slug when available
           const maybe = categoryBySlug.get(categorySlug.trim().toLowerCase());
           if (maybe) {
             if (maybe.level === 1) resolvedMain = maybe.name;
@@ -359,7 +346,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
           ...product,
           profiles: profile || null,
           product_images: images.map(url => ({ image_url: url })),
-          // Parse images JSON from RPC if it exists
           images: product.images || images,
           categories: resolvedCategoryNode ? {
             id: resolvedCategoryNode.id,
@@ -368,15 +354,12 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
             parent_id: resolvedCategoryNode.parent_id,
             level: resolvedCategoryNode.level
           } : null,
-          // Attach resolved names for later mapping
           main_category_name_resolved: resolvedMain,
           subcategory_name_resolved: resolvedSub,
           specific_category_name_resolved: resolvedSpecific
         } as any;
       });
 
-      // For count, we'll need to run a separate count query
-      // or accept that we don't have exact counts (common for large datasets)
       count = products.length === pageSize ? (page * pageSize) + 1 : products.length;
     }
 
@@ -403,15 +386,10 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       };
     }
 
-    // Build simple 3-level hierarchy for UI
     const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
-    // Category hierarchy built successfully
-
-    // Get Level 1 categories for pills
     const level1Categories = allCategories?.filter(c => c.level === 1) || [];
     
-    // Sort by predefined order
     const categoryOrder = ['Women', 'Men', 'Kids', 'Unisex'];
     const sortedCategories = level1Categories.sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a.name);
@@ -422,7 +400,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       return aIndex - bIndex;
     });
 
-    // Optimized product transformation using efficient lookups
     const categoryLookup = new Map<string, Category>();
     allCategories?.forEach(cat => categoryLookup.set(cat.id, cat));
 
@@ -464,20 +441,16 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
           avatar_url: product.profiles.avatar_url,
           account_type: product.profiles.account_type
         } : null,
-        // Preserve seller username for URL generation
         seller_username: product.profiles?.username || null,
         category: product.categories || null,
-        // Only use resolved category hierarchy - never fallback to product.category for main_category_name
         main_category_name: mainCategoryName || null,
-        category_name: specificCategoryName || subcategoryName || mainCategoryName || null, // For display
+        category_name: specificCategoryName || subcategoryName || mainCategoryName || null,
         subcategory_name: subcategoryName || null,
         specific_category_name: specificCategoryName || null,
-        // Include relevance rank from full-text search if query was provided
         relevance_rank: product.relevance_rank || null
       };
     });
 
-    // Build virtual category product counts from the new function
     const categoryProductCounts: Record<string, number> = {};
     if (categoryCountsData) {
       categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
@@ -485,38 +458,28 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       });
     }
 
-    // Generate next cursor for pagination (using last product's created_at + id)
     const nextCursor = transformedProducts.length === pageSize && transformedProducts.length > 0
       ? Buffer.from(`${transformedProducts[transformedProducts.length - 1]?.created_at}:${transformedProducts[transformedProducts.length - 1]?.id}`).toString('base64')
       : null;
 
-    // SvelteKit 2 streaming: Return critical data immediately, stream heavy data
     return {
-      // Critical data for immediate render
       searchQuery: query,
       currentPage: page,
       pageSize,
       hasMore: transformedProducts.length === pageSize,
       nextCursor,
-
-      // Essential search results - load immediately
       products: transformedProducts,
-
-      // UI structure data - needed for layout
       categories: sortedCategories,
-
-      // Stream heavy computed data
+      topSellers: topSellers || [],
+      topBrands: [],
       categoryHierarchy: Promise.resolve().then(async () => {
         await new Promise(resolve => setTimeout(resolve, 0));
         return categoryHierarchy;
       }),
-
       categoryProductCounts: Promise.resolve().then(async () => {
         await new Promise(resolve => setTimeout(resolve, 0));
         return categoryProductCounts;
       }),
-
-      // Performance and metadata
       total: count || 0,
       filters: {
         category: category,
@@ -529,13 +492,11 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         size,
         sortBy
       },
-
-      // Performance metrics
       _performance: Promise.resolve().then(() => ({
         loadTime: Date.now() - startTime,
         queryType: query ? 'search' : 'browse',
         resultCount: transformedProducts.length,
-        cacheStatus: 'fresh' // Will be updated by cache layer
+        cacheStatus: 'fresh'
       }))
     };
 

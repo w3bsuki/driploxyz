@@ -5,7 +5,6 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { onMount, onDestroy } from 'svelte';
 
   interface Props {
     src: string;
@@ -140,19 +139,19 @@
   };
 
   // Component lifecycle
-  onMount(() => {
+  $effect(() => {
     if (priority) {
       // For critical images, load immediately
       isIntersecting = true;
     } else {
       setupIntersectionObserver();
     }
-  });
 
-  onDestroy(() => {
-    if (intersectionObserver) {
-      intersectionObserver.disconnect();
-    }
+    return () => {
+      if (intersectionObserver) {
+        intersectionObserver.disconnect();
+      }
+    };
   });
 
   // Compute container styles

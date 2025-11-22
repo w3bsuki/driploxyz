@@ -21,7 +21,6 @@ export { default as PricingCard } from './components/cards/PricingCard.svelte';
 export { default as BottomNav } from './components/navigation/BottomNav.svelte';
 export { default as CategoryPill } from './components/navigation/CategoryPill.svelte';
 export { default as SearchDropdown } from './components/navigation/SearchDropdown.svelte';
-export { default as AppliedFilterPills } from './components/navigation/AppliedFilterPills.svelte';
 
 // Form & Input Components
 export { default as Accordion } from './components/ui/Accordion.svelte';
@@ -76,7 +75,6 @@ export const SearchPageComponents = {
   ProductCard: () => import('./components/cards/ProductCard.svelte'),
   SearchDropdown: () => import('./components/navigation/SearchDropdown.svelte'),
   CategoryPill: () => import('./components/navigation/CategoryPill.svelte'),
-  AppliedFilterPills: () => import('./components/navigation/AppliedFilterPills.svelte'),
   ProductCardSkeleton: () => import('./skeleton/ProductCardSkeleton.svelte'),
   BottomNav: () => import('./components/navigation/BottomNav.svelte')
 };

@@ -288,13 +288,6 @@ export function getNotificationStore() {
 // Export the global store instance
 export const notificationStore = getNotificationStore();
 
-// Export reactive values directly from the rune-based store
-export const notifications = notificationStore.notifications;
-export const messageToasts = notificationStore.messageToasts;
-export const notificationPanelOpen = notificationStore.notificationPanelOpen;
-export const unreadNotifications = notificationStore.unreadNotifications;
-export const unreadCount = notificationStore.unreadCount;
-
 // Export actions and utilities
 export const notificationActions = notificationStore.notificationActions;
 export const messageToastActions = notificationStore.messageToastActions;

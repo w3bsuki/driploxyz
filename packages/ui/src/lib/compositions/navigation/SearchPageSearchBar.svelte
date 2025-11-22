@@ -2,7 +2,6 @@
 import SearchInput from '../../compositions/forms/SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
 import CategoryPill from '../../primitives/pill/CategoryPill.svelte';
-import AppliedFilterPills from '../../compositions/product/AppliedFilterPills.svelte';
 import {
   buildCategoryBreadcrumbs,
   flattenCategoryHierarchy,
@@ -682,11 +681,7 @@ function getSubcategoryIcon(name: string): string {
     <!-- Applied Filters -->
     {#if appliedFilters && Object.keys(appliedFilters).length > 0}
       <div class="pb-2">
-        <AppliedFilterPills
-          filters={appliedFilters}
-          onRemoveFilter={onFilterRemove}
-          onClearAll={onClearAllFilters}
-        />
+        <!-- AppliedFilterPills removed as part of refactor -->
       </div>
     {/if}
   </div>

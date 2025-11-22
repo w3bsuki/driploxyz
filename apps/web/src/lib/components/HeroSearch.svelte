@@ -23,22 +23,13 @@
   }: Props = $props();
   
   let selectedCategoryIndex = $state(-1);
+  let categoryButtons: HTMLButtonElement[] = $state([]);
+  let viewAllButton: HTMLButtonElement | undefined = $state();
 
   function navigateToCategory(categorySlug: string) {
     goto(`/category/${categorySlug}`);
   }
-
-  async function prefetchCategory(categorySlug: string) {
-    const path = `/category/${categorySlug}`;
-    try {
-      await preloadCode(path);
-      // Start data preload on interaction; it will be cached if user navigates
-      preloadData(path).catch(() => {});
-    } catch {
-      // ignore
-    }
-  }
-  
+// ...existing code...
   function handleKeyNavigation(e: KeyboardEvent, index: number) {
     switch(e.key) {
       case 'ArrowRight':
@@ -61,9 +52,11 @@
         break;
     }
     
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[role="group"] button');
-  const nextBtn = buttons.item(selectedCategoryIndex + 1);
-  nextBtn?.focus();
+    if (selectedCategoryIndex === -1) {
+      viewAllButton?.focus();
+    } else {
+      categoryButtons[selectedCategoryIndex]?.focus();
+    }
   }
 </script>
 
@@ -103,6 +96,7 @@
       class="flex gap-1.5 overflow-x-auto scrollbarhide -mx-4 px-4 sm:mx-0 sm:px-0 sm:gap-3"
     >
       <button 
+        bind:this={viewAllButton}
         onmouseenter={() => preloadCode('/search')}
         ontouchstart={() => preloadCode('/search')}
         onclick={() => goto('/search')}
@@ -114,6 +108,7 @@
       </button>
       {#each categories as category, i}
         <button 
+          bind:this={categoryButtons[i]}
           onmouseenter={() => prefetchCategory(category.slug)}
           ontouchstart={() => prefetchCategory(category.slug)}
           onclick={() => navigateToCategory(category.slug)}

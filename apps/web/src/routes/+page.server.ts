@@ -45,21 +45,36 @@ export const load = (async ({ url, locals, depends }) => {
   const { session: _session, user } = await safeGetSession();
 
   try {
-    // Fetch featured products (active products, ordered by creation date)
-    const { data: products, error: productsError } = await supabase
-      .from('products')
-      .select(`*, product_images ( image_url, sort_order )`)
-      .eq('is_active', true)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(12);
+    // Fetch data in parallel
+    const [productsResult, categoriesResult, topSellersResult] = await Promise.all([
+      // Fetch featured products (active products, ordered by creation date)
+      supabase
+        .from('products')
+        .select(`*, product_images ( image_url, sort_order )`)
+        .eq('is_active', true)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(12),
 
-    // Fetch categories
-    const { data: categories, error: categoriesError } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true });
+      // Fetch categories
+      supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true }),
+
+      // Fetch top sellers (profiles with sales)
+      supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url, rating, sales_count')
+        .gt('sales_count', 0)
+        .order('sales_count', { ascending: false })
+        .limit(6)
+    ]);
+
+    const { data: products, error: productsError } = productsResult;
+    const { data: categories, error: categoriesError } = categoriesResult;
+    const { data: topSellers, error: sellersError } = topSellersResult;
 
     const categoryLookup = new Map<string, Category>();
     (categories ?? []).forEach((category) => {
@@ -103,14 +118,6 @@ export const load = (async ({ url, locals, depends }) => {
 
       return { main, sub, specific };
     };
-
-    // Fetch top sellers (profiles with sales)
-    const { data: topSellers, error: sellersError } = await supabase
-      .from('profiles')
-      .select('id, username, full_name, avatar_url, rating, sales_count')
-      .gt('sales_count', 0)
-      .order('sales_count', { ascending: false })
-      .limit(6);
 
     // Transform products to include images array and required UI fields
     const featuredProducts: Product[] = (products || []).map((product: any) => {

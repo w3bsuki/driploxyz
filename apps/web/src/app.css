@@ -275,7 +275,6 @@
   /* Ensure interactive elements are always clickable */
   button, input, textarea, select, [role="button"], [tabindex] {
     pointer-events: auto !important;
-    z-index: auto !important;
   }
 
   /* Fix potential overlay issues */
@@ -285,6 +284,17 @@
 
   .overlay-root > *, #overlay-root > * {
     pointer-events: auto;
+  }
+  
+  /* Ensure dialog overlays work properly - CRITICAL for modals/drawers */
+  [role="dialog"],
+  [data-state="open"][role="dialog"] {
+    z-index: 9999 !important;
+  }
+  
+  [role="dialog"] > [data-overlay],
+  [data-state="open"] > [data-overlay] {
+    z-index: 9998 !important;
   }
   
   /* Safe area padding for iOS */

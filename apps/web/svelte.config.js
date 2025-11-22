@@ -6,10 +6,6 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
   preprocess: vitePreprocess(),
 
-  compilerOptions: {
-    runes: true
-  },
-
   kit: {
     // Use lightweight adapter locally; switch to Vercel adapter only in Vercel or when explicitly requested
     adapter: (process.env.DEPLOY_TARGET === 'vercel' || process.env.VERCEL === '1')
