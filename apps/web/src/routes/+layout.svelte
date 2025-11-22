@@ -29,6 +29,7 @@
   import * as i18n from '@repo/i18n';
   import type { LanguageTag } from '@repo/i18n';
   import type { Snippet } from 'svelte';
+  import { performSearch, performQuickSearch } from '$lib/utils/search';
   
   let headerContainer: HTMLDivElement | null = $state(null);
 
@@ -262,26 +263,26 @@
 
     // Fallback to basic categories if database is empty
     return [
-      { key: 'women', label: i18n.category_women(), icon: 'ðŸ‘—', slug: 'women', name: i18n.category_women(), product_count: 0 },
-      { key: 'men', label: i18n.category_men(), icon: 'ðŸ‘”', slug: 'men', name: i18n.category_men(), product_count: 0 },
-      { key: 'kids', label: i18n.category_kids(), icon: 'ðŸ‘¶', slug: 'kids', name: i18n.category_kids(), product_count: 0 },
-      { key: 'unisex', label: i18n.category_unisex(), icon: 'ðŸŒ', slug: 'unisex', name: i18n.category_unisex(), product_count: 0 }
+      { key: 'women', label: i18n.category_women(), icon: '👗', slug: 'women', name: i18n.category_women(), product_count: 0 },
+      { key: 'men', label: i18n.category_men(), icon: '👔', slug: 'men', name: i18n.category_men(), product_count: 0 },
+      { key: 'kids', label: i18n.category_kids(), icon: '👶', slug: 'kids', name: i18n.category_kids(), product_count: 0 },
+      { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', slug: 'unisex', name: i18n.category_unisex(), product_count: 0 }
     ];
   });
 
   // Helper function to get icon for category
   function getIconForCategory(slug: string): string {
     const iconMap: Record<string, string> = {
-      'women': 'ðŸ‘—',
-      'men': 'ðŸ‘”',
-      'kids': 'ðŸ‘¶',
-      'unisex': 'ðŸŒ',
-      'clothing': 'ðŸ‘•',
-      'shoes': 'ðŸ‘Ÿ',
-      'bags': 'ðŸ‘œ',
-      'accessories': 'ðŸ’'
+      'women': '👗',
+      'men': '👔',
+      'kids': '👶',
+      'unisex': '🌍',
+      'clothing': '👕',
+      'shoes': '👞',
+      'bags': '👜',
+      'accessories': '💍'
     };
-    return iconMap[slug] || 'ðŸ“';
+    return iconMap[slug] || '📂';
   }
   const conditionFilters = [
     { key: 'brand_new_with_tags', value: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
@@ -290,68 +291,14 @@
     { key: 'good', value: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
   ];
 
-  // Dropdown data for search components
-  // Removed dropdown mock datasets (no longer passed to CategorySearchBar)
-
-  // Virtual categories for quick access (clothing, shoes, etc.) - unused
-  // const virtualCategories = [
-  //   {
-  //     slug: 'clothing',
-  //     name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
-  //     product_count: 145
-  //   },
-  //   {
-  //     slug: 'shoes',
-  //     name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
-  //     product_count: 89
-  //   },
-  //   {
-  //     slug: 'bags',
-  //     name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
-  //     product_count: 67
-  //   },
-  //   {
-  //     slug: 'accessories',
-  //     name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
-  //     product_count: 123
-  //   }
-  // ];
-
   // Quick search for dropdown results in the shared sticky bar
   async function handleStickyQuickSearch(query: string): Promise<{ data: any[]; error: string | null }> {
-    if (!query?.trim() || !supabase) {
-      return { data: [], error: null };
-    }
-
-    try {
-      const { data: searchResults, error: searchError } = await supabase
-        .rpc('search_products_fast', {
-          query_text: query.trim(),
-          result_limit: 6
-        });
-
-      if (searchError) {
-        console.error('Search error:', searchError);
-        return { data: [], error: searchError.message };
-      }
-
-      // Transform data to match SearchDropdown expected format
-      const transformed = (searchResults || []).map((result: any) => ({
-        ...result,
-        images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
-      }));
-
-      return { data: transformed, error: null };
-    } catch (err) {
-      console.error('Search failed:', err);
-      return { data: [], error: 'Search failed' };
-    }
+    return performQuickSearch(supabase, query);
   }
 
   // Handlers for sticky search bar - using SvelteKit navigation
   async function handleStickySearch(query: string) {
-    if (!query?.trim()) return;
-    await goto(`/search?q=${encodeURIComponent(query.trim())}`);
+    performSearch(query);
   }
 
   async function handleStickyCategorySelect(slug: string) {

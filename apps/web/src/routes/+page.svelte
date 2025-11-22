@@ -10,9 +10,9 @@
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup.svelte';
 	import type { PageData } from './$types';
-	// Removed unused Seller type import
 	import { logInfo, logError } from '$lib/utils/error-logger';
 	import { createBrowserSupabaseClient } from '$lib/supabase/client';
+	import { performSearch, performQuickSearch, type QuickSearchResult } from '$lib/utils/search';
 
 	let { data }: { data: PageData } = $props();
 
@@ -47,16 +47,6 @@
 	const supabase = browser ? createBrowserSupabaseClient() : null;
 
 			// No local modal state needed; we navigate directly to seller profile
-
-	type QuickSearchResult = {
-		id: string;
-		title: string;
-		price: number;
-		images: Array<{ image_url: string }>;
-		slug?: string | null;
-		first_image_url?: string | null;
-		[key: string]: unknown;
-	};
 
 	// Main categories for navigation
 	const mainCategories = $derived(
@@ -98,43 +88,11 @@
 	}
 
 	function handleMainPageSearch(query: string) {
-		const url = new URL('/search', window.location.origin);
-		if (query.trim()) {
-			url.searchParams.set('q', query.trim());
-		}
-		goto(url.pathname + url.search);
+		performSearch(query);
 	}
 
 	async function handleMainPageQuickSearch(query: string): Promise<{ data: QuickSearchResult[]; error: string | null }> {
-		if (!query?.trim() || !supabase) {
-			return { data: [], error: null };
-		}
-
-		try {
-			const { data: searchResults, error } = await (supabase.rpc as any)(
-				'search_products_fast',
-				{
-					query_text: query.trim(),
-					result_limit: 6
-				}
-			);
-
-			if (error) {
-				logError('Main page quick search failed', new Error(error.message), { query });
-				return { data: [], error: error.message };
-			}
-
-			const normalizedResults = Array.isArray(searchResults) ? searchResults : [];
-			const transformed = normalizedResults.map((result: QuickSearchResult) => ({
-				...result,
-				images: result.first_image_url ? [{ image_url: result.first_image_url }] : []
-			}));
-
-			return { data: transformed, error: null };
-		} catch (err) {
-			logError('Main page quick search failed', err as Error, { query });
-			return { data: [], error: 'Search failed' };
-		}
+		return performQuickSearch(supabase, query);
 	}
 
 	function handleMainPageNavigateToBrand(brandName: string) {
@@ -305,8 +263,6 @@
   onNavigateToBrandsList={() => goto('/brands')}
 />
 
-<!-- Reverted: using existing quick pills under the search bar (no additional pills injected here) -->
-
 	<!-- Main Content Area -->
 	<div class="min-h-screen bg-[color:var(--surface-base)] pb-[var(--space-20)] sm:pb-0">
 		<main aria-label="Main content">
@@ -384,36 +340,36 @@
 			<!-- No products found - show call to action -->
 			<div class="px-[var(--space-2)] sm:px-[var(--space-4)] lg:px-[var(--space-6)] py-[var(--space-8)] text-center">
 				<div class="max-w-md mx-auto">
-					<div class="w-[var(--space-16)] h-[var(--space-16)] bg-[color:var(--surface-brand-subtle)] rounded-full flex items-center justify-center mx-auto mb-[var(--space-4)]">
-						<svg class="w-[var(--space-8)] h-[var(--space-8)] text-[color:var(--brand-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-[var(--space-16)] h-[var(--space-16)] bg-[var(--surface-subtle)] rounded-full flex items-center justify-center mx-auto mb-[var(--space-4)]">
+						<svg class="w-[var(--space-8)] h-[var(--space-8)] text-[var(--text-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
 						</svg>
 					</div>
-					<h3 class="text-xl font-semibold text-[color:var(--text-primary)] mb-[var(--space-2)]">Welcome to Driplo</h3>
-					<p class="text-[color:var(--text-secondary)] mb-[var(--space-6)]">
+					<h3 class="text-xl font-semibold text-[var(--text-primary)] mb-[var(--space-2)]">{i18n.welcome()}</h3>
+					<p class="text-[var(--text-secondary)] mb-[var(--space-6)]">
 						{data.user ?
-							'No products available yet. Check back soon for new listings!' :
-							'Discover amazing second-hand fashion and unique finds from sellers across Bulgaria and the UK.'
+							i18n.home_noProductsMessage() :
+							i18n.home_welcomeDescription()
 						}
 					</p>
 					<div class="space-y-[var(--space-3)]">
 						<button
 							onclick={() => goto('/search')}
-							class="w-full bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[color:var(--brand-primary)]/90 transition-colors"
+							class="w-full bg-[var(--brand-primary)] text-[var(--color-white)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[var(--brand-primary-strong)] transition-colors"
 						>
 							{i18n.home_browseAll()}
 						</button>
 						{#if data.user}
 							<button
 								onclick={handleSellClick}
-								class="w-full border border-[color:var(--border-primary)] text-[color:var(--brand-primary)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[color:var(--surface-secondary)] transition-colors"
+								class="w-full border border-[var(--border-default)] text-[var(--text-primary)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[var(--surface-subtle)] transition-colors"
 							>
 								{i18n.nav_sell()}
 							</button>
 						{:else}
 							<button
 								onclick={() => authPopupActions.showForSignUp()}
-								class="w-full border border-[color:var(--border-primary)] text-[color:var(--brand-primary)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[color:var(--surface-secondary)] transition-colors"
+								class="w-full border border-[var(--border-default)] text-[var(--text-primary)] px-[var(--space-6)] py-[var(--space-3)] rounded-[var(--radius-md)] font-medium hover:bg-[var(--surface-subtle)] transition-colors"
 							>
 								{i18n.auth_signUp()}
 							</button>
@@ -444,20 +400,20 @@
 {#if authPopupStore.state.isOpen}
 	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 		<div class="bg-white rounded-[var(--radius-lg)] p-[var(--space-6)] max-w-sm mx-[var(--space-4)]">
-			<h3 class="text-lg font-semibold mb-[var(--space-4)]">Sign In Required</h3>
-			<p class="text-[color:var(--text-secondary)] mb-[var(--space-4)]">Please sign in to continue</p>
+			<h3 class="text-lg font-semibold mb-[var(--space-4)]">{i18n.auth_signInRequired()}</h3>
+			<p class="text-[color:var(--text-secondary)] mb-[var(--space-4)]">{i18n.auth_pleaseSignIn()}</p>
 			<div class="flex gap-[var(--space-3)]">
 				<button
 					onclick={authPopupActions.close}
 					class="flex-1 px-[var(--space-4)] py-[var(--space-2)] border border-[color:var(--border-default)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)]"
 				>
-					Cancel
+					{i18n.common_cancel()}
 				</button>
 				<button
 					onclick={() => goto('/auth/signin')}
 					class="flex-1 px-[var(--space-4)] py-[var(--space-2)] bg-[color:var(--surface-inverse)] text-[color:var(--text-inverse)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-inverse)]/90"
 				>
-					Sign In
+					{i18n.auth_signIn()}
 				</button>
 			</div>
 		</div>

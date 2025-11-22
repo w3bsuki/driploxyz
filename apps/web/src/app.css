@@ -33,40 +33,40 @@
   
   /* Enhanced brand color scales - STRICT ZINC REFACTOR */
   /* Primary: Zinc (Neutral) */
-  --brand-primary-50: oklch(0.985 0 0);
-  --brand-primary-100: oklch(0.97 0 0);
-  --brand-primary-200: oklch(0.92 0 0);
-  --brand-primary-300: oklch(0.87 0 0);
-  --brand-primary-400: oklch(0.71 0 0);
-  --brand-primary-500: oklch(0.55 0 0);
-  --brand-primary-600: oklch(0.44 0 0);
-  --brand-primary-700: oklch(0.32 0 0);
-  --brand-primary-800: oklch(0.21 0 0);
-  --brand-primary-900: oklch(0.15 0 0);
+  --brand-primary-50: var(--color-zinc-50);
+  --brand-primary-100: var(--color-zinc-100);
+  --brand-primary-200: var(--color-zinc-200);
+  --brand-primary-300: var(--color-zinc-300);
+  --brand-primary-400: var(--color-zinc-500);
+  --brand-primary-500: var(--color-zinc-900);
+  --brand-primary-600: var(--color-black);
+  --brand-primary-700: var(--color-black);
+  --brand-primary-800: var(--color-black);
+  --brand-primary-900: var(--color-black);
   
   /* Secondary: Zinc (Neutral) - Aliased to Primary for strict monochrome */
-  --brand-secondary-50: oklch(0.985 0 0);
-  --brand-secondary-100: oklch(0.97 0 0);
-  --brand-secondary-200: oklch(0.92 0 0);
-  --brand-secondary-300: oklch(0.87 0 0);
-  --brand-secondary-400: oklch(0.71 0 0);
-  --brand-secondary-500: oklch(0.55 0 0);
-  --brand-secondary-600: oklch(0.44 0 0);
-  --brand-secondary-700: oklch(0.32 0 0);
-  --brand-secondary-800: oklch(0.21 0 0);
-  --brand-secondary-900: oklch(0.15 0 0);
+  --brand-secondary-50: var(--color-zinc-50);
+  --brand-secondary-100: var(--color-zinc-100);
+  --brand-secondary-200: var(--color-zinc-200);
+  --brand-secondary-300: var(--color-zinc-300);
+  --brand-secondary-400: var(--color-zinc-500);
+  --brand-secondary-500: var(--color-zinc-900);
+  --brand-secondary-600: var(--color-black);
+  --brand-secondary-700: var(--color-black);
+  --brand-secondary-800: var(--color-black);
+  --brand-secondary-900: var(--color-black);
   
   /* Accent: Zinc (Neutral) - Aliased to Primary for strict monochrome */
-  --brand-accent-50: oklch(0.985 0 0);
-  --brand-accent-100: oklch(0.97 0 0);
-  --brand-accent-200: oklch(0.92 0 0);
-  --brand-accent-300: oklch(0.87 0 0);
-  --brand-accent-400: oklch(0.71 0 0);
-  --brand-accent-500: oklch(0.55 0 0);
-  --brand-accent-600: oklch(0.44 0 0);
-  --brand-accent-700: oklch(0.32 0 0);
-  --brand-accent-800: oklch(0.21 0 0);
-  --brand-accent-900: oklch(0.15 0 0);
+  --brand-accent-50: var(--color-zinc-50);
+  --brand-accent-100: var(--color-zinc-100);
+  --brand-accent-200: var(--color-zinc-200);
+  --brand-accent-300: var(--color-zinc-300);
+  --brand-accent-400: var(--color-zinc-500);
+  --brand-accent-500: var(--color-zinc-900);
+  --brand-accent-600: var(--color-black);
+  --brand-accent-700: var(--color-black);
+  --brand-accent-800: var(--color-black);
+  --brand-accent-900: var(--color-black);
 
   /* Base brand variables overrides */
   --brand-primary: var(--brand-primary-600);

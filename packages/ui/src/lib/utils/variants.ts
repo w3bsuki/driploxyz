@@ -67,7 +67,7 @@ export const buttonVariants = createVariants({
   variants: {
     variant: {
       primary:
-        'bg-text-primary text-text-inverse shadow-sm hover:opacity-90 active:opacity-80',
+        'bg-zinc-900 text-white shadow-sm hover:opacity-90 active:opacity-80',
       secondary:
         'bg-surface-muted text-text-primary border border-border-default hover:bg-surface-emphasis active:bg-surface-subtle',
       outline:
@@ -116,7 +116,11 @@ export const badgeVariants = createVariants({
       error:
         'bg-zinc-100 text-zinc-900 border-zinc-200',
       info:
-        'bg-zinc-100 text-zinc-900 border-zinc-200'
+        'bg-zinc-100 text-zinc-900 border-zinc-200',
+      outline:
+        'border border-zinc-200 text-zinc-900 hover:bg-zinc-50',
+      subtle:
+        'bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
     },
     size: {
       sm: 'px-[length:calc(var(--badge-padding-x)*0.75)] py-[length:calc(var(--badge-padding-y)*0.75)] text-[length:calc(var(--badge-font)*0.85)]',

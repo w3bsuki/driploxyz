@@ -1,8 +1,5 @@
 <script lang="ts">
   import { Button, Input } from '@repo/ui';
-  // TODO: Implement these services
-  // import { PayoutService } from '@repo/core/services/payouts';
-  // import { TransactionService } from '@repo/core/services/transactions';
 
   // Placeholder services for now
   class PayoutService {

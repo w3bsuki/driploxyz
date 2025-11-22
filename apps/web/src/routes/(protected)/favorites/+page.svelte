@@ -253,15 +253,6 @@
                 </button>
               {/if}
             </div>
-            
-            <!-- Price Drop Badge -->
-            {#if false && (product as any).originalPrice && (product as any).originalPrice > product.price}
-              <div class="absolute bottom-14 left-2">
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  -{Math.round((1 - product.price / (product as any).originalPrice) * 100)}%
-                </span>
-              </div>
-            {/if}
           </div>
         {/each}
       </div>

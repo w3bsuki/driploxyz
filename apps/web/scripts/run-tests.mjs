@@ -112,8 +112,8 @@ function buildCommand() {
   }
   
   // Add positional arguments
-  if (args.positional.length > 0) {
-    command += ` ${args.positional.join(' ')}`;
+  if (args.positionals.length > 0) {
+    command += ` ${args.positionals.join(' ')}`;
   }
   
   return command;

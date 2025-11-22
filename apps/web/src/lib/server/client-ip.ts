@@ -28,7 +28,7 @@ export function getOrSetClientIp(event: RequestEvent): string {
     const ip = event.getClientAddress()
     event.locals.clientIp = ip
     return ip
-  } catch (err) {
+  } catch {
     // In prerender or certain adapters, getClientAddress may be unavailable
     const fallback = dev ? '127.0.0.1' : ''
     event.locals.clientIp = fallback

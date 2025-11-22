@@ -12,32 +12,32 @@
 :root {
   /* Surface colors */
   --surface-base: var(--color-white);
-  --surface-elevated: var(--color-gray-50);
+  --surface-elevated: var(--color-zinc-50);
   --surface-overlay: var(--color-white);
-  --surface-muted: var(--color-gray-100);
+  --surface-muted: var(--color-zinc-100);
 
   /* Text colors */
-  --text-primary: var(--color-gray-900);
-  --text-secondary: var(--color-gray-600);
-  --text-muted: var(--color-gray-500);
+  --text-primary: var(--color-zinc-900);
+  --text-secondary: var(--color-zinc-600);
+  --text-muted: var(--color-zinc-500);
   --text-inverse: var(--color-white);
 
   /* Border colors */
-  --border-subtle: var(--color-gray-200);
-  --border-default: var(--color-gray-300);
-  --border-emphasis: var(--color-gray-400);
+  --border-subtle: var(--color-zinc-200);
+  --border-default: var(--color-zinc-300);
+  --border-emphasis: var(--color-zinc-400);
 
   /* Interactive colors */
-  --interactive-primary: var(--color-sky-600);
-  --interactive-primary-hover: var(--color-sky-700);
-  --interactive-secondary: var(--color-cyan-600);
-  --interactive-secondary-hover: var(--color-cyan-700);
+  --interactive-primary: var(--color-zinc-900);
+  --interactive-primary-hover: var(--color-black);
+  --interactive-secondary: var(--color-zinc-700);
+  --interactive-secondary-hover: var(--color-zinc-800);
 
   /* State colors */
   --state-success: var(--color-green-600);
   --state-warning: var(--color-amber-600);
   --state-error: var(--color-red-600);
-  --state-info: var(--color-blue-600);
+  --state-info: var(--color-zinc-600);
 
   /* Component sizing */
   --height-input: 44px;
