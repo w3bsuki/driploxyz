@@ -205,7 +205,7 @@
             onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
             class={[
               'inline-flex items-center justify-center',
-              'h-[length:var(--touch-primary)] w-[length:var(--touch-primary)] -ml-2',
+              'h-11 w-11 -ml-2',
               'rounded-[length:var(--radius-md)]',
               'text-text-secondary hover:text-text-primary hover:bg-surface-subtle',
               'transition-colors',
@@ -237,7 +237,7 @@
             }}
             class={[
               'inline-flex items-center justify-center',
-              'h-9 w-9',
+              'h-10 w-10',
               'rounded-[length:var(--radius-md)]',
               'text-text-secondary hover:text-text-brand hover:bg-surface-subtle',
               'transition-colors',
@@ -298,7 +298,7 @@
               onclick={async () => await goto('/login')}
               class={[
                 'inline-flex items-center justify-center',
-                'h-9 px-4',
+                'h-10 px-4',
                 'rounded-[length:var(--radius-md)]',
                 'bg-brand text-white font-medium text-sm',
                 'hover:bg-brand-dark transition-colors',

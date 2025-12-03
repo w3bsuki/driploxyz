@@ -8,21 +8,21 @@
 
 <div class="product-card-skeleton {className}" role="status" aria-label="Loading product...">
   <!-- Image skeleton -->
-  <div class="relative aspect-square bg-[color:var(--surface-emphasis)] rounded-lg shimmer"></div>
+  <div class="relative aspect-square bg-[color:var(--color-surface-emphasis)] rounded-lg shimmer"></div>
 
   <!-- Content skeleton -->
   <div class="pt-2 space-y-0.5">
     <!-- Brand -->
-    <div class="h-3 bg-[color:var(--surface-emphasis)] rounded w-16 shimmer"></div>
+    <div class="h-3 bg-[color:var(--color-surface-emphasis)] rounded w-16 shimmer"></div>
 
     <!-- Title -->
-    <div class="h-4 bg-[color:var(--surface-emphasis)] rounded w-3/4 shimmer"></div>
+    <div class="h-4 bg-[color:var(--color-surface-emphasis)] rounded w-3/4 shimmer"></div>
 
     <!-- Size and condition -->
-    <div class="h-3 bg-[color:var(--surface-emphasis)] rounded w-1/2 shimmer"></div>
+    <div class="h-3 bg-[color:var(--color-surface-emphasis)] rounded w-1/2 shimmer"></div>
 
     <!-- Price -->
-    <div class="h-4 bg-[color:var(--surface-emphasis)] rounded w-1/3 shimmer"></div>
+    <div class="h-4 bg-[color:var(--color-surface-emphasis)] rounded w-1/3 shimmer"></div>
   </div>
 </div>
 
@@ -46,7 +46,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      color-mix(in oklch, var(--surface-base) 40%, transparent) 50%,
+      color-mix(in oklch, var(--color-surface-base) 40%, transparent) 50%,
       transparent 100%
     );
     animation: shimmer 2s ease-in-out infinite;

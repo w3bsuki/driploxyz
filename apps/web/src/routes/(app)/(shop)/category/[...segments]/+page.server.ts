@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { ProductDomainAdapter } from '@repo/core/services';
-// TODO: CategoryDomainAdapter needs to be implemented or removed
+import { resolveCategoryPath, getCategoryBreadcrumbs } from '$lib/server/categories.remote';
 import type { Database } from '@repo/database';
 
 export const load = (async ({ params, url, locals: { country, supabase }, setHeaders }) => {
@@ -14,22 +14,12 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
 
   // Initialize domain adapters
   const productAdapter = new ProductDomainAdapter(supabase);
-  // TODO: CategoryDomainAdapter needs to be implemented or removed
-  // const categoryAdapter = new CategoryDomainAdapter(supabase);
 
   try {
     const segments = (params.segments || '').split('/').filter(Boolean);
 
-    // TODO: Implement category resolution without CategoryDomainAdapter
-    // Fallback: Simple resolution object
-    const resolution = {
-      categoryIds: [],
-      canonicalPath: null,
-      isVirtual: true,
-      l1: null,
-      l2: null,
-      l3: null
-    };
+    // Resolve category path using the server utility
+    const resolution = await resolveCategoryPath(segments, supabase);
 
     // Check if current path matches canonical path (for redirects)
     const currentPath = `/category/${segments.join('/')}`;
@@ -43,11 +33,8 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
       }
     }
 
-    // TODO: Generate breadcrumbs without CategoryDomainAdapter
-    const breadcrumbsResult = {
-      items: [],
-      jsonLd: {}
-    };
+    // Generate breadcrumbs using the server utility
+    const breadcrumbsResult = await getCategoryBreadcrumbs(segments, supabase);
 
     // Parse query parameters for filtering and pagination
     const searchParams = url.searchParams;
@@ -104,10 +91,63 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const sortBy = (searchParams.get('sort') || 'created_at') as 'created_at' | 'price' | 'price-low' | 'price-high' | 'newest';
     const sortDirection = sortBy === 'price-low' ? 'asc' : sortBy === 'price-high' ? 'desc' : 'desc';
 
-    // TODO: Get category navigation without CategoryDomainAdapter
-    const navigationPromise = Promise.resolve({
-      pills: [],
-      dropdown: []
+    // Fetch all categories and product counts for navigation
+    const categoriesPromise = supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('level')
+      .order('sort_order');
+
+    const categoryCountsPromise = supabase.rpc('get_virtual_category_counts');
+
+    const navigationPromise = Promise.all([categoriesPromise, categoryCountsPromise]).then(([categoriesResult, countsResult]) => {
+      const allCategories = categoriesResult.data || [];
+      const categoryCountsData = countsResult.data || [];
+
+      // Build product counts map
+      const categoryProductCounts: Record<string, number> = {};
+      categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
+        categoryProductCounts[row.virtual_type] = row.product_count || 0;
+      });
+
+      // Determine which categories to show based on resolution level
+      let pills: any[] = [];
+      let dropdown: any[] = [];
+
+      if (resolution.isVirtual) {
+        // Virtual category: show level 1 (gender) categories in pills
+        pills = allCategories
+          .filter((c: any) => c.level === 1)
+          .map((c: any) => ({
+            ...c,
+            product_count: categoryProductCounts[c.slug] || 0
+          }));
+      } else if (resolution.l1 && !resolution.l2) {
+        // Level 1: show level 2 categories (subcategories) in pills
+        const l1Category = allCategories.find((c: any) => c.slug === resolution.l1?.slug);
+        if (l1Category) {
+          pills = allCategories
+            .filter((c: any) => c.parent_id === l1Category.id && c.level === 2)
+            .map((c: any) => ({
+              ...c,
+              product_count: 0 // L2 counts not available from RPC
+            }));
+        }
+      } else if (resolution.l2 && !resolution.l3) {
+        // Level 2: show level 3 categories (specific) in pills
+        const l2Category = allCategories.find((c: any) => c.slug === resolution.l2?.slug);
+        if (l2Category) {
+          pills = allCategories
+            .filter((c: any) => c.parent_id === l2Category.id && c.level === 3)
+            .map((c: any) => ({
+              ...c,
+              product_count: 0 // L3 counts not available from RPC
+            }));
+        }
+      }
+
+      return { pills, dropdown };
     });
 
     const [
@@ -165,11 +205,35 @@ export const load = (async ({ params, url, locals: { country, supabase }, setHea
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
-    // TODO: Generate SEO meta without CategoryDomainAdapter
+    // Generate SEO meta based on category resolution
+    const currentCategory = resolution.l3 || resolution.l2 || resolution.l1;
+    const categoryName = resolution.isVirtual && resolution.virtualCategory 
+      ? resolution.virtualCategory.name 
+      : (currentCategory?.name || 'Category');
+    
     const metaData = {
-      title: 'Category',
-      description: 'Browse products in this category',
-      keywords: []
+      title: resolution.isVirtual && resolution.virtualCategory
+        ? `${resolution.virtualCategory.name} - Shop All ${resolution.virtualCategory.name} | Driplo`
+        : resolution.l3
+          ? `${resolution.l3.name} - ${resolution.l2?.name || ''} for ${resolution.l1?.name || ''} | Driplo`
+          : resolution.l2
+            ? `${resolution.l2.name} for ${resolution.l1?.name || ''} | Driplo`
+            : resolution.l1
+              ? `${resolution.l1.name} - Shop ${resolution.l1.name}'s Fashion | Driplo`
+              : 'Browse Categories | Driplo',
+      description: resolution.isVirtual && resolution.virtualCategory
+        ? resolution.virtualCategory.description
+        : currentCategory?.description || `Shop the best ${categoryName} on Driplo. Find great deals on pre-owned fashion items.`,
+      keywords: [
+        categoryName.toLowerCase(),
+        'fashion',
+        'pre-owned',
+        'second-hand',
+        'marketplace',
+        ...(resolution.l1?.name ? [resolution.l1.name.toLowerCase()] : []),
+        ...(resolution.l2?.name ? [resolution.l2.name.toLowerCase()] : []),
+        ...(resolution.l3?.name ? [resolution.l3.name.toLowerCase()] : [])
+      ].filter(Boolean)
     };
 
     return {

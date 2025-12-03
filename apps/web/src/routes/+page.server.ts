@@ -46,15 +46,16 @@ export const load = (async ({ url, locals, depends }) => {
 
   try {
     // Fetch data in parallel
-    const [productsResult, categoriesResult, topSellersResult] = await Promise.all([
+    const [productsResult, categoriesResult, categoryCountsResult, topSellersResult] = await Promise.all([
       // Fetch featured products (active products, ordered by creation date)
+      // Fetch 20 products: 8 for promoted section, rest for newest section (deduplicated)
       supabase
         .from('products')
         .select(`*, product_images ( image_url, sort_order )`)
         .eq('is_active', true)
         .eq('status', 'active')
         .order('created_at', { ascending: false })
-        .limit(12),
+        .limit(20),
 
       // Fetch categories
       supabase
@@ -62,6 +63,9 @@ export const load = (async ({ url, locals, depends }) => {
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true }),
+
+      // Fetch category product counts
+      supabase.rpc('get_virtual_category_counts'),
 
       // Fetch top sellers (profiles with sales)
       supabase
@@ -74,10 +78,25 @@ export const load = (async ({ url, locals, depends }) => {
 
     const { data: products, error: productsError } = productsResult;
     const { data: categories, error: categoriesError } = categoriesResult;
+    const { data: categoryCountsData } = categoryCountsResult;
     const { data: topSellers, error: sellersError } = topSellersResult;
 
+    // Build category product counts map
+    const categoryProductCounts: Record<string, number> = {};
+    if (categoryCountsData) {
+      categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
+        categoryProductCounts[row.virtual_type] = row.product_count || 0;
+      });
+    }
+
+    // Attach product counts to categories
+    const categoriesWithCounts = (categories || []).map(cat => ({
+      ...cat,
+      product_count: categoryProductCounts[cat.slug] || 0
+    }));
+
     const categoryLookup = new Map<string, Category>();
-    (categories ?? []).forEach((category) => {
+    (categoriesWithCounts ?? []).forEach((category) => {
       if (!category?.id) return;
       categoryLookup.set(String(category.id), category);
     });
@@ -148,7 +167,7 @@ export const load = (async ({ url, locals, depends }) => {
 
     return {
   featuredProducts,
-      categories: categories || [],
+      categories: categoriesWithCounts || [],
       topSellers: topSellers || [],
       topBrands: [],
       country: country || 'BG',

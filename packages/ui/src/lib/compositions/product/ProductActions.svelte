@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as m from '@repo/i18n';
+  import ConditionBadge from '../../primitives/badge/ConditionBadge.svelte';
 
   interface Seller {
     username?: string;
@@ -22,6 +23,7 @@
     productTitle?: string;
     productDescription?: string;
     showSellerInfo?: boolean;
+    condition?: string;
   }
 
   let {
@@ -36,7 +38,8 @@
     seller,
     productTitle,
     productDescription,
-    showSellerInfo = true
+    showSellerInfo = true,
+    condition
   }: Props = $props();
 
   // State for loading actions
@@ -73,53 +76,56 @@
 <div class={[className, { 'opacity-75': isLoading }]}>
 {#if showSellerInfo && (seller || productTitle)}
     <!-- Seller Info Section -->
-    <div class="bg-white/95 backdrop-blur-sm border-b border-[color:var(--gray-200)] p-4 mb-4">
-      <!-- Grid layout so thumbnail matches text stack height (3 rows) -->
-      <div class="grid grid-cols-[auto_1fr] grid-rows-[auto_auto_auto] gap-x-3 gap-y-1 items-start">
-        <!-- Product Thumbnail (row-span to match 3 lines) -->
+    <div class="bg-white/95 backdrop-blur-sm p-4 mb-2">
+      <div class="flex gap-4">
+        <!-- Product Thumbnail -->
         {#if seller?.avatar_url}
           <img 
             src={seller.avatar_url} 
             alt={seller.full_name || seller.username || 'Seller'}
-            class="row-span-3 w-16 self-stretch rounded-md object-cover bg-[color:var(--gray-100)] border border-[color:var(--gray-200)]"
+            class="w-20 h-20 rounded-lg object-cover bg-(--gray-100) shrink-0"
             loading="lazy"
           />
         {:else}
-          <div class="row-span-3 w-16 self-stretch rounded-md bg-[color:var(--gray-200)] border border-[color:var(--gray-300)] flex items-center justify-center">
-            <svg class="w-5 h-5 text-[color:var(--gray-500)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <div class="w-20 h-20 rounded-lg bg-(--gray-200) flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-(--gray-500)" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
           </div>
         {/if}
 
-        <!-- Row 1: Title (single line) -->
-        {#if productTitle}
-          <h3 class="col-start-2 row-start-1 text-sm font-semibold text-[color:var(--gray-900)] leading-tight truncate">
-            {truncateText(productTitle, 60)}
-          </h3>
-        {/if}
-
-        <!-- Row 2: Seller meta (single line) -->
-        <div class="col-start-2 row-start-2 min-w-0 flex items-center gap-2">
-          <span class="text-xs font-medium text-[color:var(--gray-700)] truncate">
-            {seller?.full_name || seller?.username || 'Seller'}
-          </span>
-          {#if seller?.rating}
-            <div class="flex items-center gap-1">
-              <svg class="w-3 h-3 text-yellow-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              <span class="text-xs font-medium text-[color:var(--gray-600)]">{seller.rating.toFixed(1)}</span>
+        <!-- Info Column -->
+        <div class="flex flex-col justify-center min-w-0 flex-1 gap-1">
+          <!-- Condition Badge -->
+          {#if condition}
+            <div class="flex mb-1">
+              <ConditionBadge {condition} />
             </div>
           {/if}
-        </div>
 
-        <!-- Row 3: Description (single line) -->
-        {#if productDescription}
-          <p class="col-start-2 row-start-3 text-xs text-[color:var(--gray-600)] leading-relaxed truncate">
-            {truncateText(productDescription, 80)}
-          </p>
-        {/if}
+          <!-- Title -->
+          {#if productTitle}
+            <h3 class="text-base font-bold text-(--gray-900) leading-tight truncate pr-16 mb-1">
+              {productTitle}
+            </h3>
+          {/if}
+
+          <!-- Seller -->
+          <div class="flex items-center gap-2 text-sm text-(--gray-600)">
+            <span class="truncate font-medium">
+              {seller?.full_name || seller?.username || 'Seller'}
+            </span>
+            {#if seller?.rating}
+              <div class="flex items-center gap-1 text-(--gray-500)">
+                <span>•</span>
+                <svg class="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>{seller.rating.toFixed(1)}</span>
+              </div>
+            {/if}
+          </div>
+        </div>
       </div>
     </div>
   {/if}
@@ -143,9 +149,9 @@
     {:else if isOwner}
       <!-- Owner State -->
       <div class="flex items-center justify-center gap-2.5 w-full h-11 px-4 
-                  bg-[color:var(--surface-subtle)] 
-                  border border-[color:var(--border-default)] 
-                  text-[color:var(--text-secondary)] 
+                  bg-[color:var(--color-surface-subtle)] 
+                  border border-[color:var(--color-border-default)] 
+                  text-[color:var(--color-text-secondary)] 
                   font-semibold rounded-lg shadow-xs" 
            role="status" 
            aria-label="Your item">
@@ -161,13 +167,13 @@
         <button 
           type="button" 
           class="group relative flex items-center justify-center gap-2.5 h-11 px-5 
-                 bg-[color:var(--surface-base)] 
-                 border border-[color:var(--border-default)] 
-                 text-[color:var(--text-secondary)] 
+                 bg-[color:var(--color-surface-base)] 
+                 border border-[color:var(--color-border-default)] 
+                 text-[color:var(--color-text-secondary)] 
                  rounded-lg font-medium
-                 hover:bg-[color:var(--surface-subtle)] hover:border-[color:var(--border-emphasis)] hover:text-[color:var(--text-primary)]
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)] focus:ring-offset-1 focus:bg-[color:var(--surface-subtle)]
-                 active:scale-95 active:bg-[color:var(--surface-muted)]
+                 hover:bg-[color:var(--color-surface-subtle)] hover:border-[color:var(--color-border-emphasis)] hover:text-[color:var(--color-text-primary)]
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)] focus:ring-offset-1 focus:bg-[color:var(--color-surface-subtle)]
+                 active:scale-95 active:bg-[color:var(--color-surface-muted)]
                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                  transition-all duration-[--duration-fast] ease-[--ease-out]
                  shadow-xs hover:shadow-sm"
@@ -176,7 +182,7 @@
           aria-label={m.pdp_messageSeller()}
         >
           {#if loadingAction === 'message'}
-            <div class="w-4 h-4 border-2 border-[color:var(--text-muted)] border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
+            <div class="w-4 h-4 border-2 border-[color:var(--color-text-muted)] border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
           {:else}
             <svg class="w-4 h-4 transition-transform duration-[--duration-fast] group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/>

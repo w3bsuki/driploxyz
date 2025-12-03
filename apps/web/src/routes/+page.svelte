@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { MainPageSearchBar, BottomNav, FeaturedProducts, PromotedListingsSection, FilterDrawer } from '@repo/ui';
+	import { MainPageSearchBar, BottomNav, FeaturedProducts, PromotedListingsSection } from '@repo/ui';
 	import type { Product } from '@repo/ui/types';
 	import { mapProduct, mapCategory } from '$lib/types/domain';
 	import * as i18n from '@repo/i18n';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
-	import { createProductFilter } from '$lib/stores/product-filter.svelte';
 	import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
@@ -15,13 +14,15 @@
 	import { createBrowserSupabaseClient } from '$lib/supabase/client';
 	import { performSearch, performQuickSearch, type QuickSearchResult } from '$lib/utils/search';
 
+	// Page title for SEO
+	const pageTitle = i18n.home_pageTitle?.() ?? 'Driplo - Buy & Sell Pre-loved Fashion';
+	const pageDescription = i18n.home_pageDescription?.() ?? 'Discover unique pre-loved fashion items. Buy and sell second-hand clothing, shoes, and accessories on Driplo.';
+
 	let { data }: { data: PageData } = $props();
 
 	// Simple state management with Svelte 5
 	let searchQuery = $state('');
 	let loadingCategory = $state<string | null>(null);
-	let isFilterDrawerOpen = $state(false);
-	const filterStore = createProductFilter();
 
 	// Language state
 	let currentLang = $state(i18n.getLocale());
@@ -67,16 +68,6 @@
 			})
 	);
 
-	// Virtual categories
-	const virtualCategories = $derived(
-		[
-			{ slug: 'clothing', name: i18n.category_clothing(), product_count: 0 },
-			{ slug: 'shoes', name: i18n.category_shoesType(), product_count: 0 },
-			{ slug: 'bags', name: i18n.category_bags(), product_count: 0 },
-			{ slug: 'accessories', name: i18n.category_accessories(), product_count: 0 }
-		].map((c: { slug: string; name: string; product_count: number }) => mapCategory(c))
-	);
-
 
 	// Transform products for display
 	const displayProducts = $derived(featuredProducts.map((product: NonNullable<typeof featuredProducts>[number]) => ({
@@ -84,6 +75,11 @@
 		...mapProduct(product),
 		currency: i18n.common_currency()
 	})));
+
+	// Deduplicate: promoted products are the first 8, newest excludes those
+	const promotedProducts = $derived(displayProducts.slice(0, 8));
+	const promotedIds = $derived(new Set(promotedProducts.map((p: { id: string }) => p.id)));
+	const newestProducts = $derived(displayProducts.filter((p: { id: string }) => !promotedIds.has(p.id)));
 
 	// Event handlers
 	function handleMainPageCategorySelect(categorySlug: string) {
@@ -187,17 +183,6 @@
 		goto('/sell');
 	}
 
-	function handleFilterApply(filters: any) {
-		const params = new URLSearchParams();
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== null && value !== undefined && value !== 'all') {
-				params.set(key, String(value));
-			}
-		});
-		goto(`/search?${params.toString()}`);
-		isFilterDrawerOpen = false;
-	}
-
 	function formatPrice(price: number): string {
 		const formatted = price % 1 === 0 ? price.toString() : price.toFixed(2);
 		return `${formatted}${i18n.common_currency()}`;
@@ -248,6 +233,18 @@
 	];
 </script>
 
+<svelte:head>
+	<title>{pageTitle}</title>
+	<meta name="description" content={pageDescription} />
+	<meta property="og:title" content={pageTitle} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://driplo.xyz" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={pageTitle} />
+	<meta name="twitter:description" content={pageDescription} />
+</svelte:head>
+
 {#key currentLang}
 <!-- Main Page Search Bar -->
 <MainPageSearchBar
@@ -255,7 +252,7 @@
 	topBrands={[]}
 	topSellers={[]}
 	{mainCategories}
-	{virtualCategories}
+	virtualCategories={[]}
 	conditionFilters={quickConditionFilters}
 	{i18n}
 	{currentLang}
@@ -279,11 +276,11 @@
 
 	<!-- Main Content Area -->
 	<div class="min-h-screen bg-[color:var(--surface-base)] pb-[var(--space-20)] sm:pb-0">
-		<main aria-label="Main content">
+		<main aria-label="Main content" aria-live="polite">
 			<!-- Regular Products -->
 			{#if displayProducts.length > 0}
 				<PromotedListingsSection
-					promotedProducts={displayProducts.slice(0, 8) as unknown as Product[]}
+					promotedProducts={promotedProducts as unknown as Product[]}
 					onProductClick={handleProductClick}
 					onFavorite={handleFavorite}
 					favoritesState={favoritesStore}
@@ -314,7 +311,7 @@
 				/>
 
 				<FeaturedProducts
-					products={displayProducts as unknown as Product[]}
+					products={newestProducts as unknown as Product[]}
 					errors={data.errors ? { products: data.errors.products ?? undefined } : undefined}
 					sectionTitle={i18n.home_newestListings()}
 					onProductClick={handleProductClick}
@@ -401,40 +398,39 @@
 	unreadMessageCount={notificationStore.unreadCount}
 	profileHref={'/account'}
 	isAuthenticated={!!data.user}
-  onFilterClick={() => isFilterDrawerOpen = true}
 	labels={{
 			home: i18n.nav_home(),
 			search: i18n.nav_search(),
 			sell: i18n.nav_sell(),
-			filter: i18n.common_filter ? i18n.common_filter() : 'Filter',
+			messages: i18n.nav_messages ? i18n.nav_messages() : 'Messages',
 			profile: i18n.nav_profile()
 	}}
 />
 
-<FilterDrawer
-	isOpen={isFilterDrawerOpen}
-	onClose={() => isFilterDrawerOpen = false}
-	onApply={handleFilterApply}
-	onClear={() => filterStore.resetFilters()}
-	currentFilters={filterStore.filters}
-/>
-
 <!-- Auth Popup -->
 {#if authPopupStore.state.isOpen}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-		<div class="bg-white rounded-[var(--radius-lg)] p-[var(--space-6)] max-w-sm mx-[var(--space-4)]">
-			<h3 class="text-lg font-semibold mb-[var(--space-4)]">{i18n.auth_signInRequired()}</h3>
+	<div 
+		class="fixed inset-0 bg-[color:var(--surface-overlay)] flex items-center justify-center z-50"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="auth-dialog-title"
+	>
+		<div 
+			class="bg-[color:var(--surface-base)] rounded-[var(--radius-lg)] p-[var(--space-6)] max-w-sm mx-[var(--space-4)]"
+			tabindex="-1"
+		>
+			<h3 id="auth-dialog-title" class="text-lg font-semibold mb-[var(--space-4)]">{i18n.auth_signInRequired()}</h3>
 			<p class="text-[color:var(--text-secondary)] mb-[var(--space-4)]">{i18n.auth_pleaseSignIn()}</p>
 			<div class="flex gap-[var(--space-3)]">
 				<button
 					onclick={authPopupActions.close}
-					class="flex-1 px-[var(--space-4)] py-[var(--space-2)] border border-[color:var(--border-default)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)]"
+					class="flex-1 min-h-[var(--touch-standard)] px-[var(--space-4)] py-[var(--space-2)] border border-[color:var(--border-default)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)] focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:outline-none"
 				>
 					{i18n.common_cancel()}
 				</button>
 				<button
 					onclick={() => goto('/auth/signin')}
-					class="flex-1 px-[var(--space-4)] py-[var(--space-2)] bg-[color:var(--surface-inverse)] text-[color:var(--text-inverse)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-inverse)]/90"
+					class="flex-1 min-h-[var(--touch-standard)] px-[var(--space-4)] py-[var(--space-2)] bg-[color:var(--surface-inverse)] text-[color:var(--text-inverse)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-inverse)]/90 focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:outline-none"
 				>
 					{i18n.auth_signIn()}
 				</button>

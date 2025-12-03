@@ -45,13 +45,14 @@
   --space-96: calc(var(--spacing) * 96); /* 384px */
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     TOUCH TARGETS — WCAG AAA Accessibility
+     TOUCH TARGETS — Modern 2025 (Vinted/Apple Style)
+     40-44px range for clean, modern UI
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
-  --touch-primary: 44px;   /* Primary touch target (WCAG AAA) */
-  --touch-standard: 36px;  /* Standard touch target */
-  --touch-compact: 32px;   /* Compact touch target */
-  --touch-minimum: 24px;   /* Minimum touch target */
+  --touch-primary: 44px;   /* Primary touch target (Apple/Vinted) */
+  --touch-standard: 40px;  /* Standard touch target (modern default) */
+  --touch-compact: 36px;   /* Compact touch target (dense contexts) */
+  --touch-minimum: 32px;   /* Minimum touch target (icon buttons) */
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      SAFE AREA INSETS — iOS Support
@@ -79,6 +80,19 @@
   --color-zinc-800: oklch(0.205 0 0);
   --color-zinc-900: oklch(0.21 0.006 285.885);
   --color-zinc-950: oklch(0.145 0 0);
+
+  /* Lime — Bungkusa Brand Accent (Neon) */
+  --color-lime-50: oklch(0.98 0.02 134.5);
+  --color-lime-100: oklch(0.96 0.05 134.5);
+  --color-lime-200: oklch(0.92 0.10 134.5);
+  --color-lime-300: oklch(0.89 0.15 134.5);
+  --color-lime-400: oklch(0.86 0.21 134.5); /* Neon */
+  --color-lime-500: oklch(0.78 0.20 134.5);
+  --color-lime-600: oklch(0.65 0.18 134.5);
+  --color-lime-700: oklch(0.50 0.14 134.5);
+  --color-lime-800: oklch(0.40 0.10 134.5);
+  --color-lime-900: oklch(0.30 0.08 134.5);
+  --color-lime-950: oklch(0.20 0.06 134.5);
 
   /* Red — Error / Destructive */
   --color-red-50: oklch(0.97 0.014 25.49);
@@ -218,18 +232,19 @@
   --tracking-luxury: 0.15em;  /* Luxury all-caps spacing */
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     BORDER RADIUS — Modern Soft Corners
+     BORDER RADIUS — Sharp Fashion Aesthetic (Vinted/SSENSE Style)
+     Minimal rounding for premium, editorial look
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
   --radius-none: 0;
-  --radius-xs: 0.125rem;  /* 2px */
-  --radius-sm: 0.25rem;   /* 4px */
-  --radius-md: 0.375rem;  /* 6px */
-  --radius-lg: 0.5rem;    /* 8px */
-  --radius-xl: 0.75rem;   /* 12px */
-  --radius-2xl: 1rem;     /* 16px */
-  --radius-3xl: 1.5rem;   /* 24px */
-  --radius-4xl: 2rem;     /* 32px */
+  --radius-xs: 0.125rem;  /* 2px - barely visible */
+  --radius-sm: 0.25rem;   /* 4px - subtle */
+  --radius-md: 0.375rem;  /* 6px - standard cards/inputs */
+  --radius-lg: 0.5rem;    /* 8px - larger elements */
+  --radius-xl: 0.75rem;   /* 12px - modals/dialogs */
+  --radius-2xl: 1rem;     /* 16px - special use only */
+  --radius-3xl: 1.25rem;  /* 20px - rare */
+  --radius-4xl: 1.5rem;   /* 24px - pills/avatars only */
   --radius-full: 9999px;
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

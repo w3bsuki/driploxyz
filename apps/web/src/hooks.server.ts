@@ -142,21 +142,57 @@ const i18nHandle: Handle = ({ event, resolve }) =>
 /**
  * Security headers middleware
  * Add production-grade security headers to all responses
+ * Phase 5: Security Hardening compliant
  */
 const securityHeadersHandle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event);
 
+  // Security headers for all environments (stricter in production)
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('X-DNS-Prefetch-Control', 'on');
+  
+  // Permissions Policy - deny access to sensitive APIs
+  response.headers.set(
+    'Permissions-Policy', 
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=(), speaker-selection=(), accelerometer=(), gyroscope=(), magnetometer=(), clipboard-read=(), display-capture=()'
+  );
+
   if (!dev) {
-    // Production security headers
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    // Production-only headers
     
-    // Hardened CSP - removed unsafe-eval, kept unsafe-inline for Svelte hydration
+    // HSTS with preload for HTTPS enforcement
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    );
+    
+    // Hardened CSP - allows Stripe, Google Analytics, Supabase
+    // Note: unsafe-inline required for Svelte hydration
     response.headers.set(
       'Content-Security-Policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;"
+      [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://checkout.stripe.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "connect-src 'self' https://*.supabase.co https://*.supabase.io wss://*.supabase.co https://www.google-analytics.com https://api.stripe.com https://vitals.vercel-insights.com",
+        "frame-src https://checkout.stripe.com https://js.stripe.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "block-all-mixed-content",
+        "upgrade-insecure-requests"
+      ].join('; ')
+    );
+  } else {
+    // Development CSP - more permissive for hot reload
+    response.headers.set(
+      'Content-Security-Policy',
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co ws://localhost:*;"
     );
   }
 

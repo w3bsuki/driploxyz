@@ -66,9 +66,9 @@ export const apiRateLimit = rateLimit({
 });
 
 export const searchRateLimit = rateLimit({
-  maxRequests: 50,
-  windowMs: 60 * 1000, // 1 minute
-  message: 'Search rate limit exceeded'
+  maxRequests: 20,
+  windowMs: 60 * 1000, // 1 minute - Phase 5 spec: 20 req/min per IP
+  message: 'Search rate limit exceeded. Please wait before searching again.'
 });
 
 export const uploadRateLimit = rateLimit({

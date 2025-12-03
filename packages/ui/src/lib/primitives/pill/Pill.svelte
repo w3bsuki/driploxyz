@@ -100,24 +100,24 @@
   // Variant/tone matrix using semantic tokens
   const toneNeutral = {
     solid:
-      'bg-[color:var(--surface-emphasis)] text-[color:var(--text-inverse)] border-[color:var(--surface-emphasis)] hover:brightness-95',
+      'bg-[color:var(--color-surface-emphasis)] text-[color:var(--color-text-inverse)] border-[color:var(--color-surface-emphasis)] hover:brightness-95',
     soft:
-      'bg-[color:var(--surface-subtle)] text-[color:var(--text-primary)] border-[color:var(--border-subtle)] hover:bg-[color:var(--surface-muted)]',
+      'bg-[color:var(--color-surface-subtle)] text-[color:var(--color-text-primary)] border-[color:var(--color-border-subtle)] hover:bg-[color:var(--color-surface-muted)]',
     outline:
-      'bg-transparent text-[color:var(--text-primary)] border-[color:var(--border-default)] hover:bg-[color:var(--surface-subtle)]',
+      'bg-transparent text-[color:var(--color-text-primary)] border-[color:var(--color-border-default)] hover:bg-[color:var(--color-surface-subtle)]',
     ghost:
-      'bg-transparent text-[color:var(--text-secondary)] border-transparent hover:bg-[color:var(--surface-muted)] hover:text-[color:var(--text-primary)]'
+      'bg-transparent text-[color:var(--color-text-secondary)] border-transparent hover:bg-[color:var(--color-surface-muted)] hover:text-[color:var(--color-text-primary)]'
   } as const;
 
   const toneBrand = {
     solid:
-      'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border-[color:var(--brand-primary)] hover:bg-[color:var(--brand-primary)]/90',
+      'bg-[color:var(--color-brand-primary)] text-[color:var(--color-text-inverse)] border-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary)]/90',
     soft:
-      'bg-[color:var(--brand-primary)]/10 text-[color:var(--brand-primary)] border-[color:var(--brand-primary)]/30 hover:bg-[color:var(--brand-primary)]/15',
+      'bg-[color:var(--color-brand-primary)]/10 text-[color:var(--color-brand-primary)] border-[color:var(--color-brand-primary)]/30 hover:bg-[color:var(--color-brand-primary)]/15',
     outline:
-      'bg-transparent text-[color:var(--brand-primary)] border-[color:var(--brand-primary)] hover:bg-[color:var(--brand-primary)]/10',
+      'bg-transparent text-[color:var(--color-brand-primary)] border-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary)]/10',
     ghost:
-      'bg-transparent text-[color:var(--brand-primary)] border-transparent hover:bg-[color:var(--brand-primary)]/10'
+      'bg-transparent text-[color:var(--color-brand-primary)] border-transparent hover:bg-[color:var(--color-brand-primary)]/10'
   } as const;
 
   const variantTone = tone === 'brand' ? toneBrand : toneNeutral;
@@ -139,7 +139,7 @@
     disabled:opacity-50 disabled:cursor-not-allowed
     ${currentSize.base}
     ${variantTone[variant]}
-    ${selected ? (tone === 'brand' ? 'ring-1 ring-[color:var(--brand-primary)] ring-offset-0' : 'ring-1 ring-[color:var(--border-default)] ring-offset-0') : ''}
+    ${selected ? (tone === 'brand' ? 'ring-1 ring-[color:var(--color-brand-primary)] ring-offset-0' : 'ring-1 ring-[color:var(--color-border-default)] ring-offset-0') : ''}
     ${className}
   `
     .trim()
@@ -192,7 +192,7 @@
           <span
             class={`inline-flex items-center justify-center rounded-full font-semibold leading-none ml-1
             ${size === 'sm' ? 'text-[10px] px-1 py-0 min-w-4 h-3.5' : size === 'md' ? 'text-xs px-1 py-0 min-w-4 h-4' : 'text-sm px-1.5 py-0 min-w-5 h-5'}
-            ${tone === 'brand' ? 'bg-[color:var(--brand-primary)]/15 text-[color:var(--brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
+            ${tone === 'brand' ? 'bg-[color:var(--color-brand-primary)]/15 text-[color:var(--color-brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
             aria-hidden="true"
           >
             {count}
@@ -239,7 +239,7 @@
           <span
             class={`inline-flex items-center justify-center rounded-full font-semibold leading-none ml-1
             ${size === 'sm' ? 'text-[10px] px-1 py-0 min-w-4 h-3.5' : size === 'md' ? 'text-xs px-1 py-0 min-w-4 h-4' : 'text-sm px-1.5 py-0 min-w-5 h-5'}
-            ${tone === 'brand' ? 'bg-[color:var(--brand-primary)]/15 text-[color:var(--brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
+            ${tone === 'brand' ? 'bg-[color:var(--color-brand-primary)]/15 text-[color:var(--color-brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
             aria-hidden="true"
           >
             {count}
@@ -299,7 +299,7 @@
         <span
           class={`inline-flex items-center justify-center rounded-full font-semibold leading-none ml-1
           ${size === 'sm' ? 'text-[10px] px-1 py-0 min-w-4 h-3.5' : size === 'md' ? 'text-xs px-1 py-0 min-w-4 h-4' : 'text-sm px-1.5 py-0 min-w-5 h-5'}
-          ${tone === 'brand' ? 'bg-[color:var(--brand-primary)]/15 text-[color:var(--brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
+          ${tone === 'brand' ? 'bg-[color:var(--color-brand-primary)]/15 text-[color:var(--color-brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
           aria-hidden="true"
         >
           {count}
@@ -346,7 +346,7 @@
         <span
           class={`inline-flex items-center justify-center rounded-full font-semibold leading-none ml-1
           ${size === 'sm' ? 'text-[10px] px-1 py-0 min-w-4 h-3.5' : size === 'md' ? 'text-xs px-1 py-0 min-w-4 h-4' : 'text-sm px-1.5 py-0 min-w-5 h-5'}
-          ${tone === 'brand' ? 'bg-[color:var(--brand-primary)]/15 text-[color:var(--brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
+          ${tone === 'brand' ? 'bg-[color:var(--color-brand-primary)]/15 text-[color:var(--color-brand-primary)]' : 'bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]'}`}
           aria-hidden="true"
         >
           {count}

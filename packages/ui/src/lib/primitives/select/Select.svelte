@@ -121,9 +121,9 @@
   // Default CSS classes
   const defaultTriggerClasses = 'input input-select relative w-full min-h-[var(--touch-primary)] px-[var(--input-padding)] py-0 text-[var(--input-font)] bg-[var(--input-bg)] border border-[var(--input-border)] rounded-[var(--input-radius)] focus:border-[var(--input-focus-border)] focus:ring-2 focus:ring-[var(--input-focus-ring)] focus:ring-offset-0 focus:outline-none transition-colors duration-[var(--duration-fast)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between gap-2';
 
-  const defaultMenuClasses = 'menu z-[var(--z-50)] max-h-60 w-full overflow-auto rounded-[var(--radius-md)] bg-[var(--surface-base)] border border-[var(--border-default)] shadow-[var(--shadow-lg)] py-1 focus:outline-none';
+  const defaultMenuClasses = 'menu z-[var(--z-50)] max-h-60 w-full overflow-auto rounded-[var(--radius-md)] bg-[var(--color-surface-base)] border border-[var(--color-border-default)] shadow-[var(--shadow-lg)] py-1 focus:outline-none';
 
-  const defaultOptionClasses = 'menu-item relative w-full cursor-pointer select-none px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-base)] text-[var(--text-primary)] hover:bg-[var(--state-hover)] focus:bg-[var(--state-active)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-fast)]';
+  const defaultOptionClasses = 'menu-item relative w-full cursor-pointer select-none px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-base)] text-[var(--color-text-primary)] hover:bg-[var(--state-hover)] focus:bg-[var(--state-active)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-fast)]';
 
   // Computed classes
   const triggerClasses = $derived(`${defaultTriggerClasses} ${triggerClass} ${className}`);
@@ -157,13 +157,13 @@
     {#if selectedOption}
       {selectedOption.label}
     {:else}
-      <span class="text-[var(--text-muted)]">{placeholder}</span>
+      <span class="text-[var(--color-text-muted)]">{placeholder}</span>
     {/if}
   </span>
 
   <!-- Dropdown chevron icon -->
   <svg
-    class={['w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-[var(--duration-fast)]', { 'rotate-180': isOpen }]}
+    class={['w-4 h-4 text-[var(--color-text-tertiary)] transition-transform duration-[var(--duration-fast)]', { 'rotate-180': isOpen }]}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -198,7 +198,7 @@
         <!-- Selected checkmark -->
         {#if value === opt.value}
           <svg
-            class="w-4 h-4 text-[var(--brand-primary)] ml-2 flex-shrink-0"
+            class="w-4 h-4 text-[var(--color-brand-primary)] ml-2 flex-shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
             aria-hidden="true"
@@ -216,7 +216,7 @@
     <!-- Custom content via snippets -->
     {#if children}
       {#if options.length > 0}
-        <div class="border-t border-[var(--border-subtle)] my-1" role="separator"></div>
+        <div class="border-t border-[var(--color-border-subtle)] my-1" role="separator"></div>
       {/if}
       {@render children()}
     {/if}

@@ -176,11 +176,11 @@
       role="status"
       aria-label="No products available"
     >
-      <svg class="mx-auto h-12 w-12 text-[color:var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg class="mx-auto h-12 w-12 text-[color:var(--color-text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5m14 14H5" />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-[color:var(--text-primary)]">{translations.empty_noProducts}</h3>
-      <p class="mt-1 text-sm text-[color:var(--text-secondary)]">{translations.empty_startBrowsing}</p>
+      <h3 class="mt-2 text-sm font-medium text-[color:var(--color-text-primary)]">{translations.empty_noProducts}</h3>
+      <p class="mt-1 text-sm text-[color:var(--color-text-secondary)]">{translations.empty_startBrowsing}</p>
       <div class="mt-6">
         <Button 
           variant="primary" 
@@ -198,7 +198,7 @@
       <Button
         variant="ghost"
         size="lg"
-        class="text-[color:var(--text-secondary)]"
+        class="text-[color:var(--color-text-secondary)]"
         onclick={onBrowseAll}
       >
         {translations.home_browseAll}

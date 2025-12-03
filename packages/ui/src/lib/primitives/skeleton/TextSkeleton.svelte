@@ -62,7 +62,7 @@
 <div class="text-skeleton {className} {getSpacing()}" role="status" aria-label="Loading text...">
   {#each Array(lines) as _, index}
     <div
-      class="bg-[color:var(--surface-emphasis)] rounded {getLineHeight()} {getLineWidth(index, lines)} shimmer"
+      class="bg-[color:var(--color-surface-emphasis)] rounded {getLineHeight()} {getLineWidth(index, lines)} shimmer"
       role="presentation"
       aria-hidden="true"
     ></div>
@@ -89,7 +89,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      color-mix(in oklch, var(--surface-base) 40%, transparent) 50%,
+      color-mix(in oklch, var(--color-surface-base) 40%, transparent) 50%,
       transparent 100%
     );
     animation: shimmer 2s ease-in-out infinite;

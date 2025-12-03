@@ -20,6 +20,7 @@
     onMessage?: () => void;
     onViewProfile?: () => void;
     class?: string;
+    variant?: 'card' | 'minimal';
     translations?: {
       soldBy?: string;
       message?: string;
@@ -38,6 +39,7 @@
     onMessage,
     onViewProfile,
     class: className = '',
+    variant = 'card',
     translations = {}
   }: Props = $props();
 
@@ -58,7 +60,7 @@
 </script>
 
 <div 
-  class="bg-white border border-gray-200 rounded-[var(--card-radius)] p-3 {className}"
+  class="{variant === 'card' ? 'bg-white shadow-sm rounded-(--card-radius) p-3' : ''} {className}"
   role="region"
   aria-label="Seller information"
 >

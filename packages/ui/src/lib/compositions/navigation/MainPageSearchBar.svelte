@@ -1,6 +1,5 @@
 <script lang="ts">
 import type { Database } from '@repo/database';
-import { slide } from 'svelte/transition';
 import * as SearchInputMod from '../../compositions/forms/SearchInput.svelte';
 const SearchInput = (SearchInputMod as any).default ?? (SearchInputMod as any);
 import * as CategoryPillMod from '../../primitives/pill/CategoryPill.svelte';
@@ -77,6 +76,10 @@ interface Props {
   onNavigateToSellersList?: () => void;
   onNavigateToBrandsList?: () => void;
   currentPath?: string;
+  showFilterButton?: boolean;
+  showPills?: boolean;
+  onFilterClick?: () => void;
+  sticky?: boolean;
 }
 
 let {
@@ -104,80 +107,32 @@ let {
   onNavigateToQuickShop,
   onNavigateToSellersList,
   onNavigateToBrandsList,
-  currentPath = ''
+  currentPath = '',
+  showFilterButton = false,
+  showPills = true,
+  onFilterClick,
+  sticky = true
 }: Props = $props();
 
 
-// Component state
-let showSearchTypeDropdown = $state(false);
+// Component state - simplified search type selector (Vinted-style)
 let searchType = $state<'products' | 'sellers' | 'brands'>('products');
-let activeDropdownTab = $state('trending');
-let dropdownSearchQuery = $state('');
+let showSearchTypeMenu = $state(false);
 
-// Optimized derived data for dropdown - using $derived.by() for better performance
-const filteredTopBrands = $derived.by(() => {
-  if (!dropdownSearchQuery.trim()) return topBrands;
-  const query = dropdownSearchQuery.toLowerCase();
-  return topBrands.filter(brand =>
-    brand.name.toLowerCase().includes(query)
-  );
-});
+const searchTypeOptions = [
+  { value: 'products', label: '👕', fullLabel: 'Products' },
+  { value: 'sellers', label: '👤', fullLabel: 'Sellers' },
+  { value: 'brands', label: '🏷️', fullLabel: 'Brands' }
+] as const;
 
-const filteredTopSellers = $derived.by(() => {
-  if (!dropdownSearchQuery.trim()) return topSellers;
-  const query = dropdownSearchQuery.toLowerCase();
-  return topSellers.filter(seller => {
-    const name = seller.name || seller.display_name || seller.username || '';
-    return name.toLowerCase().includes(query);
-  });
-});
+const currentSearchTypeOption = $derived(
+  searchTypeOptions.find(opt => opt.value === searchType) || searchTypeOptions[0]
+);
 
-// Quick shop items (localized)
-const quickShopItems = [
-  { label: i18n.quick_under25?.() ?? 'Under $25', description: i18n.quick_budgetFinds?.() ?? 'Budget finds', filter: 'max_price=25', icon: '💰' },
-  { label: i18n.quick_dripCollection?.() ?? 'Drip Collection', description: i18n.quick_staffPicks?.() ?? 'Staff picks', filter: 'collection=drip', icon: '💧' },
-  { label: i18n.quick_designer100?.() ?? 'Designer $100+', description: i18n.quick_premiumPieces?.() ?? 'Premium pieces', filter: 'min_price=100', icon: '💎' },
-  { label: i18n.condition_newWithTags?.() ?? 'New with Tags', description: i18n.quick_brandNewCondition?.() ?? 'Brand new condition', filter: 'condition=brand_new_with_tags', icon: '🏷️' },
-  { label: i18n.condition_likeNew?.() ?? 'Like New', description: i18n.quick_excellentCondition?.() ?? 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
-];
-
-// Optimized quick shop items filtering
-const filteredQuickShopItems = $derived.by(() => {
-  if (!dropdownSearchQuery.trim()) return quickShopItems;
-  const query = dropdownSearchQuery.toLowerCase();
-  return quickShopItems.filter(item =>
-    item.label.toLowerCase().includes(query) ||
-    item.description.toLowerCase().includes(query)
-  );
-});
-
-// Track last query to hide dropdown only when the user changes the search text while the panel is open
-let lastSearchQuery = $state(searchQuery.trim());
-
-$effect(() => {
-  const normalizedQuery = searchQuery.trim();
-
-  if (showSearchTypeDropdown && normalizedQuery !== lastSearchQuery) {
-    showSearchTypeDropdown = false;
-  }
-
-  lastSearchQuery = normalizedQuery;
-});
-
-// Handle click outside for search type dropdown
-$effect(() => {
-  if (typeof window !== 'undefined' && showSearchTypeDropdown) {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('#hero-search-container')) {
-        showSearchTypeDropdown = false;
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside, true);
-    return () => document.removeEventListener('click', handleClickOutside, true);
-  }
-});
+function selectSearchType(type: 'products' | 'sellers' | 'brands') {
+  searchType = type;
+  showSearchTypeMenu = false;
+}
 
 function handleQuickCondition(conditionKey: string) {
   onConditionFilter(conditionKey);
@@ -238,84 +193,72 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           mode="compact"
         >
           {#snippet leftSection()}
-            <button
-              type="button"
-              onclick={() => showSearchTypeDropdown = !showSearchTypeDropdown}
-              class="search-input__leading-action"
-              aria-expanded={showSearchTypeDropdown}
-              aria-haspopup="listbox"
-              aria-label={searchType === 'products' ? 'Searching products' : searchType === 'sellers' ? 'Searching sellers' : 'Searching brands'}
-            >
-              {#if searchType === 'products'}
-                <span class="text-[length:var(--text-lg)]" style="line-height: 1;">🛍️</span>
-              {:else if searchType === 'sellers'}
-                <span class="text-[length:var(--text-lg)]" style="line-height: 1;">👤</span>
-              {:else}
-                <span class="text-[length:var(--text-lg)]" style="line-height: 1;">🏷️</span>
-              {/if}
-              <svg class:rotate-180={showSearchTypeDropdown} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+            {#if showFilterButton}
+              <button
+                type="button"
+                onclick={onFilterClick}
+                class="search-input__leading-action"
+                aria-label="Open filters"
+              >
+                <span class="text-[length:var(--text-lg)]" style="line-height: 1;">⚙️</span>
+              </button>
+            {:else}
+              <!-- Vinted-style search type dropdown -->
+              <div class="relative">
+                <button
+                  type="button"
+                  onclick={() => showSearchTypeMenu = !showSearchTypeMenu}
+                  class="flex items-center justify-center w-10 h-10 text-[length:var(--text-lg)] hover:bg-[color:var(--surface-subtle)] rounded-l-[var(--radius-md)] transition-colors"
+                  aria-label="Search type: {currentSearchTypeOption.fullLabel}"
+                  aria-expanded={showSearchTypeMenu}
+                  aria-haspopup="listbox"
+                >
+                  {currentSearchTypeOption.label}
+                </button>
+                
+                {#if showSearchTypeMenu}
+                  <!-- Backdrop to close menu -->
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <div 
+                    class="fixed inset-0 z-40" 
+                    onclick={() => showSearchTypeMenu = false}
+                  ></div>
+                  
+                  <!-- Dropdown menu -->
+                  <div 
+                    class="absolute left-0 top-full mt-1 bg-[color:var(--surface-base)] border border-[color:var(--border-default)] rounded-[var(--radius-md)] shadow-lg z-50 min-w-[140px] py-1"
+                    role="listbox"
+                    aria-label="Select search type"
+                  >
+                    {#each searchTypeOptions as option}
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={searchType === option.value}
+                        onclick={() => selectSearchType(option.value)}
+                        class="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-[color:var(--surface-subtle)] transition-colors
+                          {searchType === option.value ? 'bg-[color:var(--surface-brand-subtle)] text-[color:var(--brand-primary)]' : 'text-[color:var(--text-primary)]'}"
+                      >
+                        <span class="text-base">{option.label}</span>
+                        <span>{option.fullLabel}</span>
+                        {#if searchType === option.value}
+                          <svg class="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        {/if}
+                      </button>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/if}
           {/snippet}
         </SearchInput>
-
-        {#if showSearchTypeDropdown}
-          <div class="absolute top-full left-0 mt-1 z-50 w-[200px]" transition:slide={{ duration: 200 }}>
-            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] overflow-hidden">
-              <button
-                type="button"
-                onclick={() => { searchType = 'products'; showSearchTypeDropdown = false; searchQuery = ''; }}
-                class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[color:var(--surface-muted)] transition-colors text-left"
-                class:bg-[color:var(--surface-brand-subtle)]={searchType === 'products'}
-                class:text-[color:var(--text-brand)]={searchType === 'products'}
-              >
-                <span class="text-lg">🛍️</span>
-                <span class="font-medium text-sm flex-1">{i18n.search_products?.() ?? 'Products'}</span>
-                {#if searchType === 'products'}
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                {/if}
-              </button>
-              
-              <button
-                type="button"
-                onclick={() => { searchType = 'sellers'; showSearchTypeDropdown = false; searchQuery = ''; }}
-                class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[color:var(--surface-muted)] transition-colors text-left"
-                class:bg-[color:var(--surface-brand-subtle)]={searchType === 'sellers'}
-                class:text-[color:var(--text-brand)]={searchType === 'sellers'}
-              >
-                <span class="text-lg">👤</span>
-                <span class="font-medium text-sm flex-1">{i18n.search_sellers?.() ?? 'Sellers'}</span>
-                {#if searchType === 'sellers'}
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                {/if}
-              </button>
-              
-              <button
-                type="button"
-                onclick={() => { searchType = 'brands'; showSearchTypeDropdown = false; searchQuery = ''; }}
-                class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[color:var(--surface-muted)] transition-colors text-left"
-                class:bg-[color:var(--surface-brand-subtle)]={searchType === 'brands'}
-                class:text-[color:var(--text-brand)]={searchType === 'brands'}
-              >
-                <span class="text-lg">🏷️</span>
-                <span class="font-medium text-sm flex-1">{i18n.search_brands?.() ?? 'Brands'}</span>
-                {#if searchType === 'brands'}
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                {/if}
-              </button>
-            </div>
-          </div>
-        {/if}
       </div>
 
       <!-- Category Pills -->
+      {#if showPills}
       <nav
         id="category-pills"
         aria-label={i18n.nav_browseCategories()}
@@ -388,6 +331,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           />
         {/each}
       </nav>
+      {/if}
     </div>
   </div>
 </div>

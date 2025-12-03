@@ -8,21 +8,21 @@
 
 <div class="seller-card-skeleton {className}" role="status" aria-label="Loading seller profile...">
   <!-- Avatar skeleton -->
-  <div class="relative w-16 h-16 bg-[color:var(--surface-emphasis)] rounded-full shimmer"></div>
+  <div class="relative w-16 h-16 bg-[color:var(--color-surface-emphasis)] rounded-full shimmer"></div>
 
   <!-- Content skeleton -->
   <div class="flex-1 space-y-1">
     <!-- Username -->
-    <div class="h-4 bg-[color:var(--surface-emphasis)] rounded w-24 shimmer"></div>
+    <div class="h-4 bg-[color:var(--color-surface-emphasis)] rounded w-24 shimmer"></div>
 
     <!-- Stats -->
     <div class="flex gap-4">
-      <div class="h-3 bg-[color:var(--surface-emphasis)] rounded w-16 shimmer"></div>
-      <div class="h-3 bg-[color:var(--surface-emphasis)] rounded w-12 shimmer"></div>
+      <div class="h-3 bg-[color:var(--color-surface-emphasis)] rounded w-16 shimmer"></div>
+      <div class="h-3 bg-[color:var(--color-surface-emphasis)] rounded w-12 shimmer"></div>
     </div>
 
     <!-- Location -->
-    <div class="h-3 bg-[color:var(--surface-emphasis)] rounded w-20 shimmer"></div>
+    <div class="h-3 bg-[color:var(--color-surface-emphasis)] rounded w-20 shimmer"></div>
   </div>
 </div>
 
@@ -49,7 +49,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      color-mix(in oklch, var(--surface-base) 40%, transparent) 50%,
+      color-mix(in oklch, var(--color-surface-base) 40%, transparent) 50%,
       transparent 100%
     );
     animation: shimmer 2s ease-in-out infinite;

@@ -49,6 +49,9 @@ interface Product {
   main_category_name?: string;
   subcategory_name?: string;
   specific_category_name?: string;
+  main_category_slug?: string;
+  subcategory_slug?: string;
+  specific_category_slug?: string;
 }
 
 export interface ProductFilterStore {
@@ -143,14 +146,17 @@ export function createProductFilter(initialProducts: Product[] = []): ProductFil
     if (filterState.category || filterState.subcategory || filterState.specific) {
       result = result.filter(product => {
         // Check category hierarchy
-        if (filterState.specific && product.specific_category_name) {
-          return normalize(product.specific_category_name) === normalize(filterState.specific);
+        if (filterState.specific) {
+          const pVal = product.specific_category_slug || product.specific_category_name;
+          if (pVal) return normalize(pVal) === normalize(filterState.specific);
         }
-        if (filterState.subcategory && product.subcategory_name) {
-          return normalize(product.subcategory_name) === normalize(filterState.subcategory);
+        if (filterState.subcategory) {
+          const pVal = product.subcategory_slug || product.subcategory_name;
+          if (pVal) return normalize(pVal) === normalize(filterState.subcategory);
         }
-        if (filterState.category && product.main_category_name) {
-          return normalize(product.main_category_name) === normalize(filterState.category);
+        if (filterState.category) {
+          const pVal = product.main_category_slug || product.main_category_name;
+          if (pVal) return normalize(pVal) === normalize(filterState.category);
         }
         return true;
       });

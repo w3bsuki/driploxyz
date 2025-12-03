@@ -1,6 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/server/security/rate-limiter';
+import { checkLockout, recordAuthFailure, recordAuthSuccess } from '$lib/server/security';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async (event) => {
@@ -59,8 +60,9 @@ export const actions = {
     }
     
     const { email: validatedEmail, password: validatedPassword } = validation.data;
+    const normalizedEmail = validatedEmail.toLowerCase().trim();
 
-    // Rate limiting by IP address - safe client address detection
+    // Get client IP for rate limiting and lockout
     let clientIp = 'unknown';
     try {
       clientIp = event.getClientAddress();
@@ -68,8 +70,19 @@ export const actions = {
       // In development, getClientAddress might fail - use fallback
       clientIp = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'localhost';
     }
+
+    // Phase 5: Check account lockout (persistent lockout after failed attempts)
+    const lockoutStatus = checkLockout(normalizedEmail, clientIp);
+    if (lockoutStatus.locked) {
+      return fail(429, { 
+        errors: { _form: lockoutStatus.message || `Account temporarily locked. Please try again in ${lockoutStatus.retryAfter} seconds.` }, 
+        values: { email: validatedEmail, password: '' } 
+      });
+    }
+
+    // Rate limiting by IP address (short-term throttle)
     const rateLimitKey = `login:${clientIp}`;
-    const { allowed, retryAfter} = checkRateLimit(rateLimitKey, 'login');
+    const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'login');
     
     if (!allowed) {
       return fail(429, { 
@@ -79,35 +92,49 @@ export const actions = {
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: validatedEmail.toLowerCase().trim(), // Normalize email
+      email: normalizedEmail,
       password: validatedPassword
     });
 
     if (error) {
+      // Record failed authentication attempt for lockout tracking
+      const lockoutResult = recordAuthFailure(normalizedEmail, clientIp);
+      
       let errorMessage = 'Unable to sign in';
       if (error.message.includes('Invalid login credentials')) {
         errorMessage = 'Invalid email or password';
+        // Add remaining attempts warning if applicable
+        if (lockoutResult.message && !lockoutResult.locked) {
+          errorMessage += `. ${lockoutResult.message}`;
+        }
       } else if (error.message.includes('Email not confirmed')) {
         errorMessage = 'Please verify your email before logging in';
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      return fail(400, { 
+      // If lockout was triggered by this attempt, use lockout message
+      if (lockoutResult.locked) {
+        errorMessage = lockoutResult.message || 'Account temporarily locked due to too many failed attempts';
+      }
+      
+      return fail(lockoutResult.locked ? 429 : 400, { 
         errors: { _form: errorMessage }, 
         values: { email: validatedEmail, password: '' } 
       });
     }
 
     if (!data.user || !data.session) {
+      recordAuthFailure(normalizedEmail, clientIp);
       return fail(400, { 
         errors: { _form: 'Authentication failed. Please try again.' }, 
         values: { email: validatedEmail, password: '' } 
       });
     }
     
-    // Reset rate limit on successful login
+    // Reset rate limit and lockout on successful login
     rateLimiter.reset(rateLimitKey);
+    recordAuthSuccess(normalizedEmail, clientIp);
     
     // CRITICAL: Don't check profile here - let +layout.server.ts handle onboarding redirect
     // This prevents race conditions with auth state propagation

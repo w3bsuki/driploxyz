@@ -10,6 +10,7 @@
   import { UnifiedCookieConsent } from '@repo/ui';
   import Header from '$lib/components/layout/Header.svelte';
   import '../app.css';
+  import '@repo/ui/styles/once-ui-system.css'; // Import Once UI System CSS
   // Deploy to driplo.xyz - force redeploy
   import { invalidate, preloadCode, goto } from '$app/navigation';
   import { browser } from '$app/environment';
@@ -18,7 +19,7 @@
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
-  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal, DiscoverModal } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal, DiscoverModal, OnceThemeProvider } from '@repo/ui';
   import { ToastContainer } from '@repo/ui';
   import { ErrorBoundary } from '@repo/ui';
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
@@ -410,7 +411,9 @@
       // Critical resource hints for faster loading
       const preconnectUrls = [
         'https://fonts.googleapis.com',
-        'https://fonts.gstatic.com'
+        'https://fonts.gstatic.com',
+        // Supabase storage for product images - critical for LCP
+        `https://${import.meta.env.VITE_SUPABASE_URL?.replace('https://', '') || 'mqaokngptsdcvlaxohax.supabase.co'}`
       ];
       
       preconnectUrls.forEach(url => {
@@ -551,6 +554,7 @@
 <!-- Global Toast Notifications -->
 <ToastContainer position="top-right" limit={6} />
 
+<OnceThemeProvider>
 <ErrorBoundary name="AppLayout">
   {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
     <div class="sticky top-0 z-50" bind:this={headerContainer}>
@@ -598,6 +602,7 @@
     </RealtimeErrorBoundary>
   </AuthProvider>
 </ErrorBoundary>
+</OnceThemeProvider>
 
 <!-- Footer -->
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}

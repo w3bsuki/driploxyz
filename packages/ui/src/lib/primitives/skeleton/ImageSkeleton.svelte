@@ -47,7 +47,7 @@
 </script>
 
 <div
-  class="image-skeleton bg-[color:var(--surface-emphasis)] overflow-hidden relative shimmer {className} {getRoundedClass()} {getAspectRatioClass()}"
+  class="image-skeleton bg-[color:var(--color-surface-emphasis)] overflow-hidden relative shimmer {className} {getRoundedClass()} {getAspectRatioClass()}"
   style={getContainerStyles()}
   role="status"
   aria-label="Loading image..."
@@ -55,7 +55,7 @@
   {#if showIcon}
     <div class="absolute inset-0 flex items-center justify-center">
       <svg
-        class="w-8 h-8 text-[color:var(--text-tertiary)] opacity-50"
+        class="w-8 h-8 text-[color:var(--color-text-tertiary)] opacity-50"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -93,7 +93,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      color-mix(in oklch, var(--surface-base) 40%, transparent) 50%,
+      color-mix(in oklch, var(--color-surface-base) 40%, transparent) 50%,
       transparent 100%
     );
     animation: shimmer 2s ease-in-out infinite;

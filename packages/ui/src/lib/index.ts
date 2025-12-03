@@ -3,9 +3,12 @@ export { default as Badge } from './primitives/badge/Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './compositions/banners/Banner.svelte';
 export { default as SectionBanner } from './compositions/banners/SectionBanner.svelte';
+export { default as FeaturedHero } from './compositions/banners/FeaturedHero.svelte';
+export { default as FeaturedHeroSlide } from './compositions/banners/FeaturedHeroSlide.svelte';
 
 // Home banner components
 export { default as PromotedListingsBanner } from './compositions/banners/PromotedListingsBanner.svelte';
+export { default as PromoBanner } from './compositions/banners/PromoBanner.svelte';
 export { default as FeaturedSellersBanner } from './compositions/banners/FeaturedSellersBanner.svelte';
 export { default as NewestListingsBanner } from './compositions/banners/NewestListingsBanner.svelte';
 export { default as Button } from './primitives/button/Button.svelte';
@@ -301,16 +304,25 @@ export { default as RegionSwitchModal } from './compositions/modals/RegionSwitch
 
 // Search Compositions
 export { default as HeroSearch } from './compositions/search/HeroSearch.svelte';
+export { default as BrowseByType } from './compositions/search/BrowseByType.svelte';
+export { default as RecentSearches } from './compositions/search/RecentSearches.svelte';
+export { default as TrendingSearches } from './compositions/search/TrendingSearches.svelte';
+export { default as FilterBar } from './compositions/search/FilterBar.svelte';
+export { default as SearchResultsHeader } from './compositions/search/SearchResultsHeader.svelte';
 
-// === NEWLY CREATED MOBILE-FIRST SEARCH COMPONENTS (2025-10-18) ===
 
-// Simple search bar for /search page
-export { default as SearchBarSimple } from './compositions/navigation/SearchBarSimple.svelte';
 
 // Mobile-first filter and browse components
 export { default as FilterDrawer } from './compositions/product/FilterDrawer.svelte';
 export { default as CategorySideDrawer } from './compositions/navigation/CategorySideDrawer.svelte';
+export { default as CategorySidebar } from './compositions/navigation/CategorySidebar.svelte';
 
 // Legacy components (kept for backwards compatibility)
 export { default as CategoryBrowseSheet } from './compositions/navigation/CategoryBrowseSheet.svelte';
 
+export { default as DiscoveryBanners } from './compositions/navigation/DiscoveryBanners.svelte';
+
+// Once UI System
+export { default as OnceThemeProvider } from './providers/ThemeProvider.svelte';
+export { theme as onceTheme } from './stores/theme';
+export * from './once-ui-config';

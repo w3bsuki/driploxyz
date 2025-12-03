@@ -30,9 +30,9 @@
 
   /* Luxury Button Color Variants */
   --btn-primary-bg: var(--brand-primary-strong);
-  --btn-primary-hover: var(--color-zinc-800);
-  --btn-primary-text: var(--text-inverse);
-  --btn-primary-border: var(--color-zinc-900);
+  --btn-primary-hover: var(--color-lime-600);
+  --btn-primary-text: var(--color-zinc-950); /* Black text on Lime */
+  --btn-primary-border: var(--brand-primary-strong);
 
   --btn-secondary-bg: var(--surface-base);
   --btn-secondary-hover: var(--state-hover);
@@ -236,7 +236,7 @@
   --pill-bg-hover: var(--state-hover);
   --pill-bg-active: var(--brand-primary-strong);
   --pill-text: var(--text-secondary);
-  --pill-text-active: var(--text-inverse);
+  --pill-text-active: var(--color-zinc-950); /* Black text on Lime pill */
   --pill-border: var(--border-default);
   --pill-border-active: var(--brand-primary-strong);
 

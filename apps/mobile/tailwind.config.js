@@ -9,16 +9,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Import design tokens from web app
-        primary: '#3b82f6',
-        secondary: '#8b5cf6',
-        accent: '#10b981',
+        // Import design tokens from web app (Bungkusa Theme)
+        primary: '#a3e635', // Lime 400
+        secondary: '#18181b', // Zinc 900
+        accent: '#a3e635', // Lime 400
         charcoal: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          500: '#64748b',
-          900: '#0f172a',
+          50: '#fafafa',
+          100: '#f4f4f5',
+          200: '#e4e4e7',
+          500: '#71717a',
+          900: '#18181b',
         },
         indigo: {
           50: '#eef2ff',

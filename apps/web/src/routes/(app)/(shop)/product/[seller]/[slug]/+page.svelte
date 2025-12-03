@@ -221,104 +221,92 @@
   condition={productCondition as any}
       />
 
-      <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
-      <div class="md:hidden mt-4 space-y-3">
-        <div class="bg-white rounded-xl border border-gray-200 p-4">
-          <!-- Header: avatar · name/@username · like (date moved under name) -->
-          <div class="flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3 min-w-0">
-              {#if data.product.seller_avatar}
-                <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-7 rounded-full object-cover" />
-              {:else}
-                <div class="size-7 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
-              {/if}
-              <div class="min-w-0">
-                <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-medium text-gray-900 truncate">{data.product.seller_name}</a>
-                <div class="flex items-center gap-1.5 text-xs text-gray-500 truncate">
-                  {#if data.product.seller_username}
-                    <span class="truncate">@{data.product.seller_username}</span>
-                    {#if (data.product as any).location}<span aria-hidden="true">·</span>{/if}
-                  {/if}
-                  {#if (data.product as any).location}
-                    <span class="truncate">{(data.product as any).location}</span>
-                  {/if}
-                </div>
+      <!-- Mobile unified post: Compact Header (Avatar + Title + Like) -->
+      <div class="md:hidden mt-4 space-y-4">
+        <div class="flex items-start gap-3">
+          <!-- Avatar -->
+          <a href={`/profile/${data.product.seller_id}`} class="shrink-0 pt-1">
+            {#if data.product.seller_avatar}
+              <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-10 rounded-full object-cover border border-gray-100" />
+            {:else}
+              <div class="size-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400" aria-hidden="true">
+                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               </div>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-gray-200 bg-white text-gray-700'}`}
-                aria-pressed={Boolean(isLiked)}
-                onclick={async () => { const r = await handleFavorite(); return r; }}
-              >
-                <Heart class={`size-4 ${isLiked ? 'text-rose-600 fill-rose-600' : 'text-gray-500'}`}/>
-                <span>{favoriteCount || 0}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Condition + Title (inline, condition on the left) -->
-          <div class="mt-3 flex items-center gap-3">
-            {#if (data.product as any).condition}
-              <span class="shrink-0">
-                <ConditionBadge condition={(data.product as any).condition} />
-              </span>
             {/if}
-            <h1 class="flex-1 text-lg font-semibold text-gray-900 leading-snug tracking-tight truncate">
+          </a>
+
+          <!-- Title & Seller Name -->
+          <div class="flex-1 min-w-0">
+            <h1 class="text-lg font-bold text-gray-950 leading-tight mb-0.5 text-balance">
               {data.product.title}
             </h1>
+            <a href={`/profile/${data.product.seller_id}`} class="text-sm text-gray-500 truncate block">
+              {data.product.seller_name}
+              {#if data.product.seller_username}
+                <span class="text-gray-400">@{data.product.seller_username}</span>
+              {/if}
+            </a>
           </div>
 
-          <!-- Description -->
-          {#if (data.product as any).description}
-            <p class="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
+          <!-- Like Button -->
+          <button
+            type="button"
+            class="shrink-0 p-2 -mr-2 text-gray-400 hover:text-rose-600 transition-colors"
+            aria-pressed={Boolean(isLiked)}
+            onclick={async () => { const r = await handleFavorite(); return r; }}
+          >
+            <Heart class={`size-6 ${isLiked ? 'text-rose-600 fill-rose-600' : ''}`}/>
+            <span class="sr-only">{favoriteCount || 0}</span>
+          </button>
+        </div>
+
+        <!-- Description -->
+        {#if (data.product as any).description}
+          <div class="py-1">
+            <p class="text-base text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'} text-pretty">
               {(data.product as any).description}
             </p>
             {#if ((data.product as any).description as string).length > 160}
               <button
                 type="button"
-                class="mt-2 text-xs font-medium text-zinc-600 hover:text-zinc-900"
+                class="mt-2 text-sm font-medium text-gray-900 hover:underline"
                 onclick={() => descExpanded = !descExpanded}
               >{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}</button>
             {/if}
-          {/if}
-        </div>
+          </div>
+        {/if}
 
         <!-- Quick facts table (mobile) -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-sm font-semibold text-gray-900">{m.pdp_details()}</h3>
-          </div>
-          <dl class="divide-y divide-[color:var(--gray-100)]">
+        <div class="mt-4">
+          <dl class="divide-y divide-gray-100">
             {#if (data.product as any).brand}
-              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_brand()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).brand}</dd>
+              <div class="py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap">{m.pdp_brand()}</dt>
+                <dd class="font-medium text-gray-950 text-right truncate">{(data.product as any).brand}</dd>
               </div>
             {/if}
             {#if (data.product as any).size}
-              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_size()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).size}</dd>
+              <div class="py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap">{m.pdp_size()}</dt>
+                <dd class="font-medium text-gray-950 text-right truncate">{(data.product as any).size}</dd>
               </div>
             {/if}
             {#if (data.product as any).condition}
-              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_condition()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{translateCondition(((data.product as any).condition || '') as string)}</dd>
+              <div class="py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap">{m.pdp_condition()}</dt>
+                <dd class="font-medium text-gray-950 text-right truncate">{translateCondition(((data.product as any).condition || '') as string)}</dd>
               </div>
             {/if}
             {#if (data.product as any).color}
-              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_color()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).color}</dd>
+              <div class="py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap">{m.pdp_color()}</dt>
+                <dd class="font-medium text-gray-950 text-right truncate">{(data.product as any).color}</dd>
               </div>
             {/if}
             {#if (data.product as any).material}
-              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_material()}</dt>
-                <dd class="font-semibold text-gray-900 text-right truncate">{(data.product as any).material}</dd>
+              <div class="py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-500 whitespace-nowrap">{m.pdp_material()}</dt>
+                <dd class="font-medium text-gray-950 text-right truncate">{(data.product as any).material}</dd>
               </div>
             {/if}
           </dl>
@@ -336,7 +324,7 @@
       }}
       onMessage={handleMessage}
       onViewProfile={() => handleNavigate(`/profile/${data.product.seller_id}`)}
-      class="md:hidden mt-4"
+      class="md:hidden mt-6 border border-gray-200"
     />
     </section>
 
@@ -356,14 +344,14 @@
             {/if}
 
             <!-- Title -->
-            <h1 class="text-xl font-semibold text-gray-900 leading-tight">
+            <h1 class="text-xl font-semibold text-gray-950 leading-tight text-balance">
               {data.product.title}
             </h1>
 
             <!-- Price Section -->
-            <div class="mt-5 pb-5 border-b border-[color:var(--gray-100)]">
+            <div class="mt-5 pb-5 border-b border-gray-100">
               <div class="flex items-baseline gap-3">
-                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price" data-testid="product-price">€{Number((data.product as any).price)}</span>
+                <span class="text-3xl font-bold text-gray-950 tracking-tight tabular-nums" aria-label="Price" data-testid="product-price">€{Number((data.product as any).price)}</span>
                 {#if (data.product as any).original_price && (data.product as any).original_price > (data.product as any).price}
                   <span class="text-lg text-gray-500 line-through" aria-label="Original price">€{(data.product as any).original_price}</span>
                   <span class="sr-only">Reduced from €{(data.product as any).original_price} to €{(data.product as any).price}</span>
@@ -397,7 +385,7 @@
         {#if (data.product as any).description}
           <div class="hidden md:block bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <h2 class="text-base font-semibold text-gray-900 mb-3">{m.pdp_description()}</h2>
-            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'} text-pretty">
               {(data.product as any).description}
             </p>
             {#if ((data.product as any).description as string).length > 150}
@@ -418,10 +406,10 @@
             <h2 id="details-heading" class="text-base font-semibold text-gray-900">{m.pdp_productDetails()}</h2>
           </div>
           {#snippet fact(label: string, value: string)}
-            <div class="px-5 py-3.5 border-b border-[color:var(--gray-100)] last:border-b-0">
+            <div class="px-5 py-3.5 border-b border-gray-100 last:border-b-0">
               <div class="grid grid-cols-[auto_1fr] items-center gap-4">
-                <dt class="text-sm font-medium text-gray-600 whitespace-nowrap">{label}</dt>
-                <dd class="text-sm text-gray-900 font-semibold text-right truncate">{value}</dd>
+                <dt class="text-sm font-medium text-gray-500 whitespace-nowrap">{label}</dt>
+                <dd class="text-sm text-gray-950 font-medium text-right truncate">{value}</dd>
               </div>
             </div>
           {/snippet}
@@ -459,12 +447,13 @@
     {/if}
 
     {#if showSimilar}
-      <section class="mt-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_youMayAlsoLike()}</h2>
-        {#await data.similarProducts then similar}
-          {#if Array.isArray(similar) && similar.length > 0}
+      {#await data.similarProducts then similar}
+        {@const filteredSimilar = Array.isArray(similar) ? similar.filter(p => p.id !== data.product.id) : []}
+        {#if filteredSimilar.length > 0}
+          <section class="mt-4">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_youMayAlsoLike()}</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {#each similar as p (p.id)}
+              {#each filteredSimilar as p (p.id)}
                 {@const product = mapProduct(p as Record<string, any>)}
                 <ProductCard
                   {product}
@@ -473,18 +462,19 @@
                 />
               {/each}
             </div>
-          {/if}
-        {/await}
-      </section>
+          </section>
+        {/if}
+      {/await}
     {/if}
 
     {#if showSeller}
-      <section class="mt-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_moreFromSeller()}</h2>
-        {#await data.sellerProducts then sellerItems}
-          {#if Array.isArray(sellerItems) && sellerItems.length > 0}
+      {#await data.sellerProducts then sellerItems}
+        {@const filteredSellerItems = Array.isArray(sellerItems) ? sellerItems.filter(p => p.id !== data.product.id) : []}
+        {#if filteredSellerItems.length > 0}
+          <section class="mt-4">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_moreFromSeller()}</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {#each sellerItems as p (p.id)}
+              {#each filteredSellerItems as p (p.id)}
                 {@const product = mapProduct(p as Record<string, any>)}
                 <ProductCard
                   {product}
@@ -493,9 +483,9 @@
                 />
               {/each}
             </div>
-          {/if}
-        {/await}
-      </section>
+          </section>
+        {/if}
+      {/await}
     {/if}
   </div>
 
@@ -517,8 +507,8 @@
         full_name: (data.product as any).seller_name
       }}
       productTitle={(data.product as any).title}
-      productDescription={(data.product as any).description}
       showSellerInfo={true}
+      condition={(data.product as any).condition}
     />
     <div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-gray-500">
       <Clock class="size-3.5 text-gray-400" aria-hidden="true" />

@@ -5,6 +5,7 @@
  * Handles profile creation and completion in a straightforward way.
  */
 
+import { dev } from '$app/environment';
 import type { SupabaseAuthClient, Profile, AuthUser } from './index';
 import { updateUserProfile } from './index';
 import type { Database } from '@repo/database';
@@ -179,7 +180,7 @@ async function createBrandEntry(
       .single();
 
     if (existingBrand) {
-      console.log('[Onboarding] Brand entry already exists for profile:', profileId);
+      if (dev) console.log('[Onboarding] Brand entry already exists for profile:', profileId);
       return;
     }
 
@@ -201,9 +202,9 @@ async function createBrandEntry(
       throw error;
     }
 
-    console.log('[Onboarding] Brand entry created successfully for profile:', profileId);
+    if (dev) console.log('[Onboarding] Brand entry created successfully for profile:', profileId);
   } catch (error) {
-    console.error('[Onboarding] Error in createBrandEntry:', error);
+    if (dev) console.error('[Onboarding] Error in createBrandEntry:', error);
     // Don't throw the error to avoid breaking onboarding
     // Log it for monitoring instead
   }

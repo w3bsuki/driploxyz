@@ -9,6 +9,7 @@
 
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { dev } from '$app/environment';
   import { authStore } from './store.svelte';
   import type { AuthUser, AuthSession, Profile } from './index';
 
@@ -47,7 +48,7 @@
   // CRITICAL FIX: Update store when server data changes (navigation, etc.)
   $effect(() => {
     if (serverDataChanged()) {
-      console.log('[AuthProvider] Server data changed, updating store');
+      if (dev) console.log('[AuthProvider] Server data changed, updating store');
       authStore.setServerAuth(user, session, profile);
     }
   });

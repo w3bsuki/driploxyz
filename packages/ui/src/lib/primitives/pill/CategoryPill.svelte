@@ -62,7 +62,7 @@
     class: className = ''
   }: CategoryPillProps = $props();
 
-  // Size configurations
+  // Size configurations - Modern 2025 touch targets (Vinted/Apple style: 36-44px)
   const sizeConfig = {
     sm: {
       base: 'px-3 py-1.5 text-xs min-h-[var(--touch-compact)]',
@@ -175,8 +175,8 @@
 
 <style>
   .category-pill {
-    /* Ensure consistent tap target size for mobile */
-    min-height: var(--touch-standard, 36px);
+    /* Modern 2025 touch target (Vinted/Apple style: 40px standard) */
+    min-height: var(--touch-standard, 40px);
     
     /* Smooth transitions */
     transition-property: background-color, border-color, color, box-shadow;

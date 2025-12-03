@@ -65,9 +65,9 @@
         return `${baseClasses} bg-[color:var(--accent-subtle)] text-[color:var(--accent-text)] hover:bg-[color:var(--accent-muted)]`;
       case 'brand':
       case 'size':
-        return `${baseClasses} bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)]`;
+        return `${baseClasses} bg-[color:var(--color-surface-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-muted)]`;
       default:
-        return `${baseClasses} bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)]`;
+        return `${baseClasses} bg-[color:var(--color-surface-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-muted)]`;
     }
   }
 </script>

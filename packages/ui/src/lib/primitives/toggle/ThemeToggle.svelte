@@ -50,7 +50,7 @@
   type="button"
   title={tooltip}
   aria-label={tooltip}
-  class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-colors {btnSize} {className}"
+  class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[color:var(--color-border-subtle)] bg-[color:var(--color-surface-base)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-colors {btnSize} {className}"
   onclick={toggle}
 >
   {#if isDark}

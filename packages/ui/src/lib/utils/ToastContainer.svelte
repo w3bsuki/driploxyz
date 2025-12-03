@@ -75,13 +75,13 @@
 	function getToastStyles(type?: Toast['type']) {
 		switch (type) {
 			case 'success':
-				return 'bg-[var(--status-success-solid)] text-[var(--text-inverse)]';
+				return 'bg-[var(--color-status-success-solid)] text-[var(--color-text-inverse)]';
 			case 'error':
-				return 'bg-[var(--status-error-solid)] text-[var(--text-inverse)]';
+				return 'bg-[var(--color-status-error-solid)] text-[var(--color-text-inverse)]';
 			case 'warning':
-				return 'bg-[var(--status-warning-solid)] text-[var(--text-inverse)]';
+				return 'bg-[var(--color-status-warning-solid)] text-[var(--color-text-inverse)]';
 			default:
-				return 'bg-[var(--surface-inverse)] text-[var(--text-inverse)]';
+				return 'bg-[var(--color-surface-inverse)] text-[var(--color-text-inverse)]';
 		}
 	}
 </script>
@@ -106,7 +106,7 @@
 				<p class="text-sm font-medium">{toast.message}</p>
 				<button
 					onclick={() => removeToast(toast.id)}
-					class="ml-4 text-[var(--text-inverse)]/80 hover:text-[var(--text-inverse)] focus:outline-none min-h-[36px] min-w-[36px] flex items-center justify-center"
+					class="ml-4 text-[var(--color-text-inverse)]/80 hover:text-[var(--color-text-inverse)] focus:outline-none min-h-[36px] min-w-[36px] flex items-center justify-center"
 					aria-label="Close notification"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

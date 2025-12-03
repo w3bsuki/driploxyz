@@ -2,7 +2,7 @@
   import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, CategoryPills, ProductCardSkeleton, type Product } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, CategoryPill, FilterDrawer, ProductCardSkeleton, type Product } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
@@ -13,7 +13,7 @@
   // import { ProfileService } from '@repo/core/services/profiles';
   
   // Local lightweight types to avoid 'never' issues and clarify intent
-  interface CategoryPill { slug: string; name: string; productCount?: number }
+  interface CategoryPillData { slug: string; name: string; productCount?: number }
   interface LevelCategory { slug: string; name: string }
   // Raw product shape coming from server for this page (only the fields we read)
   interface RawProduct {
@@ -60,8 +60,8 @@
     canonicalPath: null,
     categoryIds: []
   };
-  const pillCategories: CategoryPill[] = (data.pillCategories as unknown as CategoryPill[]) || [];
-  const dropdownCategories: CategoryPill[] = (data.dropdownCategories as unknown as CategoryPill[]) || [];
+  const pillCategories: CategoryPillData[] = (data.pillCategories as unknown as CategoryPillData[]) || [];
+  const dropdownCategories: CategoryPillData[] = (data.dropdownCategories as unknown as CategoryPillData[]) || [];
   // const products: RawProduct[] = (data.products as unknown as RawProduct[]) || [];
   let products = $state<RawProduct[]>((data.products as unknown as RawProduct[]) || []);
   
@@ -332,10 +332,10 @@
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   // const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
   const conditions = [
-    { value: 'new', label: i18n.condition_newWithTags() },
-    { value: 'like-new', label: i18n.condition_likeNew() },
-    { value: 'good', label: i18n.condition_good() },
-    { value: 'fair', label: i18n.condition_fair() }
+    { value: 'brand_new_with_tags', label: i18n.condition_newWithTags(), emoji: '🏷️' },
+    { value: 'like_new', label: i18n.condition_likeNew(), emoji: '💎' },
+    { value: 'good', label: i18n.condition_good(), emoji: '👍' },
+    { value: 'fair', label: i18n.condition_fair(), emoji: '👌' }
   ];
   
   // Performance-optimized filtering using $state.raw() for large product arrays
@@ -702,25 +702,30 @@
 
       <!-- Level-Aware Category Navigation Pills (Unified) -->
       {#if pillCategories.length > 0}
-        <div class="px-4 flex justify-center">
-          <CategoryPills
-            categories={pillCategories.map((c) => ({ id: c.slug, name: translateSubcategoryName(c.name), slug: c.slug, count: c.productCount }))}
-            activeCategory={null}
-            showAllButton={false}
-            size="md"
-            onCategorySelect={(slug) => {
-              if (!slug) return;
-              let targetUrl = '';
-              if (resolution.isVirtual) {
-                targetUrl = `/category/${slug}/${resolution.virtualCategory?.slug || ''}`;
-              } else if (resolution.level === 1) {
-                targetUrl = getCategoryUrl(resolution.l1?.slug || '', slug);
-              } else if (resolution.level === 2) {
-                targetUrl = getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', slug);
-              }
-              if (targetUrl) goto(targetUrl);
-            }}
-          />
+        <div class="px-4">
+          <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 sm:justify-center">
+            {#each pillCategories as cat}
+              <CategoryPill
+                label={translateSubcategoryName(cat.name)}
+                itemCount={cat.productCount}
+                showItemCount={!!cat.productCount}
+                size="md"
+                onclick={() => {
+                  const slug = cat.slug;
+                  if (!slug) return;
+                  let targetUrl = '';
+                  if (resolution.isVirtual) {
+                    targetUrl = `/category/${slug}/${resolution.virtualCategory?.slug || ''}`;
+                  } else if (resolution.level === 1) {
+                    targetUrl = getCategoryUrl(resolution.l1?.slug || '', slug);
+                  } else if (resolution.level === 2) {
+                    targetUrl = getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', slug);
+                  }
+                  if (targetUrl) goto(targetUrl);
+                }}
+              />
+            {/each}
+          </div>
         </div>
       {/if}
     </div>
@@ -728,10 +733,7 @@
 
   <div class="px-2 sm:px-4 lg:px-6 py-3">
     <!-- Sort and Filter Bar -->
-    <div class="flex justify-between items-center mb-4">
-      <p class="text-sm text-gray-600">
-        {filteredProducts.length} {i18n.category_itemsCount()}
-      </p>
+    <div class="flex justify-end items-center mb-4">
       <div class="flex items-center space-x-2">
         <select 
           bind:value={sortBy}
@@ -775,17 +777,17 @@
               </button>
             </div>
             
-            <!-- Sizes -->
+            <!-- Size Filter -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">{i18n.filter_size()}</h4>
+              <h4 class="font-semibold text-sm mb-3 text-gray-900">{i18n.filter_size()}</h4>
               <div class="grid grid-cols-3 gap-2">
                 {#each sizes as size}
                   <button
                     onclick={() => toggleSize(size)}
-                    class="px-3 py-1 text-sm border rounded-lg transition-colors
+                    class="px-3 py-2 text-sm font-medium border rounded-lg transition-all duration-200
                       {selectedSizes.includes(size) 
-                        ? 'bg-black text-white border-black' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
+                        ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm' 
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-zinc-400 hover:bg-gray-50'}"
                   >
                     {size}
                   </button>
@@ -793,40 +795,40 @@
               </div>
             </div>
             
-            <!-- Condition -->
+            <!-- Condition Filter -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">{i18n.filter_condition()}</h4>
-              <div class="space-y-2">
+              <h4 class="font-semibold text-sm mb-3 text-gray-900">{i18n.filter_condition()}</h4>
+              <div class="grid grid-cols-1 gap-2">
                 {#each conditions as condition}
-                  <label class="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedConditions.includes(condition.value)}
-                      onchange={() => toggleCondition(condition.value)}
-                      class="mr-2 rounded-sm text-zinc-900"
-                    />
-                    <span class="text-sm text-gray-700">{condition.label}</span>
-                  </label>
+                  <button
+                    onclick={() => toggleCondition(condition.value)}
+                    class="px-4 py-2.5 text-sm font-medium border rounded-lg text-left transition-all duration-200
+                      {selectedConditions.includes(condition.value)
+                        ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm' 
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-zinc-400 hover:bg-gray-50'}"
+                  >
+                    {condition.label}
+                  </button>
                 {/each}
               </div>
             </div>
             
-            <!-- Price Range -->
+            <!-- Price Range Filter -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">{i18n.filter_priceRange()}</h4>
-              <div class="flex items-center space-x-2">
+              <h4 class="font-semibold text-sm mb-3 text-gray-900">{i18n.filter_priceRange()}</h4>
+              <div class="flex items-center gap-2">
                 <input 
                   type="number" 
                   bind:value={priceRange.min}
                   placeholder="{i18n.search_min()}"
-                  class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
                 />
-                <span class="text-gray-500">-</span>
+                <span class="text-gray-400">−</span>
                 <input 
                   type="number" 
                   bind:value={priceRange.max}
                   placeholder="{i18n.search_max()}"
-                  class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
                 />
               </div>
             </div>
@@ -891,94 +893,35 @@
 </div>
 
 <!-- Mobile Filter Drawer -->
-{#if showFilters}
-  <div class="lg:hidden fixed inset-0 z-50">
-    <!-- Backdrop -->
-    <button 
-      class="fixed inset-0 bg-black bg-opacity-50"
-      onclick={() => showFilters = false}
-      aria-label="Close filters"
-    ></button>
+<FilterDrawer
+  bind:isOpen={showFilters}
+  currentFilters={{
+    size: selectedSizes[0] || null,
+    condition: selectedConditions[0] || null,
+    brand: selectedBrands[0] || null,
+    minPrice: priceRange.min,
+    maxPrice: priceRange.max,
+    sortBy: sortBy
+  }}
+  onApply={(filters) => {
+    if (filters.size) selectedSizes = [filters.size as string];
+    else selectedSizes = [];
     
-    <!-- Drawer -->
-    <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[calc(90vh-4rem)] flex flex-col shadow-2xl">
-      <!-- Header -->
-      <div class="flex justify-between items-center p-4 border-b border-gray-100">
-        <h2 class="text-lg font-semibold">{i18n.category_filters()}</h2>
-        <button onclick={() => showFilters = false} class="p-1" aria-label="Close filters">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-6">
-        <!-- Sizes -->
-        <div>
-          <h4 class="font-medium text-sm mb-3">{i18n.filter_size()}</h4>
-          <div class="grid grid-cols-3 gap-2">
-            {#each sizes as size}
-              <button
-                onclick={() => toggleSize(size)}
-                class="px-3 py-2 text-sm border rounded-lg transition-colors duration-200 font-medium
-                  {selectedSizes.includes(size) 
-                    ? 'bg-black text-white border-black shadow-sm' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
-              >
-                {size}
-              </button>
-            {/each}
-          </div>
-        </div>
-        
-        <!-- Condition -->
-        <div>
-          <h4 class="font-medium text-sm mb-3">{i18n.filter_condition()}</h4>
-          <div class="space-y-2">
-            {#each conditions as condition}
-              <button
-                onclick={() => toggleCondition(condition.value)}
-                class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-colors duration-200 font-medium
-                  {selectedConditions.includes(condition.value)
-                    ? 'bg-black text-white border-black shadow-sm' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
-              >
-                {condition.label}
-              </button>
-            {/each}
-          </div>
-        </div>
-        
-        <!-- Price Range -->
-        <div>
-          <h4 class="font-medium text-sm mb-3">{i18n.filter_priceRange()}</h4>
-          <div class="flex items-center space-x-2">
-            <input 
-              type="number" 
-              bind:value={priceRange.min}
-              placeholder={i18n.search_min()}
-              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            />
-            <span class="text-gray-500">-</span>
-            <input 
-              type="number" 
-              bind:value={priceRange.max}
-              placeholder={i18n.search_max()}
-              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            />
-          </div>
-        </div>
-      </div>
-      
-      <!-- Footer Actions -->
-      <div class="flex space-x-3 p-4 border-t border-gray-100">
-        <Button onclick={clearFilters} variant="outline" class="flex-1">{i18n.category_clearAll()}</Button>
-        <Button onclick={() => showFilters = false} class="flex-1">{i18n.filter_apply()}</Button>
-      </div>
-    </div>
-  </div>
-{/if}
+    if (filters.condition) selectedConditions = [filters.condition as string];
+    else selectedConditions = [];
+    
+    if (filters.brand) selectedBrands = [filters.brand as string];
+    else selectedBrands = [];
+    
+    if (filters.minPrice !== undefined && filters.minPrice !== null) priceRange.min = Number(filters.minPrice);
+    if (filters.maxPrice !== undefined && filters.maxPrice !== null) priceRange.max = Number(filters.maxPrice);
+    
+    if (filters.sortBy) sortBy = filters.sortBy as string;
+  }}
+  onClear={clearAllFilters}
+  conditions={conditions}
+  sizes={sizes}
+/>
 
 <!-- Seller Quick View Modal -->
 {#if selectedSeller}

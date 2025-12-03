@@ -10,8 +10,12 @@
 		<!-- PWA Manifest -->
 		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
 		
-		<!-- Performance optimizations -->
+		<!-- Performance optimizations: Preconnect to critical origins -->
 		<link rel="preconnect" href="https://supabase.co" crossorigin>
+		<link rel="dns-prefetch" href="https://supabase.co">
+		
+		<!-- Preload critical fonts for LCP improvement -->
+		<link rel="preload" href="%sveltekit.assets%/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
 
 		<!-- Inter Variable Font - Self-Hosted with Cyrillic support -->
 		<link rel="stylesheet" href="%sveltekit.assets%/fonts/inter.css">
@@ -64,20 +68,22 @@
 		<!-- Apple Touch Icons -->
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
 		
-		<!-- Error handling and monitoring -->
+		<!-- Error handling -->
 		<script>
 			// Global error handler for uncaught JavaScript errors
 			window.addEventListener('error', function(event) {
-				console.error('Global error:', event.error);
-				// In production, send to error tracking service
-				if (window.location.hostname !== 'localhost') {
-					// Could integrate with Sentry, LogRocket, etc.
+				// Only log in development
+				if (window.location.hostname === 'localhost') {
+					console.error('Global error:', event.error);
 				}
 			});
 
 			// Global handler for unhandled promise rejections
 			window.addEventListener('unhandledrejection', function(event) {
-				console.error('Unhandled promise rejection:', event.reason);
+				// Only log in development
+				if (window.location.hostname === 'localhost') {
+					console.error('Unhandled promise rejection:', event.reason);
+				}
 			});
 
 			// Report Core Web Vitals to analytics (dev only)
@@ -99,18 +105,6 @@
 				} catch (e) {
 					// Silently fail if not supported
 				}
-			}
-			
-			// Debug info for Supabase connection
-			if (window.location.hostname === 'localhost') {
-				window.SENTRY_DSN = '';
-				window.NODE_ENV = 'development';
-				window.APP_VERSION = '1.0.0';
-				
-				// Log environment variables
-				console.log('[INIT] Environment variables loaded');
-				console.log('[INIT] Supabase URL:', '%PUBLIC_SUPABASE_URL%' ? 'Set' : 'Not set');
-				console.log('[INIT] Supabase Anon Key:', '%PUBLIC_SUPABASE_ANON_KEY%' ? 'Set' : 'Not set');
 			}
 		</script>
 		

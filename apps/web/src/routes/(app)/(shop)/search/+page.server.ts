@@ -4,6 +4,7 @@ import { dev } from '$app/environment';
 import type { Database } from '@repo/database';
 import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from '$lib/utils/filter-url';
 import { withTimeout } from '$lib/server/utils';
+import { ProductDomainAdapter } from '@repo/core/services';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -151,7 +152,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
   const condition = url.searchParams.get('condition');
   const brand = url.searchParams.get('brand');
   const size = url.searchParams.get('size');
-  const sortBy = url.searchParams.get('sort') || 'relevance';
+  const sortBy = url.searchParams.get('sort') || 'newest';
 
   try {
     if (!locals.supabase) {
@@ -205,45 +206,103 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     let productsError: any = null;
 
     try {
-      const rpcResponse = await (locals.supabase.rpc as any)('search_products', {
-        query_text: query?.trim() || '',
-        filter_category: categorySlug,
-        min_price: minPrice ? parseFloat(minPrice) : null,
-        max_price: maxPrice ? parseFloat(maxPrice) : null,
-        filter_size: size && size !== 'all' ? size : null,
-        filter_condition: condition && condition !== 'all' ? condition : null,
-        filter_brand: brand && brand !== 'all' ? brand : null,
-        result_limit: pageSize,
-        result_offset: offset,
-        filter_country_code: locals.country || 'BG'
+      // Use ProductDomainAdapter for consistent search logic
+      const productAdapter = new ProductDomainAdapter(locals.supabase);
+      
+      // DEBUG: Phase 1 - Log search parameters
+      console.log('[Search Server] Starting search with params:', {
+        query,
+        categorySlug,
+        page,
+        pageSize,
+        offset,
+        minPrice,
+        maxPrice,
+        condition,
+        brand,
+        size,
+        sortBy
       });
       
-      searchResults = rpcResponse.data as SearchProductResult[] | null;
-      productsError = rpcResponse.error;
-    } catch (rpcErr) {
-      console.error('RPC search failed, falling back to standard query:', rpcErr);
-      let queryBuilder = locals.supabase
-        .from('products')
-        .select('id, title, description, price, category, brand, condition, size, images, created_at, seller_id, slug, location, country_code')
-        .eq('status', 'active')
-        .range(offset, offset + pageSize - 1);
+      // Resolve category segments if needed
+      let categoryIds: string[] | undefined = undefined;
+      if (categorySlug) {
+        // Simple resolution for now - find category by slug
+        const { data: catData } = await locals.supabase
+          .from('categories')
+          .select('id')
+          .eq('slug', categorySlug)
+          .single();
+        
+        if (catData) {
+          categoryIds = [catData.id];
+          console.log('[Search Server] Resolved category slug', categorySlug, 'to ID:', catData.id);
+        } else {
+          console.log('[Search Server] Could not resolve category slug:', categorySlug);
+        }
+      }
 
-      if (query) {
-        queryBuilder = queryBuilder.ilike('title', `%${query}%`);
+      const sortMap: Record<string, { by: 'created_at' | 'price' | 'popularity' | 'relevance'; direction: 'asc' | 'desc' }> = {
+        'price-low': { by: 'price', direction: 'asc' },
+        'price-high': { by: 'price', direction: 'desc' },
+        'newest': { by: 'created_at', direction: 'desc' },
+        'oldest': { by: 'created_at', direction: 'asc' },
+        'popular': { by: 'popularity', direction: 'desc' },
+        'relevance': { by: 'created_at', direction: 'desc' } // Fallback to newest for relevance as simple search doesn't support rank
+      };
+
+      const sortOptions = sortMap[sortBy] || sortMap.newest;
+
+      const searchResult = await productAdapter.searchProductsWithFilters(query, {
+        limit: pageSize,
+        offset,
+        // country_code: locals.country || 'BG', // Removed to match main page behavior
+        category_ids: categoryIds,
+        min_price: minPrice ? parseFloat(minPrice) : undefined,
+        max_price: maxPrice ? parseFloat(maxPrice) : undefined,
+        sizes: size && size !== 'all' ? [size] : undefined,
+        conditions: condition && condition !== 'all' ? [condition] : undefined,
+        brands: brand && brand !== 'all' ? [brand] : undefined,
+        sort: sortOptions
+      });
+
+      // DEBUG: Phase 1 - Log search results
+      console.log('[Search Server] ProductDomainAdapter returned:', {
+        hasData: !!searchResult.data,
+        dataLength: searchResult.data?.length,
+        hasError: !!searchResult.error,
+        error: searchResult.error,
+        total: searchResult.total
+      });
+
+      if (searchResult.error) {
+        console.error('[Search Server] Search error:', searchResult.error);
+        throw searchResult.error;
+      }
+
+      // Map the results to the expected format
+      // Note: ProductDomainAdapter returns products with nested categories, profiles, and product_images
+      if (searchResult.data) {
+        console.log('[Search Server] First raw product from adapter:', searchResult.data[0]);
+        
+        searchResults = searchResult.data.map((p: any) => ({
+          ...p,
+          // Ensure required fields are present
+          relevance_rank: 0, // Adapter doesn't return rank yet
+          category_id: p.category_id,
+          // Keep the nested data from adapter (profiles, product_images, categories)
+          // Don't overwrite them with null/empty values
+        })) as unknown as SearchProductResult[];
+        
+        console.log('[Search Server] Mapped searchResults count:', searchResults.length);
+        console.log('[Search Server] First product has product_images:', searchResults[0]?.product_images?.length);
+        console.log('[Search Server] First product has categories:', !!searchResults[0]?.categories);
+        console.log('[Search Server] First product has profiles:', !!searchResults[0]?.profiles);
       }
       
-      const fallbackRes = await queryBuilder;
-      if (fallbackRes.data) {
-        searchResults = fallbackRes.data.map(p => ({
-          ...(p as any),
-          relevance_rank: 0,
-          category_id: undefined,
-          profiles: null,
-          product_images: [],
-          categories: null
-        })) as unknown as SearchProductResult[];
-      }
-      productsError = fallbackRes.error;
+    } catch (err) {
+      console.error('Search failed:', err);
+      productsError = err;
     }
 
     let products: SearchProductResult[] = searchResults || [];
@@ -292,7 +351,18 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
 
       products = products.map(product => {
         const profile = profilesMap.get(product.seller_id);
-        const images = imagesMap.get(product.id) || [];
+        const refetchedImages = imagesMap.get(product.id) || [];
+        
+        // Use adapter's nested product_images if available, else use re-fetched images
+        const adapterImages = (product as any).product_images;
+        const hasAdapterImages = Array.isArray(adapterImages) && adapterImages.length > 0;
+        const effectiveImages = hasAdapterImages 
+          ? adapterImages.map((img: any) => img.image_url)
+          : refetchedImages;
+        
+        // Use adapter's nested profiles if available, else use re-fetched profile
+        const adapterProfile = (product as any).profiles;
+        const effectiveProfile = adapterProfile || profile;
         
         let resolvedMain: string | null = null;
         let resolvedSub: string | null = null;
@@ -344,9 +414,9 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
 
         return {
           ...product,
-          profiles: profile || null,
-          product_images: images.map(url => ({ image_url: url })),
-          images: product.images || images,
+          profiles: effectiveProfile || null,
+          product_images: effectiveImages.map((url: string) => ({ image_url: url })),
+          images: product.images || effectiveImages,
           categories: resolvedCategoryNode ? {
             id: resolvedCategoryNode.id,
             name: resolvedCategoryNode.name,
@@ -373,25 +443,35 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         total: 0,
         error: 'Search failed. Please try again.',
         filters: {
-          category: category,
-          subcategory: subcategory,
-          specific: specific,
-          minPrice,
-          maxPrice,
-          condition,
-          brand,
-          size,
-          sortBy
+          category: category || null,
+          subcategory: subcategory || null,
+          specific: specific || null,
+          minPrice: minPrice || null,
+          maxPrice: maxPrice || null,
+          condition: condition || null,
+          brand: brand || null,
+          size: size || null,
+          sortBy: sortBy || 'relevance'
         }
       };
     }
 
     const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
+    const categoryProductCounts: Record<string, number> = {};
+    if (categoryCountsData) {
+      categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
+        categoryProductCounts[row.virtual_type] = row.product_count || 0;
+      });
+    }
+
     const level1Categories = allCategories?.filter(c => c.level === 1) || [];
     
     const categoryOrder = ['Women', 'Men', 'Kids', 'Unisex'];
-    const sortedCategories = level1Categories.sort((a, b) => {
+    const sortedCategories = level1Categories.map(cat => ({
+      ...cat,
+      product_count: categoryProductCounts[cat.slug] || 0
+    })).sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a.name);
       const bIndex = categoryOrder.indexOf(b.name);
       if (aIndex === -1 && bIndex === -1) return 0;
@@ -407,27 +487,63 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
+      let mainCategorySlug = '';
+      let subcategorySlug = '';
+      let specificCategorySlug = '';
 
       if (product.main_category_name_resolved || product.subcategory_name_resolved || product.specific_category_name_resolved) {
         mainCategoryName = product.main_category_name_resolved || '';
         subcategoryName = product.subcategory_name_resolved || '';
         specificCategoryName = product.specific_category_name_resolved || '';
+        // We need to look up slugs for these names if possible, or rely on what we have
+        // Since we don't have resolved slugs in the product object from the previous step easily available without re-lookup
+        // Let's try to get them from the category object if it matches
+        if (product.categories) {
+           if (product.categories.level === 1) mainCategorySlug = product.categories.slug;
+           if (product.categories.level === 2) subcategorySlug = product.categories.slug;
+           if (product.categories.level === 3) specificCategorySlug = product.categories.slug;
+        }
+        
+        // Fallback: try to find slugs from names using our lookups
+        if (!mainCategorySlug && mainCategoryName) {
+           const cat = Array.from(categoryLookup.values()).find(c => c.name === mainCategoryName && c.level === 1);
+           if (cat) mainCategorySlug = cat.slug;
+        }
+        if (!subcategorySlug && subcategoryName) {
+           const cat = Array.from(categoryLookup.values()).find(c => c.name === subcategoryName && c.level === 2);
+           if (cat) subcategorySlug = cat.slug;
+        }
+        if (!specificCategorySlug && specificCategoryName) {
+           const cat = Array.from(categoryLookup.values()).find(c => c.name === specificCategoryName && c.level === 3);
+           if (cat) specificCategorySlug = cat.slug;
+        }
+
       } else if (product.categories) {
         const category = product.categories;
 
         if (category.level === 1) {
           mainCategoryName = category.name;
+          mainCategorySlug = category.slug;
         } else if (category.level === 2) {
           subcategoryName = category.name;
+          subcategorySlug = category.slug;
           const parentCat = categoryLookup.get(category.parent_id!);
-          if (parentCat) mainCategoryName = parentCat.name;
+          if (parentCat) {
+             mainCategoryName = parentCat.name;
+             mainCategorySlug = parentCat.slug;
+          }
         } else if (category.level === 3) {
           specificCategoryName = category.name;
+          specificCategorySlug = category.slug;
           const parentCat = categoryLookup.get(category.parent_id!);
           if (parentCat) {
             subcategoryName = parentCat.name;
+            subcategorySlug = parentCat.slug;
             const grandparentCat = categoryLookup.get(parentCat.parent_id!);
-            if (grandparentCat) mainCategoryName = grandparentCat.name;
+            if (grandparentCat) {
+               mainCategoryName = grandparentCat.name;
+               mainCategorySlug = grandparentCat.slug;
+            }
           }
         }
       }
@@ -447,20 +563,28 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
         category_name: specificCategoryName || subcategoryName || mainCategoryName || null,
         subcategory_name: subcategoryName || null,
         specific_category_name: specificCategoryName || null,
+        main_category_slug: mainCategorySlug || null,
+        subcategory_slug: subcategorySlug || null,
+        specific_category_slug: specificCategorySlug || null,
         relevance_rank: product.relevance_rank || null
       };
     });
 
-    const categoryProductCounts: Record<string, number> = {};
-    if (categoryCountsData) {
-      categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
-        categoryProductCounts[row.virtual_type] = row.product_count || 0;
-      });
-    }
-
     const nextCursor = transformedProducts.length === pageSize && transformedProducts.length > 0
       ? Buffer.from(`${transformedProducts[transformedProducts.length - 1]?.created_at}:${transformedProducts[transformedProducts.length - 1]?.id}`).toString('base64')
       : null;
+
+    // DEBUG: Phase 1 - Final return values
+    console.log('[Search Server] Final return:', {
+      productsCount: transformedProducts.length,
+      hasMore: transformedProducts.length === pageSize,
+      total: count || 0,
+      firstProduct: transformedProducts[0] ? {
+        id: transformedProducts[0].id,
+        title: transformedProducts[0].title,
+        imagesCount: transformedProducts[0].images?.length
+      } : null
+    });
 
     return {
       searchQuery: query,
@@ -482,15 +606,16 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       }),
       total: count || 0,
       filters: {
-        category: category,
-        subcategory: subcategory,
-        specific: specific,
-        minPrice,
-        maxPrice,
-        condition,
-        brand,
-        size,
-        sortBy
+        // Return null for empty strings to avoid filter matching issues
+        category: category || null,
+        subcategory: subcategory || null,
+        specific: specific || null,
+        minPrice: minPrice || null,
+        maxPrice: maxPrice || null,
+        condition: condition || null,
+        brand: brand || null,
+        size: size || null,
+        sortBy: sortBy || 'relevance'
       },
       _performance: Promise.resolve().then(() => ({
         loadTime: Date.now() - startTime,

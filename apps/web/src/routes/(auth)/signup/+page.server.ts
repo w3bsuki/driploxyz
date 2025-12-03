@@ -1,6 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { SignupSchema } from '$lib/validation/auth';
 import { checkRateLimit } from '$lib/server/security/rate-limiter';
+import { isPasswordSafe } from '$lib/server/security';
 import type { Actions, PageServerLoad } from './$types';
 // Future enhancement imports for locale/country detection
 // import { detectLanguage } from '@repo/i18n';
@@ -75,6 +76,23 @@ export const actions = {
     if (!allowed) {
       return fail(429, { 
         errors: { _form: `Too many signup attempts. Please try again in ${retryAfter} seconds.` }, 
+        values: { email: validatedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
+    }
+
+    // Phase 5: Check password against HaveIBeenPwned breach database
+    const passwordSecurity = await isPasswordSafe(validatedPassword);
+    if (!passwordSecurity.safe) {
+      let passwordError = 'Please choose a stronger password';
+      if (passwordSecurity.reason === 'Password found in data breach') {
+        passwordError = passwordSecurity.breachCount && passwordSecurity.breachCount > 1000000
+          ? 'This password has been exposed in major data breaches. Please choose a different password for your security.'
+          : `This password has been found in ${passwordSecurity.breachCount?.toLocaleString() || 'multiple'} data breaches. Please choose a different password.`;
+      } else if (passwordSecurity.reason) {
+        passwordError = passwordSecurity.reason;
+      }
+      return fail(400, { 
+        errors: { password: passwordError }, 
         values: { email: validatedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
       });
     }

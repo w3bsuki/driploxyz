@@ -4,22 +4,32 @@
   Purpose-driven tokens for surfaces, text, borders, states
   Maps foundation tokens to semantic meaning
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  TOKEN NAMING CONVENTION (v4):
+  - Use --color-* prefix for all color tokens
+  - Example: --color-surface-base, --color-text-primary
+  
+  LEGACY ALIASES:
+  - Deprecated aliases (--surface-*, --text-*, --border-*, --brand-*)
+    are kept for backward compatibility but should NOT be used in new code
+  - Migrate existing code to use --color-* prefix
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 
 @theme {
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     CLEAN MINIMALIST BRAND IDENTITY (Shadcn Style)
-     Zinc-based monochrome system with functional accents
+     CLEAN MINIMALIST BRAND IDENTITY (Bungkusa Style)
+     High Contrast (Black/White) with Neon Lime Accents
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
   /* Primary Brand Colors */
-  --color-brand-primary: var(--color-zinc-900);        /* Primary Black */
-  --color-brand-primary-strong: var(--color-zinc-950); /* Deep Black */
-  --color-brand-primary-soft: var(--color-zinc-100);   /* Soft Grey */
-  --color-brand-secondary: var(--color-zinc-700);      /* Secondary Dark Grey */
-  --color-brand-accent: var(--color-zinc-900);         /* Accent Black */
+  --color-brand-primary: var(--color-lime-400);        /* Neon Lime */
+  --color-brand-primary-strong: var(--color-lime-500); /* Darker Lime */
+  --color-brand-primary-soft: var(--color-lime-100);   /* Soft Lime */
+  --color-brand-secondary: var(--color-zinc-900);      /* Black */
+  --color-brand-accent: var(--color-lime-400);         /* Neon Lime */
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-brand-* instead */
   --brand-primary: var(--color-brand-primary);
   --brand-primary-strong: var(--color-brand-primary-strong);
   --brand-primary-soft: var(--color-brand-primary-soft);
@@ -40,7 +50,7 @@
    --color-surface-brand-subtle: var(--color-brand-primary-soft); /* Soft brand surface */
    --color-surface-brand-strong: var(--color-brand-primary-strong); /* Strong brand surface */
 
-   /* Legacy aliases */
+   /* @deprecated Legacy aliases - use --color-surface-* instead */
    --surface-base: var(--color-surface-base);
    --surface-subtle: var(--color-surface-subtle);
    --surface-muted: var(--color-surface-muted);
@@ -55,7 +65,7 @@
    --color-surface-premium: var(--color-zinc-50);
    --color-surface-elegant: var(--color-zinc-50);
 
-   /* Legacy aliases */
+   /* @deprecated Legacy aliases - use --color-surface-* instead */
    --surface-luxury: var(--color-surface-luxury);
    --surface-premium: var(--color-surface-premium);
    --surface-elegant: var(--color-surface-elegant);
@@ -76,7 +86,7 @@
    --color-text-brand: var(--color-brand-primary);        /* Brand text */
    --color-text-brand-hover: var(--color-zinc-700);       /* Brand hover */
 
-   /* Legacy aliases */
+   /* @deprecated Legacy aliases - use --color-text-* instead */
    --text-primary: var(--color-text-primary);
    --text-secondary: var(--color-text-secondary);
    --text-tertiary: var(--color-text-tertiary);
@@ -93,7 +103,7 @@
   --color-text-elegant: var(--color-zinc-800);
   --color-text-premium: var(--color-zinc-800);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-text-* instead */
   --text-luxury: var(--color-text-luxury);
   --text-elegant: var(--color-text-elegant);
   --text-premium: var(--color-text-premium);
@@ -108,7 +118,7 @@
    --color-border-emphasis: var(--color-zinc-300);         /* Darker border */
    --color-border-inverse: var(--color-zinc-800);          /* Inverse border */
 
-   /* Legacy aliases */
+   /* @deprecated Legacy aliases - use --color-border-* instead */
    --border-subtle: var(--color-border-subtle);
    --border-default: var(--color-border-default);
    --border-emphasis: var(--color-border-emphasis);
@@ -119,7 +129,7 @@
   --color-border-premium: var(--color-zinc-300);
   --color-border-elegant: var(--color-zinc-300);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-border-* instead */
   --border-luxury: var(--color-border-luxury);
   --border-premium: var(--color-border-premium);
   --border-elegant: var(--color-border-elegant);
@@ -148,7 +158,7 @@
   --color-status-success-text: var(--color-green-700);
   --color-status-success-solid: var(--color-green-600);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-status-success-* instead */
   --status-success-bg: var(--color-status-success-bg);
   --status-success-border: var(--color-status-success-border);
   --status-success-text: var(--color-status-success-text);
@@ -160,7 +170,7 @@
    --color-status-error-text: var(--color-red-700);
    --color-status-error-solid: var(--color-red-600);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-status-error-* instead */
   --status-error-bg: var(--color-status-error-bg);
   --status-error-border: var(--color-status-error-border);
   --status-error-text: var(--color-status-error-text);
@@ -172,7 +182,7 @@
   --color-status-warning-text: var(--color-amber-700);
   --color-status-warning-solid: var(--color-amber-500);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-status-warning-* instead */
   --status-warning-bg: var(--color-status-warning-bg);
   --status-warning-border: var(--color-status-warning-border);
   --status-warning-text: var(--color-status-warning-text);
@@ -184,7 +194,7 @@
   --color-status-info-text: var(--color-blue-700);
   --color-status-info-solid: var(--color-blue-600);
 
-  /* Legacy aliases */
+  /* @deprecated Legacy aliases - use --color-status-info-* instead */
   --status-info-bg: var(--color-status-info-bg);
   --status-info-border: var(--color-status-info-border);
   --status-info-text: var(--color-status-info-text);

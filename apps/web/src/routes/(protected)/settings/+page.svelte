@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import { goto } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import { Button, toasts } from '@repo/ui';
   import type { PageData } from './$types';
   import { badge_premium, badge_coming_soon, settings_vacation_mode_coming_soon } from '@repo/i18n';
@@ -9,6 +9,90 @@
   }
 
   let { data }: Props = $props();
+  
+  // GDPR state
+  let isExporting = $state(false);
+  let isDeleting = $state(false);
+  let showDeleteConfirmation = $state(false);
+  let deletionError = $state('');
+  
+  // GDPR handlers
+  async function handleDataExport() {
+    isExporting = true;
+    try {
+      const response = await fetch('/api/gdpr/export');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to export data');
+      }
+      
+      // Trigger download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `driplo-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toasts.success('Your data has been exported successfully');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to export data';
+      toasts.error(message);
+    } finally {
+      isExporting = false;
+    }
+  }
+  
+  async function handleAccountDeletion() {
+    isDeleting = true;
+    deletionError = '';
+    
+    try {
+      // First check eligibility
+      const checkResponse = await fetch('/api/gdpr/delete');
+      if (!checkResponse.ok) {
+        throw new Error('Failed to check deletion eligibility');
+      }
+      
+      const checkData = await checkResponse.json();
+      if (!checkData.eligible) {
+        deletionError = checkData.issues.join('. ');
+        return;
+      }
+      
+      // Proceed with deletion
+      const response = await fetch('/api/gdpr/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          confirmation: 'DELETE_MY_ACCOUNT',
+          reason: 'User requested deletion via settings page'
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to delete account');
+      }
+      
+      toasts.success('Your account has been deleted. Redirecting...');
+      
+      // Redirect to homepage after a short delay
+      setTimeout(() => {
+        goto('/');
+      }, 2000);
+      
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete account';
+      deletionError = message;
+      toasts.error(message);
+    } finally {
+      isDeleting = false;
+    }
+  }
   
   // Settings categories with icons and descriptions
   const settingsCategories = [
@@ -344,13 +428,85 @@
       {/each}
     </div>
 
+    <!-- GDPR Data Management -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6 mt-6 sm:mt-8">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-base sm:text-lg font-semibold text-blue-900 mb-1">Your Data Rights (GDPR)</h3>
+          <p class="text-xs sm:text-sm text-blue-700 mb-4">Export all your personal data or request account deletion in compliance with GDPR.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              class="border-blue-300 text-blue-600 hover:bg-blue-100"
+              onclick={handleDataExport}
+              disabled={isExporting}
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              {isExporting ? 'Exporting...' : 'Download My Data'}
+            </Button>
+            <a href="/privacy" class="text-sm text-blue-600 hover:underline flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Privacy Policy
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Danger Zone -->
     <div class="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6 mt-6 sm:mt-8">
       <h3 class="text-base sm:text-lg font-semibold text-red-900 mb-2">Danger Zone</h3>
       <p class="text-xs sm:text-sm text-red-700 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-      <Button variant="outline" class="border-red-300 text-red-600 hover:bg-red-100">
-        Delete Account
-      </Button>
+      
+      {#if !showDeleteConfirmation}
+        <Button 
+          variant="outline" 
+          class="border-red-300 text-red-600 hover:bg-red-100"
+          onclick={() => showDeleteConfirmation = true}
+        >
+          Delete Account
+        </Button>
+      {:else}
+        <div class="bg-white rounded-lg p-4 border border-red-200">
+          <p class="text-sm text-red-800 font-medium mb-3">Are you absolutely sure?</p>
+          <p class="text-xs text-red-600 mb-4">This will permanently delete your account, listings, messages, and all associated data. This action cannot be undone.</p>
+          
+          {#if deletionError}
+            <div class="bg-red-100 border border-red-300 rounded p-3 mb-4">
+              <p class="text-sm text-red-800">{deletionError}</p>
+            </div>
+          {/if}
+          
+          <div class="flex flex-col sm:flex-row gap-3">
+            <Button 
+              variant="outline"
+              size="sm"
+              class="border-red-500 bg-red-600 text-white hover:bg-red-700"
+              onclick={handleAccountDeletion}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Processing...' : 'Yes, Delete My Account'}
+            </Button>
+            <Button 
+              variant="outline"
+              size="sm"
+              onclick={() => { showDeleteConfirmation = false; deletionError = ''; }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      {/if}
     </div>
 
     <!-- Footer -->

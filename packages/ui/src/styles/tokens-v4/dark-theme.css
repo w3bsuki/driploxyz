@@ -9,39 +9,39 @@
 /* System Preference Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* Surface overrides */
-    --surface-base: var(--color-charcoal-900);
-    --surface-subtle: var(--color-charcoal-800);
-    --surface-muted: var(--color-charcoal-700);
-    --surface-emphasis: var(--color-charcoal-600);
-    --surface-inverse: var(--color-charcoal-0);
-    --surface-brand: var(--brand-primary-strong);
-    --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--color-charcoal-900) 78%);
-    --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, black 15%);
+    /* v4 Surface token overrides */
+    --color-surface-base: var(--color-zinc-900);
+    --color-surface-subtle: var(--color-zinc-800);
+    --color-surface-muted: var(--color-zinc-700);
+    --color-surface-emphasis: var(--color-zinc-600);
+    --color-surface-inverse: var(--color-white);
+    --color-surface-brand: var(--color-brand-primary-strong);
+    --color-surface-brand-subtle: color-mix(in oklch, var(--color-brand-primary-strong) 22%, var(--color-zinc-900) 78%);
+    --color-surface-brand-strong: color-mix(in oklch, var(--color-brand-primary-strong) 85%, black 15%);
 
     /* Premium surface variants for dark mode */
-    --surface-luxury: var(--color-charcoal-800);
-    --surface-premium: var(--color-charcoal-800);
-    --surface-elegant: var(--color-charcoal-800);
+    --color-surface-luxury: var(--color-zinc-800);
+    --color-surface-premium: var(--color-zinc-800);
+    --color-surface-elegant: var(--color-zinc-800);
 
-    /* Text overrides */
-    --text-primary: var(--color-charcoal-50);
-    --text-secondary: var(--color-charcoal-200);
-    --text-tertiary: var(--color-charcoal-300);
-    --text-muted: var(--color-charcoal-400);
-    --text-disabled: var(--color-charcoal-500);
-    --text-inverse: var(--color-charcoal-900);
+    /* v4 Text token overrides */
+    --color-text-primary: var(--color-zinc-50);
+    --color-text-secondary: var(--color-zinc-200);
+    --color-text-tertiary: var(--color-zinc-300);
+    --color-text-muted: var(--color-zinc-400);
+    --color-text-disabled: var(--color-zinc-500);
+    --color-text-inverse: var(--color-zinc-900);
 
-    /* Border overrides */
-    --border-subtle: var(--color-charcoal-700);
-    --border-default: var(--color-charcoal-600);
-    --border-emphasis: var(--color-charcoal-500);
-    --border-inverse: var(--color-charcoal-200);
+    /* v4 Border token overrides */
+    --color-border-subtle: var(--color-zinc-700);
+    --color-border-default: var(--color-zinc-600);
+    --color-border-emphasis: var(--color-zinc-500);
+    --color-border-inverse: var(--color-zinc-200);
 
     /* Interactive state overrides */
     --state-hover: oklch(0.20 0.008 280 / 0.4);
     --state-active: oklch(0.22 0.008 280 / 0.6);
-    --state-focus: var(--brand-primary-soft);
+    --state-focus: var(--color-brand-primary-soft);
 
     /* Premium interactive states for dark mode */
     --state-hover-luxury: oklch(0.20 0.02 85 / 0.3);
@@ -49,79 +49,79 @@
     --state-hover-elegant: oklch(0.20 0.015 245 / 0.3);
 
     /* Button overrides */
-    --btn-secondary-bg: var(--color-charcoal-800);
+    --btn-secondary-bg: var(--color-zinc-800);
     --btn-secondary-hover: var(--state-hover);
-    --btn-secondary-border: var(--border-default);
+    --btn-secondary-border: var(--color-border-default);
     
     --btn-ghost-hover: var(--state-hover-elegant);
 
     /* Input overrides */
-    --input-bg: var(--color-charcoal-800);
-    --input-border: var(--border-default);
+    --input-bg: var(--color-zinc-800);
+    --input-border: var(--color-border-default);
 
     /* Card overrides */
-    --card-bg: var(--surface-base);
-    --card-border: var(--border-subtle);
-    --card-luxury-bg: var(--surface-luxury);
-    --card-premium-bg: var(--surface-premium);
-    --card-elegant-bg: var(--surface-elegant);
+    --card-bg: var(--color-surface-base);
+    --card-border: var(--color-border-subtle);
+    --card-luxury-bg: var(--color-surface-luxury);
+    --card-premium-bg: var(--color-surface-premium);
+    --card-elegant-bg: var(--color-surface-elegant);
 
     /* Navigation overrides */
-    --nav-bg: var(--surface-base);
-    --nav-border: var(--border-subtle);
-    --bottom-nav-bg: var(--surface-base);
-    --bottom-nav-border: var(--border-subtle);
+    --nav-bg: var(--color-surface-base);
+    --nav-border: var(--color-border-subtle);
+    --bottom-nav-bg: var(--color-surface-base);
+    --bottom-nav-border: var(--color-border-subtle);
 
     /* Pill navigation overrides */
-    --pill-bg: var(--color-charcoal-800);
+    --pill-bg: var(--color-zinc-800);
     --pill-bg-hover: var(--state-hover);
-    --pill-text: var(--text-secondary);
+    --pill-text: var(--color-text-secondary);
 
     /* Modal & dialog overrides */
-    --modal-bg: var(--color-charcoal-850);
+    --modal-bg: var(--color-zinc-800);
     --modal-overlay-bg: oklch(0 0 0 / 0.7);
 
     /* Toast overrides */
-    --toast-bg: var(--color-charcoal-200);
-    --toast-text: var(--color-charcoal-900);
+    --toast-bg: var(--color-zinc-200);
+    --toast-text: var(--color-zinc-900);
   }
 }
 
 /* Manual Dark Mode Toggle */
 [data-theme="dark"] {
-  /* Surface overrides */
-  --surface-base: var(--color-charcoal-900);
-  --surface-subtle: var(--color-charcoal-800);
-  --surface-muted: var(--color-charcoal-700);
-  --surface-emphasis: var(--color-charcoal-600);
-  --surface-inverse: var(--color-charcoal-0);
-  --surface-brand: var(--brand-primary-strong);
-  --surface-brand-subtle: color-mix(in oklch, var(--brand-primary-strong) 22%, var(--color-charcoal-900) 78%);
-  --surface-brand-strong: color-mix(in oklch, var(--brand-primary-strong) 85%, black 15%);
+  /* v4 Surface token overrides */
+  --color-surface-base: var(--color-zinc-900);
+  --color-surface-subtle: var(--color-zinc-800);
+  --color-surface-muted: var(--color-zinc-700);
+  --color-surface-emphasis: var(--color-zinc-600);
+  --color-surface-inverse: var(--color-white);
+  --color-surface-brand: var(--color-brand-primary-strong);
+  --color-surface-brand-subtle: color-mix(in oklch, var(--color-brand-primary-strong) 22%, var(--color-zinc-900) 78%);
+  --color-surface-brand-strong: color-mix(in oklch, var(--color-brand-primary-strong) 85%, black 15%);
 
   /* Premium surface variants for dark mode */
-  --surface-luxury: var(--color-charcoal-800);
-  --surface-premium: var(--color-charcoal-800);
-  --surface-elegant: var(--color-charcoal-800);
+  --color-surface-luxury: var(--color-zinc-800);
+  --color-surface-premium: var(--color-zinc-800);
+  --color-surface-elegant: var(--color-zinc-800);
 
-  /* Text overrides */
-  --text-primary: var(--color-charcoal-50);
-  --text-secondary: var(--color-charcoal-200);
-  --text-tertiary: var(--color-charcoal-300);
-  --text-muted: var(--color-charcoal-400);
-  --text-disabled: var(--color-charcoal-500);
-  --text-inverse: var(--color-charcoal-900);
+  /* v4 Text token overrides */
+  --color-text-primary: var(--color-zinc-50);
+  --color-text-secondary: var(--color-zinc-200);
+  --color-text-tertiary: var(--color-zinc-300);
+  --color-text-muted: var(--color-zinc-400);
+  --color-text-disabled: var(--color-zinc-500);
+  --color-text-inverse: var(--color-zinc-900);
 
-  /* Border overrides */
-  --border-subtle: var(--color-charcoal-700);
-  --border-default: var(--color-charcoal-600);
-  --border-emphasis: var(--color-charcoal-500);
-  --border-inverse: var(--color-charcoal-200);
+  /* v4 Border token overrides */
+  --color-border-subtle: var(--color-zinc-700);
+  --color-border-default: var(--color-zinc-600);
+  --color-border-emphasis: var(--color-zinc-500);
+  --color-border-inverse: var(--color-zinc-200);
 
   /* Interactive state overrides */
   --state-hover: oklch(0.20 0.008 280 / 0.4);
   --state-active: oklch(0.22 0.008 280 / 0.6);
-  --state-focus: var(--brand-primary-soft);
+  --state-focus: var(--color-brand-primary-soft);
 
   /* Premium interactive states for dark mode */
   --state-hover-luxury: oklch(0.20 0.02 85 / 0.3);
@@ -129,44 +129,39 @@
   --state-hover-elegant: oklch(0.20 0.015 245 / 0.3);
 
   /* Button overrides */
-  --btn-secondary-bg: var(--color-charcoal-800);
+  --btn-secondary-bg: var(--color-zinc-800);
   --btn-secondary-hover: var(--state-hover);
-  --btn-secondary-border: var(--border-default);
+  --btn-secondary-border: var(--color-border-default);
   
   --btn-ghost-hover: var(--state-hover-elegant);
 
   /* Input overrides */
-  --input-bg: var(--color-charcoal-800);
-  --input-border: var(--border-default);
+  --input-bg: var(--color-zinc-800);
+  --input-border: var(--color-border-default);
 
   /* Card overrides */
-  --card-bg: var(--surface-base);
-  --card-border: var(--border-subtle);
-  --card-luxury-bg: var(--surface-luxury);
-  --card-premium-bg: var(--surface-premium);
-  --card-elegant-bg: var(--surface-elegant);
+  --card-bg: var(--color-surface-base);
+  --card-border: var(--color-border-subtle);
+  --card-luxury-bg: var(--color-surface-luxury);
+  --card-premium-bg: var(--color-surface-premium);
+  --card-elegant-bg: var(--color-surface-elegant);
 
   /* Navigation overrides */
-  --nav-bg: var(--surface-base);
-  --nav-border: var(--border-subtle);
-  --bottom-nav-bg: var(--surface-base);
-  --bottom-nav-border: var(--border-subtle);
+  --nav-bg: var(--color-surface-base);
+  --nav-border: var(--color-border-subtle);
+  --bottom-nav-bg: var(--color-surface-base);
+  --bottom-nav-border: var(--color-border-subtle);
 
   /* Pill navigation overrides */
-  --pill-bg: var(--color-charcoal-800);
+  --pill-bg: var(--color-zinc-800);
   --pill-bg-hover: var(--state-hover);
-  --pill-text: var(--text-secondary);
+  --pill-text: var(--color-text-secondary);
 
   /* Modal & dialog overrides */
-  --modal-bg: var(--color-charcoal-850);
+  --modal-bg: var(--color-zinc-800);
   --modal-overlay-bg: oklch(0 0 0 / 0.7);
 
   /* Toast overrides */
-  --toast-bg: var(--color-charcoal-200);
-  --toast-text: var(--color-charcoal-900);
-}
-
-/* Dark mode color charcoal-850 fallback */
-@theme {
-  --color-charcoal-850: oklch(0.17 0.011 280);
+  --toast-bg: var(--color-zinc-200);
+  --toast-text: var(--color-zinc-900);
 }

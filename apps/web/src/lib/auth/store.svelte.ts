@@ -7,6 +7,7 @@
 
 import { browser } from '$app/environment';
 import { goto, invalidate } from '$app/navigation';
+import { dev } from '$app/environment';
 import type {
   AuthUser,
   AuthSession,
@@ -81,7 +82,7 @@ function createAuthStore() {
       // Set up auth state change listener
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event: string, session: AuthSession | null) => {
-          console.log('[Auth] State change:', event);
+          if (dev) console.log('[Auth] State change:', event);
 
           // Use secure authentication: validate user with getUser() for security
           let validatedUser: AuthUser | null = null;
@@ -131,7 +132,7 @@ function createAuthStore() {
       }
 
       state.initialized = true;
-      console.log('[Auth] Store initialized');
+      if (dev) console.log('[Auth] Store initialized');
     } catch (error) {
       console.error('[Auth] Initialization failed:', error);
       state.loading = false;

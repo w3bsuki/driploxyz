@@ -21,5 +21,11 @@ Addressed critical UI/UX issues with the Filter Drawer and Bottom Navigation, fo
 ### 3. Layout Integration (`apps/web/src/routes/(app)/(shop)/+layout.svelte`)
 - **Visibility:** Removed the condition that hid the Bottom Nav when the drawer was open. The drawer now properly overlays the navigation, providing a seamless modal experience.
 
+### 4. Search Page "Browse by Type" Refactor (`packages/ui/src/lib/compositions/search/BrowseByType.svelte`)
+- **Mobile Layout:** Converted from a vertical grid to a horizontal scrolling list (`flex-row`, `overflow-x-auto`) to save vertical space and improve mobile UX.
+- **Styling:** Removed colorful backgrounds (`bg-pink-50`, etc.) in favor of a strict black/white monochrome theme (`bg-(--surface-base)`, `border-(--border-subtle)`).
+- **Edge-to-Edge:** Implemented negative margins (`-mx-4`) on mobile to allow full-width scrolling while maintaining content alignment.
+- **Desktop Consistency:** Retained the grid layout for desktop viewports where screen real estate allows.
+
 ## Result
 The Filter Drawer is now a high-quality, native-feeling component that works globally across the shop section, respects safe areas, and follows the design system's best practices.

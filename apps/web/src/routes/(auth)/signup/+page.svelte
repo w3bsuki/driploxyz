@@ -110,6 +110,44 @@
   const confirmPasswordField = $derived(validator.getFieldProps('confirmPassword'));
   const termsField = $derived(validator.getFieldProps('terms'));
 
+  // Password strength calculation
+  function calculatePasswordStrength(password: string): { score: number; label: string; color: string } {
+    if (!password) return { score: 0, label: '', color: '' };
+    
+    let score = 0;
+    
+    // Length checks
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    if (password.length >= 16) score += 1;
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+    
+    // Common patterns (reduce score)
+    if (/^[a-zA-Z]+$/.test(password)) score -= 1;
+    if (/^[0-9]+$/.test(password)) score -= 1;
+    if (/(.)\1{2,}/.test(password)) score -= 1; // Repeated characters
+    
+    // Normalize score to 0-4
+    const normalizedScore = Math.max(0, Math.min(4, Math.round(score / 2)));
+    
+    const levels: { score: number; label: string; color: string }[] = [
+      { score: 0, label: '', color: '' },
+      { score: 1, label: i18n.auth_passwordWeak?.() ?? 'Weak', color: 'bg-red-500' },
+      { score: 2, label: i18n.auth_passwordFair?.() ?? 'Fair', color: 'bg-orange-500' },
+      { score: 3, label: i18n.auth_passwordGood?.() ?? 'Good', color: 'bg-yellow-500' },
+      { score: 4, label: i18n.auth_passwordStrong?.() ?? 'Strong', color: 'bg-green-500' }
+    ];
+    
+    return levels[normalizedScore] ?? { score: 0, label: '', color: '' };
+  }
+
+  const passwordStrength = $derived(calculatePasswordStrength(String(passwordField.value || '')));
+
   // OAuth sign in handler
   async function handleOAuthSignIn(provider: OAuthProvider) {
     if (oauthSubmitting) return;
@@ -267,8 +305,29 @@
           oninput={(e) => passwordField.setValue((e.target as HTMLInputElement).value)}
           onblur={() => passwordField.onBlur()}
         />
-        {#if typeof passwordField.value === 'string' && passwordField.value.length > 0 && passwordField.value.length < 8}
-          <p class="text-sm text-gray-600 mt-1">Password must be at least 8 characters long</p>
+        <!-- Password Strength Indicator -->
+        {#if typeof passwordField.value === 'string' && passwordField.value.length > 0}
+          <div class="mt-2">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden flex gap-0.5">
+                {#each [1, 2, 3, 4] as level}
+                  <div 
+                    class="flex-1 h-full rounded-full transition-colors duration-200 {passwordStrength.score >= level ? passwordStrength.color : 'bg-gray-200'}"
+                  ></div>
+                {/each}
+              </div>
+              {#if passwordStrength.label}
+                <span class="text-xs font-medium {passwordStrength.score >= 3 ? 'text-green-600' : passwordStrength.score >= 2 ? 'text-orange-600' : 'text-red-600'}">
+                  {passwordStrength.label}
+                </span>
+              {/if}
+            </div>
+            {#if passwordField.value.length < 8}
+              <p class="text-xs text-gray-500">{i18n.auth_passwordMinLength?.() ?? 'Password must be at least 8 characters'}</p>
+            {:else if passwordStrength.score < 3}
+              <p class="text-xs text-gray-500">{i18n.auth_passwordTip?.() ?? 'Add uppercase, numbers, or symbols for a stronger password'}</p>
+            {/if}
+          </div>
         {/if}
       </div>
 

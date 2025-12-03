@@ -60,6 +60,15 @@
   );
 
   let promotedScrollContainer = $state<HTMLElement | null>(null);
+  let canScrollLeft = $state(false);
+  let canScrollRight = $state(true);
+
+  function updateScrollIndicators() {
+    if (!promotedScrollContainer) return;
+    const { scrollLeft, scrollWidth, clientWidth } = promotedScrollContainer;
+    canScrollLeft = scrollLeft > 10;
+    canScrollRight = scrollLeft < scrollWidth - clientWidth - 10;
+  }
 
   function scrollLeft() {
     if (promotedScrollContainer) {
@@ -84,6 +93,13 @@
       scrollRight();
     }
   }
+
+  // Initialize scroll indicators on mount
+  $effect(() => {
+    if (promotedScrollContainer) {
+      updateScrollIndicators();
+    }
+  });
 </script>
 
 {#if activePromotedProducts.length > 0}
@@ -114,6 +130,20 @@
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
 		<div class="relative px-[var(--space-3)] sm:px-[var(--space-4)] lg:px-[var(--space-6)]">
+			<!-- Mobile scroll indicators - fade gradients -->
+			<div 
+				class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[color:var(--surface-base)] to-transparent z-10 pointer-events-none transition-opacity duration-200 sm:hidden"
+				class:opacity-0={!canScrollLeft}
+				class:opacity-100={canScrollLeft}
+				aria-hidden="true"
+			></div>
+			<div 
+				class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[color:var(--surface-base)] to-transparent z-10 pointer-events-none transition-opacity duration-200 sm:hidden"
+				class:opacity-0={!canScrollRight}
+				class:opacity-100={canScrollRight}
+				aria-hidden="true"
+			></div>
+			
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
       <div 
@@ -125,8 +155,9 @@
 				aria-label="Promoted listings - horizontal scroll, use arrow keys to navigate"
 				tabindex="0"
 				onkeydown={handleKeyboardScroll}
+				onscroll={updateScrollIndicators}
 			>
-        {#each activePromotedProducts as product (product.id)}
+        {#each activePromotedProducts as product, index (product.id)}
           <div class="home-promoted-card flex-shrink-0 snap-start" data-promoted-card>
 						<ProductCard
 							{product}
@@ -136,6 +167,9 @@
 							favoritesState={favoritesState}
 							showBoostBadge={false}
 							showSellerBadges={false}
+							priority={index < 4}
+							{index}
+							totalCount={activePromotedProducts.length}
 							translations={{
 								addToFavorites: translations.product_addToFavorites,
 								currency: translations.common_currency,
@@ -153,6 +187,18 @@
 					</div>
 				{/each}
 			</div>
+			
+			<!-- Mobile swipe hint - shows briefly then fades -->
+			{#if canScrollRight && activePromotedProducts.length > 2}
+				<div class="flex justify-center mt-[var(--space-2)] sm:hidden" aria-hidden="true">
+					<div class="swipe-hint flex items-center gap-1 text-xs text-[color:var(--text-muted)]">
+						<svg class="w-4 h-4 animate-swipe-hint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+						<span>Swipe for more</span>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</section>
 {/if}
@@ -182,6 +228,48 @@
     :global(.home-promoted-card) {
       flex-basis: calc((100% - (4 * var(--space-3))) / 5);
       max-width: calc((100% - (4 * var(--space-3))) / 5);
+    }
+  }
+
+  /* Swipe hint animation - subtle pulsing arrow */
+  @keyframes swipe-hint {
+    0%, 100% {
+      transform: translateX(0);
+      opacity: 0.7;
+    }
+    50% {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+  }
+
+  .animate-swipe-hint {
+    animation: swipe-hint 1.5s ease-in-out infinite;
+  }
+
+  /* Fade out the hint after a few seconds */
+  .swipe-hint {
+    animation: fade-out 4s ease-in-out forwards;
+  }
+
+  @keyframes fade-out {
+    0%, 70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-swipe-hint {
+      animation: none;
+    }
+    .swipe-hint {
+      animation: none;
+      opacity: 0.7;
     }
   }
 </style>

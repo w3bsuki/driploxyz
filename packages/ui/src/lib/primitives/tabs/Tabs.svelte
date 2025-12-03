@@ -80,18 +80,18 @@
 	// Variant styles
 	const variantClasses = {
 		default: {
-			container: 'border-b border-[var(--border-subtle)]',
-			tab: 'border-b-2 border-transparent hover:border-[var(--border-default)] data-[state=active]:border-[var(--brand-primary-strong)] data-[state=active]:text-[var(--brand-primary-strong)] text-[var(--text-secondary)]',
+			container: 'border-b border-[var(--color-border-subtle)]',
+			tab: 'border-b-2 border-transparent hover:border-[var(--color-border-default)] data-[state=active]:border-[var(--color-brand-primary-strong)] data-[state=active]:text-[var(--color-brand-primary-strong)] text-[var(--color-text-secondary)]',
 			list: 'flex'
 		},
 		pills: {
-			container: 'p-[var(--space-1)] bg-[var(--surface-subtle)] rounded-[var(--radius-lg)]',
-			tab: 'rounded-[var(--radius-md)] hover:bg-[var(--state-hover)] data-[state=active]:bg-[var(--surface-base)] data-[state=active]:text-[var(--brand-primary-strong)] data-[state=active]:shadow-sm text-[var(--text-secondary)]',
+			container: 'p-[var(--space-1)] bg-[var(--color-surface-subtle)] rounded-[var(--radius-lg)]',
+			tab: 'rounded-[var(--radius-md)] hover:bg-[var(--state-hover)] data-[state=active]:bg-[var(--color-surface-base)] data-[state=active]:text-[var(--color-brand-primary-strong)] data-[state=active]:shadow-sm text-[var(--color-text-secondary)]',
 			list: 'flex gap-[var(--space-1)]'
 		},
 		underline: {
-			container: 'border-b border-[var(--border-subtle)]',
-			tab: 'border-b-2 border-transparent hover:border-[var(--border-default)] data-[state=active]:border-[var(--brand-primary-strong)] data-[state=active]:text-[var(--brand-primary-strong)] text-[var(--text-secondary)] relative',
+			container: 'border-b border-[var(--color-border-subtle)]',
+			tab: 'border-b-2 border-transparent hover:border-[var(--color-border-default)] data-[state=active]:border-[var(--color-brand-primary-strong)] data-[state=active]:text-[var(--color-brand-primary-strong)] text-[var(--color-text-secondary)] relative',
 			list: 'flex'
 		}
 	};
@@ -102,7 +102,7 @@
 	);
 
 	const listClasses = $derived(
-		`tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[var(--border-subtle)]' : ''} ${tabListClass}`
+		`tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[var(--color-border-subtle)]' : ''} ${tabListClass}`
 	);
 
 	const getTabClasses = (tab: TabData, isActive: boolean) => {
@@ -213,9 +213,9 @@
 							class="tab-count ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-medium
 								{isActive
 									? (variant === 'pills'
-										? 'bg-[var(--surface-subtle)] text-current'
-										: 'bg-[var(--surface-brand-strong)]/10 text-[var(--brand-primary-strong)]')
-									: 'bg-[var(--surface-subtle)] text-[var(--text-secondary)]'}"
+										? 'bg-[var(--color-surface-subtle)] text-current'
+										: 'bg-[var(--color-surface-brand-strong)]/10 text-[var(--color-brand-primary-strong)]')
+									: 'bg-[var(--color-surface-subtle)] text-[var(--color-text-secondary)]'}"
 							aria-label="{tab.count} items"
 						>
 							{tab.count}
@@ -268,7 +268,7 @@
 
 	/* Hover states */
 	.tabs-trigger:hover:not(:disabled) {
-		background-color: var(--surface-subtle);
+		background-color: var(--color-surface-subtle);
 	}
 
 	/* Active state animations */
@@ -321,8 +321,8 @@
 	/* High contrast mode support */
 	@media (prefers-contrast: high) {
 		.tabs-trigger[data-state="active"] {
-			background-color: var(--surface-subtle);
-			color: var(--text-primary);
+			background-color: var(--color-surface-subtle);
+			color: var(--color-text-primary);
 		}
 
 		.tabs-trigger:focus-visible {
@@ -351,7 +351,7 @@
 
 	.tabs-root[data-orientation="vertical"] .tabs-list {
 		flex-direction: column;
-		border-right: 1px solid var(--border-subtle);
+		border-right: 1px solid var(--color-border-subtle);
 		border-bottom: none;
 		min-width: 200px;
 		padding: 8px;

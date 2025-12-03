@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { withTimeout } from '@repo/core/utils';
 import { ProductDomainAdapter } from '@repo/core/services';
@@ -122,8 +122,9 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     };
   }
 
-  // Get product directly from Supabase (domain adapter method not implemented)
-  const productResult = await locals.supabase
+  // Get product directly from Supabase
+  // Use maybeSingle() to avoid error if 0 rows, but we still want to handle duplicates if they exist
+  const { data: products, error: productError } = await locals.supabase
     .from('products')
     .select(`
       *,
@@ -131,42 +132,68 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
       profiles!products_seller_id_fkey (username, full_name, avatar_url, bio),
       categories (id, name, slug, parent_id, level)
     `)
-    .eq('slug', params.slug)
-    .single();
+    .eq('slug', params.slug);
 
-  const { data: productRaw, error: productError } = productResult;
-  const product = productRaw as unknown as ProductQueryResult;
+  if (productError) {
+    console.error('Error fetching product:', productError);
+    error(500, 'Error loading product');
+  }
 
-  if (productError || !product) {
-    console.log('Product not found:', {
-      slug: params.slug,
-      seller: params.seller,
-      error: productError
-    });
+  // Find the correct product if multiple exist with same slug (should be rare/impossible with unique constraint)
+  // Filter by seller username to be sure
+  let product = products?.find(p => {
+    const seller = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
+    return seller?.username?.toLowerCase() === params.seller.toLowerCase();
+  });
+
+  // If not found by strict seller match, just take the first one and let the redirect logic handle it
+  if (!product && products?.length > 0) {
+    product = products[0];
+  }
+
+  if (!product) {
+    console.log('Product not found for slug:', params.slug);
     error(404, 'Product not found');
   }
 
+  // Cast to our type
+  const productTyped = product as unknown as ProductQueryResult;
+
   // Extract seller profile
-  const sellerProfile = Array.isArray(product.profiles) ? product.profiles[0] : product.profiles;
+  const sellerProfile = Array.isArray(productTyped.profiles) ? productTyped.profiles[0] : productTyped.profiles;
   const sellerUsername = sellerProfile?.username;
 
-  // Validate that the seller username matches (security check)
-  if (sellerUsername !== params.seller) {
-    console.log('Seller username mismatch:', {
-      expected: params.seller,
-      actual: sellerUsername
-    });
+  // Extract category info
+  const category = Array.isArray(productTyped.categories) ? productTyped.categories[0] : productTyped.categories;
+  const categorySlug = category?.slug;
+
+  // Canonical URL Enforcement:
+  // We prefer the 4-segment URL with category, but to avoid 404s and confusion,
+  // we will render the page here as well, just like in the previous version.
+  // Only redirect if the seller username case is wrong.
+
+  // Check seller username casing -> Redirect if mismatch
+  if (!sellerUsername || sellerUsername.toLowerCase() !== params.seller.toLowerCase()) {
+    if (sellerUsername && productTyped.slug) {
+      // If we have a category, we can redirect to the full canonical URL while fixing the case
+      const correctUrl = categorySlug 
+          ? `/product/${sellerUsername}/${categorySlug}/${productTyped.slug}`
+          : `/product/${sellerUsername}/${productTyped.slug}`;
+      
+      console.log('Redirecting to correct product URL (fixing seller case):', { from: params.seller, to: sellerUsername });
+      throw redirect(301, correctUrl);
+    }
     error(404, 'Product not found');
   }
 
   // Performance logging for monitoring
   if (Date.now() - startTime > 1000) {
     console.warn('Slow product load detected:', {
-      id: product.id,
-      title: product.title,
+      id: productTyped.id,
+      title: productTyped.title,
       loadTime: Date.now() - startTime,
   seller: sellerUsername,
-      slug: product.slug
+      slug: productTyped.slug
     });
   }
 
@@ -174,14 +201,14 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
   let parentCategory: { id: string; name: string; slug: string; parent_id?: string | null } | null = null;
   let topLevelCategory: { id: string; name: string; slug: string } | null = null;
 
-  if (product.category_id) {
+  if (productTyped.category_id) {
     // We could use the domain service for this too, but for now keep the existing logic
     // This could be enhanced in a future iteration to use domain services
-    if (product.category_id) {
+    if (productTyped.category_id) {
       const { data: parent } = await locals.supabase
         .from('categories')
         .select('id, name, slug, parent_id')
-        .eq('id', product.category_id)
+        .eq('id', productTyped.category_id)
         .single();
 
       // If we have a category, try to get its parent
@@ -202,9 +229,14 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 
   // SvelteKit 2 Streaming: Fetch critical product data first, stream additional data
   // Critical data loads first for immediate page render
-  const imagesList: ProductImage[] = Array.isArray(product.product_images) ? product.product_images : [];
+  const imagesList: ProductImage[] = Array.isArray(productTyped.product_images) 
+    ? productTyped.product_images.map(img => ({
+        image_url: img.image_url,
+        sort_order: img.sort_order ?? undefined
+      }))
+    : [];
   const productData = {
-    ...product,
+    ...productTyped,
     images: imagesList
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
       .map((img) => img.image_url)
@@ -214,8 +246,8 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
     seller_avatar: sellerProfile?.avatar_url ?? undefined,
     seller_rating: sellerProfile?.rating ?? undefined,
     seller_sales_count: 0,
-    category_name: product.categories?.name,
-    category_slug: product.categories?.slug,
+    category_name: productTyped.categories?.name,
+    category_slug: productTyped.categories?.slug,
     parent_category: parentCategory,
     top_level_category: topLevelCategory,
     currency: 'EUR'
@@ -229,23 +261,23 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
           .from('favorites')
           .select('id')
           .eq('user_id', user.id)
-          .eq('product_id', product.id)
+          .eq('product_id', productTyped.id)
           .maybeSingle()
       : Promise.resolve({ data: null } as { data: { id: string } | null }),
 
     // Get similar products using domain service (same category)
-    product.category_id
+    productTyped.category_id
       ? withTimeout(
           productAdapter.getProducts({
             filters: {
-              category_ids: [product.category_id],
+              category_ids: [productTyped.category_id],
               country_code: locals.country || 'BG'
             },
             limit: 6,
             sort: { by: 'created_at', direction: 'desc' }
           }).then((result) => {
             const arr = Array.isArray(result?.data) ? (result.data as Array<{ id: string }>) : [];
-            return arr.filter((p) => p.id !== product.id);
+            return arr.filter((p) => p.id !== productTyped.id);
           }),
           2500,
           [] as Array<{ id: string }>
@@ -254,12 +286,12 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
 
     // Get other seller products using domain service
     withTimeout(
-      productAdapter.getSellerProducts(product.seller_id!, {
+      productAdapter.getSellerProducts(productTyped.seller_id!, {
         limit: 4,
         sort: { by: 'created_at', direction: 'desc' }
       }).then((result) => {
         const arr = Array.isArray(result?.data) ? (result.data as Array<{ id: string }>) : [];
-        return arr.filter((p) => p.id !== product.id);
+        return arr.filter((p) => p.id !== productTyped.id);
       }),
       2000,
       [] as Array<{ id: string }>
@@ -285,7 +317,7 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
           )
         )
       `)
-      .eq('reviewee_id', product.seller_id!)
+      .eq('reviewee_id', productTyped.seller_id!)
       .eq('is_public', true)
       .order('created_at', { ascending: false })
       .limit(10)
@@ -295,7 +327,7 @@ export const load = (async ({ params, locals, depends, setHeaders }) => {
   const similarProducts = similarResult.status === 'fulfilled' && 'data' in similarResult.value ? (similarResult.value.data as Array<{ id: string; slug?: string; seller_username?: string; images?: Array<{ image_url: string }> | string[] }>) || [] : [];
   const sellerProducts = sellerResult.status === 'fulfilled' && 'data' in sellerResult.value ? (sellerResult.value.data as Array<{ id: string; slug?: string; seller_username?: string; images?: Array<{ image_url: string }> | string[] }>) || [] : [];
   const reviews = reviewsResult.status === 'fulfilled' && 'data' in reviewsResult.value ? (reviewsResult.value.data as Array<{ rating: number }>) || [] : [];
-  const isOwner = session && user && user.id === product.seller_id;
+  const isOwner = session && user && user.id === productTyped.seller_id;
 
   // Calculate rating summary
   const ratingSummary = reviews.length > 0 ? {

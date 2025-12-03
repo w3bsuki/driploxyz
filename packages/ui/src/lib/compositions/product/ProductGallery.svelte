@@ -510,7 +510,7 @@
     position: relative;
     aspect-ratio: 4/5;
     overflow: hidden;
-    border-radius: var(--radius-xl);
+    border-radius: var(--product-card-radius);
     background: var(--surface-subtle);
     cursor: pointer;
     user-select: none;
