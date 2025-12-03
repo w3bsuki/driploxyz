@@ -28,11 +28,12 @@
 ### Phase 2: Web App Cleanup
 - [x] Delete ~25 unused Svelte components
 - [x] Delete ~70+ unused lib files (identified by knip)
-- [ ] Remove unused dependencies (web-vitals, sharp)
+- [x] Remove unused dependencies (web-vitals, sharp)
 
 ### Phase 3: Mobile App Cleanup
-- [ ] Delete unused mobile components
-- [ ] Remove unused dependencies (expo-image-picker, expo-camera)
+- [x] Delete unused mobile components (hello-wave.tsx)
+- [x] Remove unused dependencies (expo-image-picker, expo-camera)
+- [x] Delete unused contexts and hooks
 
 ### Phase 4: Docs Consolidation
 - [ ] Merge essential docs into `/docs`
