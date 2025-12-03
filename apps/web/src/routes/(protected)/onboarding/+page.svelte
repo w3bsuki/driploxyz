@@ -34,9 +34,9 @@
   let showBrandPayment = $state(false);
   let brandPaid = $state(false);
   
-  // Dynamically imported modal components
-  let OnboardingSuccessModal: typeof import('$lib/components/OnboardingSuccessModal.svelte').default | null = $state(null);
-  let BrandPaymentModal: typeof import('$lib/components/BrandPaymentModal.svelte').default | null = $state(null);
+  // Dynamically imported modal components from @repo/ui
+  let OnboardingSuccessModal: typeof import('@repo/ui').OnboardingSuccessModal | null = $state(null);
+  let BrandPaymentModal: typeof import('@repo/ui').BrandPaymentModal | null = $state(null);
   let successModalLoaded = $state(false);
   let brandPaymentModalLoaded = $state(false);
   let accountType = $state<'personal' | 'pro' | 'brand'>('personal');

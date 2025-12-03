@@ -11,7 +11,7 @@
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import { favoritesActions } from '$lib/stores/favorites.svelte';
-import { followStoreInstance } from '$lib/stores/follow.svelte';
+// followStoreInstance removed in cleanup - follow feature simplified
 import { browser } from '$app/environment';
 
 interface ProductMetrics {
@@ -173,12 +173,7 @@ class RealtimeService {
               }
             };
 
-            // Update follow store
-            followStoreInstance.updateCounts(
-              followingId,
-              newCount,
-              this.state.userMetrics[followingId]?.following_count || 0
-            );
+            // Follow store removed in cleanup - metrics tracked in state only
           }
         }
       )

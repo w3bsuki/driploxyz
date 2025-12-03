@@ -22,7 +22,7 @@
   import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, RegionSwitchModal, DiscoverModal, OnceThemeProvider } from '@repo/ui';
   import { ToastContainer } from '@repo/ui';
   import { ErrorBoundary } from '@repo/ui';
-  import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
+  // RealtimeErrorBoundary removed in cleanup
   import LocaleSwitcherBanner from '$lib/components/LocaleSwitcherBanner.svelte';
   import { COUNTRY_CONFIGS } from '$lib/country/constants';
   import { page } from '$app/state';
@@ -594,12 +594,10 @@
 
   <!-- Wrap everything with consolidated auth provider -->
   <AuthProvider user={data.user} session={data.session} profile={data.profile}>
-    <!-- Wrap main content with realtime error boundary -->
-    <RealtimeErrorBoundary>
+    <!-- Main content -->
       <main>
         {@render children?.()}
       </main>
-    </RealtimeErrorBoundary>
   </AuthProvider>
 </ErrorBoundary>
 </OnceThemeProvider>

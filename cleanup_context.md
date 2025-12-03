@@ -6,21 +6,28 @@
 
 ## ✅ Completed Tasks
 
-*(Nothing yet)*
+- ✅ Deleted 25 unnecessary .md files from root folder
+- ✅ Deleted 8 obsolete scripts from root (fix-*.sh, *.mjs, *.ps1)
+- ✅ Deleted `/notes` folder (4 obsolete files)
+- ✅ Deleted `/scripts/legacy` folder (5 files)
+- ✅ Deleted `/scripts/migration` folder (2 files)
+- ✅ Deleted 20 unused Svelte components from apps/web/src/lib/components
+- ✅ Deleted 50+ unused TypeScript files from apps/web/src/lib
+- ✅ Fixed broken imports after cleanup
 
 ---
 
 ## 📋 Pending Tasks
 
 ### Phase 1: Root Cleanup
-- [ ] Delete 25+ unnecessary MD files from root
-- [ ] Delete obsolete scripts (fix-*.sh, *.mjs one-offs)
-- [ ] Clean up `/notes` folder
-- [ ] Clean up `/scripts/legacy` folder
+- [x] Delete 25+ unnecessary MD files from root
+- [x] Delete obsolete scripts (fix-*.sh, *.mjs one-offs)
+- [x] Clean up `/notes` folder
+- [x] Clean up `/scripts/legacy` folder
 
 ### Phase 2: Web App Cleanup
-- [ ] Delete ~25 unused Svelte components
-- [ ] Delete ~70+ unused lib files (identified by knip)
+- [x] Delete ~25 unused Svelte components
+- [x] Delete ~70+ unused lib files (identified by knip)
 - [ ] Remove unused dependencies (web-vitals, sharp)
 
 ### Phase 3: Mobile App Cleanup
